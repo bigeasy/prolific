@@ -1,3 +1,3 @@
-# Node.js Middleware
+# Prolific
 
-A set of acceptable defaults.
+A logging framework.
