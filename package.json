@@ -20,6 +20,7 @@
     "dependencies":
     {
                         "cadence":              "0.0.52",
+                        "supersede":            "0.0.4",
                         "staccato":             "0.0.5"
     },
     "devDependencies":
