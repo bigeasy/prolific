@@ -11,7 +11,7 @@ function prove (assert) {
     }
 
     var controller = {
-        _supersede: new Supersede(2),
+        _supersede: new Supersede('info'),
         _write: function (actual) {
             assert(actual, expected, message)
         },

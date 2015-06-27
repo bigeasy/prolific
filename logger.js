@@ -13,7 +13,7 @@ function Logger (context, controller) {
 var levels = { error: 0, warn: 1, info: 2, debug: 3, trace: 4 }
 
 Logger.prototype._log = function (level, vargs) {
-    if (!(levels[level] <= this._controller._supersede.get(this._path))) {
+    if (!(levels[level] <= levels[this._controller._supersede.get(this._path)])) {
         return
     }
     var entry = {
