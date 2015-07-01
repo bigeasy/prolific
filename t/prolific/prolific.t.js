@@ -1,4 +1,4 @@
-require('proof')(7, prove)
+require('proof')(8, prove)
 
 function prove (assert) {
     var prolific = require('../..')
@@ -18,4 +18,6 @@ function prove (assert) {
     assert(prolific._supersede.get([ '', 'hello', 'world' ]), 'debug', 'clear')
     prolific.clearLevel()
     assert(prolific._supersede.get([ '', 'hello', 'world' ]), 'info', 'clear default')
+
+    assert(prolific.createLogger('hello.world'), 'create logger')
 }

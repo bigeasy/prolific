@@ -1,3 +1,4 @@
+var Logger = require('./logger')
 var Supersede = require('supersede')
 var slice = [].slice
 
@@ -23,4 +24,8 @@ exports.setLevel = function () {
 exports.clearLevel = function (context) {
     var path = (context == null ? '*' : '.' + context).split('.')
     this._supersede.remove(path)
+}
+
+exports.createLogger = function (context) {
+   return new Logger(context, exports)
 }
