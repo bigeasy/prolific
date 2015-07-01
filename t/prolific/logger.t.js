@@ -1,4 +1,4 @@
-require('proof')(4, prove)
+require('proof')(5, prove)
 
 function prove (assert) {
     var Supersede = require('supersede')
@@ -57,4 +57,15 @@ function prove (assert) {
         timestamp: '2015-06-27T01:45:30.742Z'
     }, 'warn')
     logger.warn('hello')
+
+    expect({
+        context: 'hello.world',
+        name: 'rescued',
+        level: 'error',
+        timestamp: '2015-06-27T01:45:30.742Z',
+        key: 'value',
+        message: 'error',
+        stack: '*'
+    }, 'rescue')
+    logger.rescue('rescued', { key: 'value' })({ message: 'error', stack: '*' })
 }

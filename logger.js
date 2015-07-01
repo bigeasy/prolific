@@ -51,4 +51,13 @@ Logger.prototype.trace = function () {
     this._log('trace', slice.call(arguments))
 }
 
+Logger.prototype.rescue = function (name) {
+    var logger = this, vargs = slice.call(arguments)
+    return function (error) {
+        if (error) {
+            logger._log('error', vargs.concat({ message: error.message, stack: error.stack }))
+        }
+    }
+}
+
 module.exports = Logger
