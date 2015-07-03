@@ -5,7 +5,7 @@ function prove (assert) {
     assert(prolific._timestamp(), 'timestamp')
     prolific.sink = {
         write: function (line) {
-            assert(line, '{"a":1}\n', 'write')
+            assert(line, 'a=1;\n', 'write')
         }
     }
     prolific._write({ a: 1 })

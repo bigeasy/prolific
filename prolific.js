@@ -1,6 +1,7 @@
 var Logger = require('./logger')
 var Supersede = require('supersede')
 var slice = [].slice
+var Wafer = require('wafer')
 
 exports._timestamp = function () {
     return new Date().toISOString()
@@ -10,7 +11,7 @@ exports._write = function (line) {
     this.sink.write(this.serializer.stringify(line) + '\n')
 }
 
-exports.serializer = JSON
+exports.serializer = Wafer
 exports.sink = process.stdout
 
 exports._supersede = new Supersede('info')
