@@ -1,11 +1,12 @@
-var slice = [].slice
-
 function Logger (context, controller) {
     this._context = context
     this._path = ('.' + context).split('.')
     this._controller = controller
     this.log = function () {
-        var vargs = slice.call(arguments)
+    var vargs = []
+        for (var i = 0, I = arguments.length; i < I; i++) {
+            vargs[i] = arguments[i]
+        }
         this._log(vargs.shift(), vargs)
     }.bind(this)
 }
@@ -32,23 +33,43 @@ Logger.prototype._log = function (level, vargs) {
 }
 
 Logger.prototype.error = function () {
-    this._log('error', slice.call(arguments))
+    var vargs = []
+    for (var i = 0, I = arguments.length; i < I; i++) {
+        vargs[i] = arguments[i]
+    }
+    this._log('error', vargs)
 }
 
 Logger.prototype.warn = function () {
-    this._log('warn', slice.call(arguments))
+    var vargs = []
+    for (var i = 0, I = arguments.length; i < I; i++) {
+        vargs[i] = arguments[i]
+    }
+    this._log('warn', vargs)
 }
 
 Logger.prototype.info = function () {
-    this._log('info', slice.call(arguments))
+    var vargs = []
+    for (var i = 0, I = arguments.length; i < I; i++) {
+        vargs[i] = arguments[i]
+    }
+    this._log('info', vargs)
 }
 
 Logger.prototype.debug = function () {
-    this._log('debug', slice.call(arguments))
+    var vargs = []
+    for (var i = 0, I = arguments.length; i < I; i++) {
+        vargs[i] = arguments[i]
+    }
+    this._log('debug', vargs)
 }
 
 Logger.prototype.trace = function () {
-    this._log('trace', slice.call(arguments))
+    var vargs = []
+    for (var i = 0, I = arguments.length; i < I; i++) {
+        vargs[i] = arguments[i]
+    }
+    this._log('trace', vargs)
 }
 
 Logger.prototype.rescue = function (name) {
