@@ -52,7 +52,10 @@ Logger.prototype.trace = function () {
 }
 
 Logger.prototype.rescue = function (name) {
-    var logger = this, vargs = slice.call(arguments)
+    var vargs = [], logger = this
+    for (var i = 0, I = arguments.length; i < I; i++) {
+        vargs[i] = arguments[i]
+    }
     return function (error) {
         if (error) {
             logger._log('error', vargs.concat({ message: error.message, stack: error.stack }))
