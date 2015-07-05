@@ -16,10 +16,14 @@ exports.sink = process.stdout
 
 exports._supersede = new Supersede('info')
 
-exports.setLevel = function () {
-    var vargs = slice.call(arguments)
-    var path = (vargs.length == 1 ? '' : '.' + vargs.shift()).split('.')
-    this._supersede.set(path, vargs[0])
+exports.setLevel = function (path, level) {
+    if (level == null) {
+        level = path
+        path = ''
+    } else {
+        path = '.' + path
+    }
+    this._supersede.set(path.split('.'), level)
 }
 
 exports.clearLevel = function (context) {
