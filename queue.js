@@ -54,6 +54,7 @@ Queue.prototype.start = cadence(function (async) {
 
         if (offset < 0) {
             logger.error('pump', 'overflow')
+            offset = 0
         }
 
         this._timer = {}
@@ -66,6 +67,7 @@ Queue.prototype.start = cadence(function (async) {
 Queue.prototype.stop = function () {
     this._stop = true
     if (this._timer) {
+        clearTimeout(this._timer.timeout)
         this._timer.callback()
     }
 }
