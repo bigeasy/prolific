@@ -68,4 +68,5 @@ function prove (assert) {
         stack: '*'
     }, 'rescue')
     logger.rescue('rescued', { key: 'value' })({ message: 'error', stack: '*' })
+    logger.rescue('rescued', { key: 'value' })()
 }
