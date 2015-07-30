@@ -1,5 +1,5 @@
 var Staccato = require('staccato')
-var cadence = require('cadence/redux')
+var cadence = require('cadence')
 
 function Queue (out) {
     this._entries = []
