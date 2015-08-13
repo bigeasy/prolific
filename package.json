@@ -21,7 +21,7 @@
     {
                         "cadence":              "0.2.3",
                         "supersede":            "0.0.4",
-                        "staccato":             "0.0.7",
+                        "staccato":             "0.0.8",
                         "wafer":                "0.0.2"
     },
     "devDependencies":
