@@ -12,7 +12,7 @@ function prove (assert) {
 
     var controller = {
         _supersede: new Supersede('info'),
-        _write: function (actual) {
+        _write: function (level, actual) {
             assert(actual, expected, message)
         },
         _timestamp: function () {

@@ -29,7 +29,7 @@ Logger.prototype._log = function (level, vargs) {
             entry[key] = properties[key]
         }
     }
-    this._controller._write(entry)
+    this._controller._write(level, entry)
 }
 
 Logger.prototype.error = function () {
