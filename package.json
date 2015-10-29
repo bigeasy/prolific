@@ -19,7 +19,6 @@
     },
     "dependencies":
     {
-                        "arguable":             "0.0.35",
                         "cadence":              "0.4.0",
                         "supersede":            "0.0.4",
                         "staccato":             "0.0.8",
