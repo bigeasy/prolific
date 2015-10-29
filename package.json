@@ -19,7 +19,7 @@
     },
     "dependencies":
     {
-                        "cadence":              "0.4.0",
+                        "cadence":              "0.4.1",
                         "supersede":            "0.0.4",
                         "staccato":             "0.0.8",
                         "timezone":             "0.0.47",
