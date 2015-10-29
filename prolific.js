@@ -2,7 +2,6 @@ var Logger = require('./logger')
 var Supersede = require('supersede')
 var slice = [].slice
 var Wafer = require('wafer')
-var glossy = require('glossy')
 var tz = require('timezone')
 
 var facilities = {
