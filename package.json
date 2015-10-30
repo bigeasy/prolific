@@ -17,6 +17,10 @@
                         "type": "git",
                         "url": "http://github.com/bigeasy/prolific.git"
     },
+    "bin":
+    {
+                        "prolific":             "prolific.bin.js"
+    },
     "dependencies":
     {
                         "abend":                "0.0.2",
