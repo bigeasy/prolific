@@ -27,6 +27,9 @@
     },
     "devDependencies":
     {
+                        "abend":                "0.0.2",
+                        "arguable":             "0.0.36",
+                        "delta":                "0.0.4",
                         "proof":                "0.0.56"
     },
     "scripts":
