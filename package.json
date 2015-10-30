@@ -25,6 +25,7 @@
     {
                         "abend":                "0.0.2",
                         "cadence":              "0.4.1",
+                        "delta":                "0.0.4",
                         "supersede":            "0.0.4",
                         "staccato":             "0.0.8",
                         "timezone":             "0.0.47",
