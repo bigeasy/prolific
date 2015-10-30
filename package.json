@@ -19,6 +19,7 @@
     },
     "dependencies":
     {
+                        "abend":                "0.0.2",
                         "cadence":              "0.4.1",
                         "supersede":            "0.0.4",
                         "staccato":             "0.0.8",
@@ -27,7 +28,6 @@
     },
     "devDependencies":
     {
-                        "abend":                "0.0.2",
                         "arguable":             "0.0.36",
                         "delta":                "0.0.4",
                         "proof":                "0.0.56"
