@@ -1,3 +1,5 @@
+var prolific = require('./prolific')
+
 function Logger (context, controller) {
     this._context = context
     this._path = ('.' + context).split('.')
@@ -23,6 +25,7 @@ Logger.prototype._log = function (level, vargs) {
         level: level,
         timestamp: this._controller._timestamp()
     }
+    vargs.unshift(prolific.context)
     while (vargs.length) {
         var properties = vargs.shift()
         for (var key in properties) {

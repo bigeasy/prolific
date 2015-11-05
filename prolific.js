@@ -91,3 +91,5 @@ exports.clearLevel = function (context) {
 exports.createLogger = function (context) {
    return new Logger(context, exports)
 }
+
+exports.context = {}
