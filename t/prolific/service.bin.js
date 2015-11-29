@@ -42,6 +42,8 @@ require('arguable')(module, require('cadence')(function (async, options) {
     async(function () {
         queue.flush(log, async())
     }, function () {
+        setTimeout(async(), 1000)
+    }, function () {
         throw new Error('uncaught')
     })
 }))
