@@ -24,7 +24,7 @@
     "dependencies":
     {
                         "abend":                "0.0.2",
-                        "arguable":             "0.0.36",
+                        "arguable":             "0.0.40",
                         "cadence":              "0.4.1",
                         "delta":                "0.0.4",
                         "supersede":            "0.0.4",

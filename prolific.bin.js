@@ -37,20 +37,20 @@ Writer.prototype.write = function (chunk) {
     }, this)
 }
 
-require('arguable')(module, require('cadence')(function (async, options) {
-    options.helpIf(options.param.help)
-    options.required('udp')
+require('arguable')(module, require('cadence')(function (async, program) {
+    program.helpIf(program.param.help)
+    program.required('udp')
 
-    var send = options.param.udp.split(':')
-    var host = options.param.host = send[0]
-    var port = options.param.port = +send[1]
+    var send = program.param.udp.split(':')
+    var host = program.param.host = send[0]
+    var port = program.param.port = +send[1]
 
     var socket = new dgram.Socket('udp4')
-    var child = children.spawn(options.argv.shift(), options.argv, {
+    var child = children.spawn(program.argv.shift(), program.argv, {
         stdio: [ 'ignore', 'pipe', 'pipe', 'pipe' ],
         detatched: true
     })
-    options.signal('SIGINT', function () { if (child) process.kill(child.pid) })
+    program.on('SIGINT', function () { if (child) process.kill(child.pid) })
     async(function () {
         var delta = new Delta(async())
         delta.ee(child).on('close')
