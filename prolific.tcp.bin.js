@@ -36,7 +36,6 @@ require('arguable')(module, require('cadence')(function (async, program) {
     })
 
     program.on('SIGINT', function () {
-        console.log('got int')
         if (child) child.kill('SIGINT')
     })
 

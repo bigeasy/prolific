@@ -18,6 +18,26 @@ function Sink (queue, stream) {
     this._initialized = false
 }
 
+Queue.prototype.exit = function (stderr) {
+    this._sink._termianted = true
+    var messages = this._entries.pop() || []
+    while (this._entries.length) {
+        messages.push.apply(messages, this._entries.pop())
+    }
+    if (messages.length == 0) {
+        return
+    }
+    var buffer, checksum
+    var buffers = []
+    buffer = new Buffer(this._previousChecksum + '\n')
+    checksum = fnv(0, buffer, 0, buffer.length)
+    buffers.push(new Buffer(0xaaaaaaaa + ' ' + checksum + ' ' + buffer.length + '\n'), buffer)
+    buffer = new Buffer(messages.join(''))
+    checksum = fnv(0, buffer, 0, buffer.length)
+    buffers.push(new Buffer(this._previousChecksum + ' ' + checksum + ' ' + buffer.length + '\n'), buffer)
+    stderr.write(Buffer.concat(buffers))
+}
+
 Sink.prototype._write = cadence(function (async, string) {
     var buffer = new Buffer(string)
     var checksum = fnv(0, buffer, 0, buffer.length)

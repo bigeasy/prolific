@@ -17,6 +17,7 @@ function Shuttle (process, log, interval) {
     process.on('uncaughtException', function (error) {
         logger.error('uncaught', { stack: error.stack })
         this.stop()
+        throw error
     }.bind(this))
     this._stderr = process.stderr
 }
@@ -33,7 +34,7 @@ Shuttle.prototype.stop = function () {
     if (!this._stopped) {
         this._stopped = true
         this._isochronous.stop()
-        sync(this.queue, this._stderr)
+        this.queue.exit(this._stderr)
     }
 }
 
