@@ -27,14 +27,18 @@
                         "arguable":             "0.0.40",
                         "cadence":              "0.4.3",
                         "delta":                "0.0.4",
+                        "hash.fnv":             "0.0.0",
+                        "isochronous":          "0.0.5",
+                        "operation":            "0.0.4",
+                        "reactor":              "0.0.11",
                         "supersede":            "0.0.4",
-                        "staccato":             "0.0.8",
                         "timezone":             "0.0.48",
                         "wafer":                "0.0.4"
     },
     "devDependencies":
     {
-                        "proof":                "0.0.57"
+                        "proof":                "0.0.57",
+                        "rimraf":               "2.4.4"
     },
     "scripts":
     {

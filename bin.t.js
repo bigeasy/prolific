@@ -16,6 +16,7 @@ function prove (async, assert) {
             '--udp', '127.0.0.1:8514', 'node', 't/prolific/service.bin.js', '--log', '3'
         ], {}, async())
     }, function () {
+        console.log(lines)
         assert(/^<(\d+)>/.exec(lines[0])[1], '129', 'info')
         assert(/^<(\d+)>/.exec(lines[1])[1], '132', 'error')
         lines.length = 0

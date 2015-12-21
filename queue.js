@@ -1,17 +1,64 @@
 var cadence = require('cadence')
+var fnv = require('hash.fnv')
 
 function Queue () {
     this._entries = [[]]
+    this._sink = {}
+    this._previousChecksum = 0xaaaaaaaa
 }
 
-Queue.prototype.flush = cadence(function (async, out) {
-    if (this._entries.length == 1) {
-        this._entries.unshift([])
-    }
+Queue.prototype.createSink = function (stream) {
+    return new Sink(this, stream)
+}
+
+function Sink (queue, stream) {
+    this._queue = queue
+    this._stream = stream
+    this._previousChecksum = 0xaaaaaaaa
+    this._initialized = false
+}
+
+Sink.prototype._write = cadence(function (async, string) {
+    var buffer = new Buffer(string)
+    var checksum = fnv(0, buffer, 0, buffer.length)
     async(function () {
-        out.write(this._entries[this._entries.length - 1].join(''), async())
+        this._stream.write(this._previousChecksum + ' ' + checksum + ' ' + buffer.length + '\n', async())
     }, function () {
-        this._entries.pop()
+        this._stream.write(buffer, async())
+    }, function () {
+        return [ checksum ]
+    })
+})
+
+Sink.prototype.open = cadence(function (async, out) {
+    this._queue._sink._termianted = true
+    this._queue._sink = this
+    async(function () {
+        this._write(this._queue._previousChecksum + '\n', async())
+    }, function () {
+        this._previousChecksum = this._queue._previousChecksum
+    })
+})
+
+Sink.prototype.flush = cadence(function (async, out) {
+    if (this._termianted) {
+        return
+    }
+
+    var entries = this._queue._entries
+
+    if (entries.length == 1) {
+        if (entries[0].length == 0) {
+            return
+        }
+        entries.unshift([])
+    }
+
+    async(function () {
+        this._write(entries[entries.length - 1].join(''), async())
+    }, function (checksum) {
+        this._queue._previousChecksum = this._previousChecksum = checksum
+        entries.pop()
     })
 })
 
