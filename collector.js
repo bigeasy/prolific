@@ -2,6 +2,7 @@ var fnv = require('hash.fnv')
 
 function Collector (dedicated) {
     this.chunks = []
+    this.stderr = []
     this._collecing = null
     this._header = new Buffer(0)
     this._previousChecksum = 0xaaaaaaaa
@@ -141,9 +142,13 @@ Collector.prototype._scanHeader = function (scan) {
                 }
             } else {
                 this._assert(!this._dedicated, 'dedicated stream sequence break')
+                this.stderr.push(header)
+                this.stderr.push(new Buffer('\n'))
             }
         } else {
             this._assert(!this._dedicated, 'dedicated stream garbled header')
+            this.stderr.push(header)
+            this.stderr.push(new Buffer('\n'))
         }
         scan.index = i + 1
         return true

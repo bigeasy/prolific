@@ -12,13 +12,15 @@ function Shuttle (process, log, interval) {
     this._stopped = false
     this._isochronous = new Isochronous({
         interval: interval,
-        operation: { object: this._sink, method: 'flush' }
+        operation: { object: this._sink, method: 'flush' },
+        unref: true
     })
     process.on('uncaughtException', function (error) {
         logger.error('uncaught', { stack: error.stack })
         this.stop()
         throw error
     }.bind(this))
+    process.on('exit', this.stop.bind(this))
     this._stderr = process.stderr
 }
 

@@ -17,6 +17,11 @@ Writer.prototype.data = function (buffer) {
         while (this.collector.chunks.length) {
             this.sender.send(this.previous = this.collector.chunks.shift())
         }
+    } else {
+        while (this.collector.stderr.length) {
+            // TODO Pass this in.
+            process.stderr.write(this.collector.stderr.shift())
+        }
     }
 }
 

@@ -4,9 +4,7 @@ var Shuttle = require('./shuttle')
 var abend = require('abend')
 
 var shuttle = new Shuttle(process, 3, 2500)
-process.on('exit', function () {
-    shuttle.stop()
-})
+process.on('beforeExit', function () { logger.info('goodbye') })
 prolific.sink = shuttle.queue
 shuttle.run(abend)
 
@@ -15,5 +13,5 @@ var interval = setInterval(function () {
 }, 1000)
 
 process.on('SIGINT', function () {
-    throw new Error('uncaught')
+    clearInterval(interval)
 })
