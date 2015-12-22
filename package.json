@@ -1,6 +1,6 @@
 {
     "name":             "prolific",
-    "version":          "0.0.15",
+    "version":          "0.0.16",
     "author":           "Alan Gutierrez <alan@prettyrobots.com>",
     "description":      "A logging framework.",
     "keywords":
