@@ -44,10 +44,6 @@ module.exports = cadence(function (async, sender, child, asyncout, syncout) {
             sender.send(chunk)
             previous = chunk
         }
-        async(function () {
-            sender.close(async())
-        }, function () {
-            return [ code, signal ]
-        })
+        return [ code, signal ]
     })
 })
