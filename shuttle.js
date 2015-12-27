@@ -2,6 +2,7 @@ var Queue = require('./queue')
 var logger = require('./prolific').createLogger('prolific.shuttle')
 var fs = require('fs')
 var sync = require('./sync')
+var abend = require('abend')
 var Isochronous = require('isochronous')
 var cadence = require('cadence')
 
@@ -38,6 +39,13 @@ Shuttle.prototype.stop = function () {
         this._isochronous.stop()
         this.queue.exit(this._stderr)
     }
+}
+
+Shuttle.shuttle = function (program) {
+    if (!program.env.PROLIFIC_LOG_SHUTTLE_FILE_NUMBER) {
+        return
+    }
+    new Shuttle(program, +program.env.PROLIFIC_LOG_SHUTTLE_FILE_NUMBER, 2500).run(abend)
 }
 
 module.exports = Shuttle
