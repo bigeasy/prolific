@@ -42,10 +42,10 @@ Shuttle.prototype.stop = function () {
 }
 
 Shuttle.shuttle = function (program) {
-    if (!program.env.PROLIFIC_LOG_SHUTTLE_FILE_NUMBER) {
+    if (!program.env.PROLIFIC_LOGGING_FD) {
         return
     }
-    new Shuttle(program, +program.env.PROLIFIC_LOG_SHUTTLE_FILE_NUMBER, 2500).run(abend)
+    new Shuttle(program, +program.env.PROLIFIC_LOGGING_FD, 2500).run(abend)
 }
 
 module.exports = Shuttle

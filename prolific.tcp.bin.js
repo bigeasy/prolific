@@ -30,6 +30,8 @@ require('arguable')(module, require('cadence')(function (async, program) {
 
     var sender = new Sender(host, port)
 
+    program.env.PROLIFIC_LOGGING_FD = '3'
+
     var child = children.spawn(program.argv.shift(), program.argv, {
         stdio: [ 'ignore', 'inherit', 'pipe', 'pipe' ],
         detatched: true

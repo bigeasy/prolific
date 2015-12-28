@@ -9,7 +9,7 @@ prolific.sink = shuttle.queue
 shuttle.run(abend)
 
 var interval = setInterval(function () {
-    logger.info('hello', { target: 'world' })
+    logger.info('hello', { target: 'world', env: process.env })
 }, 1000)
 
 process.on('SIGINT', function () {
