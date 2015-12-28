@@ -79,7 +79,6 @@ Collector.prototype._scanChunk = function (scan) {
         var checksum = fnv(0, buffer, 0, buffer.length)
         this._assert(checksum == this._chunk.checksum, 'invalid checksum')
         if (this._initialized) {
-            console.log('data', this._dedicated, this._previousChecksum, this._chunk.checksum)
             this.chunks.push({
                 previousChecksum: this._previousChecksum,
                 checksum: this._chunk.checksum,
@@ -89,7 +88,6 @@ Collector.prototype._scanChunk = function (scan) {
             this._previousChecksum = this._chunk.checksum
         } else {
             this._initialized = true
-            console.log('init', this._dedicated, this._previousChecksum, this._chunk.checksum, +buffer.toString())
             this._previousChecksum = +buffer.toString()
         }
         this._chunk = null
