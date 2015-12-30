@@ -17,14 +17,15 @@
 */
 
 var monitor = require('./monitor')
-var Sender = require('./sender.file')
+var Sender = require('./sender.stream')
 var children = require('child_process')
 
 require('arguable')(module, require('cadence')(function (async, program) {
     program.helpIf(program.param.help)
     program.required('destination')
 
-    var sender = new Sender(program.param.destination)
+    var fs = require('fs')
+    var sender = new Sender(fs.createWriteStream(program.param.destination, { flags: 'a' }), true)
 
     program.env.PROLIFIC_LOGGING_FD = 3
 

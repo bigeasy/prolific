@@ -8,7 +8,7 @@ function Writer (sender, dedicated) {
     this.collector = new Collector(dedicated)
     this.dedicated = dedicated
     this.ondata = this.data.bind(this)
-    this.previous = { checksum: 0 }
+    this.previous = { checksum: 0xaaaaaaaa }
 }
 
 Writer.prototype.data = function (buffer) {

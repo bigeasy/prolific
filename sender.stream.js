@@ -2,9 +2,10 @@ var cadence = require('cadence')
 var Reactor = require('reactor')
 var fs = require('fs')
 
-function Sender (filename) {
+function Sender (stream, close) {
     this._sending = new Reactor({ object: this, method: '_send' })
-    this._stream = fs.createWriteStream(filename, { flags: 'a' })
+    this._stream = stream
+    this._close = close
 }
 
 // TODO The primary concern at the time of writing is capturing fatal errors
@@ -47,7 +48,9 @@ Sender.prototype.close = cadence(function (async) {
     async(function () {
         this.send({ buffer: new Buffer(0) }, async())
     }, function () {
-        this._stream.end(async())
+        if (this._close) {
+            this._stream.end(async())
+        }
     })
 })
 
