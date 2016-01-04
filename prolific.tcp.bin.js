@@ -28,7 +28,7 @@ require('arguable')(module, require('cadence')(function (async, program) {
     var host = program.param.host = send[0]
     var port = program.param.port = +send[1]
 
-    var sender = new Sender(host, port)
+    var sender = new Sender(host, port, program.stdout)
 
     program.env.PROLIFIC_LOGGING_FD = '3'
 

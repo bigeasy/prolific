@@ -15,7 +15,7 @@ Writer.prototype.data = function (buffer) {
     this.collector.scan(buffer)
     if (this.dedicated) {
         while (this.collector.chunks.length) {
-            this.sender.send(this.previous = this.collector.chunks.shift())
+            this.sender.send((this.previous = this.collector.chunks.shift()).buffer)
         }
     } else {
         while (this.collector.stderr.length) {
@@ -41,7 +41,7 @@ module.exports = cadence(function (async, sender, child, asyncout, syncout) {
             var chunk = io.synclog.collector.chunks.shift()
             // TODO Allow an initial duplicate for the flush race condition.
             assert.ok(chunk.previousChecksum == previous.checksum, 'previous mismatch')
-            sender.send(chunk)
+            sender.send(chunk.buffer)
             previous = chunk
         }
         return [ code, signal ]

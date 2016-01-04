@@ -1,10 +1,12 @@
 var cadence = require('cadence')
+var logger = require('./prolific').createLogger('bigeasy.prolific.sender.tcp')
 var Reactor = require('reactor')
 
-function Sender (host, port) {
+function Sender (host, port, sync) {
     this._sending = new Reactor({ object: this, method: '_send' })
     this._host = host
     this._port = port
+    this._sync = sync
 }
 
 // TODO The primary concern at the time of writing is capturing fatal errors
@@ -44,15 +46,20 @@ var net = require('net')
 
 Sender.prototype._send = cadence(function (async, timeout, chunk) {
     var socket = new net.Socket
-    async(function () {
-        socket.connect({ port: this._port, host: this._host })
-        new Delta(async()).ee(socket).on('connect')
-    }, function () {
-        socket.end(chunk)
-        new Delta(async()).ee(socket).on('close')
-    }, function () {
+    async([function () {
         socket.destroy()
-    })
+    }], [function () {
+        async(function () {
+            socket.connect({ port: this._port, host: this._host })
+            new Delta(async()).ee(socket).on('connect')
+        }, function () {
+            socket.end(chunk)
+            new Delta(async()).ee(socket).on('close')
+        })
+    }, function (error) {
+        logger.error('write', { stack: error.stack })
+        this._sync.write(chunk)
+    }])
 })
 
 Sender.prototype.close = cadence(function () {
