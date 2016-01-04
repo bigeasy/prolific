@@ -2,7 +2,7 @@
     ___ usage ___ en_US ___
     usage: node prolific.tcp.bin.js
 
-        -d, --destination   <string>    the udp address and port to send to
+        -l, --log           <string>    the udp address and port to send to
             --help                      display this message
 
     ___ $ ___ en_US ___
@@ -22,10 +22,10 @@ var children = require('child_process')
 
 require('arguable')(module, require('cadence')(function (async, program) {
     program.helpIf(program.param.help)
-    program.required('destination')
+    program.required('log')
 
     var fs = require('fs')
-    var sender = new Sender(fs.createWriteStream(program.param.destination, { flags: 'a' }), true)
+    var sender = new Sender(fs.createWriteStream(program.param.log, { flags: 'a' }), true)
 
     program.env.PROLIFIC_LOGGING_FD = 3
 
