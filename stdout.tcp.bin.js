@@ -5,18 +5,26 @@
     options:
 
         --help                      display help message
-        -p, --port      <integer>   port to listen to
+        -b, --bind      <integer>   port to listen to
     ___ . ___
 
  */
 require('arguable')(module, require('cadence')(function (async, program) {
     program.helpIf(program.param.help)
-    program.required('port')
+    program.required('bind')
+    var pair = program.param.bind.split(':')
+    if (pair.length == 1) {
+        var host = '0.0.0.0'
+        var port = +pair[0]
+    } else {
+        var host = pair[0]
+        var port = +pair[1]
+    }
     var net = require('net')
     var server = net.createServer(function (socket) {
         socket.on('data', function (chunk) {
             program.stdout.write(chunk.toString())
         })
     })
-    server.listen(+program.param.port, async())
+    server.listen(port, host, async())
 }))
