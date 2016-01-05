@@ -1,5 +1,6 @@
 var Queue = require('./queue')
-var logger = require('./prolific').createLogger('prolific.shuttle')
+var prolific = require('./prolific')
+var logger = prolific.createLogger('prolific.shuttle')
 var fs = require('fs')
 var sync = require('./sync')
 var abend = require('abend')
@@ -8,7 +9,7 @@ var cadence = require('cadence')
 
 function Shuttle (process, log, interval) {
     this._logout = fs.createWriteStream(null, { fd: +log })
-    this.queue = new Queue
+    prolific.sink = this.queue = new Queue
     this._sink = this.queue.createSink(this._logout)
     this._stopped = false
     this._isochronous = new Isochronous({
