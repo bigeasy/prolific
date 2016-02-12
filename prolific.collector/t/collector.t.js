@@ -1,8 +1,8 @@
 require('proof')(4, require('cadence')(prove))
 
 function prove (async, assert) {
-    var Collector = require('../../collector')
-    var Queue = require('../../queue')
+    var Collector = require('../collector')
+    var Queue = require('prolific/queue')
     var fnv = require('hash.fnv')
     var buffer = new Buffer('a\nb\n')
     var hash = fnv(0, buffer, 0, buffer.length)

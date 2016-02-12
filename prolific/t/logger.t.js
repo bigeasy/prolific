@@ -2,7 +2,7 @@ require('proof')(5, prove)
 
 function prove (assert) {
     var Supersede = require('supersede')
-    var Logger = require('../../logger')
+    var Logger = require('../logger')
 
     var expected = null, message = null
     function expect (_exepcted, _message) {

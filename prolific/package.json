@@ -1,0 +1,38 @@
+{
+    "name":             "prolific",
+    "version":          "0.0.23",
+    "author":           "Alan Gutierrez <alan@prettyrobots.com>",
+    "description":      "A logging framework.",
+    "keywords":
+    [
+                        "http", "https", "rest", "json", "curl"
+    ],
+    "license":          "MIT",
+    "contributors":     [],
+    "homepage":         "https://github.com/bigeasy/prolific",
+    "bugs":             "https://github.com/bigeasy/prolific/issues",
+    "main":             "prolific",
+    "repository":
+    {
+                        "type": "git",
+                        "url": "http://github.com/bigeasy/prolific.git"
+    },
+    "bin":
+    {
+    },
+    "dependencies":
+    {
+                        "supersede":            "0.0.4",
+                        "timezone":             "0.0.48",
+                        "wafer":                "0.0.4"
+    },
+    "devDependencies":
+    {
+                        "proof":                "0.0.57",
+                        "rimraf":               "2.4.4"
+    },
+    "scripts":
+    {
+                        "test": "proof test t/*.t.js"
+    }
+}

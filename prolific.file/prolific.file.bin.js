@@ -2,7 +2,7 @@
     ___ usage ___ en_US ___
     usage: node prolific.tcp.bin.js
 
-        -l, --log           <string>    the udp address and port to send to
+        -l, --log           <string>    the file to write logs to
             --help                      display this message
 
     ___ $ ___ en_US ___

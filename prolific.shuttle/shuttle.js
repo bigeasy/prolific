@@ -1,5 +1,5 @@
-var Queue = require('./queue')
-var prolific = require('./prolific')
+var Queue = require('prolific/queue')
+var prolific = require('prolific')
 var logger = prolific.createLogger('prolific.shuttle')
 var fs = require('fs')
 var sync = require('./sync')

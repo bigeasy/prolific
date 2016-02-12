@@ -1,7 +1,7 @@
 require('proof')(8, prove)
 
 function prove (assert) {
-    var prolific = require('../..')
+    var prolific = require('..')
     prolific._Date = { now: function () { return 0 } }
     assert(prolific._timestamp(), 'timestamp')
     prolific.syslog({ pid: 4, host: 'prettyrobots.com', application: 'prolific'  })

@@ -3,7 +3,7 @@ require('proof')(1, require('cadence')(prove))
 function prove (async, assert) {
     var stream = require('stream')
     var abend = require('abend')
-    var Queue = require('../../queue')
+    var Queue = require('../queue')
     var fail, out = {
         write: function (buffer, callback) {
             if (!fail) {
