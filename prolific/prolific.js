@@ -71,7 +71,8 @@ exports._write = function (level, line) {
 exports.serializer = Wafer
 exports.sink = process.stdout
 
-exports._supersede = new Supersede('info')
+exports._supersede = new Supersede
+exports._supersede.set([ '' ], 'info')
 
 exports.setLevel = function (path, level) {
     if (level == null) {
@@ -84,8 +85,12 @@ exports.setLevel = function (path, level) {
 }
 
 exports.clearLevel = function (context) {
-    var path = (context == null ? '*' : '.' + context).split('.')
-    this._supersede.remove(path)
+    if (context == null) {
+        this._supersede.remove([ '' ])
+        this._supersede.set([ '' ], 'info')
+    } else {
+        this._supersede.remove(('.' + context).split('.'))
+    }
 }
 
 exports.createLogger = function (context) {

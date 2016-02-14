@@ -11,7 +11,7 @@ function prove (assert) {
     }
 
     var controller = {
-        _supersede: new Supersede('info'),
+        _supersede: new Supersede,
         _write: function (level, actual) {
             assert(actual, expected, message)
         },
@@ -19,6 +19,8 @@ function prove (assert) {
             return '2015-06-27T01:45:30.742Z'
         }
     }
+
+    controller._supersede.set([ '' ], 'info')
 
     var logger = new Logger('hello.world', controller)
     logger.trace('hello')
