@@ -22,11 +22,11 @@
     },
     "dependencies":
     {
-                        "hash.fnv":             "0.0.0",
-                        "prolific":             "0.0.23"
+                        "hash.fnv":             "0.0.0"
     },
     "devDependencies":
     {
+                        "prolific.queue":       "1.x",
                         "proof":                "0.0.57",
                         "rimraf":               "2.4.4"
     },
