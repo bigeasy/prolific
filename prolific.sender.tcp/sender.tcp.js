@@ -1,5 +1,5 @@
 var cadence = require('cadence')
-var logger = require('./prolific').createLogger('bigeasy.prolific.sender.tcp')
+var logger = require('prolific').createLogger('bigeasy.prolific.sender.tcp')
 var Reactor = require('reactor')
 
 function Sender (host, port, sync) {
@@ -37,8 +37,8 @@ function Sender (host, port, sync) {
 // if it is really worth it. It seems that I'm close to building a reliable
 // logging stream here, so that if we create a reliable logging stream, we might
 // in turn come to depend on it, but if it is reliable we never will.
-Sender.prototype.send = function (chunk) {
-    this._sending.push(chunk)
+Sender.prototype.send = function () {
+    this._sending.push.apply(this._sending, [].slice.call(arguments))
 }
 
 var Delta = require('delta')
