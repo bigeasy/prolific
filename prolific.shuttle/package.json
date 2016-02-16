@@ -24,7 +24,7 @@
     {
                         "abend":                "0.0.3",
                         "cadence":              "0.4.3",
-                        "isochronous":          "0.0.6",
+                        "isochronous":          "1.x",
                         "prolific":             "1.x",
                         "prolific.queue":       "1.x"
     },
