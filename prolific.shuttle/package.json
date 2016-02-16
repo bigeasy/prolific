@@ -30,7 +30,7 @@
     "devDependencies":
     {
                         "proof":                "1.x",
-                        "rimraf":               "2.4.4"
+                        "rimraf":               "2.5.2"
     },
     "scripts":
     {
