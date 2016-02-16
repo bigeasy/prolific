@@ -22,7 +22,7 @@
     },
     "dependencies":
     {
-                        "cadence":              "0.4.3",
+                        "cadence":              "1.x",
                         "hash.fnv":             "0.0.0"
     },
     "devDependencies":
