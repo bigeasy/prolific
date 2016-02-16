@@ -23,7 +23,7 @@
     "dependencies":
     {
                         "supersede":            "1.x",
-                        "timezone":             "0.0.48",
+                        "timezone":             "1.x",
                         "wafer":                "1.x"
     },
     "devDependencies":
