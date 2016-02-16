@@ -27,8 +27,7 @@
     "devDependencies":
     {
                         "prolific.queue":       "1.x",
-                        "proof":                "1.x",
-                        "rimraf":               "2.4.4"
+                        "proof":                "1.x"
     },
     "scripts":
     {
