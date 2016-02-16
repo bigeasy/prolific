@@ -22,7 +22,7 @@
     },
     "dependencies":
     {
-                        "abend":                "0.0.3",
+                        "abend":                "1.x",
                         "cadence":              "1.x",
                         "isochronous":          "1.x",
                         "prolific":             "1.x",
