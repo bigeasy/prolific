@@ -1,10 +1,11 @@
 var cadence = require('cadence')
 var fnv = require('hash.fnv')
+var hex = require('./hex')
 
 function Queue () {
     this._entries = [[]]
     this._sink = {}
-    this._previousChecksum = 0xaaaaaaaa
+    this._previousChecksum = hex(0xaaaaaaaa, 8)
 }
 
 Queue.prototype.createSink = function (stream) {
@@ -14,7 +15,7 @@ Queue.prototype.createSink = function (stream) {
 function Sink (queue, stream) {
     this._queue = queue
     this._stream = stream
-    this._previousChecksum = 0xaaaaaaaa
+    this._previousChecksum = hex(0xaaaaaaaa, 8)
     this._initialized = false
 }
 
@@ -30,17 +31,17 @@ Queue.prototype.exit = function (stderr) {
     var buffer, checksum
     var buffers = []
     buffer = new Buffer(this._previousChecksum + '\n')
-    checksum = fnv(0, buffer, 0, buffer.length)
-    buffers.push(new Buffer(0xaaaaaaaa + ' ' + checksum + ' ' + buffer.length + '\n'), buffer)
+    checksum = hex(fnv(0, buffer, 0, buffer.length), 8)
+    buffers.push(new Buffer(hex(0xaaaaaaaa, 8) + ' ' + checksum + ' ' + buffer.length + '\n'), buffer)
     buffer = new Buffer(messages.join(''))
-    checksum = fnv(0, buffer, 0, buffer.length)
+    checksum = hex(fnv(0, buffer, 0, buffer.length), 8)
     buffers.push(new Buffer(this._previousChecksum + ' ' + checksum + ' ' + buffer.length + '\n'), buffer)
     stderr.write(Buffer.concat(buffers))
 }
 
 Sink.prototype._write = cadence(function (async, string) {
     var buffer = new Buffer(string)
-    var checksum = fnv(0, buffer, 0, buffer.length)
+    var checksum = hex(fnv(0, buffer, 0, buffer.length), 8)
     async(function () {
         this._stream.write(this._previousChecksum + ' ' + checksum + ' ' + buffer.length + '\n', async())
     }, function () {

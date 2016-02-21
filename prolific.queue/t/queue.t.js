@@ -24,7 +24,7 @@ function prove (async, assert) {
     }, function () {
         sink.flush(out, async())
     }, function () {
-        assert(out.stream.read().toString(), '2863311530 2129253025 11\n2863311530\n2863311530 4256134199 6\n1\n2\n3\n', 'written')
+        assert(out.stream.read().toString(), 'aaaaaaaa 6eb9f4a5 9\naaaaaaaa\naaaaaaaa fdaf7437 6\n1\n2\n3\n', 'written')
     }, function () {
         queue.write(4 + '\n')
         fail = true
