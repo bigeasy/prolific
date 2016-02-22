@@ -88,7 +88,7 @@ Collector.prototype._scanChunk = function (scan) {
             this._previousChecksum = this._chunk.checksum
         } else {
             this._initialized = true
-            this._previousChecksum = +buffer.toString()
+            this._previousChecksum = parseInt(buffer.toString(), 16)
         }
         this._chunk = null
         scan.start = scan.end = scan.end + 1
@@ -124,13 +124,13 @@ Collector.prototype._scanHeader = function (scan) {
         this._buffers.push(new Buffer(buffer.slice(scan.index, i)))
         var header = Buffer.concat(this._buffers)
         this._buffers.length = 0
-        var $ = /^(\d+) (\d+) (\d+)$/.exec(header.toString())
+        var $ = /^([\da-f]+) ([\da-f]+) ([\da-f]+)$/i.exec(header.toString())
         if ($) {
-            var previousChecksum = +$[1]
-            var chunk = { checksum: +$[2], length: +$[3], remaining: +$[3] }
+            var previousChecksum = parseInt($[1], 16)
+            var chunk = { checksum: parseInt($[2], 16), length: +$[3], remaining: +$[3] }
             if (previousChecksum == this._previousChecksum) {
                 if (!this._initialized) {
-                    if (chunk.remaining == 11) {
+                    if (chunk.remaining == 9) {
                         this._chunk = chunk
                     } else {
                         this._assert(!this._dedicated, 'invalid initializer')
