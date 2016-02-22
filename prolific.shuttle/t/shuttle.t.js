@@ -40,8 +40,8 @@ function prove (async, assert) {
         async(function () {
             fs.readFile(path.join(__dirname, 'logout'), 'utf8', async())
         }, function (body) {
-            assert(body, '2863311530 2129253025 11\n2863311530\n2863311530 2049273326 4\na\nb\n', 'log file')
-            assert(program.stderr.read().toString(), '2863311530 4272152517 11\n2049273326\n2049273326 4070205066 4\nc\nd\n', 'stderr')
+            assert(body, 'aaaaaaaa 6eb9f4a5 9\naaaaaaaa\naaaaaaaa 7a256dee 4\na\nb\n', 'log file')
+            assert(program.stderr.read().toString(), 'aaaaaaaa 21780b7e 9\n7a256dee\n7a256dee f29a668a 4\nc\nd\n', 'stderr')
         })
     })
 }
