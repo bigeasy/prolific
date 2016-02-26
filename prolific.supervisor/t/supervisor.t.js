@@ -1,11 +1,11 @@
 require('proof')(1, require('cadence')(prove))
 
 function prove (async, assert) {
-    var bin = require('../prolific.bin')
+    var supervisor = require('../prolific.supervisor')
 
     var io
     async(function () {
-        io = bin({}, [ 'test', 'a' ], {}, async())
+        io = supervisor({}, [ 'test', 'a' ], {}, async())
     }, function (code) {
         assert(code, 0, 'code')
     })
