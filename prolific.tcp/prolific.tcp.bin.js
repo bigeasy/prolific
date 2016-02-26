@@ -30,11 +30,14 @@ require('arguable')(module, require('cadence')(function (async, program) {
 
     var sender = new Sender(host, port, program.stdout)
 
+    // TODO Add to very end of existing stdio. This would require a command line
+    // switch and it would mean that there would be inheritence for certain
+    // number `--inherit=4` so that we'd put ourself after the last inherited.
     program.env.PROLIFIC_LOGGING_FD = '3'
 
     var child = children.spawn(program.argv.shift(), program.argv, {
         stdio: [ 'ignore', 'inherit', 'pipe', 'pipe' ],
-        detatched: true
+        detatched: true // TODO `false`.
     })
 
     program.on('SIGINT', function () {
