@@ -29,8 +29,6 @@
     },
     "devDependencies":
     {
-                        "abend":                "1.x",
-                        "delta":                "1.x",
                         "proof":                "1.x"
     },
     "scripts":
