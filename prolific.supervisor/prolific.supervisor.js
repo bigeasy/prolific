@@ -1,3 +1,5 @@
+#!/bin/bash
+
 /*
     ___ usage ___ en_US ___
     usage: prolific <protocol> <protocol args>
