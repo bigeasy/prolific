@@ -42,10 +42,5 @@ require('arguable')(module, require('cadence')(function (async, program) {
 
     program.on('SIGINT', function () { child.kill('SIGINT') })
 
-    async(function () {
-        monitor(sender, child, child.stdio[3], child.stderr, program.stderr, async())
-    }, function (code, signal) {
-        // TODO Move this condition up to monitor.
-        return [ code == null ? 1 : code ]
-    })
+    monitor(sender, child, child.stdio[3], child.stderr, program.stderr, async())
 }))
