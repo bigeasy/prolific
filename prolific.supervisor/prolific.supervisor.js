@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env node
 
 /*
     ___ usage ___ en_US ___
