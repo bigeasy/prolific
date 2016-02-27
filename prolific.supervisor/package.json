@@ -1,6 +1,6 @@
 {
     "name":             "prolific.supervisor",
-    "version":          "0.0.0",
+    "version":          "1.0.0",
     "author":           "Alan Gutierrez <alan@prettyrobots.com>",
     "description":      "Root executable for standard Prolific supervisors.",
     "keywords":
