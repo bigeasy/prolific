@@ -16,8 +16,8 @@
     ___ . ___
 */
 
-var monitor = require('./monitor')
-var Sender = require('./sender.tcp')
+var monitor = require('prolific.monitor')
+var Sender = require('prolific.sender.tcp')
 var children = require('child_process')
 
 require('arguable')(module, require('cadence')(function (async, program) {
@@ -40,13 +40,12 @@ require('arguable')(module, require('cadence')(function (async, program) {
         detatched: true // TODO `false`.
     })
 
-    program.on('SIGINT', function () {
-        if (child) child.kill('SIGINT')
-    })
+    program.on('SIGINT', function () { child.kill('SIGINT') })
 
     async(function () {
-        monitor(sender, child, child.stdio[3], child.stderr, async())
+        monitor(sender, child, child.stdio[3], child.stderr, program.stderr, async())
     }, function (code, signal) {
+        // TODO Move this condition up to monitor.
         return [ code == null ? 1 : code ]
     })
 }))
