@@ -32,9 +32,9 @@ module.exports = cadence(function (async, sender, child, asyncout, syncout, forw
     }
     async(function () {
         var delta = new Delta(async())
-        delta.ee(child).on('close')
-             .ee(asyncout).on('data', log.async.ondata)
-             .ee(syncout).on('data', log.sync.ondata)
+        delta.ee(child).on('exit')
+             .ee(asyncout).on('data', log.async.ondata).on('end')
+             .ee(syncout).on('data', log.sync.ondata).on('end')
     }, function (code, signal) {
         var previous = log.async.previous
         while (log.sync.collector.chunks.length) {

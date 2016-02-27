@@ -32,7 +32,9 @@ function prove (async, assert) {
         }, function () {
             queue.write('b\n')
             queue.exit(io.sync)
-            child.emit('close', null, 'SIGFOO')
+            child.emit('exit', null, 'SIGFOO')
+            io.sync.end()
+            io.async.end()
         })
     }, function (code) {
         assert(io.forward.read().toString(), 'hello, world!\n', 'forward')
@@ -45,7 +47,9 @@ function prove (async, assert) {
             forward: new stream.PassThrough
         }
         monitor(sender, child, io.async, io.sync, io.forward, async())
-        child.emit('close', 0)
+        child.emit('exit', 0)
+        io.sync.end()
+        io.async.end()
     }, function (code) {
         assert(code, 0, 'code')
     })
