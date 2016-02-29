@@ -24,8 +24,8 @@ function prove (async, assert) {
         }, [function (fd) {
             fs.close(fd, async())
         }], function (fd) {
-            var shuttle = new Shuttle(program, fd, 250)
-            shuttle.run(abend)
+            program.env = { PROLIFIC_LOGGING_FD: fd }
+            var shuttle = Shuttle.shuttle(program, 250)
             async(function () {
                 shuttle.queue.write('a\n')
                 shuttle.queue.write('b\n')

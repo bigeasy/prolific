@@ -5,6 +5,7 @@ var fs = require('fs')
 var abend = require('abend')
 var Isochronous = require('isochronous')
 var cadence = require('cadence')
+var ok = require('assert').ok
 
 function Shuttle (process, log, interval) {
     this._logout = fs.createWriteStream(null, { fd: +log })
@@ -41,11 +42,14 @@ Shuttle.prototype.stop = function () {
     }
 }
 
-Shuttle.shuttle = function (program) {
+Shuttle.shuttle = function (program, interval) {
+    ok(interval, 'interval required')
     if (!program.env.PROLIFIC_LOGGING_FD) {
         return
     }
-    new Shuttle(program, +program.env.PROLIFIC_LOGGING_FD, 2500).run(abend)
+    var shuttle = new Shuttle(program, +program.env.PROLIFIC_LOGGING_FD, interval)
+    shuttle.run(abend)
+    return shuttle
 }
 
 module.exports = Shuttle
