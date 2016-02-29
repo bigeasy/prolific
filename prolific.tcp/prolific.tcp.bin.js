@@ -40,7 +40,7 @@ require('arguable')(module, require('cadence')(function (async, program) {
         detatched: true // TODO `false`.
     })
 
-    program.on('SIGINT', function () { child.kill('SIGINT') })
+    program.on('SIGTERM', function () {})
 
     monitor(sender, child, child.stdio[3], child.stderr, program.stderr, async())
 }))

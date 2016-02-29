@@ -9,7 +9,7 @@ function prove (async, assert) {
         async(function () {
             setTimeout(async(), 250)
         }, function () {
-            io.events.emit('SIGINT')
+            io.events.emit('SIGTERM')
         })
     }, function (code) {
         assert(code, 0, 'exit')
