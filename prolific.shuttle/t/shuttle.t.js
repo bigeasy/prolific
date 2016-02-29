@@ -24,6 +24,8 @@ function prove (async, assert) {
         }, [function (fd) {
             fs.close(fd, async())
         }], function (fd) {
+            program.env = {}
+            Shuttle.shuttle(program, 250) // no op: `PROLIFIC_LOGGING_FD` missing.
             program.env = { PROLIFIC_LOGGING_FD: fd }
             var shuttle = Shuttle.shuttle(program, 250)
             async(function () {
