@@ -34,6 +34,7 @@ function prove (async, assert) {
                 shuttle.queue.write('c\n')
                 shuttle.queue.write('d\n')
                 shuttle.stop()
+                shuttle.stop()
             })
         })
     }, function () {
