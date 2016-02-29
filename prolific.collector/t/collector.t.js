@@ -20,7 +20,9 @@ function prove (async, assert) {
     }, function () {
         sink.flush(async())
     }, function () {
-        collector.scan(stdout.read())
+        var buffer = stdout.read()
+        collector.scan(buffer.slice(0, buffer.length - 4))
+        collector.scan(buffer.slice(buffer.length - 4))
         var entry = collector.chunks.shift()
         entry.buffer = entry.buffer.toString()
         assert(entry, {
