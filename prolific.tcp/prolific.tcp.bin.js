@@ -36,8 +36,7 @@ require('arguable')(module, require('cadence')(function (async, program) {
     program.env.PROLIFIC_LOGGING_FD = '3'
 
     var child = children.spawn(program.argv.shift(), program.argv, {
-        stdio: [ 0, 1, 'pipe', 'pipe' ],
-        detatched: true // TODO `false`.
+        stdio: [ 0, 1, 'pipe', 'pipe' ]
     })
 
     program.on('SIGTERM', function () {})
