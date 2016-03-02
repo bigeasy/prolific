@@ -3,6 +3,7 @@
     usage: node prolific.tcp.bin.js
 
         -l, --log       <string>        the udp address and port to send to
+        -i, --inherit   <number>        file handles to inherit
             --help                      display this message
 
     ___ $ ___ en_US ___
@@ -19,27 +20,27 @@
 var monitor = require('prolific.monitor')
 var Sender = require('prolific.sender.tcp')
 var children = require('child_process')
+var inherit = require('prolific.supervisor/inherit')
 
 require('arguable')(module, require('cadence')(function (async, program) {
     program.helpIf(program.param.help)
     program.required('log')
+
+    program.on('SIGTERM', function () {})
 
     var send = program.param.log.split(':')
     var host = program.param.host = send[0]
     var port = program.param.port = +send[1]
 
     var sender = new Sender(host, port, program.stdout)
+    var stdio = inherit(program.params.inherit)
 
     // TODO Add to very end of existing stdio. This would require a command line
     // switch and it would mean that there would be inheritence for certain
     // number `--inherit=4` so that we'd put ourself after the last inherited.
-    program.env.PROLIFIC_LOGGING_FD = '3'
+    program.env.PROLIFIC_LOGGING_FD = String(stdio.length - 1)
 
-    var child = children.spawn(program.argv.shift(), program.argv, {
-        stdio: [ 0, 1, 'pipe', 'pipe' ]
-    })
+    var child = children.spawn(program.argv.shift(), program.argv, { stdio: stdio })
 
-    program.on('SIGTERM', function () {})
-
-    monitor(sender, child, child.stdio[3], child.stderr, program.stderr, async())
+    monitor(sender, child, child.stdio[stdio.length - 1], child.stderr, program.stderr, async())
 }))
