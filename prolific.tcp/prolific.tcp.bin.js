@@ -20,7 +20,7 @@
 var monitor = require('prolific.monitor')
 var Sender = require('prolific.sender.tcp')
 var children = require('child_process')
-var inherit = require('prolific.supervisor/inherit')
+var inherit = require('prolific.inherit')
 
 require('arguable')(module, require('cadence')(function (async, program) {
     program.helpIf(program.param.help)
