@@ -1,0 +1,33 @@
+{
+    "name":             "prolific.ipc",
+    "version":          "1.0.0",
+    "author":           "Alan Gutierrez <alan@prettyrobots.com>",
+    "description":      "Utility to pass Node.js IPC through a Prolific supervisor.",
+    "keywords":
+    [
+                        "http", "https", "rest", "json", "curl"
+    ],
+    "license":          "MIT",
+    "contributors":     [],
+    "homepage":         "https://github.com/bigeasy/prolific",
+    "bugs":             "https://github.com/bigeasy/prolific/issues",
+    "main":             "ipc",
+    "repository":
+    {
+                        "type": "git",
+                        "url": "http://github.com/bigeasy/prolific.git"
+    },
+    "dependencies":
+    {
+                        "cadence":              "1.x",
+                        "reactor":              "1.x"
+    },
+    "devDependencies":
+    {
+                        "proof":                "1.x"
+    },
+    "scripts":
+    {
+                        "test": "proof test t/*.t.js"
+    }
+}
