@@ -20,7 +20,7 @@
     "dependencies":
     {
                         "cadence":              "1.x",
-                        "reactor":              "1.x"
+                        "reactor":              "2.x"
     },
     "devDependencies":
     {

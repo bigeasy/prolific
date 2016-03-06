@@ -11,8 +11,8 @@ var forward = cadence(function (async, timeout, work) {
 
 module.exports = function (ipc, process, child) {
     if (ipc) {
-        var down = new Reactor(forward)
-        var up = new Reactor(forward)
+        var down = new Reactor({ operation: forward, turnstiles: 256 })
+        var up = new Reactor({ operation: forward, turnstiles: 256 })
         var async = +process.versions.node.split('.')[0] != 0
         process.on('message', function () {
             up.push({ async: async, object: child, vargs: slice.call(arguments) })
