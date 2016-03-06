@@ -35,7 +35,7 @@ require('arguable')(module, require('cadence')(function (async, program) {
     var port = program.param.port = +send[1]
 
     var sender = new Sender(host, port, program.stdout)
-    var stdio = inherit(program.params.inherit)
+    var stdio = inherit(program)
 
     // TODO Add to very end of existing stdio. This would require a command line
     // switch and it would mean that there would be inheritence for certain
