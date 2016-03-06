@@ -24,6 +24,7 @@
     {
                         "arguable":             "1.x",
                         "cadence":              "1.x",
+                        "prolific.ipc":         "1.x",
                         "prolific.inherit":     "1.x",
                         "prolific.monitor":     "1.x",
                         "prolific.sender.tcp":  "1.x"

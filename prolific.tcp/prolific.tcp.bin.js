@@ -4,15 +4,16 @@
 
         -l, --log       <string>        the udp address and port to send to
         -i, --inherit   <number>        file handles to inherit
+        -I, --ipc                       enable Node.js IPC forwarding
             --help                      display this message
 
     ___ $ ___ en_US ___
 
-        udp is required:
-            the `--udp` address and port is a required argument
+        log is required:
+            the `--log` address and port is a required argument
 
         port is not an integer:
-            the `--udp` port must be an integer
+            the `--log` port must be an integer
 
     ___ . ___
 */
@@ -21,6 +22,7 @@ var monitor = require('prolific.monitor')
 var Sender = require('prolific.sender.tcp')
 var children = require('child_process')
 var inherit = require('prolific.inherit')
+var ipc = require('prolific.ipc')
 
 require('arguable')(module, require('cadence')(function (async, program) {
     program.helpIf(program.param.help)
@@ -42,5 +44,6 @@ require('arguable')(module, require('cadence')(function (async, program) {
 
     var child = children.spawn(program.argv.shift(), program.argv, { stdio: stdio })
 
+    ipc(program.param.ipc, process, child)
     monitor(sender, child, child.stdio[stdio.length - 1], child.stderr, program.stderr, async())
 }))
