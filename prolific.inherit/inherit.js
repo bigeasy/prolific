@@ -1,6 +1,6 @@
-module.exports = function (inherit) {
+module.exports = function (program) {
     var seen = {}
-    var inherit = [ 0, 1, 2 ].concat(inherit).map(function (number) {
+    var inherit = [ 0, 1, 2 ].concat(program.params.inherit).map(function (number) {
         return +number
     }).sort(function (a, b) {
         return a - b
@@ -14,6 +14,10 @@ module.exports = function (inherit) {
         if (inherit[i] != i) {
             inherit.splice(i, 0, 'inherit')
         }
+    }
+
+    if (program.param.ipc) {
+        inherit.push('ipc')
     }
 
     inherit[2] = inherit[inherit.length] = 'pipe'
