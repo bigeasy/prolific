@@ -38,6 +38,7 @@ var levels = {
     error: 4
 }
 
+// TODO Maybe rename configure?
 var syslog
 exports.syslog = function (options) {
     options || (options = {})
@@ -61,11 +62,13 @@ exports._timestamp = function () {
 
 exports._Date = Date
 exports._write = function (level, line) {
+    this.sink.write(format(level, line))
+}
+var format = exports.format = function (level, line) {
     var timestamp = tz(exports._Date.now(), '%FT%T.%3NZ')
-    this.sink.write(
-        '<' + (syslog.facility * 8 + levels[level]) + '>1 ' + timestamp + ' ' +
+    return '<' + (syslog.facility * 8 + levels[level]) + '>1 ' + timestamp + ' ' +
         syslog.context +
-        exports.serializer.stringify(line) + '\n')
+        exports.serializer.stringify(line) + '\n'
 }
 
 exports.serializer = Wafer
