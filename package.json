@@ -5,7 +5,7 @@
     "description":      "A logging framework.",
     "keywords":
     [
-                        "http", "https", "rest", "json", "curl"
+                        "logging", "log", "syslog"
     ],
     "license":          "MIT",
     "contributors":     [],
