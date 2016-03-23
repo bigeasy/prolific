@@ -22,9 +22,8 @@
     },
     "dependencies":
     {
-                        "delta":                "1.x",
-                        "reactor":              "1.x",
-                        "prolific":             "1.x"
+                        "cadence":              "1.x",
+                        "reactor":              "2.x"
     },
     "devDependencies":
     {
