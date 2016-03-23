@@ -36,8 +36,8 @@ function Sender (stream, close) {
 // if it is really worth it. It seems that I'm close to building a reliable
 // logging stream here, so that if we create a reliable logging stream, we might
 // in turn come to depend on it, but if it is reliable we never will.
-Sender.prototype.send = function (chunk) {
-    this._sending.push(chunk)
+Sender.prototype.send = function (chunk, callback) {
+    this._sending.push(chunk, callback || null)
 }
 
 Sender.prototype._send = cadence(function (async, timeout, chunk) {
