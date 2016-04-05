@@ -17,16 +17,7 @@
     ___ . ___
 */
 require('arguable')(module, require('cadence')(function (async, program) {
-    program.helpIf(program.param.help)
+    program.helpIf(program.command.param.help)
 
-    var pkg = 'prolific.' + program.argv.shift()
-
-    var io = {
-        stdout: program.stdout,
-        stdin: program.stdin,
-        stderr: program.stderr,
-        events: program.events
-    }
-
-    require(pkg)(process.env, program.argv, io, async())
+    program.delegate('prolific', async())
 }))

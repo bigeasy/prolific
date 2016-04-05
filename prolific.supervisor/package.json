@@ -23,7 +23,7 @@
     },
     "dependencies":
     {
-                        "arguable":             "1.x",
+                        "arguable":             "2.x",
                         "cadence":              "1.x"
     },
     "devDependencies":
