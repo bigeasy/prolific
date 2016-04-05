@@ -22,7 +22,7 @@
     },
     "dependencies":
     {
-                        "hash.fnv":             "0.0.0"
+                        "hash.fnv":             "1.x"
     },
     "devDependencies":
     {
