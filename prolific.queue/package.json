@@ -27,6 +27,7 @@
     },
     "devDependencies":
     {
+                        "abend":                "1.x",
                         "proof":                "1.x",
                         "rimraf":               "2.5.2"
     },

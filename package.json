@@ -22,22 +22,10 @@
     },
     "dependencies":
     {
-                        "abend":                "0.0.3",
-                        "arguable":             "0.0.40",
-                        "cadence":              "0.4.3",
-                        "delta":                "0.0.4",
-                        "hash.fnv":             "0.0.0",
-                        "isochronous":          "0.0.6",
-                        "operation":            "0.0.4",
-                        "reactor":              "0.0.11",
-                        "supersede":            "0.0.4",
-                        "timezone":             "0.0.48",
-                        "wafer":                "0.0.4"
     },
     "devDependencies":
     {
-                        "proof":                "0.0.57",
-                        "rimraf":               "2.4.4"
+                        "proof":                "1.x"
     },
     "scripts":
     {
