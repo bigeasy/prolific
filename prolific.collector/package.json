@@ -5,7 +5,7 @@
     "description":      "A logging framework.",
     "keywords":
     [
-                        "http", "https", "rest", "json", "curl"
+                        "logging", "log", "syslog"
     ],
     "license":          "MIT",
     "contributors":     [],
@@ -16,9 +16,6 @@
     {
                         "type": "git",
                         "url": "http://github.com/bigeasy/prolific.git"
-    },
-    "bin":
-    {
     },
     "dependencies":
     {
