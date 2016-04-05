@@ -5,7 +5,7 @@
     "description":      "Forward to TCP implementation of a Prolific supervisor.",
     "keywords":
     [
-                        "http", "https", "rest", "json", "curl"
+                        "logging", "log", "syslog"
     ],
     "license":          "MIT",
     "contributors":     [],
