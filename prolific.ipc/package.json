@@ -5,7 +5,7 @@
     "description":      "Utility to pass Node.js IPC through a Prolific supervisor.",
     "keywords":
     [
-                        "http", "https", "rest", "json", "curl"
+                        "logging", "log", "syslog"
     ],
     "license":          "MIT",
     "contributors":     [],
