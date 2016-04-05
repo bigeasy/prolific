@@ -19,7 +19,7 @@
     },
     "bin":
     {
-                        "prolific":             "./prolific.supervisor.js"
+                        "prolific":             "./supervisor.js"
     },
     "dependencies":
     {
