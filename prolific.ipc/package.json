@@ -1,6 +1,6 @@
 {
     "name":             "prolific.ipc",
-    "version":          "1.0.1",
+    "version":          "1.0.2",
     "author":           "Alan Gutierrez <alan@prettyrobots.com>",
     "description":      "Utility to pass Node.js IPC through a Prolific supervisor.",
     "keywords":
