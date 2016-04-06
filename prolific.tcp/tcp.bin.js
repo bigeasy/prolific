@@ -25,14 +25,14 @@ var inherit = require('prolific.inherit')
 var ipc = require('prolific.ipc')
 
 require('arguable')(module, require('cadence')(function (async, program) {
-    program.helpIf(program.param.help)
-    program.required('log')
+    program.helpIf(program.command.param.help)
+    program.command.required('log')
 
     program.on('SIGTERM', function () {})
 
-    var send = program.param.log.split(':')
-    var host = program.param.host = send[0]
-    var port = program.param.port = +send[1]
+    var send = program.command.param.log.split(':')
+    var host = send[0]
+    var port = +send[1]
 
     var sender = new Sender(host, port, program.stdout)
     var stdio = inherit(program)
@@ -44,6 +44,6 @@ require('arguable')(module, require('cadence')(function (async, program) {
 
     var child = children.spawn(program.argv.shift(), program.argv, { stdio: stdio })
 
-    ipc(program.param.ipc, process, child)
+    ipc(program.command.param.ipc, process, child)
     monitor(sender, child, child.stdio[stdio.length - 1], child.stderr, program.stderr, async())
 }))

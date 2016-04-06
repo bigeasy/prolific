@@ -22,7 +22,7 @@
     },
     "dependencies":
     {
-                        "arguable":             "1.x",
+                        "arguable":             "2.x",
                         "cadence":              "1.x",
                         "prolific.ipc":         "1.x",
                         "prolific.inherit":     "1.x",
