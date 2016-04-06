@@ -1,7 +1,7 @@
 require('proof')(1, require('cadence')(prove))
 
 function prove (async, assert) {
-    var tcp = require('../prolific.tcp.bin')
+    var tcp = require('..')
     var path = require('path')
     var worker = path.join(__dirname, 'worker.js')
     async(function () {
