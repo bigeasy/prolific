@@ -19,6 +19,10 @@ function Shuttle (process, log, interval) {
     })
     process.on('uncaughtException', function (error) {
         logger.error('uncaught', { stack: error.stack })
+        if (error.cause) {
+            console.log(error.cause.stack)
+            logger.error('uncaught.cause', { stack: error.cause.stack })
+        }
         this.stop()
         throw error
     }.bind(this))
