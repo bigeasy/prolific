@@ -1,0 +1,99 @@
+0 info it worked if it ends with ok
+1 verbose cli [ '/usr/local/Cellar/node/4.2.3/bin/node',
+1 verbose cli   '/usr/local/bin/npm',
+1 verbose cli   'publish' ]
+2 info using npm@2.14.7
+3 info using node@v4.2.3
+4 verbose publish [ '.' ]
+5 silly cache add args [ '.', null ]
+6 verbose cache add spec .
+7 silly cache add parsed spec Result {
+7 silly cache add   raw: '.',
+7 silly cache add   scope: null,
+7 silly cache add   name: null,
+7 silly cache add   rawSpec: '.',
+7 silly cache add   spec: '/Users/alan/git/ecma/bluey/prolific/prolific.supervisor',
+7 silly cache add   type: 'directory' }
+8 verbose addLocalDirectory /Users/alan/.npm/prolific.supervisor/1.0.7/package.tgz not in flight; packing
+9 verbose tar pack [ '/Users/alan/.npm/prolific.supervisor/1.0.7/package.tgz',
+9 verbose tar pack   '/Users/alan/git/ecma/bluey/prolific/prolific.supervisor' ]
+10 verbose tarball /Users/alan/.npm/prolific.supervisor/1.0.7/package.tgz
+11 verbose folder /Users/alan/git/ecma/bluey/prolific/prolific.supervisor
+12 info prepublish prolific.supervisor@1.0.7
+13 verbose addLocalTarball adding from inside cache /Users/alan/.npm/prolific.supervisor/1.0.7/package.tgz
+14 silly cache afterAdd prolific.supervisor@1.0.7
+15 verbose afterAdd /Users/alan/.npm/prolific.supervisor/1.0.7/package/package.json not in flight; writing
+16 verbose afterAdd /Users/alan/.npm/prolific.supervisor/1.0.7/package/package.json written
+17 silly publish { name: 'prolific.supervisor',
+17 silly publish   version: '1.0.7',
+17 silly publish   author: { name: 'Alan Gutierrez', email: 'alan@prettyrobots.com' },
+17 silly publish   description: 'Root executable for standard Prolific supervisors.',
+17 silly publish   keywords: [ 'logging', 'log', 'syslog' ],
+17 silly publish   license: 'MIT',
+17 silly publish   contributors: [],
+17 silly publish   homepage: 'https://github.com/bigeasy/prolific',
+17 silly publish   bugs: { url: 'https://github.com/bigeasy/prolific/issues' },
+17 silly publish   main: 'supervisor',
+17 silly publish   repository:
+17 silly publish    { type: 'git',
+17 silly publish      url: 'git+ssh://git@github.com/bigeasy/prolific.git' },
+17 silly publish   bin: { prolific: './supervisor.js' },
+17 silly publish   dependencies: { arguable: '2.x', cadence: '1.x' },
+17 silly publish   devDependencies: { proof: '1.x' },
+17 silly publish   scripts: { test: 'proof test t/*.t.js' },
+17 silly publish   readme: 'Prolific Supervisor\n\nRun a project under the supervision of a Prolific log collector.\n',
+17 silly publish   readmeFilename: 'README.md',
+17 silly publish   _id: 'prolific.supervisor@1.0.7',
+17 silly publish   _shasum: '85de350f9463eac2972949f683c68804b5180fd7',
+17 silly publish   _from: '.' }
+18 verbose getPublishConfig undefined
+19 silly mapToRegistry name prolific.supervisor
+20 silly mapToRegistry using default registry
+21 silly mapToRegistry registry https://registry.npmjs.org/
+22 silly mapToRegistry uri https://registry.npmjs.org/prolific.supervisor
+23 verbose publish registryBase https://registry.npmjs.org/
+24 silly publish uploading /Users/alan/.npm/prolific.supervisor/1.0.7/package.tgz
+25 verbose request uri https://registry.npmjs.org/prolific.supervisor
+26 verbose request sending authorization for write operation
+27 info attempt registry request try #1 at 07:48:05
+28 verbose request using bearer token for auth
+29 verbose request id 11b13e03d02f3646
+30 http request PUT https://registry.npmjs.org/prolific.supervisor
+31 http 403 https://registry.npmjs.org/prolific.supervisor
+32 verbose headers { 'content-type': 'application/json',
+32 verbose headers   'cache-control': 'max-age=300',
+32 verbose headers   'content-length': '95',
+32 verbose headers   'accept-ranges': 'bytes',
+32 verbose headers   date: 'Fri, 08 Apr 2016 11:48:06 GMT',
+32 verbose headers   via: '1.1 varnish',
+32 verbose headers   connection: 'keep-alive',
+32 verbose headers   'x-served-by': 'cache-iad2135-IAD',
+32 verbose headers   'x-cache': 'MISS',
+32 verbose headers   'x-cache-hits': '0',
+32 verbose headers   'x-timer': 'S1460116085.666966,VS0,VE985',
+32 verbose headers   vary: 'Accept-Encoding' }
+33 verbose request invalidating /Users/alan/.npm/registry.npmjs.org/prolific.supervisor on PUT
+34 error publish Failed PUT 403
+35 verbose stack Error: "You cannot publish over the previously published version 1.0.7." : prolific.supervisor
+35 verbose stack     at makeError (/usr/local/Cellar/node/4.2.3/lib/node_modules/npm/node_modules/npm-registry-client/lib/request.js:264:12)
+35 verbose stack     at CachingRegistryClient.<anonymous> (/usr/local/Cellar/node/4.2.3/lib/node_modules/npm/node_modules/npm-registry-client/lib/request.js:252:14)
+35 verbose stack     at Request._callback (/usr/local/Cellar/node/4.2.3/lib/node_modules/npm/node_modules/npm-registry-client/lib/request.js:172:14)
+35 verbose stack     at Request.self.callback (/usr/local/Cellar/node/4.2.3/lib/node_modules/npm/node_modules/request/request.js:198:22)
+35 verbose stack     at emitTwo (events.js:87:13)
+35 verbose stack     at Request.emit (events.js:172:7)
+35 verbose stack     at Request.<anonymous> (/usr/local/Cellar/node/4.2.3/lib/node_modules/npm/node_modules/request/request.js:1063:14)
+35 verbose stack     at emitOne (events.js:82:20)
+35 verbose stack     at Request.emit (events.js:169:7)
+35 verbose stack     at IncomingMessage.<anonymous> (/usr/local/Cellar/node/4.2.3/lib/node_modules/npm/node_modules/request/request.js:1009:12)
+36 verbose statusCode 403
+37 verbose pkgid prolific.supervisor
+38 verbose cwd /Users/alan/git/ecma/bluey/prolific/prolific.supervisor
+39 error Darwin 15.4.0
+40 error argv "/usr/local/Cellar/node/4.2.3/bin/node" "/usr/local/bin/npm" "publish"
+41 error node v4.2.3
+42 error npm  v2.14.7
+43 error code E403
+44 error "You cannot publish over the previously published version 1.0.7." : prolific.supervisor
+45 error If you need help, you may report this error at:
+45 error     <https://github.com/npm/npm/issues>
+46 verbose exit [ 1, true ]
