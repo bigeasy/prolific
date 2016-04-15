@@ -1,8 +1,8 @@
 require('proof')(6, require('cadence')(prove))
 
 function prove (async, assert) {
-    var monitor = require('..')
-    assert(monitor, 'require')
+    var pumper = require('..')
+    assert(pumper, 'require')
     var stream = require('stream')
     var events = require('events')
     var Queue = require('prolific.queue')
@@ -19,7 +19,7 @@ function prove (async, assert) {
     }
     async(function () {
         var child = new events.EventEmitter
-        monitor(sender, child, io.async, io.sync, io.forward, async())
+        pumper(sender, child, io.async, io.sync, io.forward, async())
         var queue = new Queue
         var sink = queue.createSink(io.async)
         async(function () {
@@ -46,7 +46,7 @@ function prove (async, assert) {
             sync: new stream.PassThrough,
             forward: new stream.PassThrough
         }
-        monitor(sender, child, io.async, io.sync, io.forward, async())
+        pumper(sender, child, io.async, io.sync, io.forward, async())
         child.emit('exit', 0)
         io.sync.end()
         io.async.end()

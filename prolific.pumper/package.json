@@ -1,0 +1,38 @@
+{
+    "name":             "prolific.pumper",
+    "version":          "9.9.9",
+    "author":           "Alan Gutierrez <alan@prettyrobots.com>",
+    "description":      "Pump messages from a collector to zero, one or more senders.",
+    "keywords":
+    [
+                        "logging", "log", "syslog"
+    ],
+    "license":          "MIT",
+    "contributors":     [],
+    "homepage":         "https://github.com/bigeasy/prolific",
+    "bugs":             "https://github.com/bigeasy/prolific/issues",
+    "main":             "pumper",
+    "repository":
+    {
+                        "type": "git",
+                        "url": "http://github.com/bigeasy/prolific.git"
+    },
+    "bin":
+    {
+    },
+    "dependencies":
+    {
+                        "cadence":              "1.x",
+                        "delta":                "1.x",
+                        "prolific.collector":   "1.x"
+    },
+    "devDependencies":
+    {
+                        "prolific.queue":       "1.x",
+                        "proof":                "1.x"
+    },
+    "scripts":
+    {
+                        "test": "proof test t/*.t.js"
+    }
+}
