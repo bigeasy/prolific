@@ -1,6 +1,6 @@
 {
     "name":             "prolific.pumper",
-    "version":          "9.9.9",
+    "version":          "0.0.0",
     "author":           "Alan Gutierrez <alan@prettyrobots.com>",
     "description":      "Pump messages from a collector to zero, one or more senders.",
     "keywords":
