@@ -1,5 +1,6 @@
 /node_modules
 /*/node_modules/*
 !/prolific.supervisor/node_modules/prolific.test.js
+!/prolific.monitor/node_modules/prolific.sender.test.js
 /.proof.out
 /coverage

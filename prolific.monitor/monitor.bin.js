@@ -18,7 +18,7 @@
     ___ . ___
 */
 
-var monitor = require('./monitor')
+var pumper = require('prolific.pumper')
 var children = require('child_process')
 var inherit = require('prolific.inherit')
 var ipc = require('prolific.ipc')
@@ -30,25 +30,33 @@ require('arguable')(module, require('cadence')(function (async, program) {
 
     program.on('SIGTERM', function () {})
 
-    var senders = program.command.params.url.map(function (location) {
-        location = url.parse(location)
-        var protocol = location.protocol.substring(0, location.protocol.length - 1)
-        var pkg = [ 'prolific.sender', protocol ].join('.')
-        console.log(pkg)
-        var Sender = require(pkg)
-        console.log(location)
+    var configuration = {
+        senders: program.command.params.url.map(function (location) {
+            var parsed = url.parse(location)
+            var protocol = parsed.protocol.substring(0, parsed.protocol.length - 1)
+            var moduleName =  [ 'prolific.sender', protocol ].join('.')
+            return { moduleName: moduleName, url: location }
+        })
+    }
+    console.log(configuration)
+    var senders = configuration.senders.map(function (sender) {
+        var Sender = require(sender.moduleName)
+        return new Sender(sender)
     })
+    console.log(senders)
 
-    var sender = new Sender(host, port, program.stdout)
     var stdio = inherit(program)
 
     // TODO Add to very end of existing stdio. This would require a command line
     // switch and it would mean that there would be inheritence for certain
     // number `--inherit=4` so that we'd put ourself after the last inherited.
-    program.env.PROLIFIC_LOGGING_FD = String(stdio.length - 1)
+    program.env.PROLIFIC_CONTROL_FD = String(stdio.length - 1)
 
     var child = children.spawn(program.argv.shift(), program.argv, { stdio: stdio })
 
     ipc(program.command.param.ipc, process, child)
-    monitor(sender, child, child.stdio[stdio.length - 1], child.stderr, program.stderr, async())
+    var loop = async(function () {
+        monitor(sender, child, child.stdio[stdio.length - 1], child.stderr, program.stderr, async())
+    }, function () {
+    })()
 }))

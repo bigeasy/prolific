@@ -27,6 +27,9 @@ function prove (async, assert) {
         }, function () {
             sink.open(async())
         }, function () {
+            queue.write('{"key":"value"}\n')
+            sink.flush(async())
+        }, function () {
             queue.write('a\n')
             sink.flush(async())
         }, function () {

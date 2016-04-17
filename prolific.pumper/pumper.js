@@ -1,10 +1,21 @@
 var Delta = require('delta')
 var cadence = require('cadence')
 var assert = require('assert')
+var splice = [].splice
 var Collector = require('prolific.collector')
 
-function Writer (sender, forward) {
-    this.sender = sender
+function Interceptor (writer, senders) {
+    this.writer = writer
+    this.senders = senders
+}
+
+Interceptor.prototype.send = function (line) {
+    this.configuration = JSON.parse(line.toString())
+    splice.apply(this.writer.senders, [ 0, 1 ].concat(this.senders))
+}
+
+function Writer (senders, forward) {
+    this.senders = [ new Interceptor(this, [senders]) ]
     this.collector = new Collector(! forward)
     this.forward = forward
     this.dedicated = ! forward
@@ -16,7 +27,10 @@ Writer.prototype.data = function (buffer) {
     this.collector.scan(buffer)
     if (this.dedicated) {
         while (this.collector.chunks.length) {
-            this.sender.send((this.previous = this.collector.chunks.shift()).buffer)
+            this.previous = this.collector.chunks.shift()
+            for (var i = 0, I = this.senders.length; i < I; i++) {
+                this.senders[i].send(this.previous.buffer)
+            }
         }
     } else {
         while (this.collector.stderr.length) {
