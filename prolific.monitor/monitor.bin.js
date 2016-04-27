@@ -38,25 +38,31 @@ require('arguable')(module, require('cadence')(function (async, program) {
             return { moduleName: moduleName, url: location }
         })
     }
-    console.log(configuration)
     var senders = configuration.senders.map(function (sender) {
         var Sender = require(sender.moduleName)
         return new Sender(sender)
     })
-    console.log(senders)
 
     var stdio = inherit(program)
 
     // TODO Add to very end of existing stdio. This would require a command line
     // switch and it would mean that there would be inheritence for certain
     // number `--inherit=4` so that we'd put ourself after the last inherited.
-    program.env.PROLIFIC_CONTROL_FD = String(stdio.length - 1)
+    process.env.PROLIFIC_LOGGING_FD = String(stdio.length - 1)
 
-    var child = children.spawn(program.argv.shift(), program.argv, { stdio: stdio })
-
-    ipc(program.command.param.ipc, process, child)
+    var argv = program.argv.slice()
     var loop = async(function () {
-        monitor(sender, child, child.stdio[stdio.length - 1], child.stderr, program.stderr, async())
-    }, function () {
+        var child = children.spawn(argv.shift(), argv, { stdio: stdio })
+        ipc(program.command.param.ipc, process, child)
+        child.stdio[stdio.length - 1].write(JSON.stringify(configuration) + '\n')
+        pumper(senders, child, child.stdio[stdio.length - 1], child.stderr, program.stderr, async())
+    }, function (code, sender) {
+        if (code != 0 || sender.moduleName == null) {
+            return [ loop.break, code ]
+        }
+        configuration.senders.push(sender)
+        var Sender = require(sender.moduleName)
+        senders.push(new Sender(sender))
+        argv = sender.argv
     })()
 }))
