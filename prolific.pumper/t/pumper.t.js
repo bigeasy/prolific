@@ -19,7 +19,7 @@ function prove (async, assert) {
     }
     async(function () {
         var child = new events.EventEmitter
-        pumper(sender, child, io.async, io.sync, io.forward, async())
+        pumper([ sender ], child, io.async, io.sync, io.forward, async())
         var queue = new Queue
         var sink = queue.createSink(io.async)
         async(function () {
@@ -49,7 +49,7 @@ function prove (async, assert) {
             sync: new stream.PassThrough,
             forward: new stream.PassThrough
         }
-        pumper(sender, child, io.async, io.sync, io.forward, async())
+        pumper([ sender ], child, io.async, io.sync, io.forward, async())
         child.emit('exit', 0)
         io.sync.end()
         io.async.end()

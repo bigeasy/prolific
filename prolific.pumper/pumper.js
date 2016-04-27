@@ -10,12 +10,13 @@ function Interceptor (writer, senders) {
 }
 
 Interceptor.prototype.send = function (line) {
-    this.configuration = JSON.parse(line.toString())
+    this.writer.options.configuration = JSON.parse(line.toString())
     splice.apply(this.writer.senders, [ 0, 1 ].concat(this.senders))
 }
 
-function Writer (senders, forward) {
-    this.senders = [ new Interceptor(this, [senders]) ]
+function Writer (options, senders, forward) {
+    this.options = options
+    this.senders = forward ? senders :[ new Interceptor(this, senders) ]
     this.collector = new Collector(! forward)
     this.forward = forward
     this.dedicated = ! forward
@@ -39,10 +40,13 @@ Writer.prototype.data = function (buffer) {
     }
 }
 
-module.exports = cadence(function (async, sender, child, asyncout, syncout, forward) {
+module.exports = cadence(function (async, senders, child, asyncout, syncout, forward) {
+    var options = {
+        configuration: null
+    }
     var log = {
-        async: new Writer(sender),
-        sync: new Writer(sender, forward)
+        async: new Writer(options, senders),
+        sync: new Writer(options, senders, forward)
     }
     async(function () {
         var delta = new Delta(async())
@@ -55,9 +59,9 @@ module.exports = cadence(function (async, sender, child, asyncout, syncout, forw
             var chunk = log.sync.collector.chunks.shift()
             // TODO Allow an initial duplicate for the flush race condition.
             assert.ok(chunk.previousChecksum == previous.checksum, 'previous mismatch')
-            sender.send(chunk.buffer)
+            senders.forEach(function (sender) { sender.send(chunk.buffer) })
             previous = chunk
         }
-        return [ code == null ? 1 : code ]
+        return [ code == null ? 1 : code, options.configuration ]
     })
 })
