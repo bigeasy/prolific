@@ -16,7 +16,7 @@ Interceptor.prototype.send = function (line) {
 
 function Writer (options, senders, forward) {
     this.options = options
-    this.senders = forward ? senders :[ new Interceptor(this, senders) ]
+    this.senders = forward ? senders : [ new Interceptor(this, senders) ]
     this.collector = new Collector(! forward)
     this.forward = forward
     this.dedicated = ! forward
