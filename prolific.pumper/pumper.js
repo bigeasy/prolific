@@ -42,7 +42,7 @@ Writer.prototype.data = function (buffer) {
 
 module.exports = cadence(function (async, senders, child, asyncout, syncout, forward) {
     var options = {
-        configuration: null
+        configuration: {}
     }
     var log = {
         async: new Writer(options, senders),
