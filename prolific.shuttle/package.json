@@ -23,7 +23,9 @@
     "dependencies":
     {
                         "abend":                "1.x",
+                        "byline":               "4.2.1",
                         "cadence":              "1.x",
+                        "delta":                "1.x",
                         "isochronous":          "1.x",
                         "prolific":             "1.x",
                         "prolific.queue":       "1.x"

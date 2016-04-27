@@ -6,54 +6,77 @@ var abend = require('abend')
 var Isochronous = require('isochronous')
 var cadence = require('cadence')
 var ok = require('assert').ok
+var util = require('util')
+var byline = require('byline')
+var Delta = require('delta')
 
-function Shuttle (process, log, interval) {
-    this._logout = fs.createWriteStream(null, { fd: +log })
-    prolific.sink = this.queue = new Queue
-    this._sink = this.queue.createSink(this._logout)
-    this._stopped = false
-    this._isochronous = new Isochronous({
-        interval: interval,
-        operation: { object: this._sink, method: 'flush' },
-        unref: true
-    })
-    process.on('uncaughtException', function (error) {
-        logger.error('uncaught', { stack: error.stack })
-        if (error.cause) {
-            console.log(error.cause.stack)
-            logger.error('uncaught.cause', { stack: error.cause.stack })
-        }
-        this.stop()
-        throw error
-    }.bind(this))
-    process.on('exit', this.stop.bind(this))
-    this._stderr = process.stderr
+function openStream (method, fd) {
+    if (typeof fd == 'string') {
+        fd = +fd
+    }
+    if (typeof fd == 'number') {
+        return fs[method].call(fs, null, { fd: fd, encoding: 'utf8' })
+    }
+    return fd
 }
 
-Shuttle.prototype.run = cadence(function (async) {
+function Shuttle (input, output, sync, finale) {
+    this.output = openStream('createWriteStream', output)
+    this.input = byline(openStream('createReadStream', input))
+    this.queue = new Queue
+    this.sink = this.queue.createSink(this.output)
+    this.stopped = false
+    this.sync = sync
+    this.finale = finale
+}
+
+Shuttle.prototype.uncaughtException = function (error) {
+    this.finale.call(null, error)
+    this.stop()
+    throw error
+}
+
+Shuttle.prototype.open = cadence(function (async, configuration) {
+    ok(configuration, 'configuration required')
+    this.queue.write(JSON.stringify(configuration))
     async(function () {
-        this._sink.open(async())
+        new Delta(async()).ee(this.input).on('data')
+    }, function (configuration) {
+        this.configuration = JSON.parse(configuration)
+        this.sink.open(async())
     }, function () {
-        this._isochronous.run(async())
+        this.sink.flush(async())
     })
 })
 
 Shuttle.prototype.stop = function () {
-    if (!this._stopped) {
-        this._stopped = true
-        this._isochronous.stop()
-        this.queue.exit(this._stderr)
+    if (!this.stopped) {
+        this.stopped = true
+        this.queue.exit(this.sync)
     }
 }
 
-Shuttle.shuttle = function (program, interval) {
-    ok(interval, 'interval required')
-    if (!program.env.PROLIFIC_LOGGING_FD) {
-        return
+Shuttle.shuttle = cadence(function (async, program, interval, configuration, finale) {
+    ok(arguments.length == 5, 'invalid arguments')
+    if (program.env.PROLIFIC_LOGGING_FD == null) {
+        return false
     }
-    var shuttle = new Shuttle(program, +program.env.PROLIFIC_LOGGING_FD, interval)
-    shuttle.run(abend)
-    return shuttle
-}
+    var fd = program.env.PROLIFIC_LOGGING_FD
+    var shuttle = new Shuttle(fd, fd, program.stderr, finale)
+    async(function () {
+        shuttle.open(configuration, async())
+    }, function () {
+        program.on('uncaughtException', shuttle.uncaughtException.bind(shuttle))
+        program.on('exit', shuttle.stop.bind(shuttle))
+        var isochronous = new Isochronous({
+            operation: { object: shuttle.sink, method: 'flush' },
+            interval: interval,
+            unref: true
+        })
+        program.on('exit', isochronous.stop.bind(isochronous))
+        isochronous.run(abend)
+        return true
+    })
+})
 
 module.exports = Shuttle
