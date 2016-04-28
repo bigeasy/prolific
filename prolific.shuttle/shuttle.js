@@ -59,7 +59,7 @@ Shuttle.prototype.stop = function () {
 Shuttle.shuttle = cadence(function (async, program, interval, configuration, finale) {
     ok(arguments.length == 5, 'invalid arguments')
     if (program.env.PROLIFIC_LOGGING_FD == null) {
-        return false
+        return null
     }
     var fd = program.env.PROLIFIC_LOGGING_FD
     var shuttle = new Shuttle(fd, fd, program.stderr, finale)
@@ -75,7 +75,7 @@ Shuttle.shuttle = cadence(function (async, program, interval, configuration, fin
         })
         program.on('exit', isochronous.stop.bind(isochronous))
         isochronous.run(abend)
-        return true
+        return [ configuration ]
     })
 })
 
