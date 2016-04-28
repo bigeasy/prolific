@@ -1,6 +1,6 @@
 /*
     ___ usage ___ en_US ___
-    node stdout.tcp.bin.js --bind ip:port
+    node stdout.udp.bin.js --bind ip:port
 
     options:
 
@@ -14,8 +14,15 @@ require('arguable')(module, require('cadence')(function (async, program) {
     program.required('port')
     var dgram = require('dgram')
     var socket = dgram.createSocket('udp4')
-    socket.bind(+program.param.port)
-    socket.on('message', function (chunk) {
-        program.stdout.write(chunk.toString())
+    socket.on('message', function (buffer) {
+        console.log('called')
+        program.stdout.write(buffer)
+    })
+    program.on('SIGINT', socket.close.bind(socket))
+    async(function () {
+        // TODO Bind should be port or port and address.
+        socket.bind(+program.param.port, async())
+    }, function () {
+        return 0
     })
 }))
