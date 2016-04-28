@@ -1,0 +1,37 @@
+{
+    "name":             "prolific.sender.udp",
+    "version":          "1.0.1",
+    "author":           "Alan Gutierrez <alan@prettyrobots.com>",
+    "description":      "A TCP sender implementation for the Prolific logging framework.",
+    "keywords":
+    [
+                        "logging", "syslog"
+    ],
+    "license":          "MIT",
+    "contributors":     [],
+    "homepage":         "https://github.com/bigeasy/prolific",
+    "bugs":             "https://github.com/bigeasy/prolific/issues",
+    "main":             "sender.udp",
+    "repository":
+    {
+                        "type": "git",
+                        "url": "http://github.com/bigeasy/prolific.git"
+    },
+    "bin":
+    {
+    },
+    "dependencies":
+    {
+                        "cadence":              "1.x",
+                        "prolific":             "1.x",
+                        "reactor":              "2.x"
+    },
+    "devDependencies":
+    {
+                        "proof":                "1.x"
+    },
+    "scripts":
+    {
+                        "test": "proof test t/*.t.js"
+    }
+}
