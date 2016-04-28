@@ -66,6 +66,7 @@ Shuttle.shuttle = cadence(function (async, program, interval, configuration, fin
     async(function () {
         shuttle.open(configuration, async())
     }, function () {
+        prolific.sink = shuttle.queue
         program.on('uncaughtException', shuttle.uncaughtException.bind(shuttle))
         program.on('exit', shuttle.stop.bind(shuttle))
         var isochronous = new Isochronous({
@@ -75,7 +76,7 @@ Shuttle.shuttle = cadence(function (async, program, interval, configuration, fin
         })
         program.on('exit', isochronous.stop.bind(isochronous))
         isochronous.run(abend)
-        return [ configuration ]
+        return [ shuttle.configuration ]
     })
 })
 
