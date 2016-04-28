@@ -49,10 +49,14 @@ module.exports = cadence(function (async, senders, child, asyncout, syncout, for
         sync: new Writer(options, senders, forward)
     }
     async(function () {
-        var delta = new Delta(async())
-        delta.ee(child).on('exit')
-             .ee(asyncout).on('data', log.async.ondata).on('end')
-             .ee(syncout).on('data', log.sync.ondata).on('end')
+        new Delta(async())
+            .ee(child).on('exit')
+            .ee(syncout).on('data', log.sync.ondata).on('end')
+        async([function () {
+            new Delta(async()).ee(asyncout).on('data', log.async.ondata).on('end')
+        }, /^ECONNRESET$/, function (error) {
+            console.log(error.stack)
+        }])
     }, function (code, signal) {
         var previous = log.async.previous
         while (log.sync.collector.chunks.length) {
