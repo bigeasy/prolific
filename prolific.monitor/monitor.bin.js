@@ -5,6 +5,7 @@
         -l, --url       <string>        the url port to logs to
         -i, --inherit   <number>        file handles to inherit
         -I, --ipc                       enable Node.js IPC forwarding
+            --configuration <string>    base configuration
             --help                      display this message
 
     ___ $ ___ en_US ___
@@ -26,18 +27,18 @@ var url = require('url')
 
 require('arguable')(module, require('cadence')(function (async, program) {
     program.helpIf(program.command.param.help)
-    program.command.required('url')
 
     program.on('SIGTERM', function () {})
 
-    var configuration = {
-        senders: program.command.params.url.map(function (location) {
-            var parsed = url.parse(location)
-            var protocol = parsed.protocol.substring(0, parsed.protocol.length - 1)
-            var moduleName =  [ 'prolific.sender', protocol ].join('.')
-            return { moduleName: moduleName, url: location }
-        })
-    }
+    var configuration = program.command.param.configuration || '{}'
+    configuration = JSON.parse(configuration)
+    configuration.senders || (configuration.senders = [])
+    program.command.params.url.forEach(function (location) {
+        var parsed = url.parse(location)
+        var protocol = parsed.protocol.substring(0, parsed.protocol.length - 1)
+        var moduleName =  [ 'prolific.sender', protocol ].join('.')
+        configuration.senders.push({ moduleName: moduleName, url: location })
+    })
     var senders = configuration.senders.map(function (sender) {
         var Sender = require(sender.moduleName)
         return new Sender(sender)

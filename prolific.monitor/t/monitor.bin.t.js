@@ -1,4 +1,4 @@
-require('proof')(1, require('cadence')(prove))
+require('proof')(2, require('cadence')(prove))
 
 function prove (async, assert) {
     var monitor = require('../monitor.bin')
@@ -13,6 +13,11 @@ function prove (async, assert) {
 
         io.events.emit('SIGTERM')
     }, function (code) {
-        assert(code, 0, 'code')
+        assert(code, 0, 'no configuration')
+        io = monitor({}, [ '--configuration', '{}', '--url', 'test://127.0.0.1', 'node', sender, 'node', program ], {}, async())
+
+        io.events.emit('SIGTERM')
+    }, function (code) {
+        assert(code, 0, 'with configuration')
     })
 }
