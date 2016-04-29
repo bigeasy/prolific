@@ -16,7 +16,6 @@ require('arguable')(module, require('cadence')(function (async, program) {
     var socket = dgram.createSocket('udp4')
     socket.on('message', function (buffer) {
         program.stdout.write(buffer)
-        program.stdout.write('\n')
     })
     program.on('SIGINT', socket.close.bind(socket))
     async(function () {
