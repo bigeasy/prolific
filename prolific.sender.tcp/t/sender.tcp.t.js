@@ -4,7 +4,7 @@ function prove (async, assert) {
     var Sender = require('..')
     var stream = require('stream')
     var sync = new stream.PassThrough
-    var sender = new Sender('127.0.0.1', 8086, sync)
+    var sender = new Sender({ url: 'tcp://127.0.0.1:8086' }, sync)
     var Delta = require('delta')
     var net = require('net')
     var wait

@@ -1,11 +1,11 @@
 var cadence = require('cadence')
 var logger = require('prolific').createLogger('bigeasy.prolific.sender.tcp')
 var Reactor = require('reactor')
+var url = require('url')
 
-function Sender (host, port, sync) {
+function Sender (configuration, sync) {
     this._sending = new Reactor({ object: this, method: '_send' })
-    this._host = host
-    this._port = port
+    this._url = url.parse(configuration.url)
     this._sync = sync
 }
 
@@ -50,7 +50,7 @@ Sender.prototype._send = cadence(function (async, timeout, chunk) {
         socket.destroy()
     }], [function () {
         async(function () {
-            socket.connect({ port: this._port, host: this._host })
+            socket.connect({ port: +this._url.port, host: this._url.hostname })
             new Delta(async()).ee(socket).on('connect')
         }, function () {
             socket.end(chunk)
