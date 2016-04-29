@@ -41,7 +41,7 @@ require('arguable')(module, require('cadence')(function (async, program) {
     })
     var senders = configuration.senders.map(function (sender) {
         var Sender = require(sender.moduleName)
-        return new Sender(sender)
+        return new Sender(sender, program.stdout)
     })
 
     var stdio = inherit(program)
