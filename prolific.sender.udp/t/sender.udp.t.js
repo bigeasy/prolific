@@ -11,7 +11,7 @@ function prove (async, assert) {
     var server = dgram.createSocket('udp4')
 
     server.on('message', function (message, remote) {
-        assert(message.toString(), 'abc', 'sent')
+        assert(message.toString(), 'abc\n', 'sent')
         wait()
     })
 
