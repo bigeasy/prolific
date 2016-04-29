@@ -7,6 +7,7 @@ function prove (async, assert) {
     var rimraf = require('rimraf')
     var Shuttle = require('../shuttle')
     var prolific = require('prolific')
+    var children = require('child_process')
     var logger = prolific.createLogger('prolific.shuttle.test')
     var stream = require('stream')
     var events = require('events')
@@ -15,24 +16,16 @@ function prove (async, assert) {
     program.stderr = new stream.PassThrough
     program.stderr.flag = 1
     var io = {
-        async: new stream.PassThrough,
+        input: new stream.PassThrough,
+        output: new stream.PassThrough,
         sync: new stream.PassThrough
     }
     async(function () {
-        rimraf(path.join(__dirname, 'logout'), async())
-    }, [function () {
-        rimraf(path.join(__dirname, 'logout'), async())
-    }], function () {
         async(function () {
-            fs.open(path.join(__dirname, 'logout'), 'w', 0644, async())
-        }, [function (fd) {
-            fs.close(fd, async())
-        }], function (fd) {
-            new Shuttle(io.async, String(fd), io.sync, function() {})
-            var shuttle = new Shuttle(io.async, fd, io.sync, function (error) {
+            var shuttle = new Shuttle(io.input, io.output, io.sync, function (error) {
                 assert(error.message, 'hello', 'uncaught handled')
             })
-            io.async.write('{"key":"value"}\n')
+            io.input.write('{"key":"value"}\n')
             async(function () {
                 shuttle.open({ open: 1 }, async())
             }, function () {
@@ -52,27 +45,29 @@ function prove (async, assert) {
             })
         })
     }, function () {
-        async(function () {
-            fs.readFile(path.join(__dirname, 'logout'), 'utf8', async())
-        }, function (body) {
-            assert(body, 'aaaaaaaa 6eb9f4a5 9\naaaaaaaa\naaaaaaaa 9a86a096 10\n{"open":1}9a86a096 7a256dee 4\na\nb\n', 'log file')
-            assert(io.sync.read().toString(), 'aaaaaaaa 21780b7e 9\n7a256dee\n7a256dee f29a668a 4\nc\nd\n', 'sync')
-        })
+        assert(io.output.read().toString(), 'aaaaaaaa 6eb9f4a5 9\naaaaaaaa\naaaaaaaa 9a86a096 10\n{"open":1}9a86a096 7a256dee 4\na\nb\n', 'log file')
+        assert(io.sync.read().toString(), 'aaaaaaaa 21780b7e 9\n7a256dee\n7a256dee f29a668a 4\nc\nd\n', 'sync')
     }, function () {
-        Shuttle.shuttle({ env: {} }, 1000, {}, function () {}, async())
-    }, function (result) {
-        assert(!result, 'no fd')
-        program = new events.EventEmitter
-        program.env = {
-            PROLIFIC_LOGGING_FD: new stream.PassThrough
+        var util = require('util')
+        function _Socket () {
+            stream.PassThrough.call(this)
+            this.write('{"bootstrap":true}\n')
         }
-        program.stderr = new stream.PassThrough
-        program.env.PROLIFIC_LOGGING_FD.write("{}\n")
+        util.inherits(_Socket, stream.PassThrough)
+        var bootstrap = require('../bootstrap').createShuttle({ Socket: _Socket }, Shuttle)
         async(function () {
-            Shuttle.shuttle(program, 1000, {}, function () {}, async())
+            bootstrap({ env: {} }, 1000, {}, function () {}, async())
         }, function (result) {
-            assert(result, 'started')
-            program.emit('exit')
+            assert(!result, 'no fd')
+            program = new events.EventEmitter
+            program.env = { PROLIFIC_LOGGING_FD: '3' }
+            program.stderr = new stream.PassThrough
+            async(function () {
+                bootstrap(program, 1000, {}, function () {}, async())
+            }, function (result) {
+                assert(result, 'started')
+                program.emit('exit')
+            })
         })
     })
 }
