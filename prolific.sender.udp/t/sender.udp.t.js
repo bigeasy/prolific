@@ -5,7 +5,7 @@ function prove (async, assert) {
 
     var dgram = require('dgram')
 
-    var sender = new Sender({ url: 'udp://127.0.0.1:8514' })
+    var sender = new Sender({ url: 'udp://127.0.0.1:9898' })
     var wait
 
     var server = dgram.createSocket('udp4')
@@ -21,7 +21,7 @@ function prove (async, assert) {
 
     async(function () {
         server.bind({
-            port: 8514,
+            port: 9898,
             address: '127.0.0.1',
             exclusive: true
         }, async())

@@ -20,7 +20,7 @@ Sender.prototype._send = cadence(function (async, timeout, chunk) {
         var client = dgram.createSocket('udp4')
         async(function () {
             var buffer = new Buffer(line + '\n')
-            client.send(buffer, 0, buffer.length, 8514, '127.0.0.1', Sender.youHaveGotToBeKiddingMe(async()))
+            client.send(buffer, 0, buffer.length, this.url.port, this.url.hostname, Sender.youHaveGotToBeKiddingMe(async()))
         }, function () {
             client.close(async())
         })
