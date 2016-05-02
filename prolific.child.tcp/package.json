@@ -1,6 +1,6 @@
 {
     "name":             "prolific.child.tcp",
-    "version":          "0.0.0",
+    "version":          "1.0.0",
     "author":           "Alan Gutierrez <alan@prettyrobots.com>",
     "description":      "Write TCP syslog messages to a child process' STDIN.",
     "keywords":
