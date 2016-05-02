@@ -1,0 +1,30 @@
+require('proof')(2, require('cadence')(prove))
+
+function prove (async, assert) {
+    var monitor = require('../child.tcp.bin')
+    var path = require('path')
+
+    var sender = path.join(__dirname, 'sender.js')
+    var program = path.join(__dirname, 'program.js')
+    var net = require('net')
+
+    var io
+    async(function () {
+        io = monitor({}, [ '--bind', '8514', 'node', path.join(__dirname, 'child.js') ], {}, async())
+    }, function () {
+       setTimeout(async(), 100)
+    }, function () {
+        async(function () {
+            async(function () {
+                net.connect({ port: 8514 }, async())
+            }, function (socket) {
+                socket.write('x\n', async())
+                socket.end()
+            })
+        }, function () {
+            io.events.emit('SIGINT')
+        })
+    }, function (code) {
+        assert(code, 0, 'code')
+    })
+}

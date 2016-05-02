@@ -1,0 +1,39 @@
+{
+    "name":             "prolific.child.tcp",
+    "version":          "1.0.0",
+    "author":           "Alan Gutierrez <alan@prettyrobots.com>",
+    "description":      "Write TCP syslog messages to a child process' STDIN.",
+    "keywords":
+    [
+                        "json", "syslog", "logging", "prolific", "tcp"
+    ],
+    "license":          "MIT",
+    "contributors":     [],
+    "homepage":         "https://github.com/bigeasy/prolific",
+    "bugs":             "https://github.com/bigeasy/prolific/issues",
+    "main":             "child.tcp",
+    "repository":
+    {
+                        "type": "git",
+                        "url": "http://github.com/bigeasy/prolific.git"
+    },
+    "bin":
+    {
+    },
+    "dependencies":
+    {
+                        "arguable":             "2.x",
+                        "byline":               "4.2.1",
+                        "cadence":              "1.x",
+                        "delta":                "1.x",
+                        "reactor":              "2.x"
+    },
+    "devDependencies":
+    {
+                        "proof":                "1.x"
+    },
+    "scripts":
+    {
+                        "test": "proof test t/*.t.js"
+    }
+}
