@@ -22,14 +22,11 @@
     },
     "dependencies":
     {
-                        "supersede":            "1.x",
-                        "timezone":             "1.x",
-                        "wafer":                "1.x"
+                        "supersede":            "1.x"
     },
     "devDependencies":
     {
-                        "proof":                "1.x",
-                        "rimraf":               "2.5.2"
+                        "proof":                "1.x"
     },
     "scripts":
     {
