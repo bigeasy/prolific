@@ -2,19 +2,20 @@ var Queue = require('prolific.queue')
 var cadence = require('cadence')
 var byline = require('byline')
 var Delta = require('delta')
+var createUncaughtExceptionHandler = require('./uncaught')
 
-function Shuttle (input, output, sync, finale) {
+function Shuttle (input, output, sync, uncaught) {
     this.input = input
     this.output = output
     this.queue = new Queue
     this.sink = this.queue.createSink(this.output)
     this.stopped = false
     this.sync = sync
-    this.finale = finale
+    this.uncaught = createUncaughtExceptionHandler(uncaught)
 }
 
 Shuttle.prototype.uncaughtException = function (error) {
-    this.finale.call(null, error)
+    this.uncaught.call(null, error)
     this.stop()
     throw error
 }
