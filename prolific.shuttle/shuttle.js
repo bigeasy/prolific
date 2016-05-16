@@ -1,18 +1,9 @@
 var Queue = require('prolific.queue')
-var prolific = require('prolific')
-var logger = prolific.createLogger('prolific.shuttle')
-var fs = require('fs')
-var net = require('net')
-var abend = require('abend')
-var Isochronous = require('isochronous')
 var cadence = require('cadence')
-var ok = require('assert').ok
-var util = require('util')
 var byline = require('byline')
 var Delta = require('delta')
 
 function Shuttle (input, output, sync, finale) {
-    ok(arguments.length == 4)
     this.input = input
     this.output = output
     this.queue = new Queue
@@ -29,7 +20,6 @@ Shuttle.prototype.uncaughtException = function (error) {
 }
 
 Shuttle.prototype.open = cadence(function (async, configuration) {
-    ok(configuration, 'configuration required')
     this.queue.write(JSON.stringify(configuration))
     async(function () {
         new Delta(async()).ee(byline(this.input)).on('data')
