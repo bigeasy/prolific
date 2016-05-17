@@ -15,8 +15,8 @@ function prove (assert) {
         _write: function (level, actual) {
             assert(actual, expected, message)
         },
-        _timestamp: function () {
-            return '2015-06-27T01:45:30.742Z'
+        _Date: {
+            now: function () { return 0 }
         }
     }
 
@@ -28,14 +28,14 @@ function prove (assert) {
         context: 'hello.world',
         name: 'hello',
         level: 'info',
-        timestamp: '2015-06-27T01:45:30.742Z'
+        when: 0
     }, 'info')
     logger.info('hello')
     expect({
         context: 'hello.world',
         name: 'hello',
         level: 'error',
-        timestamp: '2015-06-27T01:45:30.742Z',
+        when: 0,
         key: 'value'
     }, 'error')
     logger.error('hello', { key: 'value' }, 1)
@@ -44,7 +44,7 @@ function prove (assert) {
         context: 'hello.world',
         name: 'log',
         level: 'info',
-        timestamp: '2015-06-27T01:45:30.742Z',
+        when: 0,
         key: 'value'
     }, 'log')
     var log = logger.log
@@ -56,7 +56,7 @@ function prove (assert) {
         context: 'hello.world',
         name: 'hello',
         level: 'warn',
-        timestamp: '2015-06-27T01:45:30.742Z'
+        when: 0
     }, 'warn')
     logger.warn('hello')
 
@@ -64,7 +64,7 @@ function prove (assert) {
         context: 'hello.world',
         name: 'rescued',
         level: 'error',
-        timestamp: '2015-06-27T01:45:30.742Z',
+        when: 0,
         key: 'value',
         message: 'error',
         stack: '*'

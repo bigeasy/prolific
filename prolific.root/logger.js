@@ -23,7 +23,7 @@ Logger.prototype._log = function (level, vargs) {
         context: this._context,
         name: vargs.shift(),
         level: level,
-        timestamp: this._controller._timestamp()
+        when: this._controller._Date.now()
     }
     vargs.unshift(prolific.context)
     while (vargs.length) {
