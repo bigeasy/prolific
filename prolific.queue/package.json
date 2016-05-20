@@ -23,13 +23,11 @@
     "dependencies":
     {
                         "cadence":              "1.x",
-                        "hash.fnv":             "0.0.0"
+                        "prolific.chunk":       "0.0.0"
     },
     "devDependencies":
     {
-                        "abend":                "1.x",
-                        "proof":                "1.x",
-                        "rimraf":               "2.5.2"
+                        "proof":                "1.x"
     },
     "scripts":
     {

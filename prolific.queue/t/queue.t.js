@@ -1,42 +1,28 @@
-require('proof')(1, require('cadence')(prove))
+require('proof')(2, require('cadence')(prove))
 
 function prove (async, assert) {
     var stream = require('stream')
-    var abend = require('abend')
     var Queue = require('../queue')
-    var fail, out = {
-        write: function (buffer, callback) {
-            if (!fail) {
-                this.stream.write(buffer, callback)
-            }
-        },
-        stream: new stream.PassThrough
-    }
-    var queue = new Queue()
-    var sink = queue.createSink(out)
+    var queue
     async(function () {
+        queue = new Queue(new stream.PassThrough)
         queue.write(1 + '\n')
         queue.write(2 + '\n')
         queue.write(3 + '\n')
-        sink.open(async())
+        queue.flush(async())
     }, function () {
-        sink.flush(out, async())
+        var chunk = queue._stream.read().toString()
+        assert(chunk, '0 aaaaaaaa 05eb07a2 2\n1\n1 05eb07a2 fdaf7437 6\n1\n2\n3\n', 'initialize')
+        queue.flush(async())
     }, function () {
-        sink.flush(out, async())
+        queue.exit(null)
+        queue.exit(null)
+        queue.flush(async())
     }, function () {
-        assert(out.stream.read().toString(), 'aaaaaaaa 6eb9f4a5 9\naaaaaaaa\naaaaaaaa fdaf7437 6\n1\n2\n3\n', 'written')
-    }, function () {
-        queue.write(4 + '\n')
-        fail = true
-        sink.flush(out, abend)
-    }, function () {
-        var sink = queue.createSink(new stream.PassThrough)
-        async(function () {
-            sink.open(async())
-        }, function () {
-            sink.flush(out, async())
-        })
-    }, function () {
-        sink.flush(out, async())
+        queue = new Queue(new stream.PassThrough)
+        var stderr = new stream.PassThrough
+        queue.exit(stderr)
+        var chunk = stderr.read().toString()
+        assert(chunk, '0 aaaaaaaa 27ed7bbf 2\n0\n0 aaaaaaaa 05eb07a2 2\n1\n', 'initialize')
     })
 }

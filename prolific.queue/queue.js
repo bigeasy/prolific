@@ -1,90 +1,75 @@
 var cadence = require('cadence')
-var fnv = require('hash.fnv')
-var hex = require('./hex')
+var Chunk = require('prolific.chunk')
 
-function Queue () {
-    this._entries = [[]]
-    this._sink = {}
-    this._previousChecksum = hex(0xaaaaaaaa, 8)
-}
-
-Queue.prototype.createSink = function (stream) {
-    return new Sink(this, stream)
-}
-
-function Sink (queue, stream) {
-    this._queue = queue
+function Queue (stream) {
+    this._entries = []
+    this._chunks = []
+    this._chunkNumber = 1
+    this._previousChecksum = 'aaaaaaaa'
     this._stream = stream
-    this._previousChecksum = hex(0xaaaaaaaa, 8)
-    this._initialized = false
+    this._chunks.push(new Chunk(0, '1\n'))
 }
 
-Queue.prototype.exit = function (stderr) {
-    this._sink._termianted = true
-    var messages = this._entries.pop() || []
-    while (this._entries.length) {
-        messages.push.apply(messages, this._entries.pop())
-    }
-    if (messages.length == 0) {
+Queue.prototype.write = function (line) {
+    this._entries.push(line)
+}
+
+Queue.prototype._chunkEntries = function () {
+    var entries = this._entries
+    if (entries.length == 0) {
         return
     }
-    var buffer, checksum
-    var buffers = []
-    buffer = new Buffer(this._previousChecksum + '\n')
-    checksum = hex(fnv(0, buffer, 0, buffer.length), 8)
-    buffers.push(new Buffer(hex(0xaaaaaaaa, 8) + ' ' + checksum + ' ' + buffer.length + '\n'), buffer)
-    buffer = new Buffer(messages.join(''))
-    checksum = hex(fnv(0, buffer, 0, buffer.length), 8)
-    buffers.push(new Buffer(this._previousChecksum + ' ' + checksum + ' ' + buffer.length + '\n'), buffer)
-    stderr.write(Buffer.concat(buffers))
+    this._entries = []
+
+    this._chunks.push(new Chunk(this._chunkNumber++, entries.join('')))
 }
 
-Sink.prototype._write = cadence(function (async, string) {
-    var buffer = new Buffer(string)
-    var checksum = hex(fnv(0, buffer, 0, buffer.length), 8)
-    async(function () {
-        this._stream.write(this._previousChecksum + ' ' + checksum + ' ' + buffer.length + '\n', async())
-    }, function () {
-        this._stream.write(buffer, async())
-    }, function () {
-        return [ checksum ]
-    })
-})
-
-Sink.prototype.open = cadence(function (async, out) {
-    this._queue._sink._termianted = true
-    this._queue._sink = this
-    async(function () {
-        this._write(this._queue._previousChecksum + '\n', async())
-    }, function () {
-        this._previousChecksum = this._queue._previousChecksum
-    })
-})
-
-Sink.prototype.flush = cadence(function (async, out) {
+Queue.prototype.flush = cadence(function (async) {
     if (this._termianted) {
         return
     }
 
-    var entries = this._queue._entries
+    this._chunkEntries()
 
-    if (entries.length == 1) {
-        if (entries[0].length == 0) {
-            return
+    var loop = async(function () {
+        if (this._chunks.length == 0) {
+            return [ loop.break ]
         }
-        entries.unshift([])
-    }
-
-    async(function () {
-        this._write(entries[entries.length - 1].join(''), async())
-    }, function (checksum) {
-        this._queue._previousChecksum = this._previousChecksum = checksum
-        entries.pop()
-    })
+        var chunk = this._chunks[0]
+        async(function () {
+            this._stream.write(chunk.header(this._previousChecksum), async())
+        }, function () {
+// TODO Wait for a response, let's get for reals here.
+            this._stream.write(chunk.buffer, async())
+        }, function () {
+            this._previousChecksum = chunk.checksum
+            this._chunks.shift()
+        })
+    })()
 })
 
-Queue.prototype.write = function (line) {
-    this._entries[0].push(line)
+Queue.prototype.exit = function (stderr) {
+    if (this._termianted) {
+        return
+    }
+
+    this._termianted = true
+
+    this._chunkEntries()
+
+    if (this._chunks.length == 0) {
+        return
+    }
+
+    this._chunks.unshift(new Chunk(0, this._chunks[0].number + '\n'))
+
+    var buffers = []
+    while (this._chunks.length) {
+        var chunk = this._chunks.shift()
+        buffers.push(chunk.header(this._previousChecksum), chunk.buffer)
+    }
+
+    stderr.write(Buffer.concat(buffers))
 }
 
 module.exports = Queue
