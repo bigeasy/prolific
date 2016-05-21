@@ -1,18 +1,19 @@
 var fnv = require('hash.fnv')
 var hex = require('./hex')
 
-function Chunk (number, string) {
+function Chunk (number, buffer, value) {
     this.number = number
-    this.buffer = new Buffer(string)
-    this.checksum = hex(fnv(0, this.buffer, 0, this.buffer.length), 8)
+    this.checksum = hex(fnv(0, buffer, 0, buffer.length), 8)
+    this.value = value
+    this.buffer = buffer
 }
 
-Chunk.prototype.header = function (previousChecksum) {
+Chunk.prototype.header = function (previousChecksum, length) {
     return new Buffer([
         this.number, ' ',
         previousChecksum, ' ',
         this.checksum, ' ',
-        this.buffer.length, '\n'
+        this.value, '\n'
     ].join(''))
 }
 
