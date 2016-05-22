@@ -1,63 +1,47 @@
-require('proof')(4, require('cadence')(prove))
+require('proof')(7, prove)
 
-function prove (async, assert) {
+function prove (assert) {
+    var Chunk = require('prolific.chunk')
     var Collector = require('../collector')
-    var Queue = require('prolific.queue')
-    var fnv = require('hash.fnv')
-    var buffer = new Buffer('a\nb\n')
-    var hash = fnv(0, buffer, 0, buffer.length)
-    var stream = require('stream')
-    var stdout = new stream.PassThrough
-    var queue = new Queue
-    var reactor = []
-    var collector = new Collector(reactor, true)
-    var sink = queue.createSink(stdout)
-    async(function () {
-        queue.write('abc\n')
-        queue.write('def\n')
-    }, function () {
-        sink.open(async())
-    }, function () {
-        sink.flush(async())
-    }, function () {
-        var buffer = stdout.read()
-        collector.scan(buffer.slice(0, buffer.length - 4))
-        collector.scan(buffer.slice(buffer.length - 4))
-        var entry = collector.chunks.shift()
-        entry.buffer = entry.buffer.toString()
-        assert(entry, {
-            previousChecksum: 2863311530,
-            checksum: 2700757720,
-            length: 8,
-            buffer: 'abc\ndef\n'
-        }, 'chunk')
-    }, function () {
-        try {
-            collector.scan(new Buffer('0 0 0\n'))
-        } catch (error) {
-            assert(error.message, 'dedicated stream sequence break', 'sequence break')
-        }
-        try {
-            collector.scan(new Buffer('!\n'))
-        } catch (error) {
-            assert(error.message, 'dedicated stream garbled header', 'garbled header')
-        }
-        queue.write('ghi\n')
-        queue.write('jkl\n')
-        sink.flush(async())
-    }, function () {
-        var buffer = stdout.read()
-        collector.scan(buffer.slice(0, 4))
-        collector.scan(buffer.slice(4, 28))
-        collector.scan(buffer.slice(28))
-    }, function () {
-        var entry = collector.chunks.shift()
-        entry.buffer = entry.buffer.toString()
-        assert(entry, {
-            previousChecksum: 2700757720,
-            checksum: 4286234924,
-            length: 8,
-            buffer: 'ghi\njkl\n'
-        }, 'chunk')
-    })
+
+    var collector = new Collector(false)
+    collector.scan(new Buffer('x\n'))
+    assert(collector.stderr.shift().toString(), 'x\n', 'stdout not header')
+    collector.scan(new Buffer('0 00000000 00000000 0\n'))
+    assert(collector.stderr.shift().toString(), '0 00000000 00000000 0\n', 'stdout not valid')
+
+    var chunk
+
+    chunk = new Chunk(0, new Buffer(''), 1)
+    var header = chunk.header('aaaaaaaa')
+    collector.scan(header.slice(0, 4))
+    collector.scan(header.slice(4))
+    collector.scan(chunk.buffer)
+
+    var previousChecksum = chunk.checksum
+
+    assert(collector._chunkNumber, 1, 'next chunk number')
+
+    chunk = new Chunk(0, new Buffer(''), 2)
+    collector.scan(chunk.header(previousChecksum))
+    collector.scan(chunk.buffer)
+
+    assert(collector._chunkNumber, 1, 'already initialized')
+
+    var buffer = new Buffer('a\n')
+    chunk = new Chunk(2, buffer, buffer.length)
+    collector.scan(chunk.header(previousChecksum))
+    collector.scan(chunk.buffer)
+
+    assert(collector._chunkNumber, 1, 'wrong chunk number')
+
+    chunk = new Chunk(1, buffer, buffer.length)
+    collector.scan(chunk.header(previousChecksum))
+    collector.scan(chunk.buffer)
+
+    assert(collector.chunks.shift().buffer.toString(), 'a\n', 'chunk')
+
+    collector.scan(chunk.header('00000000'))
+
+    assert(collector._chunkNumber, 2, 'wrong previous checksum')
 }

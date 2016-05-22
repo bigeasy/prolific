@@ -1,13 +1,14 @@
 var fnv = require('hash.fnv')
+var assert = require('assert')
 
 function Collector (dedicated) {
+    this._dedicated = dedicated
+    this._buffers = []
+    this._chunkNumber = 0
+    this._previousChecksum = 0xaaaaaaaa
     this.chunks = []
     this.stderr = []
-    this._collecing = null
-    this._header = new Buffer(0)
-    this._previousChecksum = 0xaaaaaaaa
-    this._buffers = []
-    this._dedicated = dedicated
+    this._state = 'seek'
 }
 
 // TODO We control the asynchronous stream, so we know that the messages on that
@@ -62,7 +63,17 @@ function Collector (dedicated) {
 Collector.prototype.scan = function (buffer) {
     var scan = { buffer: buffer, index: 0 }, scanned = true
     while (scanned) {
-        scanned = this._chunk ? this._scanChunk(scan) : this._scanHeader(scan)
+        switch (this._state) {
+        case 'seek':
+            scanned = this._seek(scan)
+            break
+        case 'header':
+            scanned = this._scanHeader(scan)
+            break
+        case 'chunk':
+            scanned = this._scanChunk(scan)
+            break
+        }
     }
     if (scan.index < scan.buffer.length) {
         this._buffers.push(new Buffer(buffer.slice(scan.index)))
@@ -77,22 +88,48 @@ Collector.prototype._scanChunk = function (scan) {
         var buffer = Buffer.concat(this._buffers)
         this._buffers.length = 0
         var checksum = fnv(0, buffer, 0, buffer.length)
-        this._assert(checksum == this._chunk.checksum, 'invalid checksum')
-        if (this._initialized) {
-            this.chunks.push({
-                previousChecksum: this._previousChecksum,
-                checksum: this._chunk.checksum,
-                length: this._chunk.length,
-                buffer: buffer
-            })
-            this._previousChecksum = this._chunk.checksum
-        } else {
-            this._initialized = true
-            this._previousChecksum = parseInt(buffer.toString(), 16)
-        }
+        assert(checksum == this._chunk.checksum, 'invalid checksum')
+        this.chunks.push({
+            previousChecksum: this._previousChecksum,
+            checksum: this._chunk.checksum,
+            length: this._chunk.length,
+            buffer: buffer
+        })
         this._chunk = null
-        scan.start = scan.end = scan.end + 1
+        this._state = 'seek'
         return true
+    }
+    return false
+}
+
+Collector.prototype._push = function (scan, i) {
+    this._buffers.push(new Buffer(scan.buffer.slice(scan.index, i)))
+    scan.index = i
+}
+
+Collector.prototype._flush = function () {
+    return Buffer.concat(this._buffers.splice(0, this._buffers.length))
+}
+
+Collector.prototype._scanned = function (scan, i) {
+    this._push(scan, i)
+    var scanned = this._flush()
+    if (scanned.length != 0) {
+        assert(!this._dedicated, 'garbage before header')
+        this.stderr.push(scanned)
+    }
+}
+
+Collector.prototype._seek = function (scan) {
+    for (var buffer = scan.buffer, i = scan.index, I = buffer.length; i < I; i++) {
+        if (buffer[i] == 0x25) {
+            this._state = 'header'
+            this._scanned(scan, i)
+            return true
+        } else if (buffer[i] == 0xa) {
+            this._scanned(scan, i + 1)
+            return true
+        }
     }
     return false
 }
@@ -110,10 +147,6 @@ Collector.prototype._scanChunk = function (scan) {
 // essentally answering an admonishment, when I believe that the answer I've
 // come to is that adding code doesn't add stability. Stability comes from
 // deployment first, and then the passage of time.
-Collector.prototype._assert = function (condition, message) {
-    if (!condition) throw new Error(message)
-}
-
 Collector.prototype._scanHeader = function (scan) {
     for (var buffer = scan.buffer, i = scan.index, I = buffer.length; i < I; i++) {
         if (buffer[i] == 0xa) {
@@ -121,34 +154,38 @@ Collector.prototype._scanHeader = function (scan) {
         }
     }
     if (i != I) {
-        this._buffers.push(new Buffer(buffer.slice(scan.index, i)))
-        var header = Buffer.concat(this._buffers)
-        this._buffers.length = 0
-        var $ = /^([\da-f]+) ([\da-f]+) ([\da-f]+)$/i.exec(header.toString())
+        this._push(scan, i + 1)
+        var header = this._flush()
+        var $ = /^% (\d+) ([0-9a-f]{8}) ([0-9a-f]{8}) (\d+)\n$/i.exec(header.toString())
         if ($) {
-            var previousChecksum = parseInt($[1], 16)
-            var chunk = { checksum: parseInt($[2], 16), length: +$[3], remaining: +$[3] }
+            var chunkNumber = +$[1]
+            var previousChecksum = parseInt($[2], 16)
+            var chunk = { checksum: parseInt($[3], 16), length: +$[4], remaining: +$[4] }
             if (previousChecksum == this._previousChecksum) {
-                if (!this._initialized) {
-                    if (chunk.remaining == 9) {
-                        this._chunk = chunk
+                if (chunkNumber == 0) {
+                    if (!this._initialized) {
+                        this._chunkNumber = chunk.remaining
+                        this._previousChecksum = chunk.checksum
+                        this._initialized = true
                     } else {
-                        this._assert(!this._dedicated, 'invalid initializer')
+                        assert(!this._dedicated, 'already initialized')
                     }
-                } else {
+                } else if (chunkNumber == this._chunkNumber) {
+                    this._state = 'chunk'
                     this._chunk = chunk
+                    this._previousChecksum = chunk.checksum
+                    this._chunkNumber++
+                } else {
+                    assert(!this._dedicated, 'chunk numbers incorrect')
                 }
             } else {
-                this._assert(!this._dedicated, 'dedicated stream sequence break')
+                assert(!this._dedicated, 'dedicated stream sequence break')
                 this.stderr.push(header)
-                this.stderr.push(new Buffer('\n'))
             }
         } else {
-            this._assert(!this._dedicated, 'dedicated stream garbled header')
+            assert(!this._dedicated, 'dedicated stream garbled header')
             this.stderr.push(header)
-            this.stderr.push(new Buffer('\n'))
         }
-        scan.index = i + 1
         return true
     }
     return false

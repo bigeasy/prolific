@@ -24,7 +24,7 @@
     "devDependencies":
     {
                         "cadence":              "1.x",
-                        "prolific.queue":       "1.x",
+                        "prolific.chunk":       "0.0.2",
                         "proof":                "1.x"
     },
     "scripts":
