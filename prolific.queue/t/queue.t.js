@@ -12,7 +12,7 @@ function prove (async, assert) {
         queue.flush(async())
     }, function () {
         var chunk = queue._stream.read().toString()
-        assert(chunk, '0 aaaaaaaa 05eb07a2 2\n1\n1 05eb07a2 fdaf7437 6\n1\n2\n3\n', 'initialize')
+        assert(chunk, '0 aaaaaaaa 811c9dc5 1\n1 811c9dc5 fdaf7437 6\n1\n2\n3\n', 'initialize')
         queue.flush(async())
     }, function () {
         queue.exit(null)
@@ -23,6 +23,6 @@ function prove (async, assert) {
         var stderr = new stream.PassThrough
         queue.exit(stderr)
         var chunk = stderr.read().toString()
-        assert(chunk, '0 aaaaaaaa 27ed7bbf 2\n0\n0 aaaaaaaa 05eb07a2 2\n1\n', 'initialize')
+        assert(chunk, '0 aaaaaaaa 811c9dc5 0\n0 aaaaaaaa 811c9dc5 1\n', 'exit')
     })
 }
