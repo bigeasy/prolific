@@ -5,11 +5,8 @@ function prove (assert) {
 
     inheritance = inherit({ command: { param: {}, params: { inherit: [ 0, 1, 2, 4, 4, 5, 8 ] } } })
     assert(inheritance, {
-        stdio: [ 0, 1, 'pipe', 'ignore', 4, 5, 'ignore', 'ignore', 8, 'pipe', 'pipe' ],
-        fd: {
-            configuration: 9,
-            logging: 10
-        }
+        stdio: [ 0, 1, 'pipe', 'ignore', 4, 5, 'ignore', 'ignore', 8, 'pipe' ],
+        fd: 9
     }, 'inherit')
 
     inheritance = inherit({
@@ -17,10 +14,7 @@ function prove (assert) {
         params: { inherit: [ 0, 1, 2, 4, 4, 5 ] } }
     })
     assert(inheritance, {
-        stdio: [ 0, 1, 'pipe', 'ignore', 4, 5, 'ipc', 'pipe', 'pipe' ],
-        fd: {
-            configuration: 7,
-            logging: 8
-        }
+        stdio: [ 0, 1, 'pipe', 'ignore', 4, 5, 'ipc', 'pipe' ],
+        fd: 7
     }, 'inherit with ipc')
 }

@@ -20,13 +20,7 @@ module.exports = function (program) {
         stdio.push('ipc')
     }
 
-    stdio[2] = stdio[stdio.length + 1] = stdio[stdio.length] = 'pipe'
+    stdio[2] = stdio[stdio.length] = 'pipe'
 
-    return {
-        stdio: stdio,
-        fd:{
-            configuration: stdio.length - 2,
-            logging: stdio.length - 1
-        }
-    }
+    return { stdio: stdio, fd: stdio.length - 1 }
 }
