@@ -158,15 +158,15 @@ Collector.prototype._scanHeader = function (scan) {
     if (i != I) {
         this._push(scan, i + 1)
         var header = this._flush()
-        var $ = /^% (\d+) ([0-9a-f]{8}) ([0-9a-f]{8}) (\d+)\n$/i.exec(header.toString())
+        var $ = /^% (\S+) (\d+) ([0-9a-f]{8}) ([0-9a-f]{8}) (\d+)\n$/i.exec(header.toString())
         if ($) {
             var chunk = {
-                number: +$[1],
-                checksum: parseInt($[3], 16),
-                length: +$[4],
-                remaining: +$[4]
+                number: +$[2],
+                checksum: parseInt($[4], 16),
+                length: +$[5],
+                remaining: +$[5]
             }
-            var previousChecksum = parseInt($[2], 16)
+            var previousChecksum = parseInt($[3], 16)
             if (previousChecksum == this._previousChecksum) {
                 if (chunk.number == 0) {
                     if (this._initializations == 0 || (this._initializations == 1 && !this._dedicated)) {
