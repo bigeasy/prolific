@@ -23,7 +23,7 @@
     "dependencies":
     {
                         "cadence":              "1.x",
-                        "prolific.chunk":       "0.0.3"
+                        "prolific.chunk":       "0.0.4"
     },
     "devDependencies":
     {
