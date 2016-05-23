@@ -44,22 +44,20 @@ require('arguable')(module, require('cadence')(function (async, program) {
         return new Sender(sender, program.stdout)
     })
 
-    var stdio = inherit(program)
+    var inheritance = inherit(program)
 
     // TODO Add to very end of existing stdio. This would require a command line
     // switch and it would mean that there would be inheritence for certain
     // number `--inherit=4` so that we'd put ourself after the last inherited.
-    process.env.PROLIFIC_LOGGING_FD = String(stdio.length - 1)
+    process.env.PROLIFIC_LOGGING_FD = String(inheritance.fd.configuration)
 
     var argv = program.argv.slice()
     var loop = async(function () {
-        var child = children.spawn(argv.shift(), argv, { stdio: stdio })
-        var io = { async: child.stdio[stdio.length - 1], sync: child.stderr }
+        var child = children.spawn(argv.shift(), argv, { stdio: inheritance.stdio })
+        var io = { async: child.stdio[inheritance.fd], sync: child.stderr }
         ipc(program.command.param.ipc, process, child)
-        io.async.write(JSON.stringify(configuration) + '\n')
         pumper(senders, child, io, program.stderr, async())
     }, function (code, sender) {
-        console.log(sender)
         if (code != 0 || sender == null || sender.moduleName == null) {
             return [ loop.break, code ]
         }
