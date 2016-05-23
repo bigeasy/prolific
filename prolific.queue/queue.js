@@ -1,13 +1,14 @@
 var cadence = require('cadence')
 var Chunk = require('prolific.chunk')
 
-function Queue (stream) {
+function Queue (pid, stream) {
+    this._pid = pid
     this._entries = []
     this._chunks = []
     this._chunkNumber = 1
     this._previousChecksum = 'aaaaaaaa'
     this._stream = stream
-    this._chunks.push(new Chunk(0, new Buffer(''), 1))
+    this._chunks.push(new Chunk('x', 0, new Buffer(''), 1))
 }
 
 Queue.prototype.write = function (line) {
@@ -22,7 +23,7 @@ Queue.prototype._chunkEntries = function () {
     this._entries = []
 
     var buffer = new Buffer(entries.join(''))
-    this._chunks.push(new Chunk(this._chunkNumber++, buffer, buffer.length))
+    this._chunks.push(new Chunk('x', this._chunkNumber++, buffer, buffer.length))
 }
 
 Queue.prototype.flush = cadence(function (async) {
@@ -62,7 +63,7 @@ Queue.prototype.exit = function (stderr) {
         return
     }
 
-    this._chunks.unshift(new Chunk(0, new Buffer(''), this._chunks[0].number))
+    this._chunks.unshift(new Chunk('x', 0, new Buffer(''), this._chunks[0].number))
 
     var buffers = []
     while (this._chunks.length) {
