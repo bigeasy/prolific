@@ -27,7 +27,7 @@ function prove (async, assert) {
         }, async())
     }, function () {
         wait = async()
-        sender._send(null, new Buffer('abc\n'), async())
+        sender.send(new Buffer('abc\n'))
     }, function () {
         server.close(async())
     })
