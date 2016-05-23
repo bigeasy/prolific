@@ -1,5 +1,3 @@
-var fs = require('fs')
-var cadence = require('cadence')
 var prolific = require('prolific')
 var abend = require('abend')
 var Isochronous = require('isochronous')

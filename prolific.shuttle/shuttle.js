@@ -1,7 +1,4 @@
 var Queue = require('prolific.queue')
-var cadence = require('cadence')
-var byline = require('byline')
-var Delta = require('delta')
 var createUncaughtExceptionHandler = require('./uncaught')
 
 function Shuttle (input, output, sync, uncaught) {
