@@ -24,11 +24,11 @@
     {
                         "cadence":              "1.x",
                         "delta":                "1.x",
-                        "prolific.consolidator":"0.0.1"
+                        "prolific.consolidator":"0.0.2"
     },
     "devDependencies":
     {
-                        "prolific.chunk":       "0.0.2",
+                        "prolific.chunk":       "0.0.4",
                         "proof":                "1.x"
     },
     "scripts":
