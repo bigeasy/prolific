@@ -2,58 +2,59 @@ require('proof')(6, require('cadence')(prove))
 
 function prove (async, assert) {
     var pumper = require('..')
-    assert(pumper, 'require')
+    var Chunk = require('prolific.chunk')
+    var events = require ('events')
     var stream = require('stream')
-    var events = require('events')
-    var Queue = require('prolific.queue')
-    var sent = [ 'a\n', 'b\n' ]
-    var sender = {
-        send: function (buffer) {
-            assert(buffer.toString(), sent.shift(), 'sent')
-        }
-    }
-    var io = {
-        async: new stream.PassThrough,
-        sync: new stream.PassThrough,
-        forward: new stream.PassThrough
-    }
+    var stderr = new stream.PassThrough
     async(function () {
-        var child = new events.EventEmitter
-        pumper([ sender ], child, io.async, io.sync, io.forward, async())
-        var queue = new Queue
-        var sink = queue.createSink(io.async)
-        async(function () {
-            io.sync.write('hello, world!\n', async())
-        }, function () {
-            sink.open(async())
-        }, function () {
-            queue.write('{"key":"value"}\n')
-            sink.flush(async())
-        }, function () {
-            queue.write('a\n')
-            sink.flush(async())
-        }, function () {
-            queue.write('b\n')
-            queue.exit(io.sync)
-            child.emit('exit', null, 'SIGFOO')
-            io.sync.end()
-            io.async.end()
-        })
-    }, function (code) {
-        assert(io.forward.read().toString(), 'hello, world!\n', 'forward')
-        assert(code, 1, 'signaled')
-    }, function () {
         var child = new events.EventEmitter
         var io = {
             async: new stream.PassThrough,
-            sync: new stream.PassThrough,
-            forward: new stream.PassThrough
+            sync: new stream.PassThrough
         }
-        pumper([ sender ], child, io.async, io.sync, io.forward, async())
-        child.emit('exit', 0)
-        io.sync.end()
-        io.async.end()
-    }, function (code) {
-        assert(code, 0, 'code')
+        pumper([{
+            send: function (buffer) {
+                assert(buffer.toString(), 'a\n', 'sender')
+            }
+        }], child, io, stderr, async())
+        io.sync.write(new Buffer('hello, world\n'))
+        var chunk = new Chunk(0, new Buffer(''), 1)
+        io.async.write(chunk.header('aaaaaaaa'))
+        io.async.write(chunk.buffer)
+        var previousChecksum = chunk.checksum
+        var buffer = new Buffer('{"a":1}\n')
+        chunk = new Chunk(1, buffer, buffer.length)
+        io.async.write(chunk.header(previousChecksum))
+        io.async.write(chunk.buffer)
+        previousChecksum = chunk.checksum
+        buffer = new Buffer('a\n')
+        chunk = new Chunk(2, buffer, buffer.length)
+        io.async.write(chunk.header(previousChecksum))
+        io.async.write(chunk.buffer)
+        io.async.emit('end')
+        io.sync.emit('end')
+        child.emit('exit', 0, null)
+    }, function (code, configuration) {
+        assert(code, 0, 'exit code')
+        assert(configuration, { a: 1 }, 'configuration')
+        assert(stderr.read().toString(), 'hello, world\n', 'stderr')
+        var child = new events.EventEmitter
+        var io = {
+            async: new stream.PassThrough,
+            sync: new stream.PassThrough
+        }
+        pumper([{
+            send: function (buffer) {
+                assert(buffer.toString(), 'a\n', 'sender')
+            }
+        }], child, io, stderr, async())
+        child.emit('exit', null, 'SIGTERM')
+        io.sync.emit('end')
+        var error = new Error
+        error.code = 'ECONNRESET'
+        io.async.emit('error', error)
+    }, function (code, configuration) {
+        assert(code, 1, 'error exit code')
+        assert(configuration, null, 'no configuration')
     })
 }

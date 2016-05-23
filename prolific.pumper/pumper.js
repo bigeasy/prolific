@@ -1,71 +1,45 @@
+var Consolidator = require('prolific.consolidator')
 var Delta = require('delta')
 var cadence = require('cadence')
-var assert = require('assert')
-var splice = [].splice
-var Collector = require('prolific.collector')
 
-function Interceptor (writer, senders) {
-    this.writer = writer
-    this.senders = senders
-}
-
-Interceptor.prototype.send = function (line) {
-    this.writer.options.configuration = JSON.parse(line.toString())
-    splice.apply(this.writer.senders, [ 0, 1 ].concat(this.senders))
-}
-
-function Writer (options, senders, forward) {
-    this.options = options
-    this.senders = forward ? senders : [ new Interceptor(this, senders) ]
-    this.collector = new Collector(! forward)
-    this.forward = forward
-    this.dedicated = ! forward
-    this.ondata = this.data.bind(this)
-    this.previous = { checksum: 0xaaaaaaaa }
-}
-
-Writer.prototype.data = function (buffer) {
-    this.collector.scan(buffer)
-    if (this.dedicated) {
-        while (this.collector.chunks.length) {
-            this.previous = this.collector.chunks.shift()
-            for (var i = 0, I = this.senders.length; i < I; i++) {
-                this.senders[i].send(this.previous.buffer)
+module.exports = cadence(function (async, senders, child, io, forward) {
+    var configuration = null
+    var consolidator = new Consolidator
+    var sender = function (chunks) {
+        if (chunks.length) {
+            configuration = JSON.parse(chunks.shift().buffer.toString())
+            sender = function (chunks) {
+                for (var i = 0, I = chunks.length; i < I; i++) {
+                    for (var j = 0, J = senders.length; j < J; j++) {
+                        senders[j].send(chunks[i].buffer)
+                    }
+                }
             }
-        }
-    } else {
-        while (this.collector.stderr.length) {
-            this.forward.write(this.collector.stderr.shift())
+            sender(chunks)
         }
     }
-}
-
-module.exports = cadence(function (async, senders, child, asyncout, syncout, forward) {
-    var options = {
-        configuration: {}
+    function onChunk () {
+        sender(consolidator.chunks.splice(0, consolidator.chunks.length))
     }
-    var log = {
-        async: new Writer(options, senders),
-        sync: new Writer(options, senders, forward)
+    function onLine () {
+        forward.write(consolidator.stderr.splice(0, consolidator.stderr.length).join(''))
     }
     async(function () {
         new Delta(async())
             .ee(child).on('exit')
-            .ee(syncout).on('data', log.sync.ondata).on('end')
+            .ee(io.sync).on('data', consolidator.sync.ondata)
+                        .on('data', onLine).on('end')
         async([function () {
-            new Delta(async()).ee(asyncout).on('data', log.async.ondata).on('end')
+            new Delta(async())
+                .ee(io.async)
+                    .on('data', consolidator.async.ondata)
+                    .on('data', onChunk).on('end')
         }, /^ECONNRESET$/, function (error) {
             console.log(error.stack)
         }])
     }, function (code, signal) {
-        var previous = log.async.previous
-        while (log.sync.collector.chunks.length) {
-            var chunk = log.sync.collector.chunks.shift()
-            // TODO Allow an initial duplicate for the flush race condition.
-            assert.ok(chunk.previousChecksum == previous.checksum, 'previous mismatch')
-            senders.forEach(function (sender) { sender.send(chunk.buffer) })
-            previous = chunk
-        }
-        return [ code == null ? 1 : code, options.configuration ]
+        consolidator.exit()
+        onChunk()
+        return [ code == null ? 1 : code, configuration ]
     })
 })
