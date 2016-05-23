@@ -1,6 +1,6 @@
 module.exports = function (program) {
     var seen = {}
-    var inherit = [ 0, 1, 2 ].concat(program.command.params.inherit).map(function (number) {
+    var stdio = [ 0, 1, 2 ].concat(program.command.params.inherit).map(function (number) {
         return +number
     }).sort(function (a, b) {
         return a - b
@@ -10,17 +10,23 @@ module.exports = function (program) {
         return ! exclude
     })
 
-    for (var i = 0, I = inherit[inherit.length - 1]; i < I; i++) {
-        if (inherit[i] != i) {
-            inherit.splice(i, 0, 'inherit')
+    for (var i = 0, I = stdio[stdio.length - 1]; i < I; i++) {
+        if (stdio[i] != i) {
+            stdio.splice(i, 0, 'ignore')
         }
     }
 
     if (program.command.param.ipc) {
-        inherit.push('ipc')
+        stdio.push('ipc')
     }
 
-    inherit[2] = inherit[inherit.length] = 'pipe'
+    stdio[2] = stdio[stdio.length + 1] = stdio[stdio.length] = 'pipe'
 
-    return inherit
+    return {
+        stdio: stdio,
+        fd:{
+            configuration: stdio.length - 2,
+            logging: stdio.length - 1
+        }
+    }
 }
