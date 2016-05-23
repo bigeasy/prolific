@@ -68,6 +68,7 @@ Queue.prototype.exit = function (stderr) {
     while (this._chunks.length) {
         var chunk = this._chunks.shift()
         buffers.push(chunk.header(this._previousChecksum), chunk.buffer)
+        this._previousChecksum = chunk.checksum
     }
 
     stderr.write(Buffer.concat(buffers))
