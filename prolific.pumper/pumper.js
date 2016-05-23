@@ -35,6 +35,7 @@ module.exports = cadence(function (async, senders, child, io, forward) {
                     .on('data', consolidator.async.ondata)
                     .on('data', onChunk).on('end')
         }, /^ECONNRESET$/, function (error) {
+// TODO Revisit this. Which operating system generated this error?
             console.log(error.stack)
         }])
     }, function (code, signal) {
