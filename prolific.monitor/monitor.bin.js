@@ -31,7 +31,7 @@ require('arguable')(module, require('cadence')(function (async, program) {
     program.on('SIGTERM', function () {})
 
     var configuration = program.command.param.configuration || '{}'
-    configuration = JSON.parse(configuration) || {}
+    configuration = JSON.parse(configuration)
     configuration.senders || (configuration.senders = [])
     program.command.params.url.forEach(function (location) {
         var parsed = url.parse(location)
