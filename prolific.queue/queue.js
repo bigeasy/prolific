@@ -10,6 +10,10 @@ function Queue (stream) {
     this._chunks.push(new Chunk(0, new Buffer(''), 1))
 }
 
+Queue.prototype.relay = function (chunk) {
+    this._chunks.push(new Chunk(this._chunkNumber++, chunk.buffer, chunk.buffer.length))
+}
+
 Queue.prototype.write = function (line) {
     this._entries.push(line)
 }
