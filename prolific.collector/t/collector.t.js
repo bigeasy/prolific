@@ -1,4 +1,4 @@
-require('proof')(7, prove)
+require('proof')(8, prove)
 
 function prove (assert) {
     var Chunk = require('prolific.chunk')
@@ -12,13 +12,19 @@ function prove (assert) {
 
     var chunk
 
-    chunk = new Chunk(0, new Buffer(''), 1)
+    chunk = new Chunk(0, new Buffer(''), 0)
     var header = chunk.header('aaaaaaaa')
     collector.scan(header.slice(0, 4))
     collector.scan(header.slice(4))
     collector.scan(chunk.buffer)
 
     var previousChecksum = chunk.checksum
+
+    assert(collector.chunkNumber, 0, 'next chunk number stderr initialization')
+
+    chunk = new Chunk(0, new Buffer(''), 1)
+    collector.scan(chunk.header(previousChecksum))
+    collector.scan(chunk.buffer)
 
     assert(collector.chunkNumber, 1, 'next chunk number')
 
