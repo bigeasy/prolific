@@ -1,0 +1,34 @@
+{
+    "name":             "prolific.consolidator",
+    "version":          "9.9.9",
+    "description":      "Consolidate chunks emitted from the logging stream and standard error of a supervised process.",
+    "keywords":
+    [
+                        "http", "https", "rest", "json", "curl"
+    ],
+    "author":           "Alan Gutierrez <alan@prettyrobots.com>",
+    "contributors":     [],
+    "homepage":         "https://github.com/bigeasy/prolific",
+    "bugs":             "https://github.com/bigeasy/prolific/issues",
+    "license":          "MIT",
+    "repository":
+    {
+                        "type": "git",
+                        "url": "http://github.com/bigeasy/prolific.git"
+    },
+    "dependencies":
+    {
+                        "hash.fnv":             "1.x",
+                        "prolific.collector":   "2.0.1"
+    },
+    "devDependencies":
+    {
+                        "prolific.chunk":       "0.0.2",
+                        "proof":                "1.x"
+    },
+    "main":             "consolidator",
+    "scripts":
+    {
+                        "test": "proof test t/*.t.js"
+    }
+}
