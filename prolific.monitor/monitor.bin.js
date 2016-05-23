@@ -54,11 +54,13 @@ require('arguable')(module, require('cadence')(function (async, program) {
     var argv = program.argv.slice()
     var loop = async(function () {
         var child = children.spawn(argv.shift(), argv, { stdio: stdio })
+        var io = { async: child.stdio[stdio.length - 1], sync: child.stderr }
         ipc(program.command.param.ipc, process, child)
-        child.stdio[stdio.length - 1].write(JSON.stringify(configuration) + '\n')
-        pumper(senders, child, child.stdio[stdio.length - 1], child.stderr, program.stderr, async())
+        io.async.write(JSON.stringify(configuration) + '\n')
+        pumper(senders, child, io, program.stderr, async())
     }, function (code, sender) {
-        if (code != 0 || sender.moduleName == null) {
+        console.log(sender)
+        if (code != 0 || sender == null || sender.moduleName == null) {
             return [ loop.break, code ]
         }
         configuration.senders.push(sender)
