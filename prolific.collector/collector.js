@@ -6,6 +6,7 @@ function Collector (dedicated) {
     this._buffers = []
     this.chunkNumber = 0
     this._previousChecksum = 0xaaaaaaaa
+    this._initializations = 0
     this.chunks = []
     this.stderr = []
     this._state = 'seek'
@@ -168,10 +169,10 @@ Collector.prototype._scanHeader = function (scan) {
             var previousChecksum = parseInt($[2], 16)
             if (previousChecksum == this._previousChecksum) {
                 if (chunk.number == 0) {
-                    if (!this._initialized) {
+                    if (this._initializations == 0 || (this._initializations == 1 && !this._dedicated)) {
                         this.chunkNumber = chunk.remaining
                         this._previousChecksum = chunk.checksum
-                        this._initialized = true
+                        this._initializations++
                     } else {
                         assert(!this._dedicated, 'already initialized')
                     }
