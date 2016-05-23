@@ -1,0 +1,31 @@
+{
+    "name":             "prolific.syslog",
+    "version":          "9.9.9",
+    "description":      "Consolidate chunks emitted from the logging stream and standard error of a supervised process.",
+    "keywords":
+    [
+                        "http", "https", "rest", "json", "curl"
+    ],
+    "author":           "Alan Gutierrez <alan@prettyrobots.com>",
+    "contributors":     [],
+    "homepage":         "https://github.com/bigeasy/prolific",
+    "bugs":             "https://github.com/bigeasy/prolific/issues",
+    "license":          "MIT",
+    "repository":
+    {
+                        "type": "git",
+                        "url": "http://github.com/bigeasy/prolific.git"
+    },
+    "dependencies":
+    {
+    },
+    "devDependencies":
+    {
+                        "proof":                "1.x"
+    },
+    "main":             "syslog",
+    "scripts":
+    {
+                        "test": "proof test t/*.t.js"
+    }
+}
