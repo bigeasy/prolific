@@ -1,6 +1,6 @@
 {
     "name":             "prolific.queue",
-    "version":          "2.0.2",
+    "version":          "2.0.3",
     "author":           "Alan Gutierrez <alan@prettyrobots.com>",
     "description":      "A logging framework.",
     "keywords":
