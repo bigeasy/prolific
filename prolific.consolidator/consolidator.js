@@ -7,7 +7,7 @@ function Writer (consolidator, dedicated) {
     this.collector = new Collector(dedicated)
     this.consolidator = consolidator
     this.previous = { checksum: 0xaaaaaaaa }
-    this.chunkNumber = 0
+    this.chunkNumber = 1
 }
 
 Writer.prototype.data = function (buffer) {
