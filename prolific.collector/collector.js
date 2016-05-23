@@ -4,7 +4,7 @@ var assert = require('assert')
 function Collector (dedicated) {
     this._dedicated = dedicated
     this._buffers = []
-    this._chunkNumber = 0
+    this.chunkNumber = 0
     this._previousChecksum = 0xaaaaaaaa
     this.chunks = []
     this.stderr = []
@@ -90,6 +90,7 @@ Collector.prototype._scanChunk = function (scan) {
         var checksum = fnv(0, buffer, 0, buffer.length)
         assert(checksum == this._chunk.checksum, 'invalid checksum')
         this.chunks.push({
+            number: this._chunk.number,
             previousChecksum: this._previousChecksum,
             checksum: this._chunk.checksum,
             length: this._chunk.length,
@@ -158,23 +159,27 @@ Collector.prototype._scanHeader = function (scan) {
         var header = this._flush()
         var $ = /^% (\d+) ([0-9a-f]{8}) ([0-9a-f]{8}) (\d+)\n$/i.exec(header.toString())
         if ($) {
-            var chunkNumber = +$[1]
+            var chunk = {
+                number: +$[1],
+                checksum: parseInt($[3], 16),
+                length: +$[4],
+                remaining: +$[4]
+            }
             var previousChecksum = parseInt($[2], 16)
-            var chunk = { checksum: parseInt($[3], 16), length: +$[4], remaining: +$[4] }
             if (previousChecksum == this._previousChecksum) {
-                if (chunkNumber == 0) {
+                if (chunk.number == 0) {
                     if (!this._initialized) {
-                        this._chunkNumber = chunk.remaining
+                        this.chunkNumber = chunk.remaining
                         this._previousChecksum = chunk.checksum
                         this._initialized = true
                     } else {
                         assert(!this._dedicated, 'already initialized')
                     }
-                } else if (chunkNumber == this._chunkNumber) {
+                } else if (chunk.number == this.chunkNumber) {
                     this._state = 'chunk'
                     this._chunk = chunk
                     this._previousChecksum = chunk.checksum
-                    this._chunkNumber++
+                    this.chunkNumber++
                 } else {
                     assert(!this._dedicated, 'chunk numbers incorrect')
                 }
