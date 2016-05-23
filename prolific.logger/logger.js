@@ -16,23 +16,29 @@ function Logger (context, controller) {
 var levels = { error: 0, warn: 1, info: 2, debug: 3, trace: 4 }
 
 Logger.prototype._log = function (level, vargs) {
+// If we wanted some sort of filter, here it would be, but no, let's not.
+//  if (options.filter != null) entry = (options.filter)(entry)
     if (!(levels[level] <= levels[this._controller._supersede.get(this._path)])) {
         return
     }
-    var entry = {
-        context: this._context,
-        name: vargs.shift(),
-        level: level,
-        when: this._controller._Date.now()
-    }
+    var name = vargs.shift(), values = {}
     vargs.unshift(prolific.context)
     while (vargs.length) {
         var properties = vargs.shift()
         for (var key in properties) {
-            entry[key] = properties[key]
+// TODO Should we unpack exceptions here?
+            values[key] = properties[key]
         }
     }
-    this._controller._write(level, entry)
+// TODO Should we add sequence and pid in the monitor or here?
+    this._controller._write(level, {
+        context: this._context,
+        name: name,
+        level: level,
+        when: this._controller._Date.now(),
+// TODO Not crazy about this name.
+        values: values
+    })
 }
 
 Logger.prototype.error = function () {

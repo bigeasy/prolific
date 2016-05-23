@@ -28,7 +28,8 @@ function prove (assert) {
         context: 'hello.world',
         name: 'hello',
         level: 'info',
-        when: 0
+        when: 0,
+        values: {}
     }, 'info')
     logger.info('hello')
     expect({
@@ -36,7 +37,9 @@ function prove (assert) {
         name: 'hello',
         level: 'error',
         when: 0,
-        key: 'value'
+        values: {
+            key: 'value'
+        }
     }, 'error')
     logger.error('hello', { key: 'value' }, 1)
 
@@ -45,7 +48,9 @@ function prove (assert) {
         name: 'log',
         level: 'info',
         when: 0,
-        key: 'value'
+        values: {
+            key: 'value'
+        }
     }, 'log')
     var log = logger.log
     log('info', 'log', { key: 'value' })
@@ -56,7 +61,8 @@ function prove (assert) {
         context: 'hello.world',
         name: 'hello',
         level: 'warn',
-        when: 0
+        when: 0,
+        values: {}
     }, 'warn')
     logger.warn('hello')
 
@@ -65,9 +71,11 @@ function prove (assert) {
         name: 'rescued',
         level: 'error',
         when: 0,
-        key: 'value',
-        message: 'error',
-        stack: '*'
+        values: {
+            key: 'value',
+            message: 'error',
+            stack: '*'
+        }
     }, 'rescue')
     logger.rescue('rescued', { key: 'value' })({ message: 'error', stack: '*' })
     logger.rescue('rescued', { key: 'value' })()
