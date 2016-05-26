@@ -2,7 +2,7 @@ var cadence = require('cadence')
 var Chunk = require('prolific.chunk')
 
 function Queue (stream) {
-    this._entries = []
+    this._buffers = []
     this._chunks = []
     this._chunkNumber = 1
     this._previousChecksum = 'aaaaaaaa'
@@ -10,22 +10,18 @@ function Queue (stream) {
     this._chunks.push(new Chunk(0, new Buffer(''), 1))
 }
 
-Queue.prototype.relay = function (chunk) {
-    this._chunks.push(new Chunk(this._chunkNumber++, chunk.buffer, chunk.buffer.length))
-}
-
-Queue.prototype.write = function (line) {
-    this._entries.push(line)
+Queue.prototype.write = function (buffer) {
+    this._buffers.push(buffer)
 }
 
 Queue.prototype._chunkEntries = function () {
-    var entries = this._entries
-    if (entries.length == 0) {
+    var buffers = this._buffers
+    if (buffers.length == 0) {
         return
     }
-    this._entries = []
+    this._buffers = []
 
-    var buffer = new Buffer(entries.join(''))
+    var buffer = Buffer.concat(buffers)
     this._chunks.push(new Chunk(this._chunkNumber++, buffer, buffer.length))
 }
 
