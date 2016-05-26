@@ -1,27 +1,7 @@
-var format = exports.format = function (level, line) {
-    var timestamp = tz(exports._Date.now(), '%FT%T.%3NZ')
-    return '<' + (syslog.facility * 8 + levels[level]) + '>1 ' + timestamp + ' ' +
-        syslog.context +
-        exports.serializer.stringify(line) + '\n'
-}
+var tz = require('timezone')
+var url = require('url')
 
-// TODO Maybe rename configure?
-var syslog
-exports.syslog = function (options) {
-    options || (options = {})
-    syslog = {
-        host: options.host || 'localhost',
-        application: options.application || process.title,
-        pid: options.pid || process.pid,
-        facility: facilities[options.facility || 'local0'],
-        context: null
-    }
-    syslog.context = syslog.host + ' ' +
-        syslog.application + ' ' +
-        syslog.pid + ' - - '
-}
-
-var facilities = {
+var FACILITY = {
     kern: 0,
     user: 1,
     mail: 2,
@@ -47,16 +27,49 @@ var facilities = {
     local7: 23
 }
 
-var levels = {
+var LEVEL = {
     trace: 0,
     debug: 0,
     info: 1,
     warn: 3,
     error: 4
+// TODO: Fatal.
 }
 
-exports.syslog()
-
-exports._timestamp = function () {
-    return new Date().toISOString()
+function Logger (configuration) {
+    var parsed = url.parse(configuration.url, true)
+    this._format = parsed.query.format || 'json'
+    var application = parsed.query.application || process.title
+    var host = parsed.query.host || 'localhost'
+    var pid = parsed.query.pid || 'pid'
+    this._facility = FACILITY[parsed.query.facility || 'local0']
+    this._context = host + ' ' + application + ' ' + pid + ' - - '
+    this._serializer = require([ 'prolific.serializer', parsed.query.serializer || 'json'].join('.'))
+    this._Date = configuration.Date || Date
 }
+
+Logger.prototype.start = function (callback) { callback() }
+
+Logger.prototype.filter = function (entry) {
+    var amalgamated = {
+        sequence: entry.sequence,
+        level: entry.level,
+        context: entry.context,
+        name: entry.name
+    }
+    for (var key in entry.common) {
+        amalgamated[key] = entry.common[key]
+    }
+    for (var key in entry.specific) {
+        amalgamated[key] = entry.specific[key]
+    }
+    entry.formatted = '<' + (this._facility * 8 + LEVEL[entry.level]) + '>1 ' +
+        tz(this._Date.now(), '%FT%T.%3NZ') + ' ' +
+        this._context +
+        this._serializer.stringify(amalgamated) + '\n'
+    return [ entry ]
+}
+
+Logger.prototype.stop = function (callback) { callback() }
+
+module.exports = Logger

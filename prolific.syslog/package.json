@@ -18,6 +18,7 @@
     },
     "dependencies":
     {
+                        "timezone":             "1.x"
     },
     "devDependencies":
     {

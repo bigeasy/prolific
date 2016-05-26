@@ -2,5 +2,6 @@
 /*/node_modules/*
 !/prolific.supervisor/node_modules/prolific.test.js
 !/prolific.monitor/node_modules/prolific.sender.test.js
+!/prolific.syslog/node_modules/prolific.serializer.test.js
 /.proof.out
 /coverage
