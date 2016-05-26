@@ -22,7 +22,7 @@
     },
     "dependencies":
     {
-                        "supersede":            "1.x"
+                        "prolific.main":        "0.0.0"
     },
     "devDependencies":
     {
