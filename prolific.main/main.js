@@ -24,8 +24,8 @@ exports.json = function (path, level, context, name, properties) {
     var entry = {
         sequence: sequence++,
         level: level,
-        name: name,
         context: context,
+        name: name,
         common: exports.properties,
         specific: properties
     }
