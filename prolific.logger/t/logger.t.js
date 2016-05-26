@@ -1,7 +1,7 @@
 require('proof')(1, prove)
 
 function prove (assert) {
-    var Logger = require('../logger')
+    var Logger = require('..')
     var slice = [].slice
 
     var prolific = require('prolific')

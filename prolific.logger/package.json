@@ -25,7 +25,7 @@
                         "prolific.main":        "0.0.0",
                         "proof":                "1.x"
     },
-    "main":             "prolific",
+    "main":             "logger",
     "scripts":
     {
                         "test": "proof test t/*.t.js"
