@@ -16,6 +16,6 @@ function prove (assert) {
     var program = new events.EventEmitter
     var createShuttle = bootstrap.createShuttle(net, Shuttle)
     createShuttle({ env: {} })
-    program.env = { PROLIFIC_LOGGING_FD: 3 }
+    program.env = { PROLIFIC_CONFIGURATION: JSON.stringify({ fd: 3 }) }
     createShuttle(program, 1000, function () {})
 }

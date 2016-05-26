@@ -4,9 +4,10 @@ var Isochronous = require('isochronous')
 
 exports.createShuttle = function (net, Shuttle) {
     return function (program, interval, finale) {
-        if (program.env.PROLIFIC_LOGGING_FD != null) {
-            var fd = +program.env.PROLIFIC_LOGGING_FD
-            var pipe = new net.Socket({ fd: fd  })
+        if (program.env.PROLIFIC_CONFIGURATION != null) {
+// TODO Maybe delete and internalize?
+            var configuration = JSON.parse(program.env.PROLIFIC_CONFIGURATION)
+            var pipe = new net.Socket({ fd: configuration.fd  })
             var shuttle = new Shuttle(pipe, pipe, program.stderr, finale)
             prolific.sink = shuttle.queue
             program.on('uncaughtException', shuttle.uncaughtException.bind(shuttle))
