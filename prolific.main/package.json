@@ -1,0 +1,32 @@
+{
+    "name":             "prolific.main",
+    "version":          "9.9.9",
+    "description":      "Discoverable common root for the Prolific logging framework.",
+    "keywords":
+    [
+                        "logging", "log", "syslog"
+    ],
+    "author":           "Alan Gutierrez <alan@prettyrobots.com>",
+    "contributors":     [],
+    "homepage":         "https://github.com/bigeasy/prolific",
+    "bugs":             "https://github.com/bigeasy/prolific/issues",
+    "license":          "MIT",
+    "repository":
+    {
+                        "type": "git",
+                        "url": "http://github.com/bigeasy/prolific.git"
+    },
+    "dependencies":
+    {
+                        "supersede":            "1.x"
+    },
+    "devDependencies":
+    {
+                        "proof":                "1.x"
+    },
+    "main":             "main",
+    "scripts":
+    {
+                        "test": "proof test t/*.t.js"
+    }
+}
