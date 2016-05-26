@@ -1,0 +1,40 @@
+{
+    "name":             "prolific.average",
+    "version":          "1.0.3",
+    "author":           "Alan Gutierrez <alan@prettyrobots.com>",
+    "description":      "Forward to TCP implementation of a Prolific supervisor.",
+    "keywords":
+    [
+                        "logging", "log", "syslog"
+    ],
+    "license":          "MIT",
+    "contributors":     [],
+    "homepage":         "https://github.com/bigeasy/prolific",
+    "bugs":             "https://github.com/bigeasy/prolific/issues",
+    "main":             "tcp.bin",
+    "repository":
+    {
+                        "type": "git",
+                        "url": "http://github.com/bigeasy/prolific.git"
+    },
+    "bin":
+    {
+    },
+    "dependencies":
+    {
+                        "arguable":             "2.x",
+                        "cadence":              "1.x",
+                        "prolific.ipc":         "1.x",
+                        "prolific.inherit":     "1.x",
+                        "prolific.monitor":     "1.x",
+                        "prolific.sender.tcp":  "1.x"
+    },
+    "devDependencies":
+    {
+                        "proof":                "1.x"
+    },
+    "scripts":
+    {
+                        "test": "proof test t/*.t.js"
+    }
+}
