@@ -17,5 +17,5 @@ function prove (assert) {
     var createShuttle = bootstrap.createShuttle(net, Shuttle)
     createShuttle({ env: {} })
     program.env = { PROLIFIC_CONFIGURATION: JSON.stringify({ fd: 3 }) }
-    createShuttle(program, 1000, function () {})
+    createShuttle(program, 1000, {}, function () {})
 }
