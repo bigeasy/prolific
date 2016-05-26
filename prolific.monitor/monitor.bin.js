@@ -35,11 +35,14 @@ require('arguable')(module, require('cadence')(function (async, program) {
     configuration.senders || (configuration.senders = [])
     program.command.params.url.forEach(function (location) {
         var parsed = url.parse(location)
-        var protocol = parsed.protocol.substring(0, parsed.protocol.length - 1)
+        var protocol = parsed.protocol == null
+                     ? parsed.path
+                     : parsed.protocol.substring(0, parsed.protocol.length - 1)
         var moduleName =  [ 'prolific.sender', protocol ].join('.')
         configuration.senders.push({ moduleName: moduleName, url: location })
     })
     var senders = configuration.senders.map(function (sender) {
+// TODO Catch and report error.
         var Sender = require(sender.moduleName)
         return new Sender(sender, program.stdout)
     })
