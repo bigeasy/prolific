@@ -10,14 +10,13 @@ var sequence = 0
 // TOOD You can also do special things with a special logger.
 var levels = new Supersede
 levels.set([ '' ], 'info')
-var LEVEL = { error: 0, warn: 1, info: 2, debug: 3, trace: 4 }
+var LEVEL = { none: -1, error: 0, warn: 1, info: 2, debug: 3, trace: 4 }
 
 exports.Date = Date
 
 // TODO Keep wanting to optimize this, but the optimization is the level. If
 // someone truly does not want to pay for the logging, they can set the logging
 // level to "none".
-// TODO Implement "none."
 exports.json = function (path, level, context, name, properties) {
     if (LEVEL[level] > LEVEL[levels.get(path)]) {
         return
