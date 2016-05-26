@@ -5,7 +5,7 @@
         -l, --url       <string>        the url port to logs to
         -i, --inherit   <number>        file handles to inherit
         -I, --ipc                       enable Node.js IPC forwarding
-            --configuration <string>    base configuration
+            --configuration <string>    base configuration JSON or environment variable
             --help                      display this message
 
     ___ $ ___ en_US ___
@@ -26,13 +26,30 @@ var ipc = require('prolific.ipc')
 var url = require('url')
 
 require('arguable')(module, require('cadence')(function (async, program) {
+    function parseConfiguration (configuration) {
+        if (configuration == null) {
+            configuration = { senders: [] }
+        } else if (/^\s*{/.test(configuration)) {
+            configuration = JSON.parse(configuration)
+        } else if (configuration == 'inherit') {
+            configuration = 'PROLIFIC_CONFIGURATION'
+        } else {
+            configuration = program.env[configuration]
+        }
+        if (typeof configuration == 'object') {
+            return configuration
+        }
+        return parseConfiguration(configuration)
+    }
+
     program.helpIf(program.command.param.help)
 
     program.on('SIGTERM', function () {})
 
-    var configuration = program.command.param.configuration || '{}'
-    configuration = JSON.parse(configuration)
-    configuration.senders || (configuration.senders = [])
+    var configuration = parseConfiguration(program.command.param.configuration)
+    if (configuration.senders == null) {
+        configuration.senders = []
+    }
     program.command.params.url.forEach(function (location) {
         var parsed = url.parse(location)
         var protocol = parsed.protocol == null
@@ -48,11 +65,9 @@ require('arguable')(module, require('cadence')(function (async, program) {
     })
 
     var inheritance = inherit(program)
+    configuration.fd = inheritance.fd.configuration
 
-    // TODO Add to very end of existing stdio. This would require a command line
-    // switch and it would mean that there would be inheritence for certain
-    // number `--inherit=4` so that we'd put ourself after the last inherited.
-    process.env.PROLIFIC_LOGGING_FD = String(inheritance.fd.configuration)
+    process.env.PROLIFIC_CONFIGURATION = JSON.stringify(configuration)
 
     var argv = program.argv.slice()
     var loop = async(function () {
