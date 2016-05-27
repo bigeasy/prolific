@@ -9,3 +9,6 @@ is used to store common properties for all the loggers in program.
 Please remove all but a single top most instance of `prolific` in your
 `node_modules` directory. If you are using a consistant version string
 across your modules NPM will do this automatically.
+
+main:   %s
+module: %s

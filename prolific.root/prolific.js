@@ -1,13 +1,17 @@
-var nullify = require('./nullify')
+var coalesce = require('./coalesce')
 var assert = require('assert')
 var fs = require('fs')
 var path = require('path')
+var util = require('util')
 
 var prolific = require('prolific.main')
 
-var main = nullify(function () {
+var main = coalesce(function () {
     return require.main.require('prolific.main')
-})
-assert(main == null || main === prolific, fs.readFileSync(path.join(__dirname, 'error.txt'), 'utf8'))
+}, { filename: null })
+
+assert(main.filename == null || main === prolific,
+    util.format(fs.readFileSync(path.join(__dirname, 'error.txt'), 'utf8'),
+        prolific.filename, main.filename))
 
 module.exports = prolific
