@@ -30,11 +30,15 @@
 require('arguable')(module, require('cadence')(function (async, program) {
     program.helpIf(program.command.param.help)
 
-    var querystring = require('querystring')
+    var logger = require('prolific.logger').createLogger('bigeasy.prolific.syslog.bin')
+    var querylist = require('querylist')
 
-    var Shuttle = require('prolific.shuttle')
+    var Shuttle = program.require('prolific.shuttle')
 
-    Shuttle.bootstrap(program, 1000, {
-        url: 'syslog?' + querystring.stringify(program.param)
+    Shuttle.shuttle(program, 1000, {
+        moduleName: 'prolific.syslog/syslog',
+        url: 'syslog' + querylist.stringify(program.command.ordered)
     }, logger)
+
+    return 0
 }))
