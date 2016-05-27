@@ -1,0 +1,11 @@
+
+
+Multiple versions of `prolific` module.
+
+Your `node_modules` contains multiple version of the module `prolific`.
+The `prolific` module is a Singleton. One single instance of the module
+is used to store common properties for all the loggers in program.
+
+Please remove all but a single top most instance of `prolific` in your
+`node_modules` directory. If you are using a consistant version string
+across your modules NPM will do this automatically.
