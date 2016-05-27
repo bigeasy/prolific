@@ -30,4 +30,6 @@ function prove (assert) {
     assert(prolific.getLevel('hello.world'), 'debug', 'clear')
     prolific.clearLevel()
     assert(prolific.getLevel('hello.world'), 'info', 'clear default')
+
+    console.log(prolific.filename)
 }

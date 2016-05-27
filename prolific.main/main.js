@@ -58,3 +58,5 @@ exports.getLevel = function (path) {
 }
 
 exports.properties = {}
+
+exports.filename = module.filename
