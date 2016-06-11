@@ -19,6 +19,11 @@
     },
     "dependencies":
     {
+                            "prolific.main":        "0.0.2",
+                            "prolific.shuttle":     "2.4.1",
+                            "prolific.logger":      "0.0.1",
+                            "prolific.monitor":     "*"
+
     },
     "devDependencies":
     {
