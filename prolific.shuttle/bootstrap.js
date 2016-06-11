@@ -3,6 +3,8 @@ var abend = require('abend')
 var Isochronous = require('isochronous')
 
 exports.createShuttle = function (net, Shuttle) {
+// TODO Is the interval necessary? Just flush constantly. Use Reactor (as heavy
+// as Isochronous.)
     return function (program, interval, parameters, finale) {
         if (arguments.length == 3) {
             finale = parameters
