@@ -1,0 +1,33 @@
+{
+    "name":             "prolific.stdio",
+    "version":          "9.9.9",
+    "description":      "A standard I/O sender implementation for the Prolific logging framework.",
+    "keywords":
+    [
+                        "logging", "syslog"
+    ],
+    "author":           "Alan Gutierrez <alan@prettyrobots.com>",
+    "contributors":     [],
+    "homepage":         "https://github.com/bigeasy/prolific",
+    "bugs":             "https://github.com/bigeasy/prolific/issues",
+    "license":          "MIT",
+    "repository":
+    {
+                        "type": "git",
+                        "url": "http://github.com/bigeasy/prolific.git"
+    },
+    "dependencies":
+    {
+                        "arguable":             "2.5.5",
+                        "cadence":              "1.x"
+    },
+    "devDependencies":
+    {
+                        "proof":                "1.x"
+    },
+    "main":             "sender.stdio",
+    "scripts":
+    {
+                        "test": "proof test t/*.t.js"
+    }
+}
