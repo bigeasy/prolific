@@ -1,25 +1,27 @@
 var Consolidator = require('prolific.consolidator')
 var Delta = require('delta')
 var cadence = require('cadence')
+var push = [].push
 
-module.exports = cadence(function (async, senders, child, io, forward) {
+module.exports = cadence(function (async, processors, child, io, forward) {
     var configuration = null
     var consolidator = new Consolidator
-    var sender = function (chunks) {
-        if (chunks.length) {
-            configuration = JSON.parse(chunks.shift().buffer.toString())
-            sender = function (chunks) {
-                for (var i = 0, I = chunks.length; i < I; i++) {
-                    for (var j = 0, J = senders.length; j < J; j++) {
-                        senders[j].send(chunks[i].buffer)
-                    }
-                }
-            }
-            sender(chunks)
-        }
-    }
     function onChunk () {
-        sender(consolidator.chunks.splice(0, consolidator.chunks.length))
+        consolidator.chunks.splice(0, consolidator.chunks.length).forEach(function (chunk) {
+            var lines = chunk.buffer.toString().split(/\n/)
+            console.log(lines)
+            lines.pop()
+            var entries = {
+                input: lines.map(function (line) { return JSON.parse(line) }),
+                output: []
+            }
+            processors.forEach(function (processor) {
+                entries.input.forEach(function (entry) {
+                    push.apply(entries.output, processor.process(entry))
+                })
+                entries = { input: entries.output, output: [] }
+            })
+        })
     }
     function onLine () {
         forward.write(consolidator.stderr.splice(0, consolidator.stderr.length).join(''))

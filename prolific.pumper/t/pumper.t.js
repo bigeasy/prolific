@@ -13,8 +13,9 @@ function prove (async, assert) {
             sync: new stream.PassThrough
         }
         pumper([{
-            send: function (buffer) {
-                assert(buffer.toString(), 'a\n', 'sender')
+            process: function (entry) {
+                assert(entry, { a: 1 }, 'sender')
+                return []
             }
         }], child, io, stderr, async())
         io.sync.write(new Buffer('hello, world\n'))
@@ -27,7 +28,7 @@ function prove (async, assert) {
         io.async.write(chunk.header(previousChecksum))
         io.async.write(chunk.buffer)
         previousChecksum = chunk.checksum
-        buffer = new Buffer('a\n')
+        buffer = new Buffer('{"a":1}\n')
         chunk = new Chunk(2, buffer, buffer.length)
         io.async.write(chunk.header(previousChecksum))
         io.async.write(chunk.buffer)
@@ -36,7 +37,6 @@ function prove (async, assert) {
         child.emit('exit', 0, null)
     }, function (code, configuration) {
         assert(code, 0, 'exit code')
-        assert(configuration, { a: 1 }, 'configuration')
         assert(stderr.read().toString(), 'hello, world\n', 'stderr')
         var child = new events.EventEmitter
         var io = {
