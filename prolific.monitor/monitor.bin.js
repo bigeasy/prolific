@@ -39,13 +39,13 @@ require('arguable')(module, require('cadence')(function (async, program) {
     var configuration = configure(program.env, program.command.param.configuration)
 
     var inheritance = inherit(program)
-    configuration.fd = inheritance.fd.configuration
+    configuration.fd = inheritance.fd
 
     var isProgram = require('./programmatic')
     var argv = program.argv.slice(), terminal = false
     var loop = async(function () {
-        process.env.PROLIFIC_CONFIGURATION = JSON.stringify(configuration)
         if (isProgram(program, terminal, argv)) {
+            process.env.PROLIFIC_CONFIGURATION = JSON.stringify(configuration)
             var processors = configuration.processors.map(function (configuration) {
                 var Processor = require(configuration.moduleName)
                 return new Processor(configuration.parameters)
