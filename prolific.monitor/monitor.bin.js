@@ -2,7 +2,6 @@
     ___ usage ___ en_US ___
     usage: node prolific.tcp.bin.js
 
-        -l, --url       <string>        the url port to logs to
         -i, --inherit   <number>        file handles to inherit
         -I, --ipc                       enable Node.js IPC forwarding
             --configuration <string>    base configuration JSON or environment variable
@@ -26,62 +25,60 @@ var ipc = require('prolific.ipc')
 var url = require('url')
 
 require('arguable')(module, require('cadence')(function (async, program) {
-    function parseConfiguration (configuration) {
-        if (configuration == null) {
-            configuration = { senders: [] }
-        } else if (/^\s*{/.test(configuration)) {
-            configuration = JSON.parse(configuration)
-        } else if (configuration == 'inherit') {
-            configuration = 'PROLIFIC_CONFIGURATION'
-        } else {
-            configuration = program.env[configuration]
-        }
-        if (typeof configuration == 'object') {
-            return configuration
-        }
-        return parseConfiguration(configuration)
-    }
+    var configure = require('./configure')
+    var nop = require('nop')
 
     program.helpIf(program.command.param.help)
 
-    program.on('SIGTERM', function () {})
+    // Let child shtudown to shut us down.
+    program.on('SIGINT', nop)
+    program.on('SIGTERM', nop)
 
-    var configuration = parseConfiguration(program.command.param.configuration)
-    if (configuration.senders == null) {
-        configuration.senders = []
-    }
-    program.command.params.url.forEach(function (location) {
-        var parsed = url.parse(location)
-        var protocol = parsed.protocol == null
-                     ? parsed.path
-                     : parsed.protocol.substring(0, parsed.protocol.length - 1)
-        var moduleName =  [ 'prolific.sender', protocol ].join('.')
-        configuration.senders.push({ moduleName: moduleName, url: location })
-    })
-    var senders = configuration.senders.map(function (sender) {
-// TODO Catch and report error.
-        var Sender = require(sender.moduleName)
-        return new Sender(sender, program.stdout)
-    })
+    var configuration = configure(program.env, program.command.param.configuration)
 
     var inheritance = inherit(program)
     configuration.fd = inheritance.fd.configuration
 
-    process.env.PROLIFIC_CONFIGURATION = JSON.stringify(configuration)
-
-    var argv = program.argv.slice()
+    var isProgram = require('./programmatic')
+    var argv = program.argv.slice(), terminal = false
     var loop = async(function () {
-        var child = children.spawn(argv.shift(), argv, { stdio: inheritance.stdio })
-        var io = { async: child.stdio[inheritance.fd], sync: child.stderr }
-        ipc(program.command.param.ipc, process, child)
-        pumper(senders, child, io, program.stderr, async())
-    }, function (code, sender) {
-        if (code != 0 || sender == null || sender.moduleName == null) {
-            return [ loop.break, code ]
+        process.env.PROLIFIC_CONFIGURATION = JSON.stringify(configuration)
+        if (isProgram(program, terminal, argv)) {
+            var processors = configuration.processors.map(function (configuration) {
+                var Processor = require(configuration.moduleName)
+                return new Processor(configuration.parameters)
+            })
+            var child = children.spawn(argv.shift(), argv, { stdio: inheritance.stdio })
+            var io = { async: child.stdio[inheritance.fd], sync: child.stderr }
+            ipc(program.command.param.ipc, process, child)
+            var initialized = []
+            async([function () {
+                async.forEach(function (processor) {
+                    processor.close(async())
+                })(initialized)
+            }], function () {
+                async.forEach(function (processor) {
+                    async(function () {
+                        processor.open(async())
+                    }, function () {
+                        initialized.push(processor)
+                    })
+                })(processors)
+            }, function () {
+                pumper(processors, child, io, program.stderr, async())
+            }, function (code) {
+                return [ loop.break, code ]
+            })
+        } else {
+            var command = argv.shift()
+            var parser = require('prolific.' + command + '/' + command + '.argv')
+            async(function () {
+                parser(argv, async())
+            }, function (processor) {
+                configuration.processors.push(processor)
+                argv = processor.argv
+                terminal = processor.terminal
+            })
         }
-        configuration.senders.push(sender)
-        var Sender = require(sender.moduleName)
-        senders.push(new Sender(sender))
-        argv = sender.argv
     })()
 }))

@@ -19,9 +19,10 @@
     },
     "dependencies":
     {
-                        "arguable":             "2.x",
+                        "arguable":             "2.5.5",
                         "cadence":              "1.x",
                         "delta":                "1.x",
+                        "nop":                  "1.x",
                         "prolific.collector":   "2.x",
                         "prolific.pumper":      "0.x",
                         "prolific.inherit":     "2.x",
@@ -31,6 +32,10 @@
     {
                         "prolific.queue":       "2.x",
                         "proof":                "1.x"
+    },
+    "bin":
+    {
+                        "prolific":             "monitor.bin.js"
     },
     "scripts":
     {
