@@ -19,7 +19,7 @@
 require('arguable')(module, require('cadence')(function (async, program) {
     program.helpIf(program.command.params.help)
     var response = {
-        moduleName: 'prolific.stdio/stdio.sender',
+        moduleName: 'prolific.stdio/stdio.processor',
         parameters: { params: program.command.param },
         argv: program.argv,
         terminal: program.command.terminal

@@ -6,7 +6,7 @@ function prove (async, assert) {
         argv([ '--stderr' ], {}, async())
     }, function (result) {
         assert(result, {
-            moduleName: 'prolific.stdio/stdio.sender',
+            moduleName: 'prolific.stdio/stdio.processor',
             parameters: { params: { stderr: true } },
             argv: [],
             terminal: false
