@@ -9,7 +9,6 @@ module.exports = cadence(function (async, processors, child, io, forward) {
     function onChunk () {
         consolidator.chunks.splice(0, consolidator.chunks.length).forEach(function (chunk) {
             var lines = chunk.buffer.toString().split(/\n/)
-            console.log(lines)
             lines.pop()
             var entries = {
                 input: lines.map(function (line) { return JSON.parse(line) }),
