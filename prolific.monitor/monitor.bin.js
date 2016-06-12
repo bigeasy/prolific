@@ -1,3 +1,5 @@
+#!/usr/bin/env node
+
 /*
     ___ usage ___ en_US ___
     usage: node prolific.tcp.bin.js
