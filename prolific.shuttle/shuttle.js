@@ -4,7 +4,7 @@ var createUncaughtExceptionHandler = require('./uncaught')
 function Shuttle (input, output, sync, uncaught) {
     this.input = input
     this.output = output
-    this.queue = new Queue
+    this.queue = new Queue(output)
     this.stopped = false
     this.sync = sync
     this.uncaught = createUncaughtExceptionHandler(uncaught)
