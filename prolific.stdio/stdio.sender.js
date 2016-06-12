@@ -5,7 +5,7 @@ function Sender (configuration) {
 
 Sender.prototype.open  = function (callback) { callback () }
 
-Sender.prototype.entry = function (entry) {
+Sender.prototype.process = function (entry) {
     process[this._streamName].write(entry.formatted || JSON.stringify(entry) + '\n')
     return [ entry ]
 }

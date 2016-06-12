@@ -18,13 +18,14 @@
 */
 require('arguable')(module, require('cadence')(function (async, program) {
     program.helpIf(program.command.params.help)
-    var parameters = {
+    var response = {
         moduleName: 'prolific.stdio/stdio.sender',
-        params: program.command.param,
+        parameters: { params: program.command.param },
+        argv: program.argv,
         terminal: program.command.terminal
     }
     if (process.mainModule == module) {
-        console.log(parameters)
+        console.log(response)
     }
-    return parameters
+    return response
 }))
