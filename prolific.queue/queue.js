@@ -75,6 +75,7 @@ Queue.prototype.exit = function (stderr) {
     }
 
     this._chunks.unshift(new Chunk(0, new Buffer(''), this._chunks[0].number))
+    this._previousChecksum = 'aaaaaaaa'
 
     var buffers = []
     while (this._chunks.length) {
