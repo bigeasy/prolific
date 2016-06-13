@@ -1,3 +1,4 @@
+var nop = require('nop')
 var cadence = require('cadence')
 var Chunk = require('prolific.chunk')
 
@@ -25,34 +26,37 @@ Queue.prototype._chunkEntries = function () {
     this._chunks.push(new Chunk(this._chunkNumber++, buffer, buffer.length))
 }
 
-Queue.prototype.flush = cadence(function (async) {
+Queue.prototype._write = cadence(function (async, buffer) {
     if (this._termianted) {
-        return
+        throw new Error('bigeasy.prolific.queue.terminated')
     }
+    this._stream.write(buffer, async())
+})
 
-    this._chunkEntries()
-
-    var loop = async(function () {
-        if (this._chunks.length == 0) {
-            return [ loop.break ]
+Queue.prototype.flush = cadence(function (async) {
+    async([function () {
+        if (this._termianted) {
+            return
         }
-        var chunk = this._chunks[0]
-        async(function () {
-            if (!this._stream.writable) {
+
+        this._chunkEntries()
+
+        var loop = async(function () {
+            if (this._chunks.length == 0) {
                 return [ loop.break ]
             }
-            this._stream.write(chunk.header(this._previousChecksum), async())
-        }, function () {
-            if (!this._stream.writable) {
-                return [ loop.break ]
-            }
-// TODO Wait for a response, let's get for reals here.
-            this._stream.write(chunk.buffer, async())
-        }, function () {
-            this._previousChecksum = chunk.checksum
-            this._chunks.shift()
-        })
-    })()
+            var chunk = this._chunks[0]
+            async(function () {
+                this._write(chunk.header(this._previousChecksum), async())
+            }, function () {
+    // TODO Wait for a response, let's get for reals here.
+                this._write(chunk.buffer, async())
+            }, function () {
+                this._previousChecksum = chunk.checksum
+                this._chunks.shift()
+            })
+        })()
+    }, /^bigeasy.prolific.queue.terminated$/, nop])
 })
 
 Queue.prototype.exit = function (stderr) {
@@ -61,6 +65,8 @@ Queue.prototype.exit = function (stderr) {
     }
 
     this._termianted = true
+
+    this._stream.end()
 
     this._chunkEntries()
 

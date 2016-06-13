@@ -1,4 +1,4 @@
-require('proof')(2, require('cadence')(prove))
+require('proof')(3, require('cadence')(prove))
 
 function prove (async, assert) {
     var stream = require('stream')
@@ -23,5 +23,9 @@ function prove (async, assert) {
         queue.exit(stderr)
         var chunk = stderr.read().toString()
         assert(chunk, '% 0 aaaaaaaa 811c9dc5 0\n% 0 811c9dc5 811c9dc5 1\n', 'exit')
-    })
+    }, [function () {
+        queue._write(new Buffer(''), async())
+    }, function (error) {
+        assert(error.message, 'bigeasy.prolific.queue.terminated', 'write after close')
+    }])
 }

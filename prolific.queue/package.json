@@ -17,12 +17,10 @@
                         "type": "git",
                         "url": "http://github.com/bigeasy/prolific.git"
     },
-    "bin":
-    {
-    },
     "dependencies":
     {
                         "cadence":              "1.x",
+                        "nop":                  "1.0.0",
                         "prolific.chunk":       "0.0.4"
     },
     "devDependencies":
