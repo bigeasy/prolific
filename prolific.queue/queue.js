@@ -38,8 +38,14 @@ Queue.prototype.flush = cadence(function (async) {
         }
         var chunk = this._chunks[0]
         async(function () {
+            if (!this._stream.writable) {
+                return [ loop.break ]
+            }
             this._stream.write(chunk.header(this._previousChecksum), async())
         }, function () {
+            if (!this._stream.writable) {
+                return [ loop.break ]
+            }
 // TODO Wait for a response, let's get for reals here.
             this._stream.write(chunk.buffer, async())
         }, function () {
