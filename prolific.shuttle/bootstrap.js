@@ -13,7 +13,9 @@ exports.createShuttle = function (net, Shuttle) {
             var shuttle = new Shuttle(pipe, pipe, program.stderr, finale, interval)
             prolific.sink = shuttle.queue
             program.on('uncaughtException', shuttle.uncaughtException.bind(shuttle))
-            program.on('exit', shuttle.stop.bind(shuttle))
+            program.on('exit', shuttle.exit.bind(shuttle))
+// TODO Not right. Want to stop queue before exiting, there might still be
+// messages.
             program.on('SIGINT', shuttle.stop.bind(shuttle))
             program.on('SIGTERM', shuttle.stop.bind(shuttle))
         }

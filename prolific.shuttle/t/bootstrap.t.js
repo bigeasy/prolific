@@ -14,6 +14,7 @@ function prove (assert) {
         this.queue = {}
         this.uncaughtException = function () {}
         this.stop = function () {}
+        this.exit = function () {}
     }
     var createShuttle = bootstrap.createShuttle(net, Shuttle)
     createShuttle({ env: {} })
