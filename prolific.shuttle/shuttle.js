@@ -7,8 +7,6 @@ function Shuttle (input, output, sync, uncaught, interval) {
     this.input = input
     this.output = output
     this.queue = new Queue(output)
-    this._terminated = false
-    this.stopped = false
     this.sync = sync
     this.uncaught = createUncaughtExceptionHandler(uncaught)
 // TODO Interval is so dubious, why not just write?
@@ -27,15 +25,12 @@ Shuttle.prototype.uncaughtException = function (error) {
 
 Shuttle.prototype.stop = function () {
     this.queue.close()
+    this.isochronous.stop()
 }
 
 Shuttle.prototype.exit = function () {
-    if (!this._terminated) {
-        this._terminated = true
-        this.stop()
-        this.isochronous.stop()
-        this.queue.exit(this.sync)
-    }
+    this.stop()
+    this.queue.exit(this.sync)
 }
 
 Shuttle.shuttle = require('./bootstrap').createShuttle(require('net'), Shuttle)
