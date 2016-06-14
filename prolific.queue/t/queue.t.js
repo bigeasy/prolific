@@ -26,6 +26,7 @@ function prove (async, assert) {
     }, [function () {
         queue._write(new Buffer(''), async())
     }, function (error) {
-        assert(error.message, 'bigeasy.prolific.queue.terminated', 'write after close')
+        assert(error.message, 'bigeasy.prolific.queue:closed', 'write after close')
+        queue.close()
     }])
 }

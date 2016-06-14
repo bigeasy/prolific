@@ -8,6 +8,8 @@ function Queue (stream) {
     this._chunkNumber = 1
     this._previousChecksum = 'aaaaaaaa'
     this._stream = stream
+    this._termianted = false
+    this._closed = false
     this._chunks.push(new Chunk(0, new Buffer(''), 1))
 }
 
@@ -27,8 +29,8 @@ Queue.prototype._chunkEntries = function () {
 }
 
 Queue.prototype._write = cadence(function (async, buffer) {
-    if (this._termianted) {
-        throw new Error('bigeasy.prolific.queue.terminated')
+    if (this._closed) {
+        throw new Error('bigeasy.prolific.queue:closed')
     }
     this._stream.write(buffer, async())
 })
@@ -56,8 +58,15 @@ Queue.prototype.flush = cadence(function (async) {
                 this._chunks.shift()
             })
         })()
-    }, /^bigeasy.prolific.queue.terminated$/, nop])
+    }, /^bigeasy.prolific.queue:closed$/, nop])
 })
+
+Queue.prototype.close = function (stderr) {
+    if (!this._closed) {
+        this._closed = true
+        this._stream.end()
+    }
+}
 
 Queue.prototype.exit = function (stderr) {
     if (this._termianted) {
@@ -66,7 +75,7 @@ Queue.prototype.exit = function (stderr) {
 
     this._termianted = true
 
-    this._stream.end()
+    this.close()
 
     this._chunkEntries()
 
