@@ -15,6 +15,6 @@ function prove (assert) {
         shuttle.uncaughtException(new Error('hello'))
     } catch (e) {
         console.log(e.stack)
-        shuttle.stop()
+        shuttle.exit()
     }
 }
