@@ -1,6 +1,6 @@
-require('proof')(1, prove)
+require('proof')(2, prove)
 
-function prove (assert) {
+function prove (assert, callback) {
     var Shuttle = require('../shuttle')
     var stream = require('stream')
     var io = {
@@ -8,13 +8,14 @@ function prove (assert) {
         output: new stream.PassThrough,
         sync: new stream.PassThrough
     }
-    try {
-        var shuttle = new Shuttle(io.input, io.output, io.sync, function (error) {
-            assert(error.message, 'hello', 'uncaught handled')
-        }, 1000)
-        shuttle.uncaughtException(new Error('hello'))
-    } catch (e) {
-        console.log(e.stack)
-        shuttle.exit()
-    }
+    var shuttle = new Shuttle(io.input, io.output, io.sync, function (error) {
+        assert(error.message, 'hello', 'uncaught handled')
+    }, 1000, {
+        exit: function (code) {
+            assert(code, 1, 'uncaught')
+            shuttle.exit()
+            callback()
+        }
+    })
+    shuttle.uncaughtException(new Error('hello'))
 }
