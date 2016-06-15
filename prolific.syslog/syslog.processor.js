@@ -44,7 +44,7 @@ function Processor (parameters) {
     var pid = query.pid == null ? 'pid' : query.pid
     this._facility = FACILITY[query.facility || 'local0']
     this._context = host + ' ' + application + ' ' + pid + ' - - '
-    this._serializer = query.serializer ? require([ 'prolific.serializer', query.serializer ].join('.')) : JSON
+    this._serializer = query.serializer ? require(query.serializer) : JSON
     this._Date = parameters.Date || Date
 }
 

@@ -3,6 +3,6 @@
 !/prolific.supervisor/node_modules/prolific.test.js
 !/prolific.monitor/node_modules/prolific.sender.est.js
 !/prolific.monitor/node_modules/prolific.test/*
-!/prolific.syslog/node_modules/prolific.serializer.json.js
+!/prolific.syslog/node_modules/json.js
 /.proof.out
 /coverage
