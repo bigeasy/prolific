@@ -22,7 +22,6 @@
                             "cadence":              "1.x",
                             "prolific.shuttle":     "2.4.x",
                             "prolific.logger":      "0.0.1",
-                            "querylist":            "0.0.1",
                             "timezone":             "1.x"
     },
     "devDependencies":
