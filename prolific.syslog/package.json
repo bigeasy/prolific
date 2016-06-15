@@ -1,37 +1,37 @@
 {
-    "name":             "prolific.syslog",
-    "version":          "9.9.9",
-    "description":      "Consolidate chunks emitted from the logging stream and standard error of a supervised process.",
+    "name":                 "prolific.syslog",
+    "version":              "9.9.9",
+    "description":          "Consolidate chunks emitted from the logging stream and standard error of a supervised process.",
     "keywords":
     [
-                        "http", "https", "rest", "json", "curl"
+                            "http", "https", "rest", "json", "curl"
     ],
-    "author":           "Alan Gutierrez <alan@prettyrobots.com>",
-    "contributors":     [],
-    "homepage":         "https://github.com/bigeasy/prolific",
-    "bugs":             "https://github.com/bigeasy/prolific/issues",
-    "license":          "MIT",
+    "author":               "Alan Gutierrez <alan@prettyrobots.com>",
+    "contributors":         [],
+    "homepage":             "https://github.com/bigeasy/prolific",
+    "bugs":                 "https://github.com/bigeasy/prolific/issues",
+    "license":              "MIT",
     "repository":
     {
-                        "type": "git",
-                        "url": "http://github.com/bigeasy/prolific.git"
+                            "type": "git",
+                            "url": "http://github.com/bigeasy/prolific.git"
     },
     "dependencies":
     {
-                        "arguable":             "2.5.x",
-                        "cadence":              "1.x",
-                        "prolific.shuttle":     "2.4.x",
-                        "prolific.logger":      "0.0.1",
-                        "querylist":            "0.0.1",
-                        "timezone":             "1.x"
+                            "arguable":             "2.5.x",
+                            "cadence":              "1.x",
+                            "prolific.shuttle":     "2.4.x",
+                            "prolific.logger":      "0.0.1",
+                            "querylist":            "0.0.1",
+                            "timezone":             "1.x"
     },
     "devDependencies":
     {
-                        "proof":                "1.x"
+                            "proof":                "1.x"
     },
-    "main":             "syslog.argv",
+    "main":                 "syslog.argv",
     "scripts":
     {
-                        "test": "proof test t/*.t.js"
+                            "test": "proof test t/*.t.js"
     }
 }
