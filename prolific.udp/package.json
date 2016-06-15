@@ -1,5 +1,5 @@
 {
-    "name":                 "prolific.sender.udp",
+    "name":                 "prolific.udp",
     "version":              "1.0.3",
     "author":               "Alan Gutierrez <alan@prettyrobots.com>",
     "description":          "A TCP sender implementation for the Prolific logging framework.",
