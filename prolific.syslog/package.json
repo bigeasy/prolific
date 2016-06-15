@@ -29,7 +29,7 @@
     {
                         "proof":                "1.x"
     },
-    "main":             "syslog",
+    "main":             "syslog.argv",
     "scripts":
     {
                         "test": "proof test t/*.t.js"

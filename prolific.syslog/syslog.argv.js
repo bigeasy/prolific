@@ -28,17 +28,15 @@
 */
 
 require('arguable')(module, require('cadence')(function (async, program) {
-    program.helpIf(program.command.param.help)
-
-    var logger = require('prolific.logger').createLogger('bigeasy.prolific.syslog.bin')
-    var querylist = require('querylist')
-
-    var Shuttle = program.require('prolific.shuttle')
-
-    Shuttle.shuttle(program, 1000, {
-        moduleName: 'prolific.syslog/syslog',
-        url: 'syslog' + querylist.stringify(program.command.ordered)
-    }, logger)
-
-    return 0
+    program.helpIf(program.command.params.help)
+    var response = {
+        moduleName: 'prolific.syslog/syslog.processor',
+        parameters: { params: program.command.param },
+        argv: program.argv,
+        terminal: program.command.terminal
+    }
+    if (process.mainModule == module) {
+        console.log(response)
+    }
+    return response
 }))

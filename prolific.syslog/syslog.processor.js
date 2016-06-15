@@ -36,21 +36,21 @@ var LEVEL = {
 // TODO: Fatal.
 }
 
-function Logger (configuration) {
-    var parsed = url.parse(configuration.url, true)
-    this._format = parsed.query.format || 'json'
-    var application = parsed.query.application || process.title
-    var host = parsed.query.host || 'localhost'
-    var pid = parsed.query.pid || 'pid'
-    this._facility = FACILITY[parsed.query.facility || 'local0']
+function Processor (parameters) {
+    var query = parameters.params
+    this._format = query.format || 'json'
+    var application = query.application || process.title
+    var host = query.host || 'localhost'
+    var pid = query.pid == null ? 'pid' : query.pid
+    this._facility = FACILITY[query.facility || 'local0']
     this._context = host + ' ' + application + ' ' + pid + ' - - '
-    this._serializer = require([ 'prolific.serializer', parsed.query.serializer || 'json'].join('.'))
-    this._Date = configuration.Date || Date
+    this._serializer = query.serializer ? require([ 'prolific.serializer', query.serializer ].join('.')) : JSON
+    this._Date = parameters.Date || Date
 }
 
-Logger.prototype.start = function (callback) { callback() }
+Processor.prototype.open = function (callback) { callback() }
 
-Logger.prototype.filter = function (entry) {
+Processor.prototype.process = function (entry) {
     var amalgamated = {
         sequence: entry.sequence,
         level: entry.level,
@@ -70,6 +70,6 @@ Logger.prototype.filter = function (entry) {
     return [ entry ]
 }
 
-Logger.prototype.stop = function (callback) { callback() }
+Processor.prototype.close = function (callback) { callback() }
 
-module.exports = Logger
+module.exports = Processor
