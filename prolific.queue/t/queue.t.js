@@ -20,7 +20,7 @@ function prove (async, assert) {
     }, function () {
         queue = new Queue(new stream.PassThrough)
         var stderr = new stream.PassThrough
-        queue.exit(stderr)
+        queue.exit(stderr, function () {})
         var chunk = stderr.read().toString()
         assert(chunk, '% 0 aaaaaaaa 811c9dc5 0\n% 0 811c9dc5 811c9dc5 1\n', 'exit')
     }, [function () {

@@ -68,7 +68,7 @@ Queue.prototype.close = function (stderr) {
     }
 }
 
-Queue.prototype.exit = function (stderr) {
+Queue.prototype.exit = function (stderr, callback) {
     if (this._termianted) {
         return
     }
@@ -93,7 +93,7 @@ Queue.prototype.exit = function (stderr) {
         this._previousChecksum = chunk.checksum
     }
 
-    stderr.write(Buffer.concat(buffers))
+    stderr.write(Buffer.concat(buffers), callback)
 }
 
 module.exports = Queue
