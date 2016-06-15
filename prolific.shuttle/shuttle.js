@@ -18,9 +18,9 @@ function Shuttle (input, output, sync, uncaught, interval) {
 }
 
 Shuttle.prototype.uncaughtException = function (error) {
+    console.error(error.stack)
     this.uncaught.call(null, error)
-    this.exit()
-    throw error
+    this.exit(function () { process.exit(1) })
 }
 
 Shuttle.prototype.stop = function () {
@@ -28,9 +28,9 @@ Shuttle.prototype.stop = function () {
     this.isochronous.stop()
 }
 
-Shuttle.prototype.exit = function () {
+Shuttle.prototype.exit = function (callback) {
     this.stop()
-    this.queue.exit(this.sync)
+    this.queue.exit(this.sync, callback)
 }
 
 Shuttle.shuttle = require('./bootstrap').createShuttle(require('net'), Shuttle)
