@@ -1,37 +1,38 @@
 {
-    "name":             "prolific.sender.udp",
-    "version":          "1.0.3",
-    "author":           "Alan Gutierrez <alan@prettyrobots.com>",
-    "description":      "A TCP sender implementation for the Prolific logging framework.",
+    "name":                 "prolific.sender.udp",
+    "version":              "1.0.3",
+    "author":               "Alan Gutierrez <alan@prettyrobots.com>",
+    "description":          "A TCP sender implementation for the Prolific logging framework.",
     "keywords":
     [
-                        "logging", "syslog"
+                            "logging", "syslog", "udp"
     ],
-    "license":          "MIT",
-    "contributors":     [],
-    "homepage":         "https://github.com/bigeasy/prolific",
-    "bugs":             "https://github.com/bigeasy/prolific/issues",
-    "main":             "sender.udp",
+    "license":              "MIT",
+    "contributors":         [],
+    "homepage":             "https://github.com/bigeasy/prolific",
+    "bugs":                 "https://github.com/bigeasy/prolific/issues",
     "repository":
     {
-                        "type": "git",
-                        "url": "http://github.com/bigeasy/prolific.git"
+                            "type": "git",
+                            "url": "http://github.com/bigeasy/prolific.git"
     },
     "bin":
     {
     },
     "dependencies":
     {
-                        "cadence":              "1.x",
-                        "prolific":             "1.x",
-                        "reactor":              "2.x"
+                            "arguable":             "2.x",
+                            "cadence":              "1.x",
+                            "prolific":             "1.x",
+                            "reactor":              "2.x"
     },
     "devDependencies":
     {
-                        "proof":                "1.x"
+                            "proof":                "1.x"
     },
+    "main":                 "sender.udp",
     "scripts":
     {
-                        "test": "proof test t/*.t.js"
+                            "test": "proof test t/*.t.js"
     }
 }
