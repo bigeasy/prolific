@@ -65,7 +65,7 @@ require('arguable')(module, require('cadence')(function (async, program) {
                     }, function () {
                         initialized.push(processor)
                     })
-                })(processors)
+                })(processors.slice().reverse())
             }, function () {
                 pumper(processors, child, io, program.stderr, async())
             }, function (code) {
