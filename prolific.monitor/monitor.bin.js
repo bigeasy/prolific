@@ -50,6 +50,7 @@ require('arguable')(module, require('cadence')(function (async, program) {
                 var Processor = require(configuration.moduleName)
                 return new Processor(configuration.parameters)
             })
+            processors.reverse()
             var child = children.spawn(argv.shift(), argv, { stdio: inheritance.stdio })
             var io = { async: child.stdio[inheritance.fd], sync: child.stderr }
             ipc(program.command.param.ipc, process, child)
@@ -65,7 +66,7 @@ require('arguable')(module, require('cadence')(function (async, program) {
                     }, function () {
                         initialized.push(processor)
                     })
-                })(processors.slice().reverse())
+                })(processors)
             }, function () {
                 pumper(processors, child, io, program.stderr, async())
             }, function (code) {
