@@ -1,3 +1,3 @@
-Prolific Sender TCP
+Prolific Sender Stream
 
-A TCP sender implementation for the Prolific logging framework.
+A generic stream sender implementation for the Prolific logging framework.
