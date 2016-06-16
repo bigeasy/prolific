@@ -1,6 +1,6 @@
 {
     "name":                 "prolific.stdout.udp",
-    "version":              "0.0.1",
+    "version":              "0.0.2",
     "description":          "Write UDP syslog messages to stdout.",
     "keywords":
     [
