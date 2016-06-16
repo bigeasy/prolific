@@ -9,10 +9,10 @@ function prove (async, assert) {
     var sender = new Sender(out)
     async(function () {
         sender.process({ formatted: 'foo\n' })
-        sender.process({ a: 1 })
+        sender.splice(['{"a":1}\n'])
         var expected = [
-            { name: 'formatted', value: 'foo\n' },
-            { name: 'entry', value: '{"a":1}\n' }
+            { name: 'processed', value: 'foo\n' },
+            { name: 'spliced', value: '{"a":1}\n' }
         ]
         out.on('data', function (data) {
             var expect = expected.shift()

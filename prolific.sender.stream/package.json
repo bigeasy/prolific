@@ -27,6 +27,7 @@
     {
                             "abend":                        "1.x",
                             "cadence":                      "1.x",
+                            "prolific.monitor":             "2.x",
                             "vestibule":                    "1.x"
     },
     "devDependencies":

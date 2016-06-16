@@ -1,6 +1,7 @@
 var cadence = require('cadence')
 var abend = require('abend')
 var Vestibule = require('vestibule')
+var stringify = require('prolific.monitor/stringify')
 
 function Processor (stream) {
     this._stream = stream
@@ -9,8 +10,7 @@ function Processor (stream) {
     this.lines = []
 }
 
-Processor.prototype.process = function (entry) {
-    this.lines.push(entry.formatted || JSON.stringify(entry) + '\n')
+Processor.prototype._nudge = function () {
     if (this._sending.open != null) {
         this._send(abend)
     }
@@ -32,6 +32,16 @@ Processor.prototype._send = cadence(function (async) {
         })()
     })
 })
+
+Processor.prototype.splice = function (lines) {
+    this.lines.push.apply(this.lines, lines.splice(0, lines.length))
+    this._nudge()
+}
+
+Processor.prototype.process = function (entry) {
+    this.lines.push(stringify(entry))
+    this._nudge()
+}
 
 Processor.prototype.flush = cadence(function (async) {
     this._sending.enter(async())
