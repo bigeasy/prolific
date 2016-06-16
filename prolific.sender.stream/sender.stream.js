@@ -2,7 +2,7 @@ var cadence = require('cadence')
 var Reactor = require('reactor')
 var fs = require('fs')
 
-function Sender (stream, close) {
+function Processor (stream, close) {
     this._sending = new Reactor({ object: this, method: '_send' })
     this._stream = stream
     this._close = close
@@ -36,15 +36,15 @@ function Sender (stream, close) {
 // if it is really worth it. It seems that I'm close to building a reliable
 // logging stream here, so that if we create a reliable logging stream, we might
 // in turn come to depend on it, but if it is reliable we never will.
-Sender.prototype.send = function (chunk, callback) {
+Processor.prototype.send = function (chunk, callback) {
     this._sending.push(chunk, callback || null)
 }
 
-Sender.prototype._send = cadence(function (async, timeout, chunk) {
+Processor.prototype._send = cadence(function (async, timeout, chunk) {
     this._stream.write(chunk.buffer, async())
 })
 
-Sender.prototype.close = cadence(function (async) {
+Processor.prototype.close = cadence(function (async) {
     async(function () {
         this.send({ buffer: new Buffer(0) }, async())
     }, function () {
@@ -54,4 +54,4 @@ Sender.prototype.close = cadence(function (async) {
     })
 })
 
-module.exports = Sender
+module.exports = Processor
