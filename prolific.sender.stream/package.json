@@ -27,7 +27,7 @@
     {
                             "abend":                        "1.x",
                             "cadence":                      "1.x",
-                            "reactor":                      "2.x"
+                            "vestibule":                    "1.x"
     },
     "devDependencies":
     {

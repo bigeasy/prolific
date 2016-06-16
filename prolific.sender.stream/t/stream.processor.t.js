@@ -7,17 +7,21 @@ function prove (async, assert) {
     var wait = async()
     var out = new stream.PassThrough
     var sender = new Sender(out)
-    sender.process({ formatted: 'foo\n' })
-    sender.process({ a: 1 })
-    var expected = [
-        { name: 'formatted', value: 'foo\n' },
-        { name: 'entry', value: '{"a":1}\n' }
-    ]
-    out.on('data', function (data) {
-        var expect = expected.shift()
-        assert(data.toString(), expect.value, expect.name)
-        if (expected.length == 0) {
-            wait()
-        }
+    async(function () {
+        sender.process({ formatted: 'foo\n' })
+        sender.process({ a: 1 })
+        var expected = [
+            { name: 'formatted', value: 'foo\n' },
+            { name: 'entry', value: '{"a":1}\n' }
+        ]
+        out.on('data', function (data) {
+            var expect = expected.shift()
+            assert(data.toString(), expect.value, expect.name)
+            if (expected.length == 0) {
+                wait()
+            }
+        })
+    }, function () {
+        sender.flush(async())
     })
 }
