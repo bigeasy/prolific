@@ -30,7 +30,7 @@
     {
                             "proof":                "1.x"
     },
-    "main":                 "sender.udp",
+    "main":                 "udp.argv",
     "scripts":
     {
                             "test": "proof test t/*.t.js"

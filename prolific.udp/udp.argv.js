@@ -1,6 +1,6 @@
 /*
     ___ usage ___ en_US ___
-    usage: prolific syslog <options>
+    usage: prolific udp <options>
 
         -u, --url <string>
             The URL of the logging destination.
@@ -16,7 +16,7 @@
 require('arguable')(module, require('cadence')(function (async, program) {
     program.helpIf(program.command.params.help)
     var response = {
-        moduleName: 'prolific.syslog/syslog.processor',
+        moduleName: 'prolific.udp/udp.processor',
         parameters: { params: program.command.param },
         argv: program.argv,
         terminal: program.command.terminal

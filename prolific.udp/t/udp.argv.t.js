@@ -6,7 +6,7 @@ function prove (async, assert) {
         argv([ '--url', 'udp://127.0.0.1:514' ], {}, async())
     }, function (result) {
         assert(result, {
-            moduleName: 'prolific.syslog/syslog.processor',
+            moduleName: 'prolific.udp/udp.processor',
             parameters: { params: { url: 'udp://127.0.0.1:514' } },
             argv: [],
             terminal: false

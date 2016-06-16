@@ -13,6 +13,7 @@ Processor.prototype.open = function (callback) { callback() }
 
 Processor.prototype.process = function (entry) {
     this._processing.push(entry.formatted || JSON.stringify(entry) + '\n')
+    return [ entry ]
 }
 
 Processor.prototype._process = cadence(function (async, timeout, line) {
