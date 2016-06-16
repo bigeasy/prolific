@@ -20,10 +20,6 @@ require('arguable')(module, require('cadence')(function (async, program) {
         program.stdout.write(buffer)
     })
     program.on('SIGINT', socket.close.bind(socket))
-    async(function () {
-        // TODO Bind should be port or port and address.
-        socket.bind(+program.param.port, async())
-    }, function () {
-        return 0
-    })
+    program.on('SIGTERM', socket.close.bind(socket))
+    socket.bind(+program.param.port, async())
 }))
