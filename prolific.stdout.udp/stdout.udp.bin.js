@@ -1,3 +1,5 @@
+#!/usr/bin/env node
+
 /*
     ___ usage ___ en_US ___
     node stdout.udp.bin.js --bind ip:port
