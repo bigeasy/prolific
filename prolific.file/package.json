@@ -1,0 +1,42 @@
+{
+    "name":                 "prolific.file",
+    "version":              "9.9.9",
+    "description":
+
+        "Write logs to a rotating file.",
+
+    "keywords":
+    [
+                            "http", "https", "rest", "json", "curl"
+    ],
+    "author":               "Alan Gutierrez <alan@prettyrobots.com>",
+    "contributors":         [],
+    "homepage":             "https://github.com/bigeasy/prolific",
+    "bugs":                 "https://github.com/bigeasy/prolific/issues",
+    "license":              "MIT",
+    "repository":
+    {
+                            "type": "git",
+                            "url": "http://github.com/bigeasy/prolific.git"
+    },
+    "dependencies":
+    {
+                            "abend":                "1.x",
+                            "arguable":             "2.5.x",
+                            "cadence":              "1.x",
+                            "delta":                "1.x",
+                            "prolific.monitor":     "2.3.*",
+                            "prolific.sender.stream":     "1.x",
+                            "timezone":             "1.x",
+                            "vestibule":            "1.x"
+    },
+    "devDependencies":
+    {
+                            "proof":                "1.x"
+    },
+    "main":                 "file.argv",
+    "scripts":
+    {
+                            "test": "proof test t/*.t.js"
+    }
+}
