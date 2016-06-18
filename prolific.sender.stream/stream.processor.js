@@ -8,6 +8,7 @@ function Processor (stream) {
     this._sending = new Vestibule
     this._sending.open = []
     this.lines = []
+    this.sent = 0
 }
 
 Processor.prototype._nudge = function () {
@@ -26,9 +27,10 @@ Processor.prototype._send = cadence(function (async) {
             if (this.lines.length == 0) {
                 return [ loop.break ]
             }
-            var lines = this.lines
+            var lines = new Buffer(this.lines.join(''))
             this.lines = []
-            this._stream.write(lines.join(''), async())
+            this.sent += lines.length
+            this._stream.write(lines, async())
         })()
     })
 })

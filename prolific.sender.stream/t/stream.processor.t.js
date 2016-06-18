@@ -1,4 +1,4 @@
-require('proof')(2, require('cadence')(prove))
+require('proof')(3, require('cadence')(prove))
 
 function prove (async, assert) {
     var Sender = require('..')
@@ -23,5 +23,7 @@ function prove (async, assert) {
         })
     }, function () {
         sender.flush(async())
+    }, function () {
+        assert(sender.sent, 12, 'sent')
     })
 }
