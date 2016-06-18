@@ -18,7 +18,8 @@ function Processor (parameters) {
         rotating: true
     }
     this._filename = parameters.params.file
-    this._rotateSize = 1024 * 1024 * 1024
+    this._rotateSize = parameters.params.rotate || 1024 * 1024 * 1024
+    this._pid = parameters.params.pid || process.pid
     this._sender = this._nullSender
     this._Date = parameters.Date || Date
     this._rotating = new Vestibule
@@ -34,8 +35,8 @@ Processor.prototype._rotate = cadence(function (async) {
     async(function () {
         this._flush(async())
     }, function () {
-        var filename = this._filename + tz(this._Date.now(), '-%F-%H-%M-%S')
-        stream = fs.createWriteStream(filename)
+        var filename = this._filename + tz(this._Date.now(), '-%F-%H-%M-' + this._pid)
+        stream = fs.createWriteStream(filename, { flags: 'a' })
         new Delta(async()).ee(stream).on('open')
     }, function () {
         this._sender = new Sender(stream)
@@ -50,7 +51,7 @@ Processor.prototype._flush = cadence(function (async) {
         this._sender.flush(async())
     }, function () {
 // TODO Expose `stream` instead of `_stream`.
-        this._sender._stream.end(async())
+        this._sender._stream.end()
     })
 })
 
