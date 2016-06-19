@@ -1,0 +1,37 @@
+{
+    "name":                 "prolific.tee",
+    "version":              "9.9.9",
+    "description":
+
+        "Tap into the stream of logging messages and send them in a different direction.",
+
+    "keywords":
+    [
+                            "logging", "log", "syslog"
+    ],
+    "author":               "Alan Gutierrez <alan@prettyrobots.com>",
+    "contributors":         [],
+    "homepage":             "https://github.com/bigeasy/prolific",
+    "bugs":                 "https://github.com/bigeasy/prolific/issues",
+    "license":              "MIT",
+    "repository":
+    {
+                            "type": "git",
+                            "url": "http://github.com/bigeasy/prolific.git"
+    },
+    "dependencies":
+    {
+                            "arguable":                     "2.5.x",
+                            "cadence":                      "1.x",
+                            "prolific.monitor":             "2.3.5"
+    },
+    "devDependencies":
+    {
+                            "proof":                        "1.x"
+    },
+    "main":                 "tee.argv",
+    "scripts":
+    {
+                            "test": "proof test t/*.t.js"
+    }
+}
