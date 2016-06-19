@@ -18,5 +18,6 @@ prolific \
   tee \
     tcp://127.0.0.1:514 \
     @prolific.monitor/filter +'$context[3] == "bigeasy.paxos" && $level <= $trace' \
-    aggregate --with 'bigeasy.service:health' --avg 'http=$.http.mean' --sum 'messages=$.messages' \
+    aggregate --with 'bigeasy.service:health' --average 'http=$.http.mean' --sum 'messages=$.messages' \
+    spawn [ jq '.' ] \
   node parent.bin.js --param value prolific --configuration inherit node child.bin.js
