@@ -1,8 +1,9 @@
 var Processor = require('../stdio.processor')
 
-new Processor({ params: { stderr: true } })
+var sink = { process: function () {} }
+new Processor({ params: { stderr: true } }, sink)
 
-var processor = new Processor({ params: {} })
+var processor = new Processor({ params: {} }, sink)
 
 process.stdout.write('1..1\n')
 
