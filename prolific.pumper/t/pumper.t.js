@@ -43,11 +43,7 @@ function prove (async, assert) {
             async: new stream.PassThrough,
             sync: new stream.PassThrough
         }
-        pumper([{
-            send: function (buffer) {
-                assert(buffer.toString(), 'a\n', 'sender')
-            }
-        }], child, io, stderr, async())
+        pumper(null, child, io, stderr, async())
         child.emit('exit', null, 'SIGTERM')
         io.sync.emit('end')
         var error = new Error
