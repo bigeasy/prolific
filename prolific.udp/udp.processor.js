@@ -4,16 +4,17 @@ var url = require('url')
 var cadence = require('cadence')
 var Reactor = require('reactor')
 
-function Processor (parameters) {
+function Processor (parameters, next) {
     this._processing = new Reactor({ object: this, method: '_process' })
     this.url = url.parse(parameters.params.url)
+    this._next = next
 }
 
 Processor.prototype.open = function (callback) { callback() }
 
 Processor.prototype.process = function (entry) {
     this._processing.push(entry.formatted || JSON.stringify(entry) + '\n')
-    return [ entry ]
+    this._next.process(entry)
 }
 
 Processor.prototype._process = cadence(function (async, timeout, line) {
