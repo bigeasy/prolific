@@ -4,7 +4,7 @@
 
     options:
 
-        -s, --select
+        -s, --select <javascript>
             Apply the specified JavaScript function body to each entry. The
             function body will be invoked with the log entry in a variable named
             `$`. The level will be converted to integer and specified as $level.
@@ -53,7 +53,7 @@
 require('arguable')(module, require('cadence')(function (async, program) {
     program.helpIf(program.command.params.help)
     var response = {
-        moduleName: 'prolific.file/file.processor',
+        moduleName: 'prolific.filter/filter.processor',
         parameters: { params: program.command.param },
         argv: program.argv,
         terminal: program.command.terminal
