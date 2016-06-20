@@ -7,3 +7,4 @@
 !/prolific.syslog/node_modules/json.js
 /.proof.out
 /coverage
+/*/coverage
