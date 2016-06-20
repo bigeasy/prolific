@@ -1,6 +1,6 @@
 {
     "name":                 "prolific.syslog",
-    "version":              "0.0.0",
+    "version":              "0.0.1",
     "description":          "Consolidate chunks emitted from the logging stream and standard error of a supervised process.",
     "keywords":
     [
