@@ -1,9 +1,8 @@
 var Shuttle = require('prolific.shuttle')
-var Logger = require('prolific.logger')
+var logger = require('prolific.logger').createLogger('prolific.example.messages')
 
-Shuttle.shuttle(process, 250, Logger.createLogger('prolific.example.messages'))
+Shuttle.shuttle(process, 250, logger)
 
-var logger = Logger.createLogger('prolific.example.messages')
 setInterval(function () {
     logger.info('greeting', { hello: 'world' })
-}, 1000)
+}, 1000).unref()
