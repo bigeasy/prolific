@@ -7,7 +7,7 @@ module.exports = cadence(function (async, processor, child, io, forward) {
     var configuration = null
     var consolidator = new Consolidator
     function process (line) {
-        processor.process(JSON.parse(line))
+        processor.process({ entry: JSON.parse(line) })
     }
     function onChunk () {
         consolidator.chunks.splice(0, consolidator.chunks.length).forEach(function (chunk) {
