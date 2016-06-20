@@ -22,7 +22,7 @@
     },
     "dependencies":
     {
-                        "prolific.main":        "0.0.2"
+                        "prolific.main":        "0.0.4"
     },
     "devDependencies":
     {
