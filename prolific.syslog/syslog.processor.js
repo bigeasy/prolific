@@ -53,9 +53,9 @@ Processor.prototype.open = function (callback) { callback() }
 
 Processor.prototype.process = function (entry) {
     var json = entry.json
-    entry.formatted = '<' + (this._facility * 8 + LEVEL[json.level]) + '>1 ' +
+    entry.formatted = '<' + (this._facility * 8 + entry.level) + '>1 ' +
 // TODO NO! What? Where is the real timestamp?
-        tz(this._Date.now(), '%FT%T.%3NZ') + ' ' +
+        tz(json.when, '%FT%T.%3NZ') + ' ' +
         this._context +
         this._serializer.stringify(json) + '\n'
     this._next.process(entry)
