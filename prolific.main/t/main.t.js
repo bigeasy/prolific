@@ -7,12 +7,12 @@ function prove (assert) {
     prolific.sink = {
         write: function (line) {
             assert(JSON.parse(line.toString()), {
+                when: 0,
                 sequence: 0,
                 level: 'error',
                 name: 'greeting',
                 context: 'hello',
-                common: {},
-                specific: { a: 1 }
+                a: 1
             }, 'json')
         }
     }
