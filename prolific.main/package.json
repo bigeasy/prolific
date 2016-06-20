@@ -1,32 +1,34 @@
 {
-    "name":             "prolific.main",
-    "version":          "0.0.4",
-    "description":      "Discoverable common root for the Prolific logging framework.",
+    "name":                 "prolific.main",
+    "version":              "0.0.4",
+    "description":
+
+        "Discoverable common root for the Prolific logging framework.",
+
     "keywords":
     [
-                        "logging", "log", "syslog"
+                            "logging", "log", "syslog"
     ],
-    "author":           "Alan Gutierrez <alan@prettyrobots.com>",
-    "contributors":     [],
-    "homepage":         "https://github.com/bigeasy/prolific",
-    "bugs":             "https://github.com/bigeasy/prolific/issues",
-    "license":          "MIT",
+    "author":               "Alan Gutierrez <alan@prettyrobots.com>",
+    "homepage":             "https://github.com/bigeasy/prolific",
+    "bugs":                 "https://github.com/bigeasy/prolific/issues",
+    "license":              "MIT",
     "repository":
     {
-                        "type": "git",
-                        "url": "http://github.com/bigeasy/prolific.git"
+                            "type": "git",
+                            "url": "http://github.com/bigeasy/prolific.git"
     },
     "dependencies":
     {
-                        "supersede":            "1.x"
+                            "supersede":                    "1.x"
     },
     "devDependencies":
     {
-                        "proof":                "1.x"
+                            "proof":                        "1.x"
     },
-    "main":             "main",
+    "main":                 "main",
     "scripts":
     {
-                        "test": "proof test t/*.t.js"
+                            "test": "proof test t/*.t.js"
     }
 }
