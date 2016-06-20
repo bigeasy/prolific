@@ -3,11 +3,30 @@ var Delta = require('delta')
 var cadence = require('cadence')
 var push = [].push
 
+var LEVEL = {
+    trace: 0,
+    debug: 0,
+    info: 1,
+    warn: 3,
+    error: 4
+// TODO: Fatal.
+}
+
 module.exports = cadence(function (async, processor, child, io, forward) {
     var configuration = null
     var consolidator = new Consolidator
     function process (line) {
-        processor.process({ entry: JSON.parse(line) })
+        var json = JSON.parse(line)
+        var qualifier = json.qualifier.split('.').map(function (value, index, array) {
+            return array.slice(0, index + 1).join('.')
+        })
+        qualifier.unshift(null)
+        processor.process({
+            formatted: null,
+            qualifier: qualifier,
+            level: LEVEL[json.level],
+            json: json
+        })
     }
     function onChunk () {
         consolidator.chunks.splice(0, consolidator.chunks.length).forEach(function (chunk) {
