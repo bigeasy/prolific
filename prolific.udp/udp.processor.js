@@ -1,6 +1,7 @@
 var dgram = require('dgram')
 var url = require('url')
 
+var stringify = require('prolific.monitor/stringify')
 var cadence = require('cadence')
 var Reactor = require('reactor')
 
@@ -13,7 +14,7 @@ function Processor (parameters, next) {
 Processor.prototype.open = function (callback) { callback() }
 
 Processor.prototype.process = function (entry) {
-    this._processing.push(entry.formatted || JSON.stringify(entry) + '\n')
+    this._processing.push(stringify(entry))
     this._next.process(entry)
 }
 

@@ -23,6 +23,7 @@
     {
                             "arguable":             "2.x",
                             "cadence":              "1.x",
+                            "prolific.monitor":     "2.3.x",
                             "reactor":              "2.x"
     },
     "devDependencies":
