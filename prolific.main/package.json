@@ -1,6 +1,6 @@
 {
     "name":             "prolific.main",
-    "version":          "0.0.3",
+    "version":          "0.0.4",
     "description":      "Discoverable common root for the Prolific logging framework.",
     "keywords":
     [
