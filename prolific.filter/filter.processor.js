@@ -7,24 +7,20 @@ var LEVEL = {
 // TODO: Fatal.
 }
 
-function Processor (parameters) {
+function Processor (parameters, next) {
     this._select = new Function(
-        '$', '$context', '$level', 'ERROR', 'WARN', 'INFO', 'DEBUG', 'TRACE',
+        '$', '$qualifier', '$level', 'ERROR', 'WARN', 'INFO', 'DEBUG', 'TRACE',
         'return ' + parameters.params.select
     )
+    this._next = next
 }
 
 Processor.prototype.open = function (callback) { callback () }
 
 Processor.prototype.process = function (entry) {
-    var context = entry.context.split('.').map(function (value, index, set) {
-        return set.slice(0, index + 1).join('.')
-    })
-    context.unshift(null)
-    if (this._select.call(null, entry, context, LEVEL[entry.level], 4, 3, 2, 1, 0, 0)) {
-        return [ entry ]
+    if (this._select.call(null, entry.json, entry.qualifier, entry.level, 4, 3, 2, 1, 0, 0)) {
+        this._next.process(entry)
     }
-    return []
 }
 
 Processor.prototype.close = function (callback) { callback () }
