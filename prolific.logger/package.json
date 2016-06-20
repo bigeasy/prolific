@@ -18,7 +18,7 @@
     },
     "dependencies":
     {
-                        "prolific":             "2.3.0"
+                        "prolific":             "2.3.1"
     },
     "devDependencies":
     {
