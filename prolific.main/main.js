@@ -21,19 +21,24 @@ exports.json = function (path, level, qualifier, name, properties) {
     if (LEVEL[level] > LEVEL[levels.get(path)]) {
         return
     }
-    var entry = {}
-    for (var key in properties) {
-        entry[key] = properties[key]
+    var entry = {
+        when: exports.Date.now(),
+        sequence: sequence++,
+        level: level,
+        qualifier: qualifier,
+        name: name,
+        qualified: qualifier + '#' + name
     }
     for (var key in exports.properties) {
-        entry[key] = exports.properties[key]
+        if (!(key in entry)) {
+            entry[key] = exports.properties[key]
+        }
     }
-    entry.sequence = sequence++
-    entry.level = level
-    entry.qualifier = qualifier
-    entry.name = name
-    entry.qualified = qualifier + '#' + name
-    entry.when = exports.Date.now()
+    for (var key in properties) {
+        if (!(key in entry)) {
+            entry[key] = properties[key]
+        }
+    }
     this.sink.write(new Buffer(JSON.stringify(entry) + '\n'))
 }
 
