@@ -1,4 +1,4 @@
-module.exports = function (env, configuration) {
+function configure (env, configuration) {
     if (configuration == null) {
         configuration = { processors: [] }
     } else if (/^\s*{/.test(configuration)) {
@@ -14,5 +14,7 @@ module.exports = function (env, configuration) {
         }
         return configuration
     }
-    return parseConfiguration(configuration)
+    return configure(env, configuration)
 }
+
+module.exports = configure
