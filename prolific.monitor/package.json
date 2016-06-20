@@ -24,7 +24,7 @@
                         "delta":                "1.x",
                         "nop":                  "1.x",
                         "prolific.collector":   "2.x",
-                        "prolific.pumper":      "0.x",
+                        "prolific.pumper":      "0.1.1",
                         "prolific.inherit":     "2.x",
                         "prolific.main":        "0.x",
                         "prolific":             "2.2.x",
