@@ -64,6 +64,7 @@ Processor.prototype.process = function (entry) {
         amalgamated[key] = entry.specific[key]
     }
     entry.formatted = '<' + (this._facility * 8 + LEVEL[entry.level]) + '>1 ' +
+// TODO NO! What? Where is the real timestamp?
         tz(this._Date.now(), '%FT%T.%3NZ') + ' ' +
         this._context +
         this._serializer.stringify(amalgamated) + '\n'
