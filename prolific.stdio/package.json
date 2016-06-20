@@ -1,33 +1,35 @@
 {
-    "name":             "prolific.stdio",
-    "version":          "0.0.3",
-    "description":      "A standard I/O sender implementation for the Prolific logging framework.",
+    "name":                 "prolific.stdio",
+    "version":              "0.0.3",
+    "description":
+
+        "A standard I/O sender implementation for the Prolific logging framework.",
+
     "keywords":
     [
-                        "logging", "syslog"
+                            "logging", "syslog"
     ],
-    "author":           "Alan Gutierrez <alan@prettyrobots.com>",
-    "contributors":     [],
-    "homepage":         "https://github.com/bigeasy/prolific",
-    "bugs":             "https://github.com/bigeasy/prolific/issues",
-    "license":          "MIT",
+    "author":               "Alan Gutierrez <alan@prettyrobots.com>",
+    "homepage":             "https://github.com/bigeasy/prolific",
+    "bugs":                 "https://github.com/bigeasy/prolific/issues",
+    "license":              "MIT",
     "repository":
     {
-                        "type": "git",
-                        "url": "http://github.com/bigeasy/prolific.git"
+                            "type": "git",
+                            "url": "http://github.com/bigeasy/prolific.git"
     },
     "dependencies":
     {
-                        "arguable":             "2.5.5",
-                        "cadence":              "1.x"
+                            "arguable":                     "2.5.5",
+                            "cadence":                      "1.x"
     },
     "devDependencies":
     {
-                        "proof":                "1.x"
+                            "proof":                        "1.x"
     },
-    "main":             "stdio.argv",
+    "main":                 "stdio.argv",
     "scripts":
     {
-                        "test": "proof test t/*.t.js"
+                            "test": "proof test t/*.t.js"
     }
 }
