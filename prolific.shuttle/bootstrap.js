@@ -18,6 +18,8 @@ exports.createShuttle = function (net, Shuttle) {
 // messages.
             program.on('SIGINT', shuttle.stop.bind(shuttle))
             program.on('SIGTERM', shuttle.stop.bind(shuttle))
+            return shuttle
         }
+        return { stop: function() {} }
     }
 }
