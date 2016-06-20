@@ -46,14 +46,12 @@ require('arguable')(module, require('cadence')(function (async, program) {
     var loop = async(function () {
         if (isProgram(program, terminal, argv)) {
             process.env.PROLIFIC_CONFIGURATION = JSON.stringify(configuration)
+            var nullProcessor = { process: function () {} }, nextProcessor = nullProcessor
             var processors = configuration.processors.map(function (configuration) {
                 var Processor = require(configuration.moduleName)
-                return new Processor(configuration.parameters)
+                return nextProcessor = new Processor(configuration.parameters, nextProcessor)
             })
             processors.reverse()
-            var child = children.spawn(argv.shift(), argv, { stdio: inheritance.stdio })
-            var io = { async: child.stdio[inheritance.fd], sync: child.stderr }
-            ipc(program.command.param.ipc, process, child)
             var initialized = []
             async([function () {
                 async.forEach(function (processor) {
@@ -68,7 +66,11 @@ require('arguable')(module, require('cadence')(function (async, program) {
                     })
                 })(processors)
             }, function () {
-                pumper(processors, child, io, program.stderr, async())
+                var child = children.spawn(argv.shift(), argv, { stdio: inheritance.stdio })
+                var io = { async: child.stdio[inheritance.fd], sync: child.stderr }
+                ipc(program.command.param.ipc, process, child)
+                processors.push(nullProcessor)
+                pumper(processors[0], child, io, program.stderr, async())
             }, function (code) {
                 return [ loop.break, code ]
             })
