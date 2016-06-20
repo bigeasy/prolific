@@ -19,7 +19,7 @@
     },
     "dependencies":
     {
-                        "arguable":             "2.5.5",
+                        "arguable":             "2.5.7",
                         "cadence":              "1.x",
                         "delta":                "1.x",
                         "nop":                  "1.x",
@@ -27,8 +27,8 @@
                         "prolific.pumper":      "0.1.2",
                         "prolific.inherit":     "2.x",
                         "prolific.main":        "0.x",
-                        "prolific":             "2.2.x",
-                        "prolific.ipc":         "1.x"
+                        "prolific":             "2.3.1",
+                        "prolific.ipc":         "1.0.3"
     },
     "devDependencies":
     {
