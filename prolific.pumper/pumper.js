@@ -3,23 +3,17 @@ var Delta = require('delta')
 var cadence = require('cadence')
 var push = [].push
 
-module.exports = cadence(function (async, processors, child, io, forward) {
+module.exports = cadence(function (async, processor, child, io, forward) {
     var configuration = null
     var consolidator = new Consolidator
+    function process (line) {
+        processor.process(JSON.parse(line))
+    }
     function onChunk () {
         consolidator.chunks.splice(0, consolidator.chunks.length).forEach(function (chunk) {
             var lines = chunk.buffer.toString().split(/\n/)
             lines.pop()
-            var entries = {
-                input: lines.map(function (line) { return JSON.parse(line) }),
-                output: []
-            }
-            processors.forEach(function (processor) {
-                entries.input.forEach(function (entry) {
-                    push.apply(entries.output, processor.process(entry))
-                })
-                entries = { input: entries.output, output: [] }
-            })
+            lines.forEach(process)
         })
     }
     function onLine () {

@@ -12,12 +12,11 @@ function prove (async, assert) {
             async: new stream.PassThrough,
             sync: new stream.PassThrough
         }
-        pumper([{
+        pumper({
             process: function (entry) {
                 assert(entry, { a: 1 }, 'sender')
-                return []
             }
-        }], child, io, stderr, async())
+        }, child, io, stderr, async())
         io.sync.write(new Buffer('hello, world\n'))
         var chunk = new Chunk(0, new Buffer(''), 1)
         io.async.write(chunk.header('aaaaaaaa'))
