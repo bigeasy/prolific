@@ -14,7 +14,7 @@ function prove (async, assert) {
         }
         pumper({
             process: function (entry) {
-                assert(entry, { a: 1 }, 'sender')
+                assert(entry, { entry: { a: 1 } }, 'sender')
             }
         }, child, io, stderr, async())
         io.sync.write(new Buffer('hello, world\n'))
