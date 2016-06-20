@@ -20,5 +20,12 @@ module.exports = function (ipc, process, child) {
         child.on('message', function () {
             down.push({ async: async, object: process, vargs: slice.call(arguments) })
         })
+        function disconnect () {
+            if (process.connected) {
+                process.disconnect()
+            }
+        }
+        process.on('SIGINT', disconnect)
+        process.on('SIGTERM', disconnect)
     }
 }

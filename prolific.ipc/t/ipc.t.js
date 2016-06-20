@@ -31,6 +31,8 @@ function prove (async, assert) {
             wait()
         }
         process.versions = { node: '4.2.3' }
+        process.connected = true
+        process.disconnect = function () { this.connected = false }
         var child = new events.EventEmitter
         child.send = function (message, callback) {
             assert(message, { from: 'parent' }, 'child send')
@@ -42,5 +44,8 @@ function prove (async, assert) {
         ipc(true, process, child)
 
         process.emit('message', { from: 'parent' })
+
+        process.emit('SIGINT')
+        process.emit('SIGINT')
     })
 }
