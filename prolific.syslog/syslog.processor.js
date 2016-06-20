@@ -36,7 +36,7 @@ var LEVEL = {
 // TODO: Fatal.
 }
 
-function Processor (parameters) {
+function Processor (parameters, next) {
     var query = parameters.params
     this._format = query.format || 'json'
     var application = query.application || process.title
@@ -46,6 +46,7 @@ function Processor (parameters) {
     this._context = host + ' ' + application + ' ' + pid + ' - - '
     this._serializer = query.serializer ? require(query.serializer) : JSON
     this._Date = parameters.Date || Date
+    this._next = next
 }
 
 Processor.prototype.open = function (callback) { callback() }
@@ -68,7 +69,7 @@ Processor.prototype.process = function (entry) {
         tz(this._Date.now(), '%FT%T.%3NZ') + ' ' +
         this._context +
         this._serializer.stringify(amalgamated) + '\n'
-    return [ entry ]
+    this._next.process(entry)
 }
 
 Processor.prototype.close = function (callback) { callback() }
