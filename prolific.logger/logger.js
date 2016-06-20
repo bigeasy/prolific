@@ -1,13 +1,13 @@
 var prolific = require('prolific')
 
-function Logger (context) {
-    this.context = context
-    this._path = ('.' + context).split('.')
+function Logger (qualifier) {
+    this.qualifier = qualifier
+    this._path = ('.' + qualifier).split('.')
 }
 
 ; [ 'error', 'warn', 'info', 'debug', 'trace' ].forEach(function (level) {
     Logger.prototype[level] = function (name, properties) {
-        prolific.json(this._path, level, this.context, name, properties)
+        prolific.json(this._path, level, this.qualifier, name, properties)
     }
 })
 
