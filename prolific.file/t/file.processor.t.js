@@ -21,11 +21,11 @@ function prove (async, assert) {
     }], function () {
         processor.open(async())
     }, function () {
-        processor.process({ a: 1 })
-        processor.process({ a: 1 })
+        processor.process({ json: { a: 1 } })
+        processor.process({ json: { a: 1 } })
         setTimeout(async(), 250)
     }, function () {
-        processor.process({ a: 1 })
+        processor.process({ json: { a: 1 } })
         processor.close(async())
     }, function () {
         assert(fs.readFileSync(file + '-1970-01-01-00-00-0', 'utf8'),
