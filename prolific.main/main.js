@@ -17,7 +17,7 @@ exports.Date = Date
 // TODO Keep wanting to optimize this, but the optimization is the level. If
 // someone truly does not want to pay for the logging, they can set the logging
 // level to "none".
-exports.json = function (path, level, context, name, properties) {
+exports.json = function (path, level, qualifier, name, properties) {
     if (LEVEL[level] > LEVEL[levels.get(path)]) {
         return
     }
@@ -30,8 +30,9 @@ exports.json = function (path, level, context, name, properties) {
     }
     entry.sequence = sequence++
     entry.level = level
-    entry.context = context
+    entry.qualifier = qualifier
     entry.name = name
+    entry.qualified = qualifier + '#' + name
     entry.when = exports.Date.now()
     this.sink.write(new Buffer(JSON.stringify(entry) + '\n'))
 }

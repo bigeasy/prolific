@@ -11,7 +11,8 @@ function prove (assert) {
                 sequence: 0,
                 level: 'error',
                 name: 'greeting',
-                context: 'hello',
+                qualifier: 'hello',
+                qualified: 'hello#greeting',
                 a: 1
             }, 'json')
         }
