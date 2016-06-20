@@ -28,7 +28,7 @@ function prove (async, assert) {
             assert(message.toString(), '{"a":1}\n', 'sent')
             wait()
         })
-        processor.process({ a: 1 })
+        processor.process({ json: { a: 1 } })
     }, function () {
         var wait = async()
         server.once('message', function (message, remote) {
