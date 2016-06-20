@@ -52,23 +52,12 @@ function Processor (parameters, next) {
 Processor.prototype.open = function (callback) { callback() }
 
 Processor.prototype.process = function (entry) {
-    var amalgamated = {
-        sequence: entry.sequence,
-        level: entry.level,
-        context: entry.context,
-        name: entry.name
-    }
-    for (var key in entry.common) {
-        amalgamated[key] = entry.common[key]
-    }
-    for (var key in entry.specific) {
-        amalgamated[key] = entry.specific[key]
-    }
-    entry.formatted = '<' + (this._facility * 8 + LEVEL[entry.level]) + '>1 ' +
+    var json = entry.json
+    entry.formatted = '<' + (this._facility * 8 + LEVEL[json.level]) + '>1 ' +
 // TODO NO! What? Where is the real timestamp?
         tz(this._Date.now(), '%FT%T.%3NZ') + ' ' +
         this._context +
-        this._serializer.stringify(amalgamated) + '\n'
+        this._serializer.stringify(json) + '\n'
     this._next.process(entry)
 }
 
