@@ -21,7 +21,8 @@
     "dependencies":
     {
                             "arguable":                     "2.5.5",
-                            "cadence":                      "1.x"
+                            "cadence":                      "1.x",
+                            "prolific.monitor":             "2.3.x"
     },
     "devDependencies":
     {

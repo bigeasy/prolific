@@ -1,3 +1,5 @@
+var stringify = require('prolific.monitor/stringify')
+
 function Processor (configuration, next) {
     this._streamName = configuration.params.stderr ? 'stderr' : 'stdout'
     this._next = next
@@ -6,7 +8,7 @@ function Processor (configuration, next) {
 Processor.prototype.open  = function (callback) { callback () }
 
 Processor.prototype.process = function (entry) {
-    process[this._streamName].write(entry.formatted || JSON.stringify(entry) + '\n')
+    process[this._streamName].write(stringify(entry))
     this._next.process(entry)
 }
 
