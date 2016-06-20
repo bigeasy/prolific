@@ -15,10 +15,11 @@ function prove (async, assert) {
         pumper({
             process: function (entry) {
                 assert(entry, {
+                    when: 0,
                     formatted: null,
                     qualifier: [ null, 'bigeasy', 'bigeasy.prolific' ],
                     level: 0,
-                    json: { qualifier: 'bigeasy.prolific', level: 'trace', a: 1 }
+                    json: { when: 0, qualifier: 'bigeasy.prolific', level: 'trace', a: 1 }
                  }, 'sender')
             }
         }, child, io, stderr, async())
@@ -27,12 +28,12 @@ function prove (async, assert) {
         io.async.write(chunk.header('aaaaaaaa'))
         io.async.write(chunk.buffer)
         var previousChecksum = chunk.checksum
-        var buffer = new Buffer('{"qualifier":"bigeasy.prolific","level":"trace","a":1}\n')
+        var buffer = new Buffer('{"when":0,"qualifier":"bigeasy.prolific","level":"trace","a":1}\n')
         chunk = new Chunk(1, buffer, buffer.length)
         io.async.write(chunk.header(previousChecksum))
         io.async.write(chunk.buffer)
         previousChecksum = chunk.checksum
-        buffer = new Buffer('{"qualifier":"bigeasy.prolific","level":"trace","a":1}\n')
+        buffer = new Buffer('{"when":0,"qualifier":"bigeasy.prolific","level":"trace","a":1}\n')
         chunk = new Chunk(2, buffer, buffer.length)
         io.async.write(chunk.header(previousChecksum))
         io.async.write(chunk.buffer)
