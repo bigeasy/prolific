@@ -22,3 +22,9 @@ prolific \
     aggregate --with 'bigeasy.service#health' --average 'http=$.http.mean' --sum 'messages=$.messages' \
     spawn [ jq '.' ] \
   node parent.bin.js --param value prolific --configuration inherit node child.bin.js
+
+# Conserve namespace for now reuse `prolific.tcp`, `prolific.udp`.
+prolific \
+    tcp://127.0.0.1:8514 \
+    aggregate --with 'bigeasy.service#health' --average 'http=$.http.mean' \
+    prolific.udp --bind 9514
