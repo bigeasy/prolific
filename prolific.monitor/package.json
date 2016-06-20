@@ -1,6 +1,6 @@
 {
     "name":             "prolific.monitor",
-    "version":          "2.3.5",
+    "version":          "2.3.6",
     "author":           "Alan Gutierrez <alan@prettyrobots.com>",
     "description":      "Generic monitor implementation that watches a process that emits messages using a Prolific Shuttle.",
     "keywords":
