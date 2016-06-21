@@ -19,22 +19,22 @@
     },
     "dependencies":
     {
-                        "arguable":             "2.5.7",
-                        "cadence":              "1.x",
-                        "delta":                "1.x",
-                        "nop":                  "1.x",
-                        "prolific.collector":   "2.x",
+                        "arguable":             "2.5.x",
+                        "cadence":              "1.0.x",
+                        "delta":                "1.0.x",
+                        "nop":                  "1.0.x",
+                        "prolific.collector":   "2.0.3",
                         "prolific.pumper":      "0.1.2",
-                        "prolific.inherit":     "2.x",
-                        "prolific.main":        "0.x",
+                        "prolific.inherit":     "2.0.1",
+                        "prolific.main":        "0.0.5",
                         "prolific":             "2.3.1",
                         "prolific.ipc":         "1.0.3"
     },
     "devDependencies":
     {
-                        "prolific.queue":       "2.x",
+                        "prolific.queue":       "2.1.x",
                         "prolific.shuttle":     "2.4.x",
-                        "proof":                "1.x"
+                        "proof":                "1.0.x"
     },
     "bin":
     {
