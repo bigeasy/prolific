@@ -28,13 +28,9 @@ var url = require('url')
 
 require('arguable')(module, require('cadence')(function (async, program) {
     var configure = require('./configure')
-    var nop = require('nop')
+    var killer = require('./killer')
 
     program.helpIf(program.command.param.help)
-
-    // Let child shtudown to shut us down.
-    program.on('SIGINT', nop)
-    program.on('SIGTERM', nop)
 
     var configuration = configure(program.env, program.command.param.configuration)
 
@@ -67,6 +63,9 @@ require('arguable')(module, require('cadence')(function (async, program) {
                 })(processors)
             }, function () {
                 var child = children.spawn(argv.shift(), argv, { stdio: inheritance.stdio })
+                // Let child shtudown to shut us down.
+                program.on('SIGINT', killer(child, 'SIGINT'))
+                program.on('SIGTERM', killer(child, 'SIGTERM'))
                 var io = { async: child.stdio[inheritance.fd], sync: child.stderr }
                 ipc(program.command.param.ipc, process, child)
                 processors.push(nullProcessor)
