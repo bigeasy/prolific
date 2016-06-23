@@ -1,12 +1,22 @@
-function Processor () {
-    var pair = parameters.params['with'].split('#')
-    this._context = pair[0]
-    this._name = pair[1]
-    this._interval = +(parameter.params.interval || 30000)
-    this._history = +(parameter.params.history || 60000)
-    this._null = parameter.params['null'] == 'skip' ? null : +(parameter.params['null'])
-    this._windows = []
-    this._logger = require('prolific.logger').createLogger(parameters.param.name)
+var Logger = require('prolific.logger')
+var aggregates = {
+    sum: require('./sum'),
+    count: require('./count')
+}
+
+// TODO Considering 'level/qualifier#name' to specify output and using
+// 'field:$.example' for field selectors and extractors.
+function Processor (parameters) {
+    var params = parameters.params
+    this._in =  parameters.params['in']
+    this._interval = +(params.interval || 30000)
+    this._duration = +(params.duration || 60000)
+    this._missing = params.missing == 'skip' ? null : +(params.missing)
+    var out = (params.out || 'prolific.aggregate#summary').split('#')
+    this._out = {
+        logger: Logger.createLogger(out[0]),
+        name: out[1]
+    }
     parameters.ordered.forEach(function (parameter) {
         if (/^average|count|sum$/.test(parameter.name)) {
             var pair = parameter.value.split('=')
@@ -23,8 +33,7 @@ function Processor () {
 Processor.prototype.open = function (callback) { callback() }
 
 Processor.prototype.process = function (entry) {
-// TODO Flattening is now.
-    if (entry.name == this._name && entry.context == this._context) {
+    if (entry.qualified == this._qualified) {
         this._operations.forEach(function (operation) {
             var value = operation.select.call(null, entry)
             operation.aggregate.sample(value == null ? this._null : value)
@@ -43,3 +52,5 @@ Processor.prototype.interval = function () {
 }
 
 Processor.prototype.close = function (callback) { callback() }
+
+module.exports = Processor
