@@ -21,18 +21,18 @@
     },
     "dependencies":
     {
-                            "abend":                        "1.x",
-                            "arguable":                     "2.5.x",
-                            "cadence":                      "1.x",
-                            "delta":                        "1.x",
-                            "prolific.monitor":             "2.3.*",
-                            "prolific.sender.stream":       "1.x",
-                            "timezone":                     "1.x",
-                            "vestibule":                    "1.x"
+                            "abend":                        "1.0.x",
+                            "arguable":                     "2.6.x",
+                            "cadence":                      "1.0.x",
+                            "delta":                        "1.0.x",
+                            "prolific.monitor":             "2.3.x",
+                            "prolific.sender.stream":       "1.0.x",
+                            "timezone":                     "1.0.x",
+                            "vestibule":                    "1.1.x"
     },
     "devDependencies":
     {
-                            "proof":                        "1.x"
+                            "proof":                        "1.0.x"
     },
     "main":                 "file.argv",
     "scripts":
