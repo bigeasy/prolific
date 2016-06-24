@@ -21,6 +21,7 @@
     "dependencies":
     {
                             "arguable":                     "2.6.x",
+                            "assessment":                   "1.0.x",
                             "cadence":                      "1.0.x",
                             "prolific.logger":              "0.0.x",
                             "prolific.monitor":             "2.3.x"
