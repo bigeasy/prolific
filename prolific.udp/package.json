@@ -8,7 +8,6 @@
                             "logging", "syslog", "udp"
     ],
     "license":              "MIT",
-    "contributors":         [],
     "homepage":             "https://github.com/bigeasy/prolific",
     "bugs":                 "https://github.com/bigeasy/prolific/issues",
     "repository":
@@ -21,14 +20,14 @@
     },
     "dependencies":
     {
-                            "arguable":             "2.x",
-                            "cadence":              "1.x",
-                            "prolific.monitor":     "2.3.x",
-                            "reactor":              "2.x"
+                            "arguable":                     "2.x",
+                            "cadence":                      "1.x",
+                            "prolific.monitor":             "2.3.x",
+                            "reactor":                      "2.x"
     },
     "devDependencies":
     {
-                            "proof":                "1.x"
+                            "proof":                        "1.x"
     },
     "main":                 "udp.argv",
     "scripts":
