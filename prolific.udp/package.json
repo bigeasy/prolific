@@ -20,14 +20,14 @@
     },
     "dependencies":
     {
-                            "arguable":                     "2.x",
-                            "cadence":                      "1.x",
+                            "arguable":                     "2.6.x",
+                            "cadence":                      "1.0.x",
                             "prolific.monitor":             "2.3.x",
-                            "reactor":                      "2.x"
+                            "reactor":                      "2.2.x"
     },
     "devDependencies":
     {
-                            "proof":                        "1.x"
+                            "proof":                        "1.0.x"
     },
     "main":                 "udp.argv",
     "scripts":
