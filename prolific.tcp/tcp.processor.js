@@ -4,6 +4,8 @@ var url = require('url')
 var delta = require('delta')
 var net = require('net')
 
+var stringify = require('prolific.monitor/stringify')
+
 function Processor (parameters, next) {
     var params = parameters.params
     this._processing = new Reactor({ object: this, method: '_process' })
@@ -15,8 +17,10 @@ function Processor (parameters, next) {
     this._rotate = params.rotate ? +params.rotate : 1024 * 1024 * 16
 }
 
+Processor.prototype.open = function (callback) { callback() }
+
 Processor.prototype.process = function (entry) {
-    this._entries.push(entry)
+    this._entries.push(stringify(entry))
     this._processing.check()
     this._next.process(entry)
 }

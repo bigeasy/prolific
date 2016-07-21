@@ -18,7 +18,9 @@ function prove (async, assert) {
     async(function () {
         wait = async()
     }, function () {
-        processor.process(new Buffer('abc\n'))
+        processor.open(async())
+    }, function () {
+        processor.process({ formatted: new Buffer('abc\n') })
     })
 
     async(function () {
@@ -32,7 +34,7 @@ function prove (async, assert) {
         }, function (data) {
             assert(data.toString(), 'abc\n', 'tcp send')
             delta(async()).ee(socket).on('data')
-            processor.process(new Buffer('xyz\n'))
+            processor.process({ formatted: new Buffer('xyz\n') })
         }, function (data) {
             assert(data.toString(), 'xyz\n', 'tcp send rotate')
             delta(async()).ee(socket).on('end')
