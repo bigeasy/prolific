@@ -16,7 +16,7 @@ prolific \
     tcp://127.0.0.1:8514 \
     syslog --application paxos --serialize wafer \
   tee \
-    tcp://127.0.0.1:514 \
+    tcp://127.0.0.1:514 --rotate 512k \
     @prolific.monitor/filter +'$context[2] == "bigeasy.paxos" && $level <= $trace' \
     @prolific.monitor/level info bigeasy.database=trace bigeasy.paxos=trace \
     aggregate --with 'bigeasy.service#health' --average 'http=$.http.mean' --sum 'messages=$.messages' \
