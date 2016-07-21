@@ -1,15 +1,18 @@
 {
     "name":                 "prolific.filter",
     "version":              "0.0.0",
-    "author":               "Alan Gutierrez <alan@prettyrobots.com>",
-    "description":          "Forward to TCP implementation of a Prolific supervisor.",
+    "description":
+
+      "Forward to TCP implementation of a Prolific supervisor.",
+
     "keywords":
     [
-                            "logging", "log", "syslog"
+                            "logging", "log", "syslog", "filter"
     ],
-    "license":              "MIT",
+    "author":               "Alan Gutierrez <alan@prettyrobots.com>",
     "homepage":             "https://github.com/bigeasy/prolific",
     "bugs":                 "https://github.com/bigeasy/prolific/issues",
+    "license":              "MIT",
     "repository":
     {
                             "type": "git",
@@ -18,11 +21,7 @@
     "dependencies":
     {
                             "arguable":                     "2.x",
-                            "cadence":                      "1.x",
-                            "prolific.ipc":                 "1.x",
-                            "prolific.inherit":             "1.x",
-                            "prolific.monitor":             "1.x",
-                            "prolific.shuttle":             "1.x"
+                            "cadence":                      "1.x"
     },
     "devDependencies":
     {
