@@ -20,7 +20,7 @@ function Processor (parameters, next) {
 Processor.prototype.open = function (callback) { callback() }
 
 Processor.prototype.process = function (entry) {
-    this._entries.push(stringify(entry))
+    this._entries.push(new Buffer(stringify(entry)))
     this._processing.check()
     this._next.process(entry)
 }
