@@ -1,0 +1,24 @@
+Prolific Filter
+
+Filter Prolific logging messages.
+
+    Discussion:     https://github.com/bigeasy/prolific/issues/1
+
+    Documentation:  https://bigeasy.github.io/prolific
+    Source:         https://github.com/bigeasy/prolific
+    Issues:         https://github.com/bigeasy/prolific/issues
+    CI:             https://travis-ci.org/bigeasy/prolific
+    Coverage:       https://coveralls.io/github/bigeasy/prolific
+
+    Install:        `npm install prolific`
+
+    License:        MIT
+
+
+Usage
+
+    prolific stdio filter +'$level >= INFO' node my-program.js
+
+To learn everything you want to know about Prolific start here:
+
+    http://bigeasy.github.io/prolific
