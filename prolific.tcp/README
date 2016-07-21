@@ -2,15 +2,15 @@ Prolific TCP
 
 A TCP publisher for Prolific.
 
-    Discussion:     https://github.com/bigeasy/empathy/issues/1
+    Discussion:     https://github.com/bigeasy/prolific/issues/1
 
-    Documentation:  https://bigeasy.github.io/empathy
-    Source:         https://github.com/bigeasy/empathy
-    Issues:         https://github.com/bigeasy/empathy/issues
-    CI:             https://travis-ci.org/bigeasy/empathy
-    Coverage:       https://coveralls.io/github/bigeasy/empathy
+    Documentation:  https://bigeasy.github.io/prolific
+    Source:         https://github.com/bigeasy/prolific
+    Issues:         https://github.com/bigeasy/prolific/issues
+    CI:             https://travis-ci.org/bigeasy/prolific
+    Coverage:       https://coveralls.io/github/bigeasy/prolific
 
-    Install:        `npm install empathy`
+    Install:        `npm install prolific`
 
     License:        MIT
 
