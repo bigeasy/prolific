@@ -1,6 +1,6 @@
 {
     "name":                 "prolific.filter",
-    "version":              "1.0.3",
+    "version":              "0.0.0",
     "author":               "Alan Gutierrez <alan@prettyrobots.com>",
     "description":          "Forward to TCP implementation of a Prolific supervisor.",
     "keywords":
