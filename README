@@ -1,0 +1,14 @@
+Cadence GitHub Pages
+
+To build.
+
+$ make
+
+To serve at 127.0.0.1:4000.
+
+$ make serve
+
+To serve at 127.0.0.1:4000, build, and reload Chrome on OS X when changes are
+made.
+
+$ make watch
