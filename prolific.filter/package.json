@@ -3,7 +3,7 @@
     "version":              "0.0.0",
     "description":
 
-      "Forward to TCP implementation of a Prolific supervisor.",
+      "Filter Prolific logging messages.",
 
     "keywords":
     [
