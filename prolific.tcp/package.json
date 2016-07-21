@@ -20,16 +20,15 @@
     },
     "dependencies":
     {
-                            "arguable":                     "2.x",
-                            "cadence":                      "1.x",
-                            "prolific.ipc":                 "1.x",
-                            "prolific.inherit":             "1.x",
-                            "prolific.monitor":             "1.x",
-                            "prolific.sender.tcp":          "1.x"
+                            "arguable":                     "2.6.x",
+                            "cadence":                      "1.0.x",
+                            "delta":                        "1.1.x",
+                            "prolific.monitor":             "2.3.x",
+                            "reactor":                      "2.2.x"
     },
     "devDependencies":
     {
-                            "proof":                        "1.x"
+                            "proof":                        "1.0.x"
     },
     "main":                 "tcp.bin",
     "scripts":
