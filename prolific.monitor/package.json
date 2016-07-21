@@ -1,47 +1,49 @@
 {
-    "name":             "prolific.monitor",
-    "version":          "2.3.8",
-    "author":           "Alan Gutierrez <alan@prettyrobots.com>",
-    "description":      "Generic monitor implementation that watches a process that emits messages using a Prolific Shuttle.",
+    "name":                 "prolific.monitor",
+    "version":              "2.3.8",
+    "description":
+
+      "Main Prolific executable.",
+
     "keywords":
     [
-                        "logging", "log", "syslog"
+                            "logging", "log", "syslog"
     ],
-    "license":          "MIT",
-    "contributors":     [],
-    "homepage":         "https://github.com/bigeasy/prolific",
-    "bugs":             "https://github.com/bigeasy/prolific/issues",
-    "main":             "monitor.bin",
+    "author":               "Alan Gutierrez <alan@prettyrobots.com>",
+    "homepage":             "https://github.com/bigeasy/prolific",
+    "bugs":                 "https://github.com/bigeasy/prolific/issues",
+    "license":              "MIT",
     "repository":
     {
-                        "type": "git",
-                        "url": "http://github.com/bigeasy/prolific.git"
+                            "type": "git",
+                            "url": "http://github.com/bigeasy/prolific.git"
     },
     "dependencies":
     {
-                        "arguable":             "2.5.x",
-                        "cadence":              "1.0.x",
-                        "delta":                "1.0.x",
-                        "nop":                  "1.0.x",
-                        "prolific.collector":   "2.0.3",
-                        "prolific.pumper":      "0.1.2",
-                        "prolific.inherit":     "2.0.1",
-                        "prolific.main":        "0.0.5",
-                        "prolific":             "2.3.1",
-                        "prolific.ipc":         "1.0.3"
+                            "arguable":                     "2.5.x",
+                            "cadence":                      "1.0.x",
+                            "delta":                        "1.0.x",
+                            "nop":                          "1.0.x",
+                            "prolific.collector":           "2.0.3",
+                            "prolific.pumper":              "0.1.2",
+                            "prolific.inherit":             "2.0.1",
+                            "prolific.main":                "0.0.5",
+                            "prolific":                     "2.3.1",
+                            "prolific.ipc":                 "1.0.3"
     },
     "devDependencies":
     {
-                        "prolific.queue":       "2.1.x",
-                        "prolific.shuttle":     "2.4.x",
-                        "proof":                "1.0.x"
+                            "prolific.queue":               "2.1.x",
+                            "prolific.shuttle":             "2.4.x",
+                            "proof":                        "1.0.x"
     },
+    "main":                 "monitor.bin",
     "bin":
     {
-                        "prolific":             "monitor.bin.js"
+                            "prolific":                     "monitor.bin.js"
     },
     "scripts":
     {
-                        "test": "proof test t/*.t.js"
+                            "test": "proof test t/*.t.js"
     }
 }
