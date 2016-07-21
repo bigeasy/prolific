@@ -23,6 +23,7 @@
                             "arguable":                     "2.6.x",
                             "cadence":                      "1.0.x",
                             "delta":                        "1.1.x",
+                            "prolific":                     "2.3.x",
                             "prolific.monitor":             "2.3.x",
                             "reactor":                      "2.2.x"
     },
@@ -30,7 +31,11 @@
     {
                             "proof":                        "1.0.x"
     },
-    "main":                 "tcp.bin",
+    "main":                 "tcp.argv",
+    "bin":
+    {
+                            "prolific.tcp":                 "tcp.bin.js"
+    },
     "scripts":
     {
                             "test": "proof test t/*.t.js"
