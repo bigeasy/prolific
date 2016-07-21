@@ -1,0 +1,24 @@
+Prolific TCP
+
+A TCP publisher for Prolific.
+
+    Discussion:     https://github.com/bigeasy/empathy/issues/1
+
+    Documentation:  https://bigeasy.github.io/empathy
+    Source:         https://github.com/bigeasy/empathy
+    Issues:         https://github.com/bigeasy/empathy/issues
+    CI:             https://travis-ci.org/bigeasy/empathy
+    Coverage:       https://coveralls.io/github/bigeasy/empathy
+
+    Install:        `npm install empathy`
+
+    License:        MIT
+
+
+Usage
+
+    prolific tcp://127.0.0.1:514 node my-program.js
+
+To learn everything you want to know about Prolific start here:
+
+    http://bigeasy.github.io/prolific
