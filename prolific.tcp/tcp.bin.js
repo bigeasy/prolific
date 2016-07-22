@@ -18,6 +18,10 @@ require('arguable')(module, require('cadence')(function (async, program) {
     program.command.required('bind')
 
     var prolific = require('prolific')
+    var logger = require('prolific.logger').createLogger('prolific.tcp.listener')
+    var Shuttle = require('prolific.shuttle')
+
+    Shuttle.shuttle(program, 1000, logger)
 
     var bind = program.command.bind('bind')
 
@@ -28,4 +32,6 @@ require('arguable')(module, require('cadence')(function (async, program) {
     })
 
     server.listen(bind.port, bind.address, async())
+    program.on('SIGTERM', server.close.bind(server))
+    program.on('SIGINT', server.close.bind(server))
 }))
