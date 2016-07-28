@@ -1,23 +1,26 @@
-module.exports = function (program, terminal, argv) {
-// TODO Use `program.assert`.
-    if (argv.length == 0) {
-        program.abend('no program')
+module.exports = function (terminal, argv) {
+    if (terminal || argv[0] == 'node') {
+        return null
     }
-    return terminal || !/(^[\w.]+$|^[\w.]+:)/.test(argv[0]) || argv[0] == 'node' || (function () {
-        try {
-            var command = argv[0]
-            if (~command.indexOf(':')) {
-                argv.shift()
-                argv.unshift(command.split(':')[0], '--url', command)
-            }
-            command = argv[0]
-            if (command[0] == '@') {
-                return ! require(command[0].substring(1)).isProlific
-            } else {
-                return ! require('prolific.' + command + '/__prolific__').isProlific
-            }
-        } catch (e) {
-            return true
+    var command = argv[0], url = null
+    if (~command.indexOf(':')) {
+        url = command
+        command = command.split(':')[0]
+    }
+    var pkg = command[0] == '@'
+            ? command.substring(1)
+            : 'prolific.' + command
+    try {
+        var required = require(pkg)
+        if (!required.isProlific) {
+            return null
         }
-    })()
+        argv.shift()
+        if (url != null) {
+            argv.unshift('--url', url)
+        }
+        return required
+    } catch (e) {
+        return null
+    }
 }

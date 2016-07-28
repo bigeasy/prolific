@@ -40,7 +40,9 @@ require('arguable')(module, require('cadence')(function (async, program) {
     var isProgram = require('./programmatic')
     var argv = program.argv.slice(), terminal = false
     var loop = async(function () {
-        if (isProgram(program, terminal, argv)) {
+        program.assert(argv.length != 0, 'no program')
+        var parser = isProgram(terminal, argv)
+        if (parser == null) {
             process.env.PROLIFIC_CONFIGURATION = JSON.stringify(configuration)
             var nullProcessor = { process: function () {} }, nextProcessor = nullProcessor
             var processors = configuration.processors.map(function (configuration) {
@@ -74,10 +76,6 @@ require('arguable')(module, require('cadence')(function (async, program) {
                 return [ loop.break, code ]
             })
         } else {
-            var command = argv.shift()
-            var parser = command[0] == '@'
-                       ? require(command[0].substring(1))
-                       : require('prolific.' + command + '/' + command + '.argv')
             async(function () {
                 parser(argv, async())
             }, function (processor) {
