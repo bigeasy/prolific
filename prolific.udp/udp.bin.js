@@ -16,7 +16,9 @@
 
  */
 require('arguable')(module, require('cadence')(function (async, program) {
-    program.helpIf(program.param.help)
+    var Shuttle = require('prolific.shuttle')
+
+    program.helpIf(program.command.param.help)
     program.command.required('bind')
 
     var logger = require('prolific.logger').createLogger('prolific.udp.listener')
@@ -24,10 +26,12 @@ require('arguable')(module, require('cadence')(function (async, program) {
 
     var dgram = require('dgram')
     var socket = dgram.createSocket('udp4')
-    socket.on('message', function (buffer) {
+    var prolific = require('prolific')
+    socket.on('message', function (chunk) {
         prolific.sink.write(chunk)
     })
     program.on('SIGINT', socket.close.bind(socket))
     program.on('SIGTERM', socket.close.bind(socket))
-    socket.bind(+program.param.port, async())
+    var bind = program.command.bind('bind')
+    socket.bind(bind.port, bind.address, async())
 }))
