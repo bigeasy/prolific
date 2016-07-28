@@ -1,4 +1,5 @@
 module.exports = function (program, terminal, argv) {
+// TODO Use `program.assert`.
     if (argv.length == 0) {
         program.abend('no program')
     }
@@ -10,7 +11,11 @@ module.exports = function (program, terminal, argv) {
                 argv.unshift(command.split(':')[0], '--url', command)
             }
             command = argv[0]
-            return ! require('prolific.' + command + '/__prolific__').isProlific
+            if (command[0] == '@') {
+                return ! require(command[0].substring(1)).isProlific
+            } else {
+                return ! require('prolific.' + command + '/__prolific__').isProlific
+            }
         } catch (e) {
             return true
         }

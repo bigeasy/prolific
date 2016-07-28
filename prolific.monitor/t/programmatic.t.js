@@ -1,4 +1,4 @@
-require('proof')(5, prove)
+require('proof')(6, prove)
 
 function prove (assert) {
     var programmatic = require('../programmatic')
@@ -12,4 +12,5 @@ function prove (assert) {
     var argv = [ 'test://127.0.0.1' ]
     assert(!programmatic(null, false, argv), 'test url found')
     assert(argv, [ 'test', '--url', 'test://127.0.0.1' ], 'url expanded')
+    assert([ '@prolific.test' ], [ '@prolific.test' ], 'as module')
 }

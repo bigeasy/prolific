@@ -75,7 +75,9 @@ require('arguable')(module, require('cadence')(function (async, program) {
             })
         } else {
             var command = argv.shift()
-            var parser = require('prolific.' + command + '/' + command + '.argv')
+            var parser = command[0] == '@'
+                       ? require(command[0].substring(1))
+                       : require('prolific.' + command + '/' + command + '.argv')
             async(function () {
                 parser(argv, async())
             }, function (processor) {
