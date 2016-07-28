@@ -1,6 +1,6 @@
 {
     "name":                 "prolific.udp",
-    "version":              "0.0.4",
+    "version":              "0.0.5",
     "description":
 
       "A TCP sender implementation for the Prolific logging framework.",
