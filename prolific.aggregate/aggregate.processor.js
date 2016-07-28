@@ -1,4 +1,5 @@
 var Logger = require('prolific.logger')
+
 var aggregates = {
     sum: require('./sum'),
     count: require('./count')

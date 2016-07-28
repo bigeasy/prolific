@@ -1,6 +1,6 @@
 /*
     ___ usage ___ en_US ___
-    usage: prolific udp <options>
+    usage: prolific average <options>
 
         -q, --qualified <string>
             The qualified name of the entry to aggregate.
