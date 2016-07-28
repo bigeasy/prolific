@@ -1,6 +1,6 @@
 {
     "name":                 "prolific.tcp",
-    "version":              "2.1.3",
+    "version":              "2.1.4",
     "description":
 
       "Forward to TCP implementation of a Prolific supervisor.",
