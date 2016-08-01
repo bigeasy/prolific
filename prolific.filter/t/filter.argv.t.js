@@ -1,7 +1,8 @@
-require('proof')(1, require('cadence')(prove))
+require('proof')(2, require('cadence')(prove))
 
 function prove (async, assert) {
     var argv = require('../filter.argv')
+    var program
     async(function () {
         argv([ '--select', '$.name == "foo"' ], {}, async())
     }, function (result) {
@@ -11,5 +12,10 @@ function prove (async, assert) {
             argv: [],
             terminal: false
         }, 'configuration')
+        program = argv([], {
+            isMainModule: true
+        }, async())
+    }, function () {
+        assert(program.stdout.read() != null, 'inspect')
     })
 }

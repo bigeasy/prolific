@@ -14,8 +14,6 @@
 */
 
 require('arguable')(module, require('cadence')(function (async, program) {
-    var util = require('util')
-
     program.helpIf(program.ultimate.help)
 
     var response = {
@@ -26,7 +24,7 @@ require('arguable')(module, require('cadence')(function (async, program) {
     }
 
     if (program.isMainModule) {
-        program.stdout.write(util.inspect(response, { depth: null }) + '\n')
+        process.stdout.write(require('util').inspect(response, { depth: null }) + '\n')
     }
 
     return response
