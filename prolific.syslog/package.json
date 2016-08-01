@@ -18,15 +18,15 @@
     },
     "dependencies":
     {
-                            "arguable":             "3.0.x",
-                            "cadence":              "1.x",
-                            "prolific.shuttle":     "2.4.x",
-                            "prolific.logger":      "0.0.4",
-                            "timezone":             "1.x"
+                            "arguable":                     "3.0.x",
+                            "cadence":                      "1.x",
+                            "prolific.shuttle":             "2.4.x",
+                            "prolific.logger":              "0.0.4",
+                            "timezone":                     "1.x"
     },
     "devDependencies":
     {
-                            "proof":                "1.x"
+                            "proof":                        "1.x"
     },
     "main":                 "syslog.argv",
     "scripts":
