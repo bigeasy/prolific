@@ -7,7 +7,7 @@
 
     "keywords":
     [
-                            "http", "https", "rest", "json", "curl"
+                            "logging", "log", "syslog"
     ],
     "author":               "Alan Gutierrez <alan@prettyrobots.com>",
     "contributors":         [],
