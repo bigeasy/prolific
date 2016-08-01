@@ -21,11 +21,11 @@
     "dependencies":
     {
                             "arguable":                     "3.0.x",
-                            "cadence":                      "1.x"
+                            "cadence":                      "1.0.x"
     },
     "devDependencies":
     {
-                            "proof":                        "1.x"
+                            "proof":                        "1.0.x"
     },
     "main":                 "filter.argv",
     "scripts":
