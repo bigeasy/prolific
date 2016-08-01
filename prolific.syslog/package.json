@@ -18,7 +18,7 @@
     },
     "dependencies":
     {
-                            "arguable":             "2.5.x",
+                            "arguable":             "3.0.x",
                             "cadence":              "1.x",
                             "prolific.shuttle":     "2.4.x",
                             "prolific.logger":      "0.0.4",
