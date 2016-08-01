@@ -24,7 +24,7 @@ require('arguable')(module, require('cadence')(function (async, program) {
     }
 
     if (program.isMainModule) {
-        process.stdout.write(require('util').inspect(response, { depth: null }) + '\n')
+        program.stdout.write(require('util').inspect(response, { depth: null }) + '\n')
     }
 
     return response
