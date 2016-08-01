@@ -1,7 +1,6 @@
 {
     "name":                 "prolific.inherit",
     "version":              "2.0.1",
-    "author":               "Alan Gutierrez <alan@prettyrobots.com>",
     "description":
 
        "Utility to determine which file handles the user wants a child to inherit from a Prolific supervisor.",
@@ -10,10 +9,10 @@
     [
                             "logging", "log", "syslog"
     ],
-    "license":              "MIT",
+    "author":               "Alan Gutierrez <alan@prettyrobots.com>",
     "homepage":             "https://github.com/bigeasy/prolific",
     "bugs":                 "https://github.com/bigeasy/prolific/issues",
-    "main":                 "inherit",
+    "license":              "MIT",
     "repository":
     {
                             "type": "git",
@@ -26,6 +25,7 @@
     {
                             "proof":                        "1.x"
     },
+    "main":                 "inherit",
     "scripts":
     {
                             "test": "proof test t/*.t.js"
