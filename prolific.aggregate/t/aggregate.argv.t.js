@@ -1,7 +1,8 @@
-require('proof')(1, require('cadence')(prove))
+require('proof')(2, require('cadence')(prove))
 
 function prove (async, assert) {
     var argv = require('../aggregate.argv')
+    var stream = require('stream'), program
     async(function () {
         argv([ '--qualified', 'bigeasy.example#request' ], {}, async())
     }, function (result) {
@@ -11,5 +12,10 @@ function prove (async, assert) {
             argv: [],
             terminal: false
         }, 'configuration')
+        program = argv([ '--qualified', 'bigeasy.example#request' ], {
+            isMainModule: true
+        }, async())
+    }, function () {
+        assert(program.stdout.read() != null, 'inspect')
     })
 }
