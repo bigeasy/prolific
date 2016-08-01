@@ -1,7 +1,9 @@
 {
     "name":                 "prolific.syslog",
     "version":              "0.0.2",
-    "description":          "Consolidate chunks emitted from the logging stream and standard error of a supervised process.",
+    "description":
+
+      "A filter that formats Prolific messages as `syslog` messages.",
 
     "keywords":
     [
