@@ -17,15 +17,15 @@
 */
 
 require('arguable')(module, require('cadence')(function (async, program) {
-    program.helpIf(program.command.params.help)
+    program.helpIf(program.ultimate.help)
     var response = {
         moduleName: 'prolific.tcp/tcp.processor',
-        parameters: { params: program.command.param },
+        parameters: { params: program.ultimate },
         argv: program.argv,
-        terminal: program.command.terminal
+        terminal: program.terminal
     }
-    if (process.mainModule == module) {
-        console.log(response)
+    if (program.isMainModule) {
+        program.stdout.write(require('util').inspect(response, { depth: null }) + '\n')
     }
     return response
 }))
