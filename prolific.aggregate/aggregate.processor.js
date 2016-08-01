@@ -1,3 +1,4 @@
+var cadence = require('cadence')
 var Logger = require('prolific.logger')
 
 var aggregates = {
@@ -32,11 +33,11 @@ function Processor (parameters) {
     }, this)
 }
 
-Processor.prototype.open = function (callback) {
+Processor.prototype.open = cadence(function (async) {
     this._clearInterval()
     this._timer = setInterval(this.interval.bind(this), this._interval)
-    callback()
-}
+    return []
+})
 
 Processor.prototype.process = function (entry) {
     if (entry.qualified == this._in) {
@@ -66,9 +67,9 @@ Processor.prototype._clearInterval = function () {
     }
 }
 
-Processor.prototype.close = function (callback) {
+Processor.prototype.close = cadence(function (async) {
     this._clearInterval()
-    callback()
-}
+    return []
+})
 
 module.exports = Processor
