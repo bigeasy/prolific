@@ -1,7 +1,7 @@
-require('proof')(1, require('cadence')(prove))
+require('proof')(2, require('cadence')(prove))
 
 function prove (async, assert) {
-    var argv = require('../file.argv')
+    var argv = require('../file.argv'), program
     async(function () {
         argv([ '--file', 'a' ], {}, async())
     }, function (result) {
@@ -11,5 +11,10 @@ function prove (async, assert) {
             argv: [],
             terminal: false
         }, 'configuration')
+        program = argv([ '--file', 'a' ], {
+            isMainModule: true
+        }, async())
+    }, function () {
+        assert(program.stdout.read() != null, 'inspect')
     })
 }
