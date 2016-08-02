@@ -1,38 +1,40 @@
 {
-    "name":             "prolific.shuttle",
-    "version":          "2.4.8",
-    "author":           "Alan Gutierrez <alan@prettyrobots.com>",
-    "description":      "Log shuttle implementation that transmits final messages to Prolific monitor.",
+    "name":                 "prolific.shuttle",
+    "version":              "2.4.8",
+    "author":               "Alan Gutierrez <alan@prettyrobots.com>",
+    "description":
+
+      "Log shuttle implementation that transmits final messages to Prolific monitor.",
+
     "keywords":
     [
-                        "http", "https", "rest", "json", "curl"
+                            "http", "https", "rest", "json", "curl"
     ],
-    "license":          "MIT",
-    "contributors":     [],
-    "homepage":         "https://github.com/bigeasy/prolific",
-    "bugs":             "https://github.com/bigeasy/prolific/issues",
-    "main":             "shuttle",
+    "license":              "MIT",
+    "homepage":             "https://github.com/bigeasy/prolific",
+    "bugs":                 "https://github.com/bigeasy/prolific/issues",
+    "main":                 "shuttle",
     "repository":
     {
-                        "type": "git",
-                        "url": "http://github.com/bigeasy/prolific.git"
+                            "type": "git",
+                            "url": "http://github.com/bigeasy/prolific.git"
     },
     "bin":
     {
     },
     "dependencies":
     {
-                        "abend":                "1.x",
-                        "isochronous":          "1.x",
-                        "prolific":             "2.x",
-                        "prolific.queue":       "2.x"
+                            "abend":                "1.x",
+                            "isochronous":          "1.x",
+                            "prolific":             "2.x",
+                            "prolific.queue":       "2.x"
     },
     "devDependencies":
     {
-                        "proof":                "1.x"
+                            "proof":                "1.x"
     },
     "scripts":
     {
-                        "test": "proof test t/*.t.js"
+                            "test": "proof test t/*.t.js"
     }
 }
