@@ -30,9 +30,9 @@ require('arguable')(module, require('cadence')(function (async, program) {
     var configure = require('./configure')
     var killer = require('./killer')
 
-    program.helpIf(program.command.param.help)
+    program.helpIf(program.ultimate.help)
 
-    var configuration = configure(program.env, program.command.param.configuration)
+    var configuration = configure(program.env, program.ultimate.configuration)
 
     var inheritance = inherit(program)
     configuration.fd = inheritance.fd
@@ -69,7 +69,7 @@ require('arguable')(module, require('cadence')(function (async, program) {
                 program.on('SIGINT', killer(child, 'SIGINT'))
                 program.on('SIGTERM', killer(child, 'SIGTERM'))
                 var io = { async: child.stdio[inheritance.fd], sync: child.stderr }
-                ipc(program.command.param.ipc, process, child)
+                ipc(program.ultimate.ipc, process, child)
                 processors.push(nullProcessor)
                 pumper(processors[0], child, io, program.stderr, async())
             }, function (code) {
@@ -77,7 +77,7 @@ require('arguable')(module, require('cadence')(function (async, program) {
             })
         } else {
             async(function () {
-                parser(argv, async())
+                parser(argv, {}, async())
             }, function (processor) {
                 configuration.processors.push(processor)
                 argv = processor.argv
