@@ -1,12 +1,14 @@
+var fs = require('fs')
+var stream = require('stream')
+
 var abend = require('abend')
-var Sender = require('prolific.sender.stream')
 var tz = require('timezone')
-var stringify = require('prolific.monitor/stringify')
 var cadence = require('cadence')
 var Vestibule = require('vestibule')
-var stream = require('stream')
-var fs = require('fs')
 var Delta = require('delta')
+
+var stringify = require('prolific.monitor/stringify')
+var Sender = require('prolific.sender.stream')
 
 function Processor (parameters) {
     this._nullSender = {
