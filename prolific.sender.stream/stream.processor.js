@@ -4,7 +4,7 @@ var Vestibule = require('vestibule')
 var stringify = require('prolific.monitor/stringify')
 
 function Processor (stream) {
-    this._stream = stream
+    this.stream = stream
     this._sending = new Vestibule
     this._sending.open = []
     this.lines = []
@@ -30,7 +30,7 @@ Processor.prototype._send = cadence(function (async) {
             var lines = new Buffer(this.lines.join(''))
             this.lines = []
             this.sent += lines.length
-            this._stream.write(lines, async())
+            this.stream.write(lines, async())
         })()
     })
 })
