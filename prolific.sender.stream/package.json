@@ -1,7 +1,6 @@
 {
     "name":                 "prolific.sender.stream",
     "version":              "1.0.3",
-    "author":               "Alan Gutierrez <alan@prettyrobots.com>",
     "description":
 
         "A generic stream sender implementation for the Prolific logging framework.",
@@ -10,18 +9,14 @@
     [
                             "logging", "syslog"
     ],
-    "license":              "MIT",
-    "contributors":         [],
+    "author":               "Alan Gutierrez <alan@prettyrobots.com>",
     "homepage":             "https://github.com/bigeasy/prolific",
     "bugs":                 "https://github.com/bigeasy/prolific/issues",
-    "main":                 "stream.processor",
+    "license":              "MIT",
     "repository":
     {
                             "type": "git",
                             "url": "http://github.com/bigeasy/prolific.git"
-    },
-    "bin":
-    {
     },
     "dependencies":
     {
@@ -34,6 +29,7 @@
     {
                             "proof":                        "1.x"
     },
+    "main":                 "stream.processor",
     "scripts":
     {
                             "test": "proof test t/*.t.js"
