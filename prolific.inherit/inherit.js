@@ -1,6 +1,6 @@
 module.exports = function (program) {
     var seen = {}
-    var stdio = [ 0, 1, 2 ].concat(program.command.params.inherit).map(function (number) {
+    var stdio = [ 0, 1, 2 ].concat(program.grouped.inherit).map(function (number) {
         return +number
     }).sort(function (a, b) {
         return a - b
@@ -16,7 +16,7 @@ module.exports = function (program) {
         }
     }
 
-    if (program.command.param.ipc) {
+    if (program.ultimate.ipc) {
         stdio.push('ipc')
     }
 
