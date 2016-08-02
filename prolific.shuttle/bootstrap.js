@@ -12,6 +12,10 @@ exports.createShuttle = function (net, Shuttle) {
             var pipe = new net.Socket({ fd: configuration.fd  })
             var shuttle = new Shuttle(pipe, pipe, program.stderr, finale, interval)
             prolific.sink = shuttle.queue
+// TODO Would love to be able to HUP this somehow.
+            configuration.levels.forEach(function (level) {
+                prolific.setLevel.apply(prolific, level)
+            })
             program.on('uncaughtException', shuttle.uncaughtException.bind(shuttle))
             program.on('exit', shuttle.exit.bind(shuttle))
 // TODO Not right. Want to stop queue before exiting, there might still be
