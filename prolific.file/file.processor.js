@@ -15,7 +15,7 @@ function Processor (parameters) {
         sent: Infinity,
         process: function (entry) { this.lines.push(stringify(entry)) },
         flush: function (callback) { callback() },
-        _stream: new stream.PassThrough,
+        stream: new stream.PassThrough,
         lines: [],
         rotating: true
     }
@@ -53,7 +53,7 @@ Processor.prototype._flush = cadence(function (async) {
         this._sender.flush(async())
     }, function () {
 // TODO Expose `stream` instead of `_stream`.
-        this._sender._stream.end()
+        this._sender.stream.end()
     })
 })
 
