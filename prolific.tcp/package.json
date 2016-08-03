@@ -24,7 +24,7 @@
                             "cadence":                      "1.0.x",
                             "delta":                        "1.1.x",
                             "prolific":                     "2.3.x",
-                            "prolific.monitor":             "2.3.x",
+                            "prolific.monitor":             "2.5.x",
                             "reactor":                      "2.2.x"
     },
     "devDependencies":
