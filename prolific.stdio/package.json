@@ -21,12 +21,12 @@
     "dependencies":
     {
                             "arguable":                     "3.0.x",
-                            "cadence":                      "1.x",
+                            "cadence":                      "1.0.x",
                             "prolific.monitor":             "2.5.x"
     },
     "devDependencies":
     {
-                            "proof":                        "1.x"
+                            "proof":                        "1.0.x"
     },
     "main":                 "stdio.argv",
     "scripts":
