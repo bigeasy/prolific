@@ -24,7 +24,6 @@
                             "prolific.logger":      "0.0.4",
                             "prolific.monitor":     "2.3.6",
                             "prolific.stdio":       "0.0.4"
-
     },
     "devDependencies":
     {
