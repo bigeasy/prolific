@@ -23,7 +23,7 @@
                             "prolific.shuttle":     "2.4.7",
                             "prolific.logger":      "0.0.4",
                             "prolific.monitor":     "2.3.6",
-                            "prolific.stdio":       "0.0.4"
+                            "prolific.stdio":       "0.0.x"
     },
     "devDependencies":
     {
