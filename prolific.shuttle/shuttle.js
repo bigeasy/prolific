@@ -36,4 +36,8 @@ Shuttle.prototype.exit = function (callback) {
 
 Shuttle.shuttle = require('./bootstrap').createShuttle(require('net'), Shuttle)
 
+Shuttle.filename = module.filename
+
+Shuttle.sink = require('prolific.main')
+
 module.exports = Shuttle

@@ -1,4 +1,4 @@
-var prolific = require('prolific')
+var prolific = require('prolific.main')
 var abend = require('abend')
 var Isochronous = require('isochronous')
 
