@@ -1,6 +1,6 @@
 {
     "name":             "prolific.monitor",
-    "version":          "2.3.1",
+    "version":          "3.0.0",
     "author":           "Alan Gutierrez <alan@prettyrobots.com>",
     "description":      "A logging framework.",
     "keywords":
