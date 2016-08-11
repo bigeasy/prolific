@@ -1,6 +1,6 @@
 {
     "name":                 "prolific.shuttle",
-    "version":              "2.4.9",
+    "version":              "3.0.0",
     "description":
 
       "Log shuttle implementation that transmits final messages to Prolific monitor.",
