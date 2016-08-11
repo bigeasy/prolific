@@ -4,14 +4,19 @@ var fs = require('fs')
 var path = require('path')
 var util = require('util')
 
-var prolific = require('prolific.main')
+var main = require('prolific.main')
 
-var main = coalesce(function () {
-    return require.main.require('prolific.main')
-}, { filename: null })
+var shuttle = {
+    main: coalesce(function () {
+        return require.main.require('prolific.shuttle')
+    }, { filename: null }),
+    mine: coalesce(function () {
+        return require('prolific.shuttle')
+    }, { filename: null })
+}
 
-assert(main.filename == null || main === prolific,
+assert(shuttle.main.filename == shuttle.mine.filename,
     util.format(fs.readFileSync(path.join(__dirname, 'error.txt'), 'utf8'),
-        prolific.filename, main.filename))
+        shuttle.mine.filename, shuttle.main.filename))
 
-module.exports = prolific
+exports.sink = coalesce(shuttle.mine.main, main)
