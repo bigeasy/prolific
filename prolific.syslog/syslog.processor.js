@@ -1,4 +1,3 @@
-var tz = require('timezone')
 var url = require('url')
 
 var FACILITY = {
@@ -54,8 +53,7 @@ Processor.prototype.open = function (callback) { callback() }
 Processor.prototype.process = function (entry) {
     var json = entry.json
     entry.formatted = '<' + (this._facility * 8 + entry.level) + '>1 ' +
-// TODO NO! What? Where is the real timestamp?
-        tz(json.when, '%FT%T.%3NZ') + ' ' +
+        new Date(json.when).toISOString() + ' ' +
         this._context +
         this._serializer.stringify(json) + '\n'
     this._next.process(entry)
