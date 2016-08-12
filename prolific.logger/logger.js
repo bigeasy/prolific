@@ -1,4 +1,4 @@
-var prolific = require('prolific')
+var sink = require('prolific.monitor')
 
 function Logger (qualifier) {
     this.qualifier = qualifier
@@ -7,12 +7,12 @@ function Logger (qualifier) {
 }
 
 Logger.prototype._log = function (level, name, properties) {
-    prolific.json(this._path, level, this.qualifier, name, properties)
+    sink.json(this._path, level, this.qualifier, name, properties)
 }
 
 ; [ 'error', 'warn', 'info', 'debug', 'trace' ].forEach(function (level) {
     Logger.prototype[level] = function (name, properties) {
-        prolific.json(this._path, level, this.qualifier, name, properties)
+        sink.json(this._path, level, this.qualifier, name, properties)
     }
 })
 
