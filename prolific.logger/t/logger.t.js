@@ -5,7 +5,7 @@ function prove (assert) {
     var slice = [].slice
 
     var prolific = require('prolific.monitor')
-    prolific.json = function () {
+    prolific.sink.json = function () {
         var vargs = slice.call(arguments)
         assert(vargs, [
             [ '', 'hello' ],
