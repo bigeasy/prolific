@@ -21,9 +21,7 @@
     "dependencies":
     {
                             "arguable":                     "3.0.x",
-                            "cadence":                      "1.0.x",
-                            "prolific.shuttle":             "2.4.x",
-                            "timezone":                     "1.0.x"
+                            "cadence":                      "1.0.x"
     },
     "devDependencies":
     {
