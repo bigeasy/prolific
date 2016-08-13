@@ -1,6 +1,7 @@
 /node_modules
 /*/node_modules/*
 !/prolific.root/node_modules/prolific.shuttle.js
+!/prolific.rendezvous/node_modules/prolific.shuttle.js
 !/prolific.tee/node_modules/prolific.test
 !/prolific.monitor/node_modules/prolific.test
 !/prolific.supervisor/node_modules/prolific.test.js
