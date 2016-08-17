@@ -1,8 +1,7 @@
 {
-    "name":                 "prolific",
     "private":              true,
-    "version":              "0.0.26",
-    "author":               "Alan Gutierrez <alan@prettyrobots.com>",
+    "name":                 "prolific",
+    "version":              "0.0.0",
     "description":
 
       "A logging framework.",
@@ -11,10 +10,10 @@
     [
                             "logging", "log", "syslog"
     ],
-    "license":              "MIT",
+    "author":               "Alan Gutierrez <alan@prettyrobots.com>",
     "homepage":             "https://github.com/bigeasy/prolific",
     "bugs":                 "https://github.com/bigeasy/prolific/issues",
-    "main":                 "prolific",
+    "license":              "MIT",
     "repository":
     {
                             "type": "git",
@@ -30,6 +29,7 @@
     {
                             "proof":                "1.x"
     },
+    "main":                 "prolific",
     "scripts":
     {
                             "test": "proof platform win32 && proof test */*/*.t.js || t/test"
