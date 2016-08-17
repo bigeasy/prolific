@@ -18,4 +18,6 @@ Logger.prototype._log = function (level, name, properties) {
 
 Logger.createLogger = function (context) { return new Logger(context) }
 
+Logger.sink = sink
+
 module.exports = Logger
