@@ -20,21 +20,20 @@
     },
     "dependencies":
     {
-                            "arguable":                     "3.0.x",
+                            "arguable":                     "3.1.x",
                             "cadence":                      "1.0.x",
-                            "delta":                        "1.0.x",
+                            "delta":                        "1.1.x",
                             "nop":                          "1.0.x",
-                            "prolific.collector":           "2.0.3",
-                            "prolific.pumper":              "0.1.2",
+                            "prolific.collector":           "2.0.x",
+                            "prolific.pumper":              "0.1.x",
                             "prolific.inherit":             "3.0.x",
-                            "prolific.main":                "0.0.5",
-                            "prolific":                     "2.3.1",
-                            "prolific.ipc":                 "1.0.3"
+                            "prolific.main":                "0.0.x",
+                            "prolific.ipc":                 "1.0.x"
     },
     "devDependencies":
     {
                             "prolific.queue":               "2.1.x",
-                            "prolific.shuttle":             "2.4.x",
+                            "prolific.shuttle":             "3.0.x",
                             "proof":                        "1.1.x"
     },
     "main":                 "monitor.bin",
