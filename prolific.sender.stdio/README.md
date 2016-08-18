@@ -1,3 +1,4 @@
-Prolific Sender STDIO
+## Prolific Sender STDIO
 
-A standard I/O sender implementation for the Prolific logging framework.
+This is a defunct module in the Prolific logging framework. It has been replaced
+by `prolific.stdio`.
