@@ -1,4 +1,4 @@
-require('proof')(7, prove)
+require('proof/redux')(7, prove)
 
 function prove (assert) {
     var programmatic = require('../programmatic')

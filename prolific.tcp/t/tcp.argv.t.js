@@ -1,4 +1,4 @@
-require('proof')(2, require('cadence')(prove))
+require('proof/redux')(2, require('cadence')(prove))
 
 function prove (async, assert) {
     var argv = require('../tcp.argv'), program
