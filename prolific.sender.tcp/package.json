@@ -1,6 +1,6 @@
 {
     "name":                 "prolific.sender.tcp",
-    "version":              "2.0.0",
+    "version":              "3.0.0",
     "description":
 
       "This Prolific module has been replaced by `prolific.tcp` module.",
