@@ -5,9 +5,9 @@ var abend = require('abend')
 var tz = require('timezone')
 var cadence = require('cadence')
 var Vestibule = require('vestibule')
-var Delta = require('delta')
+var delta = require('delta')
 
-var stringify = require('prolific.monitor/stringify')
+var stringify = require('prolific/stringify')
 var Sender = require('prolific.sender.stream')
 
 function Processor (parameters) {
@@ -39,7 +39,7 @@ Processor.prototype._rotate = cadence(function (async) {
     }, function () {
         var filename = this._filename + tz(this._Date.now(), '-%F-%H-%M-' + this._pid)
         stream = fs.createWriteStream(filename, { flags: 'a' })
-        new Delta(async()).ee(stream).on('open')
+        delta(async()).ee(stream).on('open')
     }, function () {
         this._sender = new Sender(stream)
         this._sender.splice(this._nullSender.lines)
