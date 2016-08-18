@@ -3,7 +3,7 @@
     "version":              "0.0.6",
     "description":
 
-        "A standard I/O sender implementation for the Prolific logging framework.",
+      "A standard I/O sender implementation for the Prolific logging framework.",
 
     "keywords":
     [

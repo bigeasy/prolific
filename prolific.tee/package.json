@@ -3,7 +3,7 @@
     "version":              "9.9.9",
     "description":
 
-        "Tap into the stream of logging messages and send them in a different direction.",
+      "Tap into the stream of logging messages and send them in a different direction.",
 
     "keywords":
     [

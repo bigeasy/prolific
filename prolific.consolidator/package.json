@@ -3,7 +3,7 @@
     "version":              "0.0.2",
     "description":
 
-        "Consolidate chunks emitted from the logging stream and standard error of a supervised process.",
+      "Consolidate chunks emitted from the logging stream and standard error of a supervised process.",
 
     "keywords":
     [

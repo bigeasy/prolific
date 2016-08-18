@@ -1,14 +1,16 @@
 {
-    "name":                 "prolific.example",
     "private":              true,
+    "name":                 "prolific.example",
     "version":              "0.0.0",
-    "description":          "Chunk log lines for transmission to the Prolific supervisor.",
+    "description":
+
+      "Chunk log lines for transmission to the Prolific supervisor.",
+
     "keywords":
     [
                             "http", "https", "rest", "json", "curl"
     ],
     "author":               "Alan Gutierrez <alan@prettyrobots.com>",
-    "contributors":         [],
     "homepage":             "https://github.com/bigeasy/prolific",
     "bugs":                 "https://github.com/bigeasy/prolific/issues",
     "license":              "MIT",
@@ -19,15 +21,15 @@
     },
     "dependencies":
     {
-                            "prolific.main":        "0.0.5",
-                            "prolific.shuttle":     "2.4.7",
-                            "prolific.logger":      "0.0.4",
-                            "prolific.monitor":     "2.5.x",
-                            "prolific.stdio":       "0.0.x"
+                            "prolific.main":                "0.0.5",
+                            "prolific.shuttle":             "2.4.7",
+                            "prolific.logger":              "0.0.4",
+                            "prolific.monitor":             "2.5.x",
+                            "prolific.stdio":               "0.0.x"
     },
     "devDependencies":
     {
-                            "proof":                "1.x"
+                            "proof":                        "1.x"
     },
     "main":                 "chunk",
     "scripts":

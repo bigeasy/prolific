@@ -3,7 +3,7 @@
     "version":              "9.9.9",
     "description":
 
-        "Write logs to a rotating file.",
+      "Write logs to a rotating file.",
 
     "keywords":
     [
