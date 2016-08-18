@@ -20,15 +20,14 @@
     },
     "dependencies":
     {
-                            "arguable":                     "3.0.x",
-                            "assessment":                   "1.0.x",
+                            "arguable":                     "3.1.x",
+                            "assessment":                   "1.1.x",
                             "cadence":                      "1.0.x",
-                            "prolific.logger":              "0.0.x",
-                            "prolific.monitor":             "2.3.x"
+                            "prolific.logger":              "1.0.x"
     },
     "devDependencies":
     {
-                            "proof":                        "1.0.x"
+                            "proof":                        "1.1.x"
     },
     "main":                 "aggregate.argv",
     "scripts":
