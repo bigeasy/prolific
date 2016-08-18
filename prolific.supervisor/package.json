@@ -1,6 +1,6 @@
 {
     "name":                 "prolific.supervisor",
-    "version":              "1.0.7",
+    "version":              "2.0.0",
     "description":
 
       "This Proflific module has been replaced by the root `prolific` module.",
