@@ -1,16 +1,18 @@
 {
     "name":                 "prolific.collector",
     "version":              "2.0.3",
-    "author":               "Alan Gutierrez <alan@prettyrobots.com>",
-    "description":          "A logging framework.",
+    "description":
+
+      "A logging framework.",
+
     "keywords":
     [
                             "logging", "log", "syslog"
     ],
-    "license":              "MIT",
+    "author":               "Alan Gutierrez <alan@prettyrobots.com>",
     "homepage":             "https://github.com/bigeasy/prolific",
     "bugs":                 "https://github.com/bigeasy/prolific/issues",
-    "main":                 "collector",
+    "license":              "MIT",
     "repository":
     {
                             "type": "git",
@@ -26,6 +28,7 @@
                             "prolific.chunk":               "0.0.4",
                             "proof":                        "1.x"
     },
+    "main":                 "collector",
     "scripts":
     {
                             "test": "proof test t/*.t.js"

@@ -1,7 +1,6 @@
 {
     "name":                 "prolific.supervisor",
     "version":              "1.0.7",
-    "author":               "Alan Gutierrez <alan@prettyrobots.com>",
     "description":
 
       "Root executable for standard Prolific supervisors.",
@@ -10,18 +9,14 @@
     [
                             "logging", "log", "syslog"
     ],
-    "license":              "MIT",
+    "author":               "Alan Gutierrez <alan@prettyrobots.com>",
     "homepage":             "https://github.com/bigeasy/prolific",
     "bugs":                 "https://github.com/bigeasy/prolific/issues",
-    "main":                 "supervisor",
+    "license":              "MIT",
     "repository":
     {
                             "type": "git",
                             "url": "http://github.com/bigeasy/prolific.git"
-    },
-    "bin":
-    {
-                            "prolific":                     "supervisor.js"
     },
     "dependencies":
     {
@@ -31,6 +26,11 @@
     "devDependencies":
     {
                             "proof":                        "1.x"
+    },
+    "main":                 "supervisor",
+    "bin":
+    {
+                            "prolific":                     "supervisor.js"
     },
     "scripts":
     {
