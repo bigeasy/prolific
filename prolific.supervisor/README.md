@@ -1,3 +1,4 @@
-Prolific Supervisor
+## Prolific Supervisor
 
-Run a project under the supervision of a Prolific log collector.
+This is a defunct module in the Prolific logging framework. It has been replaced
+by `prolific`.
