@@ -1,33 +1,35 @@
 {
-    "name":             "prolific.ipc",
-    "version":          "1.0.3",
-    "author":           "Alan Gutierrez <alan@prettyrobots.com>",
-    "description":      "Utility to pass Node.js IPC through a Prolific supervisor.",
+    "name":                 "prolific.ipc",
+    "version":              "1.0.3",
+    "author":               "Alan Gutierrez <alan@prettyrobots.com>",
+    "description":
+
+      "Utility to pass Node.js IPC through a Prolific supervisor.",
+
     "keywords":
     [
-                        "logging", "log", "syslog"
+                            "logging", "log", "syslog"
     ],
-    "license":          "MIT",
-    "contributors":     [],
-    "homepage":         "https://github.com/bigeasy/prolific",
-    "bugs":             "https://github.com/bigeasy/prolific/issues",
-    "main":             "ipc",
+    "license":              "MIT",
+    "homepage":             "https://github.com/bigeasy/prolific",
+    "bugs":                 "https://github.com/bigeasy/prolific/issues",
+    "main":                 "ipc",
     "repository":
     {
-                        "type": "git",
-                        "url": "http://github.com/bigeasy/prolific.git"
+                            "type": "git",
+                            "url": "http://github.com/bigeasy/prolific.git"
     },
     "dependencies":
     {
-                        "cadence":              "1.x",
-                        "reactor":              "2.x"
+                            "cadence":                      "1.x",
+                            "reactor":                      "2.x"
     },
     "devDependencies":
     {
-                        "proof":                "1.x"
+                            "proof":                        "1.x"
     },
     "scripts":
     {
-                        "test": "proof test t/*.t.js"
+                            "test": "proof test t/*.t.js"
     }
 }

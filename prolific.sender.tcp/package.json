@@ -1,38 +1,40 @@
 {
-    "name":             "prolific.sender.tcp",
-    "version":          "2.0.0",
-    "author":           "Alan Gutierrez <alan@prettyrobots.com>",
-    "description":      "A TCP sender implementation for the Prolific logging framework.",
+    "name":                 "prolific.sender.tcp",
+    "version":              "2.0.0",
+    "author":               "Alan Gutierrez <alan@prettyrobots.com>",
+    "description":
+
+      "A TCP sender implementation for the Prolific logging framework.",
+
     "keywords":
     [
-                        "logging", "syslog"
+                            "logging", "syslog"
     ],
-    "license":          "MIT",
-    "contributors":     [],
-    "homepage":         "https://github.com/bigeasy/prolific",
-    "bugs":             "https://github.com/bigeasy/prolific/issues",
-    "main":             "sender.tcp",
+    "license":              "MIT",
+    "homepage":             "https://github.com/bigeasy/prolific",
+    "bugs":                 "https://github.com/bigeasy/prolific/issues",
+    "main":                 "sender.tcp",
     "repository":
     {
-                        "type": "git",
-                        "url": "http://github.com/bigeasy/prolific.git"
+                            "type": "git",
+                            "url": "http://github.com/bigeasy/prolific.git"
     },
     "bin":
     {
     },
     "dependencies":
     {
-                        "cadence":              "1.x",
-                        "delta":                "1.x",
-                        "prolific":             "1.x",
-                        "reactor":              "2.x"
+                            "cadence":                      "1.x",
+                            "delta":                        "1.x",
+                            "prolific":                     "1.x",
+                            "reactor":                      "2.x"
     },
     "devDependencies":
     {
-                        "proof":                "1.x"
+                            "proof":                        "1.x"
     },
     "scripts":
     {
-                        "test": "proof test t/*.t.js"
+                            "test": "proof test t/*.t.js"
     }
 }

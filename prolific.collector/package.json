@@ -1,34 +1,33 @@
 {
-    "name":             "prolific.collector",
-    "version":          "2.0.3",
-    "author":           "Alan Gutierrez <alan@prettyrobots.com>",
-    "description":      "A logging framework.",
+    "name":                 "prolific.collector",
+    "version":              "2.0.3",
+    "author":               "Alan Gutierrez <alan@prettyrobots.com>",
+    "description":          "A logging framework.",
     "keywords":
     [
-                        "logging", "log", "syslog"
+                            "logging", "log", "syslog"
     ],
-    "license":          "MIT",
-    "contributors":     [],
-    "homepage":         "https://github.com/bigeasy/prolific",
-    "bugs":             "https://github.com/bigeasy/prolific/issues",
-    "main":             "collector",
+    "license":              "MIT",
+    "homepage":             "https://github.com/bigeasy/prolific",
+    "bugs":                 "https://github.com/bigeasy/prolific/issues",
+    "main":                 "collector",
     "repository":
     {
-                        "type": "git",
-                        "url": "http://github.com/bigeasy/prolific.git"
+                            "type": "git",
+                            "url": "http://github.com/bigeasy/prolific.git"
     },
     "dependencies":
     {
-                        "hash.fnv":             "1.x"
+                            "hash.fnv":                     "1.x"
     },
     "devDependencies":
     {
-                        "cadence":              "1.x",
-                        "prolific.chunk":       "0.0.4",
-                        "proof":                "1.x"
+                            "cadence":                      "1.x",
+                            "prolific.chunk":               "0.0.4",
+                            "proof":                        "1.x"
     },
     "scripts":
     {
-                        "test": "proof test t/*.t.js"
+                            "test": "proof test t/*.t.js"
     }
 }
