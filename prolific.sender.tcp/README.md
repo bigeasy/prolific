@@ -1,3 +1,4 @@
-Prolific Sender TCP
+## Prolific Sender TCP
 
-A TCP sender implementation for the Prolific logging framework.
+This is a defunct module in the Prolific logging framework. It has been replaced
+by `prolific.tcp`.

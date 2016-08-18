@@ -3,7 +3,7 @@
     "version":              "2.0.0",
     "description":
 
-      "A TCP sender implementation for the Prolific logging framework.",
+      "This Prolific module has been replaced by `prolific.tcp` module.",
 
     "keywords":
     [
@@ -17,20 +17,6 @@
     {
                             "type": "git",
                             "url": "http://github.com/bigeasy/prolific.git"
-    },
-    "bin":
-    {
-    },
-    "dependencies":
-    {
-                            "cadence":                      "1.x",
-                            "delta":                        "1.x",
-                            "prolific":                     "1.x",
-                            "reactor":                      "2.x"
-    },
-    "devDependencies":
-    {
-                            "proof":                        "1.x"
     },
     "main":                 "sender.tcp",
     "scripts":
