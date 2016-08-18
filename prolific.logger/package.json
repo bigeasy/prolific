@@ -1,6 +1,6 @@
 {
     "name":                 "prolific.logger",
-    "version":              "1.0.2",
+    "version":              "1.0.3",
     "description":
 
       "Logger implementation for Prolific logging framework.",
