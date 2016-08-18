@@ -1,7 +1,7 @@
 var dgram = require('dgram')
 var url = require('url')
 
-var stringify = require('prolific.monitor/stringify')
+var stringify = require('prolific/stringify')
 var cadence = require('cadence')
 var Reactor = require('reactor')
 
