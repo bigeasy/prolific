@@ -20,14 +20,14 @@
     },
     "dependencies":
     {
-                            "abend":                        "1.x",
-                            "isochronous":                  "1.x",
+                            "abend":                        "1.0.x",
+                            "isochronous":                  "1.0.x",
                             "prolific.main":                "0.0.x",
-                            "prolific.queue":               "2.x"
+                            "prolific.queue":               "2.1.x"
     },
     "devDependencies":
     {
-                            "proof":                        "1.x"
+                            "proof":                        "1.1.x"
     },
     "main":                 "shuttle",
     "scripts":

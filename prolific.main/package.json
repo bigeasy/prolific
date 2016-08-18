@@ -20,11 +20,11 @@
     },
     "dependencies":
     {
-                            "supersede":                    "1.x"
+                            "supersede":                    "1.0.x"
     },
     "devDependencies":
     {
-                            "proof":                        "1.x"
+                            "proof":                        "1.1.x"
     },
     "main":                 "main",
     "scripts":

@@ -20,12 +20,12 @@
     },
     "dependencies":
     {
-                            "cadence":                      "1.x",
-                            "reactor":                      "2.x"
+                            "cadence":                      "1.0.x",
+                            "reactor":                      "2.2.x"
     },
     "devDependencies":
     {
-                            "proof":                        "1.x"
+                            "proof":                        "1.1.x"
     },
     "main":                 "ipc",
     "scripts":

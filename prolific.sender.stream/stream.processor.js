@@ -1,7 +1,7 @@
 var cadence = require('cadence')
 var abend = require('abend')
 var Vestibule = require('vestibule')
-var stringify = require('prolific.monitor/stringify')
+var stringify = require('prolific/stringify')
 
 function Processor (stream) {
     this.stream = stream

@@ -35,7 +35,7 @@
     {
                             "prolific.queue":               "2.1.x",
                             "prolific.shuttle":             "2.4.x",
-                            "proof":                        "1.0.x"
+                            "proof":                        "1.1.x"
     },
     "main":                 "monitor.bin",
     "bin":

@@ -20,13 +20,13 @@
     },
     "dependencies":
     {
-                            "hash.fnv":                     "1.x"
+                            "hash.fnv":                     "1.0.x"
     },
     "devDependencies":
     {
-                            "cadence":                      "1.x",
+                            "cadence":                      "1.0.x",
                             "prolific.chunk":               "0.0.4",
-                            "proof":                        "1.x"
+                            "proof":                        "1.1.x"
     },
     "main":                 "collector",
     "scripts":

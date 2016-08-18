@@ -20,11 +20,11 @@
     },
     "dependencies":
     {
-                            "hash.fnv":                     "1.x"
+                            "hash.fnv":                     "1.0.x"
     },
     "devDependencies":
     {
-                            "proof":                        "1.x"
+                            "proof":                        "1.1.x"
     },
     "main":                 "chunk",
     "scripts":

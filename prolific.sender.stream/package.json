@@ -20,14 +20,14 @@
     },
     "dependencies":
     {
-                            "abend":                        "1.x",
-                            "cadence":                      "1.x",
-                            "prolific.monitor":             "2.x",
-                            "vestibule":                    "1.x"
+                            "abend":                        "1.0.x",
+                            "cadence":                      "1.0.x",
+                            "prolific":                     "3.0.x",
+                            "vestibule":                    "1.3.x"
     },
     "devDependencies":
     {
-                            "proof":                        "1.x"
+                            "proof":                        "1.1.x"
     },
     "main":                 "stream.processor",
     "scripts":
