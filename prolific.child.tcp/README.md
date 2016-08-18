@@ -1,1 +1,4 @@
-Write TCP syslog messages to a child process' STDIN.
+## Prolific Child TCP
+
+This is a defunct module in the Prolific logging framework. It has no
+replacement.
