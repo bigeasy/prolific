@@ -20,13 +20,13 @@
     },
     "dependencies":
     {
-                            "arguable":                     "3.0.x",
+                            "arguable":                     "3.1.x",
                             "cadence":                      "1.0.x",
-                            "prolific.monitor":             "2.5.x"
+                            "prolific":                     "3.0.x"
     },
     "devDependencies":
     {
-                            "proof":                        "1.0.x"
+                            "proof":                        "1.1.x"
     },
     "main":                 "stdio.argv",
     "scripts":
