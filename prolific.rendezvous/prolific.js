@@ -4,7 +4,7 @@ var fs = require('fs')
 var path = require('path')
 var util = require('util')
 
-var main = require('prolific.main')
+var sink = require('prolific.main')
 
 var shuttle = {
     main: coalesce(function () {
@@ -19,4 +19,4 @@ assert(shuttle.main.filename == shuttle.mine.filename,
     util.format(fs.readFileSync(path.join(__dirname, 'error.txt'), 'utf8'),
         shuttle.mine.filename, shuttle.main.filename))
 
-exports.sink = coalesce(shuttle.mine.main, main)
+exports.sink = coalesce(shuttle.mine.sink, sink)
