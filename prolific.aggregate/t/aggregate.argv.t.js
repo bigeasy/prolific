@@ -7,7 +7,7 @@ function prove (async, assert) {
     }, function (result) {
         assert(result, {
             moduleName: 'prolific.aggregate/aggregate.processor',
-            parameters: { params: { qualified: 'bigeasy.example#request' } },
+            parameters: { qualified: 'bigeasy.example#request' },
             argv: [],
             terminal: false
         }, 'configuration')

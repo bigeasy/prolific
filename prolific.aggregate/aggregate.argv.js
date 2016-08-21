@@ -7,9 +7,6 @@
 
         --help
             Display this message.
-
-    ___ $ ___ en_US ___
-
     ___ . ___
 */
 
@@ -18,7 +15,7 @@ require('arguable')(module, require('cadence')(function (async, program) {
 
     var response = {
         moduleName: 'prolific.aggregate/aggregate.processor',
-        parameters: { params: program.ultimate },
+        parameters: { qualified: program.ultimate.qualified },
         argv: program.argv,
         terminal: program.terminal
     }

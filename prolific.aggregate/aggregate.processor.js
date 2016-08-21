@@ -9,18 +9,17 @@ var aggregates = {
 // TODO Considering 'level/qualifier#name' to specify output and using
 // 'field:$.example' for field selectors and extractors.
 function Processor (parameters) {
-    var params = parameters.params
-    this._in =  parameters.params['in']
-    this._interval = +(params.interval || 30000)
-    this._duration = +(params.duration || 60000)
+    this._in =  parameters['in']
+    this._interval = +(parameters.interval || 30000)
+    this._duration = +(parameters.duration || 60000)
     this._operations = []
     this._timer = null
-    var out = (params.out || 'prolific.aggregate#summary').split('#')
+    var out = (parameters.out || 'prolific.aggregate#summary').split('#')
     this._out = {
         logger: Logger.createLogger(out[0]),
         name: out[1]
     }
-    parameters.ordered.forEach(function (parameter) {
+    parameters.aggregations.forEach(function (parameter) {
         if (/^average|count|sum$/.test(parameter.name)) {
             var pair = parameter.value.split('=')
             var name = pair[0]
