@@ -8,8 +8,7 @@ function prove (async, assert) {
 
     var io
     async(function () {
-        program = monitor([ 'test', '--key', 'value', 'node', program ], {}, async())
-        program.emit('SIGTERM')
+        program = monitor([ 'configure', 'test', '--key', 'value', 'node', program ], {}, async())
     }, function () {
         assert(true, 'ran')
     })

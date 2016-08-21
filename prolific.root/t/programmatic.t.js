@@ -9,5 +9,5 @@ function prove (assert) {
     assert(programmatic(false, argv), 'test url found')
     assert(argv, [ '--url', 'test://127.0.0.1' ], 'url expanded')
     assert(programmatic(false, [ '@prolific.test' ]), 'as module')
-    assert(programmatic(false, [ 'prolific.monitor' ]), null, 'not command')
+    assert(programmatic(false, [ '@.' ]), null, 'not command')
 }

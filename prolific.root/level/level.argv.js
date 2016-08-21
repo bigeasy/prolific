@@ -10,6 +10,8 @@
 require('arguable')(module, require('cadence')(function (async, program) {
     program.helpIf(program.ultimate.help)
 
+    var configuration = program.ultimate.configuration
+
     var argv = program.argv.slice()
     var LEVEL = [ 'ERROR', 'WARN', 'INFO', 'DEBUG', 'TRACE' ]
 
@@ -17,24 +19,13 @@ require('arguable')(module, require('cadence')(function (async, program) {
     while (argv.length && (~argv[0].indexOf('=') || ~LEVEL.indexOf(argv[0]))) {
         var level = argv.shift().split('=')
         if (level.length == 1) {
-            levels.push({ path: '', level: level[0] })
+            configuration.levels.push({ path: '', level: level[0] })
         } else {
-            levels.push({ path: level[0], level: level[1] })
+            configuration.levels.push({ path: level[1], level: level[0] })
         }
     }
 
-    var response = {
-        moduleName: 'prolific.monitor/level/level.processor',
-        parameters: { levels: levels },
-        argv: argv,
-        terminal: program.terminal
-    }
-
-    if (program.isMainModule) {
-        program.stdout.write(require('util').inspect(response, { depth: null }) + '\n')
-    }
-
-    return response
+    return { argv: argv, terminal: program.terminal }
 }))
 
 module.exports.isProlific = true
