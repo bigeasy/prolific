@@ -1,0 +1,21 @@
+{
+    "name":                 "prolific.main",
+    "version":              "0.0.0",
+    "description":
+
+      "This Proflific module has been replaced by the root `prolific.resolver` module.",
+
+    "keywords":
+    [
+                            "logging", "log", "syslog", "prolific"
+    ],
+    "author":               "Alan Gutierrez <alan@prettyrobots.com>",
+    "homepage":             "https://github.com/bigeasy/prolific",
+    "bugs":                 "https://github.com/bigeasy/prolific/issues",
+    "license":              "MIT",
+    "repository":
+    {
+                            "type": "git",
+                            "url": "http://github.com/bigeasy/prolific.git"
+    }
+}
