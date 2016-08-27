@@ -19,9 +19,9 @@ function Processor (parameters) {
         lines: [],
         rotating: true
     }
-    this._filename = parameters.params.file
-    this._rotateSize = parameters.params.rotate || 1024 * 1024 * 1024
-    this._pid = parameters.params.pid || process.pid
+    this._filename = parameters.file
+    this._rotateSize = parameters.rotate || 1024 * 1024 * 1024
+    this._pid = parameters.pid || process.pid
     this._sender = this._nullSender
     this._Date = parameters.Date || Date
     this._rotating = new Vestibule
