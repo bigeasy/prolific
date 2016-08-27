@@ -15,7 +15,7 @@ require('arguable')(module, require('cadence')(function (async, program) {
 
     var response = {
         moduleName: 'prolific.aggregate/aggregate.processor',
-        parameters: { qualified: program.ultimate.qualified },
+        parameters: program.ultimate,
         argv: program.argv,
         terminal: program.terminal
     }
