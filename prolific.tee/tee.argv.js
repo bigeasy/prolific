@@ -11,7 +11,7 @@
 
 require('arguable')(module, require('cadence')(function (async, program) {
     program.helpIf(program.command.params.help)
-    var isProgram = require('prolific.monitor/programmatic')
+    var isProgram = require('prolific/programmatic')
     var argv = program.argv.slice(), terminal = false
     var configuration = { processors: [] }
     async(function () {
