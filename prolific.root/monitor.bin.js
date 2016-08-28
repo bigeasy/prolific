@@ -77,7 +77,9 @@ require('arguable')(module, require('cadence')(function (async, program) {
             })
         } else {
             async(function () {
-                parser([ { configuration: configuration }, argv ], {}, async())
+                parser(argv, {
+                    properties: { configuration: configuration }
+                }, async())
             }, function (processor) {
                 if (processor.moduleName) {
                     configuration.processors.push(processor)

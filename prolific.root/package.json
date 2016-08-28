@@ -20,7 +20,7 @@
     },
     "dependencies":
     {
-                            "arguable":                     "3.1.x",
+                            "arguable":                     "4.0.x",
                             "cadence":                      "1.0.x",
                             "delta":                        "1.1.x",
                             "nop":                          "1.0.x",
@@ -32,6 +32,7 @@
     },
     "devDependencies":
     {
+                            "prolific.logger":              "1.0.x",
                             "prolific.queue":               "2.1.x",
                             "prolific.shuttle":             "3.0.x",
                             "proof":                        "1.1.x"
