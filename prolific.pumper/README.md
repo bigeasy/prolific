@@ -1,4 +1,4 @@
-Prolific Monitor
+Prolific Pumper
 
-Generic monitor implementation that watches a process that emits messages using
-a Prolific Shuttle.
+Monitor a Prolific-enabled child process gathering and verifying chunked log
+messages.

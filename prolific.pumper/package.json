@@ -3,7 +3,7 @@
     "version":              "0.1.3",
     "description":
 
-      "Pump messages from a collector to zero, one or more senders.",
+      "Monitor a Prolific-enabled child process gathering and verifying chunked log messages.",
 
     "keywords":
     [
