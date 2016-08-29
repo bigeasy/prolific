@@ -1,6 +1,6 @@
 {
-    "name":                 "prolific.monitor",
-    "version":              "3.0.2",
+    "name":                 "prolific.resolver",
+    "version":              "0.0.0",
     "description":
 
       "A logging framework.",
@@ -26,7 +26,7 @@
     {
                             "proof":                        "1.1.x"
     },
-    "main":                 "prolific",
+    "main":                 "resolver",
     "scripts":
     {
                             "test": "proof test t/*.t.js"
