@@ -20,7 +20,7 @@
     },
     "dependencies":
     {
-                            "prolific.main":                "0.0.x"
+                            "prolific.sink":                "2.0.x"
     },
     "devDependencies":
     {

@@ -4,7 +4,7 @@ var fs = require('fs')
 var path = require('path')
 var util = require('util')
 
-var sink = require('prolific.main')
+var sink = require('prolific.sink')
 
 var shuttle = {
     main: coalesce(function () {
