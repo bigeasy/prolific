@@ -13,11 +13,13 @@ function prove (assert) {
                 name: 'greeting',
                 qualifier: 'hello',
                 qualified: 'hello#greeting',
+                z: 26,
                 a: 1
             }, 'json')
         }
     }
-    prolific.json([ '', 'hello' ], 'error', 'hello', 'greeting', { a: 1 })
+    prolific.properties = { z: 26, when: 0 }
+    prolific.json([ '', 'hello' ], 'error', 'hello', 'greeting', { a: 1, when: 0 })
     prolific.sink = {
         write: function () { throw new Error }
     }
