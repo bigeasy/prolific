@@ -3,8 +3,8 @@ require('proof/redux')(6, prove)
 function prove (assert) {
     var prolific = require('..')
     prolific.Date = { now: function () { return 0 } }
-    prolific.sink.write()
-    prolific.sink = {
+    prolific.writer.write()
+    prolific.writer = {
         write: function (line) {
             assert(JSON.parse(line.toString()), {
                 when: 0,
@@ -20,7 +20,7 @@ function prove (assert) {
     }
     prolific.properties = { z: 26, when: 0 }
     prolific.json([ '', 'hello' ], 'error', 'hello', 'greeting', { a: 1, when: 0 })
-    prolific.sink = {
+    prolific.writer = {
         write: function () { throw new Error }
     }
     prolific.json([ '', 'hello' ], 'trace', 'hello', 'greeting', { a: 1 })

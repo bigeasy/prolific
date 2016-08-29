@@ -39,10 +39,11 @@ exports.json = function (path, level, qualifier, name, properties) {
             entry[key] = properties[key]
         }
     }
-    this.sink.write(new Buffer(JSON.stringify(entry) + '\n'))
+// TODO Do not write out JSON.
+    this.writer.write(new Buffer(JSON.stringify(entry) + '\n'))
 }
 
-exports.sink = { write: function () {} }
+exports.writer = { write: function () {} }
 
 exports.setLevel = function (path, level) {
     if (level == null) {
