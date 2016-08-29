@@ -22,7 +22,7 @@
     {
                             "cadence":                      "1.0.x",
                             "delta":                        "1.1.x",
-                            "prolific.consolidator":        "0.0.x"
+                            "prolific.consolidator":        "1.0.x"
     },
     "devDependencies":
     {
