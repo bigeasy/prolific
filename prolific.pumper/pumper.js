@@ -1,5 +1,5 @@
 var Consolidator = require('prolific.consolidator')
-var Delta = require('delta')
+var delta = require('delta')
 var cadence = require('cadence')
 var push = [].push
 
@@ -40,12 +40,12 @@ module.exports = cadence(function (async, processor, child, io, forward) {
         forward.write(consolidator.stderr.splice(0, consolidator.stderr.length).join(''))
     }
     async(function () {
-        new Delta(async())
+        delta(async())
             .ee(child).on('exit')
             .ee(io.sync).on('data', consolidator.sync.ondata)
                         .on('data', onLine).on('end')
         async([function () {
-            new Delta(async())
+            delta(async())
                 .ee(io.async)
                     .on('data', consolidator.async.ondata)
                     .on('data', onChunk).on('end')
