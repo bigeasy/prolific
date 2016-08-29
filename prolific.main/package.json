@@ -26,7 +26,7 @@
     {
                             "proof":                        "1.1.x"
     },
-    "main":                 "main",
+    "main":                 "sink",
     "scripts":
     {
                             "test": "proof test t/*.t.js"
