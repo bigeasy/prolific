@@ -1,3 +1,3 @@
-# Prolific
+# Prolific Sink
 
-A logging framework.
+Discoverable common output sink for the Prolific logging framework.

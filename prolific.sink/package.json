@@ -3,7 +3,7 @@
     "version":              "0.0.6",
     "description":
 
-      "Discoverable common root for the Prolific logging framework.",
+      "Discoverable common output sink for the Prolific logging framework.",
 
     "keywords":
     [
