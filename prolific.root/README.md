@@ -1,3 +1,3 @@
-Prolific Monitor
+## Prolific
 
-Monitor a Prolific enabled application.
+Main Prolific supervisor executable.
