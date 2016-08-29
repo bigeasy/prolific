@@ -4,7 +4,7 @@ function prove (assert) {
     var Logger = require('..')
     var slice = [].slice
 
-    var prolific = require('prolific.monitor')
+    var prolific = require('prolific.resolver')
     prolific.sink.json = function () {
         var vargs = slice.call(arguments)
         assert(vargs, [

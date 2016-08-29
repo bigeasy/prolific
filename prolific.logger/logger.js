@@ -1,4 +1,4 @@
-var sink = require('prolific.monitor').sink
+var sink = require('prolific.resolver').sink
 
 function Logger (qualifier) {
     this.qualifier = qualifier
