@@ -25,7 +25,7 @@
     "devDependencies":
     {
                             "cadence":                      "1.0.x",
-                            "prolific.chunk":               "0.0.x",
+                            "prolific.chunk":               "1.0.x",
                             "proof":                        "1.1.x"
     },
     "main":                 "collector",
