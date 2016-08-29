@@ -39,7 +39,7 @@
     "main":                 "prolific.bin",
     "bin":
     {
-                            "prolific": "prolific.bin.js"
+                            "prolific":                     "prolific.bin.js"
     },
     "scripts":
     {
