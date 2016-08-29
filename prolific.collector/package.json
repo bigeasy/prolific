@@ -3,7 +3,7 @@
     "version":              "2.0.4",
     "description":
 
-      "A logging framework.",
+      "Gather chunks of logs emitted from a monitored, Prolific-enabled program.",
 
     "keywords":
     [
