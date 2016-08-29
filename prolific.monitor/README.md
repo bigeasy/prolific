@@ -1,3 +1,4 @@
-Prolific Pumper
+## Prolific Monitor
 
-Monitor a Prolific-enabled child process gathering and verifying chunked log messages and feeding them to log processors.
+Monitor a Prolific-enabled child process gathering and verifying chunked log
+messages and feeding them to log processors.
