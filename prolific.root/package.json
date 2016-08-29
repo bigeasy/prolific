@@ -36,10 +36,10 @@
                             "prolific.shuttle":             "3.0.x",
                             "proof":                        "1.1.x"
     },
-    "main":                 "monitor.bin",
+    "main":                 "prolific.bin",
     "bin":
     {
-                            "prolific": "monitor.bin.js"
+                            "prolific": "prolific.bin.js"
     },
     "scripts":
     {

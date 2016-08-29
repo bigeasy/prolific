@@ -1,7 +1,7 @@
 require('proof/redux')(2, require('cadence')(prove))
 
 function prove (async, assert) {
-    var monitor = require('../monitor.bin')
+    var monitor = require('..')
     var path = require('path')
 
     var child = path.join(__dirname, 'program.js')
