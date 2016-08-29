@@ -27,8 +27,7 @@
                             "prolific.collector":           "2.0.x",
                             "prolific.inherit":             "3.0.x",
                             "prolific.ipc":                 "1.0.x",
-                            "prolific.main":                "0.0.x",
-                            "prolific.pumper":              "0.1.x"
+                            "prolific.monitor":             "4.0.x"
     },
     "devDependencies":
     {

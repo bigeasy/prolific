@@ -20,7 +20,7 @@
     ___ . ___
 */
 
-var pumper = require('prolific.pumper')
+var monitor = require('prolific.monitor')
 var children = require('child_process')
 var inherit = require('prolific.inherit')
 var ipc = require('prolific.ipc')
@@ -71,7 +71,7 @@ require('arguable')(module, require('cadence')(function (async, program) {
                 var io = { async: child.stdio[inheritance.fd], sync: child.stderr }
                 ipc(program.ultimate.ipc, process, child)
                 processors.push(nullProcessor)
-                pumper(processors[0], child, io, program.stderr, async())
+                monitor(processors[0], child, io, program.stderr, async())
             }, function (code) {
                 return [ loop.break, code ]
             })
