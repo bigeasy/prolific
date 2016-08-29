@@ -6,10 +6,6 @@
 
       "A logging framework.",
 
-    "keywords":
-    [
-                            "logging", "log", "syslog"
-    ],
     "author":               "Alan Gutierrez <alan@prettyrobots.com>",
     "homepage":             "https://github.com/bigeasy/prolific",
     "bugs":                 "https://github.com/bigeasy/prolific/issues",
@@ -18,9 +14,6 @@
     {
                             "type": "git",
                             "url": "http://github.com/bigeasy/prolific.git"
-    },
-    "bin":
-    {
     },
     "dependencies":
     {
