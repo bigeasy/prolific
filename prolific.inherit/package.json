@@ -7,7 +7,7 @@
 
     "keywords":
     [
-                            "logging", "log", "syslog"
+                            "logging", "log", "syslog", "proflific"
     ],
     "author":               "Alan Gutierrez <alan@prettyrobots.com>",
     "homepage":             "https://github.com/bigeasy/prolific",
