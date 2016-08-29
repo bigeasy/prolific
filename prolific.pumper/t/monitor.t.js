@@ -1,7 +1,7 @@
 require('proof/redux')(6, require('cadence')(prove))
 
 function prove (async, assert) {
-    var pumper = require('..')
+    var monitor = require('..')
     var Chunk = require('prolific.chunk')
     var events = require ('events')
     var stream = require('stream')
@@ -12,7 +12,7 @@ function prove (async, assert) {
             async: new stream.PassThrough,
             sync: new stream.PassThrough
         }
-        pumper({
+        monitor({
             process: function (entry) {
                 assert(entry, {
                     when: 0,
@@ -48,7 +48,7 @@ function prove (async, assert) {
             async: new stream.PassThrough,
             sync: new stream.PassThrough
         }
-        pumper(null, child, io, stderr, async())
+        monitor(null, child, io, stderr, async())
         child.emit('exit', null, 'SIGTERM')
         io.sync.emit('end')
         var error = new Error

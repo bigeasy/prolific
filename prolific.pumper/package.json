@@ -1,5 +1,5 @@
 {
-    "name":                 "prolific.pumper",
+    "name":                 "prolific.monitor",
     "version":              "0.1.3",
     "description":
 
@@ -29,7 +29,7 @@
                             "prolific.chunk":               "1.0.x",
                             "proof":                        "1.1.x"
     },
-    "main":                 "pumper",
+    "main":                 "monitor",
     "scripts":
     {
                             "test": "proof test t/*.t.js"
