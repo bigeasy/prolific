@@ -21,8 +21,8 @@
     "dependencies":
     {
                             "cadence":                      "1.0.x",
-                            "nop":                          "1.0.0",
-                            "prolific.chunk":               "1.0.x"
+                            "prolific.chunk":               "1.0.x",
+                            "rescue":                       "2.2.x"
     },
     "devDependencies":
     {

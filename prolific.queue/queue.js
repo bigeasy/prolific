@@ -1,4 +1,4 @@
-var nop = require('nop')
+var rescue = require('rescue')
 var cadence = require('cadence')
 var Chunk = require('prolific.chunk')
 
@@ -30,7 +30,7 @@ Queue.prototype._chunkEntries = function () {
 
 Queue.prototype._write = cadence(function (async, buffer) {
     if (this._closed) {
-        throw new Error('bigeasy.prolific.queue:closed')
+        throw new Error('bigeasy.prolific.queue#closed')
     }
     this._stream.write(buffer, async())
 })
@@ -58,7 +58,7 @@ Queue.prototype.flush = cadence(function (async) {
                 this._chunks.shift()
             })
         })()
-    }, /^bigeasy.prolific.queue:closed$/, nop])
+    }, rescue(/^bigeasy.prolific.queue:closed$/)])
 })
 
 Queue.prototype.close = function (stderr) {
