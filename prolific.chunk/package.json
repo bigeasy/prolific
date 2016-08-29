@@ -7,7 +7,7 @@
 
     "keywords":
     [
-                            "http", "https", "rest", "json", "curl"
+                            "logging", "log", "syslog", "prolific"
     ],
     "author":               "Alan Gutierrez <alan@prettyrobots.com>",
     "homepage":             "https://github.com/bigeasy/prolific",
