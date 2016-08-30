@@ -9,8 +9,14 @@ function configure (env, configuration) {
         configuration = env[configuration]
     }
     if (typeof configuration == 'object') {
-        if (configuration.processors == null) {
-            configuration.processors = []
+        var defaults = {
+            processors: [],
+            levels: []
+        }
+        for (var key in defaults) {
+            if (!(key in configuration)) {
+                configuration[key] = defaults[key]
+            }
         }
         return configuration
     }
