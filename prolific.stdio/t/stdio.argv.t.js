@@ -7,7 +7,7 @@ function prove (async, assert) {
     }, function (result) {
         assert(result, {
             moduleName: 'prolific.stdio/stdio.processor',
-            parameters: { params: { stderr: true } },
+            parameters: { stderr: true },
             argv: [],
             terminal: false
         }, 'configuration')
