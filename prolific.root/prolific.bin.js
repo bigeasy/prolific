@@ -37,11 +37,11 @@ require('arguable')(module, require('cadence')(function (async, program) {
     var inheritance = inherit(program)
     configuration.fd = inheritance.fd
 
-    var isProgram = require('./programmatic')
+    var commandable = require('./commandable')
     var argv = program.argv.slice(), terminal = false
     var loop = async(function () {
         program.assert(argv.length != 0, 'no program')
-        var parser = isProgram(terminal, argv)
+        var parser = commandable(terminal, argv)
         if (parser == null) {
             process.env.PROLIFIC_CONFIGURATION = JSON.stringify(configuration)
             var nullProcessor = { process: function () {} }, nextProcessor = nullProcessor
