@@ -1,3 +1,3 @@
 ## Prolific UDP
 
-A UDP sender implementation for the Prolific logging framework.
+A UDP logger for the Prolific logging framework.

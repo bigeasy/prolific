@@ -3,7 +3,7 @@
     "version":              "0.0.6",
     "description":
 
-      "A UDP sender implementation for the Prolific logging framework.",
+      "A UDP logger for the Prolific logging framework.",
 
     "keywords":
     [
