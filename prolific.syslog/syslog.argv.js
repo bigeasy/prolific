@@ -31,7 +31,7 @@ require('arguable')(module, require('cadence')(function (async, program) {
     program.helpIf(program.ultimate.help)
     var response = {
         moduleName: 'prolific.syslog/syslog.processor',
-        parameters: { params: program.ultimate },
+        parameters: program.ultimate,
         argv: program.argv,
         terminal: program.terminal
     }

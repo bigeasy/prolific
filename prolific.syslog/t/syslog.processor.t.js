@@ -2,7 +2,7 @@ require('proof/redux')(1, prove)
 
 function prove (assert) {
     var Processor = require('../syslog.processor')
-    new Processor({ params: {} })
+    new Processor({})
     var sink = {
         gathered: [],
         process: function (entry) {
@@ -10,12 +10,10 @@ function prove (assert) {
         }
     }
     var processor = new Processor({
-        params: {
-            application: 'a',
-            host: 'h',
-            pid: 0,
-            serializer: 'json'
-        },
+        application: 'a',
+        host: 'h',
+        pid: 0,
+        serializer: 'json',
         Date: { now: function () { return 0 } }
     }, sink)
     processor.open(function () {})

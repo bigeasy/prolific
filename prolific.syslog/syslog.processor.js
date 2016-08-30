@@ -36,14 +36,13 @@ var LEVEL = {
 }
 
 function Processor (parameters, next) {
-    var query = parameters.params
-    this._format = query.format || 'json'
-    var application = query.application || process.title
-    var host = query.host || 'localhost'
-    var pid = query.pid == null ? 'pid' : query.pid
-    this._facility = FACILITY[query.facility || 'local0']
+    this._format = parameters.format || 'json'
+    var application = parameters.application || process.title
+    var host = parameters.host || 'localhost'
+    var pid = parameters.pid == null ? 'pid' : parameters.pid
+    this._facility = FACILITY[parameters.facility || 'local0']
     this._context = host + ' ' + application + ' ' + pid + ' - - '
-    this._serializer = query.serializer ? require(query.serializer) : JSON
+    this._serializer = parameters.serializer ? require(parameters.serializer) : JSON
     this._Date = parameters.Date || Date
     this._next = next
 }

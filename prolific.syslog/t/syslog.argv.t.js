@@ -7,7 +7,7 @@ function prove (async, assert) {
     }, function (result) {
         assert(result, {
             moduleName: 'prolific.syslog/syslog.processor',
-            parameters: { params: { application: 'a' } },
+            parameters: { application: 'a' },
             argv: [],
             terminal: false
         }, 'configuration')
