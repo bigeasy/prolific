@@ -2,6 +2,7 @@ var dgram = require('dgram')
 var url = require('url')
 
 var stringify = require('prolific/stringify')
+var delta = require('delta')
 var cadence = require('cadence')
 var Reactor = require('reactor')
 
@@ -24,9 +25,13 @@ Processor.prototype._process = cadence(function (async, timeout, line) {
         var buffer = new Buffer(line)
         client.send(buffer, 0, buffer.length, this.url.port, this.url.hostname, Processor.youHaveGotToBeKiddingMe(async()))
     }, function () {
-        client.close(async())
+// ACHTUNG Node.js 0.10 does not accept a callback to `close()`, you must set a handler.
+        delta(async()).ee(client).on('close')
+        client.close()
     })
 })
+
+var count = 0
 
 Processor.youHaveGotToBeKiddingMe = function (callback) {
     return function (error) {
