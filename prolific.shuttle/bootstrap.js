@@ -10,7 +10,7 @@ exports.createShuttle = function (net, Shuttle) {
 // TODO Maybe delete and internalize?
             var configuration = JSON.parse(program.env.PROLIFIC_CONFIGURATION)
             var pipe = new net.Socket({ fd: configuration.fd  })
-            var shuttle = new Shuttle(pipe, pipe, program.stderr, finale, interval)
+            var shuttle = new Shuttle(pipe, pipe, program.stderr, finale, interval, process)
             prolific.writer = shuttle.queue
 // TODO Would love to be able to HUP this somehow.
             configuration.levels.forEach(function (level) {
