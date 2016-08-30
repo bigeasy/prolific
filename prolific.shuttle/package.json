@@ -3,7 +3,7 @@
     "version":              "3.0.1",
     "description":
 
-      "Log shuttle implementation that transmits final messages to Prolific monitor.",
+      "The log shuttle that makes a program Prolific-enabled.",
 
     "keywords":
     [

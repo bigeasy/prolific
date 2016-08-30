@@ -1,3 +1,3 @@
-Prolific Shuttle
+## Prolific Shuttle
 
-Log shuttle implementation that transmits final messages to Prolific monitor.
+The log shuttle that makes a program Prolific-enabled.
