@@ -38,6 +38,6 @@ Shuttle.shuttle = require('./bootstrap').createShuttle(require('net'), Shuttle)
 
 Shuttle.filename = module.filename
 
-Shuttle.sink = require('prolific.main')
+Shuttle.sink = require('prolific.sink')
 
 module.exports = Shuttle
