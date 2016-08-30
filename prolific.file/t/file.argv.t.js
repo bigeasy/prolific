@@ -1,4 +1,4 @@
-require('proof/redux')(2, require('cadence')(prove))
+require('proof/redux')(1, require('cadence')(prove))
 
 function prove (async, assert) {
     var argv = require('../file.argv'), program
@@ -11,10 +11,5 @@ function prove (async, assert) {
             argv: [],
             terminal: false
         }, 'configuration')
-        program = argv([ '--file', 'a' ], {
-            isMainModule: true
-        }, async())
-    }, function () {
-        assert(program.stdout.read() != null, 'inspect')
     })
 }
