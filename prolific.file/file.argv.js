@@ -1,15 +1,12 @@
 /*
     ___ usage ___ en_US ___
-    usage: prolific syslog <options>
+    usage: prolific file <options>
 
         -f, --file <string>
             The base name of the file. It will have a retation timestamp
             appended to it.
 
             --help                      display this message
-
-    ___ $ ___ en_US ___
-
     ___ . ___
 */
 
