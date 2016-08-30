@@ -1,3 +1,3 @@
-Prolific Sender TCP
+## Prolific UDP
 
-A TCP sender implementation for the Prolific logging framework.
+A UDP sender implementation for the Prolific logging framework.
