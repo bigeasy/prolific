@@ -13,8 +13,7 @@ exports.createShuttle = function (net, Shuttle) {
             var shuttle = new Shuttle(pipe, pipe, program.stderr, finale, interval)
             prolific.writer = shuttle.queue
 // TODO Would love to be able to HUP this somehow.
-// TODO Make `levels` a required thing.
-            ; (configuration.levels || []).forEach(function (level) {
+            configuration.levels.forEach(function (level) {
                 prolific.setLevel.apply(prolific, level)
             })
             program.on('uncaughtException', shuttle.uncaughtException.bind(shuttle))
