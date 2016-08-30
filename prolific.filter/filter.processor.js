@@ -10,7 +10,7 @@ var LEVEL = {
 function Processor (parameters, next) {
     this._select = new Function(
         '$', '$qualifier', '$level', 'ERROR', 'WARN', 'INFO', 'DEBUG', 'TRACE',
-        'return ' + parameters.params.select
+        'return ' + parameters.select
     )
     this._next = next
 }

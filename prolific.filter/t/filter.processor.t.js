@@ -9,9 +9,7 @@ function prove (async, assert) {
         }
     }
     var processor = new Processor({
-        params: {
-            select: '$.name == "foo" && $qualifier[2] == "bigeasy.prolific" && $level == TRACE'
-        }
+        select: '$.name == "foo" && $qualifier[2] == "bigeasy.prolific" && $level == TRACE'
     }, sink)
     async(function () {
         processor.open(async())

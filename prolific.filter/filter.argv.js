@@ -55,7 +55,7 @@ require('arguable')(module, require('cadence')(function (async, program) {
 
     var response = {
         moduleName: 'prolific.filter/filter.processor',
-        parameters: { params: program.ultimate },
+        parameters: program.ultimate,
         argv: program.argv,
         terminal: program.terminal
     }

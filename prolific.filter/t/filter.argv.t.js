@@ -8,7 +8,7 @@ function prove (async, assert) {
     }, function (result) {
         assert(result, {
             moduleName: 'prolific.filter/filter.processor',
-            parameters: { params: { select: '$.name == "foo"' } },
+            parameters: { select: '$.name == "foo"' },
             argv: [],
             terminal: false
         }, 'configuration')
