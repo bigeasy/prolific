@@ -24,7 +24,7 @@
                             "arguable":                     "4.0.x",
                             "cadence":                      "1.0.x",
                             "delta":                        "1.1.x",
-                            "prolific":                     "3.0.x",
+                            "prolific":                     "4.0.x",
                             "prolific.sender.stream":       "1.1.x",
                             "vestibule":                    "1.3.x"
     },
