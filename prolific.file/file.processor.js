@@ -2,7 +2,6 @@ var fs = require('fs')
 var stream = require('stream')
 
 var abend = require('abend')
-var tz = require('timezone')
 var cadence = require('cadence')
 var Vestibule = require('vestibule')
 var delta = require('delta')
@@ -37,7 +36,11 @@ Processor.prototype._rotate = cadence(function (async) {
     async(function () {
         this._flush(async())
     }, function () {
-        var filename = this._filename + tz(this._Date.now(), '-%F-%H-%M-' + this._pid)
+        var stamp = new Date(this._Date.now())
+            .toISOString()
+            .replace(/[T.:]/g, '-')
+            .replace(/-\d{2}-\d{3}Z$/, '')
+        var filename = [ this._filename, stamp, this._pid ].join('-')
         stream = fs.createWriteStream(filename, { flags: 'a' })
         delta(async()).ee(stream).on('open')
     }, function () {
