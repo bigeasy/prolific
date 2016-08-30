@@ -7,9 +7,6 @@
 
         --help
             Display this message.
-
-    ___ $ ___ en_US ___
-
     ___ . ___
 */
 
