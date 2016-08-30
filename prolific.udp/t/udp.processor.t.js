@@ -8,7 +8,7 @@ function prove (async, assert) {
     var delta = require('delta')
 
     var sink = { process: function () {} }
-    var processor = new Processor({ params: { url: 'udp://127.0.0.1:9898' } }, sink)
+    var processor = new Processor({ url: 'udp://127.0.0.1:9898' }, sink)
 
     var server = dgram.createSocket('udp4')
 

@@ -8,7 +8,7 @@ var Reactor = require('reactor')
 
 function Processor (parameters, next) {
     this._processing = new Reactor({ object: this, method: '_process' })
-    this.url = url.parse(parameters.params.url)
+    this.url = url.parse(parameters.url)
     this._next = next
 }
 

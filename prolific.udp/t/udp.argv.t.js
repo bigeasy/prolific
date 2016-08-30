@@ -7,7 +7,7 @@ function prove (async, assert) {
     }, function (result) {
         assert(result, {
             moduleName: 'prolific.udp/udp.processor',
-            parameters: { params: { url: 'udp://127.0.0.1:514' } },
+            parameters: { url: 'udp://127.0.0.1:514' },
             argv: [],
             terminal: false
         }, 'configuration')
