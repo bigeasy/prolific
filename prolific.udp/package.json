@@ -7,7 +7,7 @@
 
     "keywords":
     [
-                            "logging", "syslog", "udp"
+                            "logging", "log", "syslog", "udp", "prolific"
     ],
     "author":               "Alan Gutierrez <alan@prettyrobots.com>",
     "homepage":             "https://github.com/bigeasy/prolific",
