@@ -1,6 +1,6 @@
 {
     "name":                 "prolific.syslog",
-    "version":              "1.0.0",
+    "version":              "1.0.1",
     "description":
 
       "A filter that formats Prolific messages as `syslog` messages.",
