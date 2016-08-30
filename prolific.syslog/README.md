@@ -1,3 +1,3 @@
-# Prolific Syslog
+## Prolific Syslog
 
-A filter that formats Prolific messages as `syslog` messages.
+Prolific `syslog` message formatter.
