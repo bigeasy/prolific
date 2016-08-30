@@ -41,9 +41,6 @@
       `WARN`, `INFO` and `TRACE` to make comparisons.
 
       prolific filter +'$context[2] == "bigeasy.server" && $level <= TRACE'
-
-    ___ $ ___ en_US ___
-
     ___ . ___
 */
 
