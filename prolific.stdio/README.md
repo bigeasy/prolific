@@ -1,3 +1,3 @@
-Prolific STDIO Sender
+## Prolific STDIO
 
-A standard I/O sender implementation for the Prolific logging framework.
+A standard I/O logger for the Prolific logging framework.
