@@ -19,3 +19,5 @@ require('arguable')(module, require('cadence')(function (async, program) {
         terminal: program.terminal
     }
 }))
+
+module.exports.isProlific = true

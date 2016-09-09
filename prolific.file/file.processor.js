@@ -9,7 +9,7 @@ var delta = require('delta')
 var stringify = require('prolific/stringify')
 var Sender = require('prolific.sender.stream')
 
-function Processor (parameters) {
+function Processor (parameters, next) {
     this._nullSender = {
         sent: Infinity,
         process: function (entry) { this.lines.push(stringify(entry)) },
@@ -18,6 +18,7 @@ function Processor (parameters) {
         lines: [],
         rotating: true
     }
+    this._next = next
     this._filename = parameters.file
     this._rotateSize = parameters.rotate || 1024 * 1024 * 1024
     this._pid = parameters.pid || process.pid
@@ -65,6 +66,7 @@ Processor.prototype.process = function (entry) {
     if (this._sender.sent >= this._rotateSize) {
         this._rotate(abend)
     }
+    this._next.process(entry)
 }
 
 Processor.prototype.close = cadence(function (async) {
