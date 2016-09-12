@@ -9,6 +9,8 @@ function prove (async, assert) {
     var processor = new Processor({
         file: file, rotate: 8, pid: '0',
         Date: { now: function () { return 0 } }
+    }, {
+        process: function () {}
     })
     var resolved = path.join(__dirname, 'log-1970-01-01-00-00-0')
     async([function () {
