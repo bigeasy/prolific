@@ -1,7 +1,7 @@
 require('proof/redux')(2, require('cadence')(prove))
 
 function prove (async, assert) {
-    var argv = require('../level/level.argv'), configuration = { levels: [] }
+    var argv = require('../level'), configuration = { levels: [] }
     async(function () {
         argv([{ configuration: configuration }, [ 'INFO', 'TRACE=bigeasy.example' ]], {}, async())
     }, function (result) {
