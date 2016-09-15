@@ -18,6 +18,7 @@ prolific \
   tee \
     tcp://127.0.0.1:514 --rotate 512k \
     filter +'$context[2] == "bigeasy.paxos" && $level <= $trace' \
+    label name=value \
     level info bigeasy.database=trace bigeasy.paxos=trace \
     aggregate --with 'bigeasy.service#health' --average 'http=$.http.mean' --sum 'messages=$.messages' \
     spawn [ jq '.' ] \
