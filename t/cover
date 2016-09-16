@@ -2,6 +2,17 @@
 
 set -e
 
+if [ ! -e node_modules/.bin/istanbul ]; then
+    cat << EOF 1>&2
+
+Istanbul is required to run coverage. Install Istanbul:
+
+    npm install istanbul
+
+EOF
+    exit 1
+fi
+
 rm -rf coverage
 
 count=1;
