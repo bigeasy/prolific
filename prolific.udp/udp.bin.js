@@ -18,8 +18,9 @@
 require('arguable')(module, require('cadence')(function (async, program) {
     var Shuttle = require('prolific.shuttle')
 
-    program.helpIf(program.command.param.help)
-    program.command.required('bind')
+    program.helpIf(program.ultimate.help)
+    program.required('bind')
+    program.validate(require('arguable/bindable'), 'bind')
 
     var logger = require('prolific.logger').createLogger('prolific.udp.listener')
     Shuttle.shuttle(program, 1000, logger)
@@ -32,6 +33,6 @@ require('arguable')(module, require('cadence')(function (async, program) {
     })
     program.on('SIGINT', socket.close.bind(socket))
     program.on('SIGTERM', socket.close.bind(socket))
-    var bind = program.command.bind('bind')
+    var bind = program.ultimate.bind
     socket.bind(bind.port, bind.address, async())
 }))
