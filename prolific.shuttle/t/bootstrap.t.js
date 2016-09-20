@@ -17,5 +17,6 @@ function prove (assert) {
         this.exit = function () {}
     }
     var createShuttle = bootstrap.createShuttle(net, Shuttle)
-    createShuttle(program, function () {})
+    createShuttle(program, function () {}, 'SIGINT')
+    createShuttle({ env: {} }, function () {}).stop()
 }
