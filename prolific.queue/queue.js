@@ -35,14 +35,10 @@ Queue.prototype._chunkEntries = function () {
 }
 
 Queue.prototype._checkTerminated = function () {
-    if (this._terminated) {
-        throw new Error('bigeasy.prolific.queue#terminated')
+    if (this._closed) {
+        throw new Error('bigeasy.prolific.queue#closed')
     }
 }
-
-Queue.prototype._write = cadence(function (async, buffer) {
-    this._stream.write(buffer, async())
-})
 
 Queue.prototype.flush = cadence(function (async) {
     async([function () {
@@ -58,25 +54,33 @@ Queue.prototype.flush = cadence(function (async) {
             var chunk = this._chunks[0]
             async(function () {
                 this._checkTerminated()
-                this._write(chunk.header(this._previousChecksum), async())
+                this._stream.write(chunk.header(this._previousChecksum), async())
             }, function () {
                 this._checkTerminated()
     // TODO Wait for a response, let's get for reals here.
-                this._write(chunk.buffer, async())
+                this._stream.write(chunk.buffer, async())
             }, function () {
                 this._checkTerminated()
                 this._previousChecksum = chunk.checksum
                 this._chunks.shift()
             })
         })()
-    }, rescue(/^bigeasy.prolific.queue#terminated$/)])
+    }, rescue(/^bigeasy.prolific.queue#closed$/)])
 })
+
+Queue.prototype.close = function () {
+    if (!this._closed) {
+        this._closed = true
+        this._stream.end()
+    }
+}
 
 Queue.prototype.exit = function (stderr, callback) {
     if (this._terminated) {
         return
     }
 
+    this.close()
     this._terminated = true
 
     this._chunkEntries()

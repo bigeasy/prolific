@@ -18,6 +18,8 @@ function prove (async, assert) {
         write: function (buffer, callback) {
             assert(buffer.toString(), expected.shift(), 'chunk ' + (++count))
             this.wait = callback
+        },
+        end: function () {
         }
     }
     async(function () {
@@ -37,6 +39,7 @@ function prove (async, assert) {
         queue.write(new Buffer(1 + '\n'))
         var stderr = new stream.PassThrough
         queue.exit(stderr, function () {})
+        queue.close()
         var chunk = stderr.read().toString()
         assert(chunk, '% 0 aaaaaaaa 811c9dc5 0\n% 0 811c9dc5 811c9dc5 1\n% 1 811c9dc5 05eb07a2 2\n1\n', 'exit')
         while (writable.wait != null) {
