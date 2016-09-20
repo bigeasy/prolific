@@ -68,6 +68,10 @@ require('arguable')(module, require('cadence')(function (async, program) {
                 // Let child shtudown to shut us down.
                 //program.on('SIGINT', killer(child, 'SIGINT'))
                 //program.on('SIGTERM', killer(child, 'SIGTERM'))
+                // Without hooking these we shutdown too fast on a signal to
+                // report the final messages.
+                program.on('SIGINT', function () {})
+                program.on('SIGTERM', function () {})
                 var io = { async: child.stdio[inheritance.fd], sync: child.stderr }
                 ipc(program.ultimate.ipc, process, child)
                 processors.push(nullProcessor)
