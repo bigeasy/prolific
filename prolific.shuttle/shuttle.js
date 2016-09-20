@@ -5,8 +5,7 @@ var abend = require('abend')
 function Shuttle (input, output, sync, uncaught, process) {
     this.input = input
     this.output = output
-    this.queue = new Queue(output)
-    this.sync = sync
+    this.queue = new Queue(output, sync)
     this.uncaught = createUncaughtExceptionHandler(uncaught)
     this.process = process
 }
@@ -23,7 +22,7 @@ Shuttle.prototype.stop = function () {
 
 Shuttle.prototype.exit = function (callback) {
     this.stop()
-    this.queue.exit(this.sync, callback)
+    this.queue.exit(callback)
 }
 
 Shuttle.shuttle = require('./bootstrap').createShuttle(require('net'), Shuttle)
