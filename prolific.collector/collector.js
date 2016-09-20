@@ -1,8 +1,8 @@
 var fnv = require('hash.fnv')
 var assert = require('assert')
 
-function Collector (dedicated) {
-    this._dedicated = dedicated
+function Collector (async) {
+    this._async = async
     this._buffers = []
     this.chunkNumber = 0
     this._previousChecksum = 0xaaaaaaaa
@@ -99,6 +99,7 @@ Collector.prototype._scanChunk = function (scan) {
         })
         this._chunk = null
         this._state = 'seek'
+        this.chunkNumber++
         return true
     }
     return false
@@ -117,7 +118,7 @@ Collector.prototype._scanned = function (scan, i) {
     this._push(scan, i)
     var scanned = this._flush()
     if (scanned.length != 0) {
-        assert(!this._dedicated, 'garbage before header')
+        assert(!this._async, 'garbage before header')
         this.stderr.push(scanned)
     }
 }
@@ -169,27 +170,26 @@ Collector.prototype._scanHeader = function (scan) {
             var previousChecksum = parseInt($[2], 16)
             if (previousChecksum == this._previousChecksum) {
                 if (chunk.number == 0) {
-                    if (this._initializations == 0 || (this._initializations == 1 && !this._dedicated)) {
+                    if (this._initializations == 0 || (this._initializations == 1 && !this._async)) {
                         this.chunkNumber = chunk.remaining
                         this._previousChecksum = chunk.checksum
                         this._initializations++
                     } else {
-                        assert(!this._dedicated, 'already initialized')
+                        assert(!this._async, 'already initialized')
                     }
                 } else if (chunk.number == this.chunkNumber) {
                     this._state = 'chunk'
                     this._chunk = chunk
                     this._previousChecksum = chunk.checksum
-                    this.chunkNumber++
                 } else {
-                    assert(!this._dedicated, 'chunk numbers incorrect')
+                    assert(!this._async, 'chunk numbers incorrect')
                 }
             } else {
-                assert(!this._dedicated, 'dedicated stream sequence break')
+                assert(!this._async, 'async stream sequence break')
                 this.stderr.push(header)
             }
         } else {
-            assert(!this._dedicated, 'dedicated stream garbled header')
+            assert(!this._async, 'async stream garbled header')
             this.stderr.push(header)
         }
         return true
