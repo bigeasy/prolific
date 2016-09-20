@@ -66,8 +66,8 @@ require('arguable')(module, require('cadence')(function (async, program) {
             }, function () {
                 var child = children.spawn(argv.shift(), argv, { stdio: inheritance.stdio })
                 // Let child shtudown to shut us down.
-                program.on('SIGINT', killer(child, 'SIGINT'))
-                program.on('SIGTERM', killer(child, 'SIGTERM'))
+                //program.on('SIGINT', killer(child, 'SIGINT'))
+                //program.on('SIGTERM', killer(child, 'SIGTERM'))
                 var io = { async: child.stdio[inheritance.fd], sync: child.stderr }
                 ipc(program.ultimate.ipc, process, child)
                 processors.push(nullProcessor)
