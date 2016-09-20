@@ -3,7 +3,7 @@ var abend = require('abend')
 var cadence = require('cadence')
 var Chunk = require('prolific.chunk')
 
-function Queue (stream) {
+function Queue (stream, stderr) {
     this._buffers = []
     this._chunks = []
     this._chunkNumber = 1
@@ -12,6 +12,7 @@ function Queue (stream) {
     this._terminated = false
     this._closed = false
     this._writing = false
+    this._stderr = stderr
     this._chunks.push(new Chunk(0, new Buffer(''), 1))
 }
 
@@ -65,7 +66,9 @@ Queue.prototype.flush = cadence(function (async) {
                 this._chunks.shift()
             })
         })()
-    }, rescue(/^bigeasy.prolific.queue#closed$/)])
+    }, rescue(/^bigeasy.prolific.queue#closed$/, function () {
+        this.exit(async())
+    })])
 })
 
 Queue.prototype.close = function () {
@@ -75,13 +78,10 @@ Queue.prototype.close = function () {
     }
 }
 
-Queue.prototype.exit = function (stderr, callback) {
-    if (this._terminated) {
-        return
-    }
+Queue.prototype.exit = function (callback) {
+    this._writing = false
 
     this.close()
-    this._terminated = true
 
     this._chunkEntries()
 
@@ -89,8 +89,11 @@ Queue.prototype.exit = function (stderr, callback) {
         return
     }
 
-    this._chunks.unshift(new Chunk(0, new Buffer(''), this._chunks[0].number))
-    this._previousChecksum = 'aaaaaaaa'
+    if (!this._terminated) {
+        this._terminated = true
+        this._chunks.unshift(new Chunk(0, new Buffer(''), this._chunks[0].number))
+        this._previousChecksum = 'aaaaaaaa'
+    }
 
     var buffers = []
     while (this._chunks.length) {
@@ -99,7 +102,7 @@ Queue.prototype.exit = function (stderr, callback) {
         this._previousChecksum = chunk.checksum
     }
 
-    stderr.write(Buffer.concat(buffers), callback)
+    this._stderr.write(Buffer.concat(buffers), callback)
 }
 
 module.exports = Queue
