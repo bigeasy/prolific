@@ -2,9 +2,9 @@ var push = [].push
 
 var Collector = require('prolific.collector')
 
-function Writer (consolidator, dedicated) {
-    this.dedicated = dedicated
-    this.collector = new Collector(dedicated)
+function Writer (consolidator, async) {
+    this.async = async
+    this.collector = new Collector(async)
     this.consolidator = consolidator
     this.previous = { checksum: 0xaaaaaaaa }
     this.chunkNumber = 1
@@ -12,7 +12,7 @@ function Writer (consolidator, dedicated) {
 
 Writer.prototype.data = function (buffer) {
     this.collector.scan(buffer)
-    if (this.dedicated) {
+    if (this.async) {
         this.chunkNumber = this.collector.chunkNumber
         push.apply(this.consolidator.chunks, this.collector.chunks.splice(0, this.collector.chunks.length))
     } else {
