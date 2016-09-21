@@ -8,8 +8,7 @@ exports.createShuttle = function (net, Shuttle) {
 // TODO Is the interval necessary? Just flush constantly. Use Reactor (as heavy
 // as Isochronous.)
     return function (program, finale) {
-        assert(typeof finale != 'number', 'old shuttle invocation')
-        var vargs = slice.call(arguments, 2)
+        assert(arguments.length == 3, 'old shuttle invocation')
         if (program.env.PROLIFIC_CONFIGURATION != null) {
 // TODO Maybe delete and internalize?
             var configuration = JSON.parse(program.env.PROLIFIC_CONFIGURATION)
@@ -20,13 +19,10 @@ exports.createShuttle = function (net, Shuttle) {
             configuration.levels.forEach(function (level) {
                 prolific.setLevel.apply(prolific, level)
             })
-            vargs.forEach(function (signal) {
-                program.on(signal, shuttle.stop.bind(shuttle))
-            })
             program.on('uncaughtException', shuttle.uncaughtException.bind(shuttle))
             program.on('exit', shuttle.exit.bind(shuttle))
             return shuttle
         }
-        return { stop: function () {} }
+        return { close: function () {} }
     }
 }

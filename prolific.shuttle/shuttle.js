@@ -16,12 +16,12 @@ Shuttle.prototype.uncaughtException = function (error) {
     this.exit(function () { this.process.exit(1) }.bind(this))
 }
 
-Shuttle.prototype.stop = function () {
+Shuttle.prototype.close = function () {
     this.queue.close()
 }
 
 Shuttle.prototype.exit = function (callback) {
-    this.stop()
+    this.close()
     this.queue.exit(callback)
 }
 
