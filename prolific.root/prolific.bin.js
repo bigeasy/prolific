@@ -65,13 +65,9 @@ require('arguable')(module, require('cadence')(function (async, program) {
                 })(processors)
             }, function () {
                 var child = children.spawn(argv.shift(), argv, { stdio: inheritance.stdio })
-                // Let child shtudown to shut us down.
-                //program.on('SIGINT', killer(child, 'SIGINT'))
-                //program.on('SIGTERM', killer(child, 'SIGTERM'))
-                // Without hooking these we shutdown too fast on a signal to
-                // report the final messages.
-                program.on('SIGINT', function () {})
-                program.on('SIGTERM', function () {})
+                // If you `ctl+c` from your shell, you're going to get doubles.
+                program.on('SIGINT', killer(child, 'SIGINT'))
+                program.on('SIGTERM', killer(child, 'SIGTERM'))
                 var io = { async: child.stdio[inheritance.fd], sync: child.stderr }
                 ipc(program.ultimate.ipc, process, child)
                 processors.push(nullProcessor)
