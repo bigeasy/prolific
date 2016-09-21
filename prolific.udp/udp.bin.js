@@ -29,7 +29,7 @@ require('arguable')(module, require('cadence')(function (async, program) {
     var socket = dgram.createSocket('udp4')
     var prolific = require('prolific')
     socket.on('message', function (chunk) {
-        shuttle.sink.write(chunk)
+        Shuttle.sink.write(chunk)
     })
 
     // Interesting example, use indempotent shuttle close to hang onto `SIGINT`
