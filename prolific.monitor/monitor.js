@@ -1,5 +1,6 @@
 var Consolidator = require('prolific.consolidator')
 var delta = require('delta')
+var rescue = require('rescue')
 var cadence = require('cadence')
 var push = [].push
 
@@ -49,8 +50,10 @@ module.exports = cadence(function (async, processor, child, io, forward) {
                 .ee(io.async)
                     .on('data', consolidator.async.ondata)
                     .on('data', onChunk).on('end')
-        }, /^ECONNRESET$/, function (error) {
+        }, function (error) {
+            child.kill()
 // TODO Revisit this. Which operating system generated this error?
+// Error was ECONNRESET.
             console.log(error.stack)
         }])
     }, function (code, signal) {
