@@ -32,8 +32,12 @@ require('arguable')(module, require('cadence')(function (async, program) {
         prolific.sink.write(chunk)
     })
 
-    program.on('shutdown', socket.close.bind(socket))
+    // Interesting example, use indempotent shuttle close to hang onto `SIGINT`
+    // and `SIGTERM`, but use `once` to keep from double closing socket.
+    program.once('shutdown', socket.close.bind(socket))
     program.on('shutdown', shuttle.close.bind(shuttle))
+    // Could do this whenever `once` is needed, it would get tested.
+    // program.on('shutdown', function() {})
 
     var bind = program.ultimate.bind
     socket.bind(bind.port, bind.address, async())
