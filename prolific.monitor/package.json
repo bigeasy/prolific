@@ -1,6 +1,6 @@
 {
     "name":                 "prolific.monitor",
-    "version":              "4.0.1",
+    "version":              "4.0.2",
     "description":
 
       "Monitor a Prolific-enabled child process gathering and verifying chunked log messages and feeding them to log processors.",
