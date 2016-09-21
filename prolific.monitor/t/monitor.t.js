@@ -8,6 +8,7 @@ function prove (async, assert) {
     var stderr = new stream.PassThrough
     async(function () {
         var child = new events.EventEmitter
+        child.kill = function () {}
         var io = {
             async: new stream.PassThrough,
             sync: new stream.PassThrough
@@ -44,6 +45,7 @@ function prove (async, assert) {
         assert(code, 0, 'exit code')
         assert(stderr.read().toString(), 'hello, world\n', 'stderr')
         var child = new events.EventEmitter
+        child.kill = function () {}
         var io = {
             async: new stream.PassThrough,
             sync: new stream.PassThrough
