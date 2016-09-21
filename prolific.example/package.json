@@ -21,7 +21,7 @@
     },
     "dependencies":
     {
-                            "prolific.shuttle":             "5.0.x",
+                            "prolific.shuttle":             "7.0.x",
                             "prolific.logger":              "2.0.x",
                             "prolific":                     "4.0.x",
                             "prolific.stdio":               "1.0.x"
