@@ -1,4 +1,4 @@
-require('proof/redux')(2, prove)
+require('proof/redux')(1, prove)
 
 function prove (assert, callback) {
     var Shuttle = require('../shuttle')
@@ -10,12 +10,7 @@ function prove (assert, callback) {
     }
     var shuttle = new Shuttle(io.input, io.output, io.sync, function (error) {
         assert(error.message, 'hello', 'uncaught handled')
-    }, {
-        exit: function (code) {
-            assert(code, 1, 'uncaught')
-            shuttle.exit()
-            callback()
-        }
+        callback()
     })
     shuttle.uncaughtException(new Error('hello'))
 }

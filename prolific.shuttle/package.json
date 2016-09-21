@@ -22,7 +22,7 @@
     {
                             "abend":                        "1.0.x",
                             "isochronous":                  "1.0.x",
-                            "prolific.queue":               "5.0.x",
+                            "prolific.queue":               "6.0.x",
                             "prolific.sink":                "2.0.x"
     },
     "devDependencies":
