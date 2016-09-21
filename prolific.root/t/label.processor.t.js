@@ -6,13 +6,13 @@ function prove (async, assert) {
         labels: [{ name: 'key', value: '1' }]
     }, {
         process: function (entry) {
-            assert(entry, { key: '1' }, 'labeled')
+            assert(entry, { json: { key: '1' } }, 'labeled')
         }
     })
     async(function () {
         processor.open(async())
     }, function () {
-        processor.process({})
+        processor.process({json:{}})
     }, function () {
         processor.close(async())
     })
