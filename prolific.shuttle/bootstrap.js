@@ -8,7 +8,7 @@ exports.createShuttle = function (net, Shuttle) {
 // TODO Is the interval necessary? Just flush constantly. Use Reactor (as heavy
 // as Isochronous.)
     return function (program, finale) {
-        assert(arguments.length == 3, 'old shuttle invocation')
+        assert(arguments.length == 2, 'old shuttle invocation')
         if (program.env.PROLIFIC_CONFIGURATION != null) {
 // TODO Maybe delete and internalize?
             var configuration = JSON.parse(program.env.PROLIFIC_CONFIGURATION)

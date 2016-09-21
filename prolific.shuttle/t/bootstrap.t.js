@@ -13,10 +13,10 @@ function prove (assert) {
     function Shuttle () {
         this.queue = {}
         this.uncaughtException = function () {}
-        this.stop = function () {}
+        this.close = function () {}
         this.exit = function () {}
     }
     var createShuttle = bootstrap.createShuttle(net, Shuttle)
-    createShuttle(program, function () {}, 'SIGINT')
-    createShuttle({ env: {} }, function () {}).stop()
+    createShuttle(program, function () {})
+    createShuttle({ env: {} }, function () {}).close()
 }
