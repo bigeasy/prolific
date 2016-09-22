@@ -27,6 +27,7 @@
                             "delta":                        "1.1.x",
                             "prolific":                     "4.0.x",
                             "reactor":                      "2.2.x",
+                            "server-destroy":               "1.0.1",
                             "staccato":                     "1.1.x"
     },
     "devDependencies":
