@@ -10,8 +10,6 @@
 require('arguable')(module, require('cadence')(function (async, program) {
     program.helpIf(program.ultimate.help)
 
-    var configuration = program.ultimate.configuration
-
     var argv = program.argv.slice()
     var LEVEL = [ 'ERROR', 'WARN', 'INFO', 'DEBUG', 'TRACE' ]
 
@@ -19,9 +17,9 @@ require('arguable')(module, require('cadence')(function (async, program) {
     while (argv.length && (~argv[0].indexOf('=') || ~LEVEL.indexOf(argv[0]))) {
         var level = argv.shift().split('=')
         if (level.length == 1) {
-            configuration.levels.push({ path: '', level: level[0] })
+            program.configuration.levels.push({ path: '', level: level[0] })
         } else {
-            configuration.levels.push({ path: level[1], level: level[0] })
+            program.configuration.levels.push({ path: level[1], level: level[0] })
         }
     }
 
