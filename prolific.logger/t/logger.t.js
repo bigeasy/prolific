@@ -16,5 +16,6 @@ function prove (assert) {
         ], 'log')
     }
     var logger = Logger.createLogger('hello')
-    logger.error('greeting', { a: 1 })
+    logger.concat('error', 'greeting', { a: 1 })
+
 }

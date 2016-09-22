@@ -10,6 +10,17 @@ Logger.prototype._log = function (level, name, properties) {
     sink.json(this._path, level, this.qualifier, name, properties)
 }
 
+Logger.prototype.concat = function (level, name) {
+    var object = {}
+    for (var i = 2, I = arguments.length; i < I; i++) {
+        var properties = arguments[i]
+        for (var key in properties) {
+            object[key] = properties[key]
+        }
+    }
+    this[level](name, properties)
+}
+
 ; [ 'error', 'warn', 'info', 'debug', 'trace' ].forEach(function (level) {
     Logger.prototype[level] = function (name, properties) {
         sink.json(this._path, level, this.qualifier, name, properties)
