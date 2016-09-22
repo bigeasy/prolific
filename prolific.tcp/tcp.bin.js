@@ -14,24 +14,42 @@
 require('arguable')(module, require('cadence')(function (async, program) {
     var net = require('net')
 
-    program.helpIf(program.command.param.help)
-    program.command.required('bind')
+    program.helpIf(program.ultimate.help)
+    program.required('bind')
+    program.validate(require('arguable/bindable'), 'bind')
 
+    var destroyer = require('server-destroy')
     var prolific = require('prolific')
     var logger = require('prolific.logger').createLogger('prolific.tcp.listener')
     var Shuttle = require('prolific.shuttle')
+    var Staccato = require('staccato')
+    var cadence = require('cadence')
+    var abend = require('abend')
+    var byline = require('byline')
 
-    Shuttle.shuttle(program, 1000, logger)
+    var shuttle = Shuttle.shuttle(program, logger)
 
-    var bind = program.command.bind('bind')
-
-    var server = net.createServer(function (socket) {
-        socket.on('data', function (chunk) {
-            prolific.sink.write(chunk)
-        })
+    var split = cadence(function (async, socket) {
+        var staccato = new Staccato(byline(socket))
+        var loop = async(function () {
+            async(function () {
+                staccato.read(async())
+            }, function (line) {
+                if (line == null) {
+                    return loop.break
+                }
+                console.log(line.toString())
+                Shuttle.sink.writer.write(line)
+            })
+        })()
     })
 
+    var server = net.createServer(function (socket) { split(socket, abend) })
+    destroyer(server)
+
+    program.once('shutdown', server.destroy.bind(server))
+    program.on('shutdown', shuttle.close.bind(shuttle))
+
+    var bind = program.ultimate.bind
     server.listen(bind.port, bind.address, async())
-    program.on('SIGTERM', server.close.bind(server))
-    program.on('SIGINT', server.close.bind(server))
 }))
