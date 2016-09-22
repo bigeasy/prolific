@@ -38,8 +38,7 @@ require('arguable')(module, require('cadence')(function (async, program) {
                 if (line == null) {
                     return loop.break
                 }
-                console.log(line.toString())
-                Shuttle.sink.writer.write(line)
+                Shuttle.sink.writer.write(new Buffer(line.toString() + '\n'))
             })
         })()
     })
