@@ -71,6 +71,14 @@ Queue.prototype.flush = cadence(function (async) {
     })])
 })
 
+// Necessary for uncaught exception when the default shutdown hooks in Node.js
+// are disabled by a `SIGTERM` handler. My test to assert that we'd shutdown
+// normally passed because the only hook was the async pipe between the parent
+// and child. That is closed by `exit`. Anything else is going to keep the
+// socket open, so you need to exit explicitly. If you exit immediately after
+// write, then you will not flush STDERR.
+
+// Put this note somewhere where you'll not delete it.
 Queue.prototype.close = function () {
     if (!this._closed) {
         this._closed = true
@@ -78,7 +86,7 @@ Queue.prototype.close = function () {
     }
 }
 
-Queue.prototype.exit = function () {
+Queue.prototype.exit = function (callback) {
     this._writing = false
 
     this.close()
@@ -102,7 +110,7 @@ Queue.prototype.exit = function () {
         this._previousChecksum = chunk.checksum
     }
 
-    this._stderr.write(Buffer.concat(buffers))
+    this._stderr.write(Buffer.concat(buffers), callback)
 }
 
 module.exports = Queue
