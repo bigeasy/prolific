@@ -94,9 +94,10 @@ Queue.prototype.exit = function (callback) {
     this._chunkEntries()
 
     if (!this._terminated) {
-        this._terminated = true
-        this._chunks.unshift(new Chunk(0, new Buffer(''), this._chunks[0].number))
+        var number = this._chunks.length ? this._chunks[0].number : this._chunkNumber
+        this._chunks.unshift(new Chunk(0, new Buffer(''), number))
         this._previousChecksum = 'aaaaaaaa'
+        this._terminated = true
     }
 
     var buffers = []
