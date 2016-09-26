@@ -1,6 +1,6 @@
-require('proof/redux')(1, prove)
+require('proof/redux')(2, prove)
 
-function prove (assert) {
+function prove (assert, callback) {
     var Shuttle = require('../shuttle')
     var stream = require('stream')
     var io = {
@@ -13,6 +13,7 @@ function prove (assert) {
     }, {
         exit: function (code) {
             assert(code, 1, 'explicit exit')
+            callback()
         }
     })
     shuttle.uncaughtException(new Error('hello'))
