@@ -13,16 +13,16 @@ function Shuttle (input, output, sync, uncaught, process) {
 Shuttle.prototype.uncaughtException = function (error) {
     console.error(error.stack)
     this.uncaught.call(null, error)
-    this.exit(function () { this.process.exit(1) }.bind(this))
+    this.exit(this.process.exit.bind(this.process, 1))
 }
 
 Shuttle.prototype.close = function () {
     this.queue.close()
 }
 
-Shuttle.prototype.exit = function (callback) {
+Shuttle.prototype.exit = function () {
     this.close()
-    this.queue.exit(callback)
+    this.queue.exit()
 }
 
 Shuttle.shuttle = require('./bootstrap').createShuttle(require('net'), Shuttle)
