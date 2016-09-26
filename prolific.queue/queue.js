@@ -93,10 +93,6 @@ Queue.prototype.exit = function (callback) {
 
     this._chunkEntries()
 
-    if (this._chunks.length == 0) {
-        return
-    }
-
     if (!this._terminated) {
         this._terminated = true
         this._chunks.unshift(new Chunk(0, new Buffer(''), this._chunks[0].number))
