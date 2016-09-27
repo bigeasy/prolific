@@ -19,7 +19,7 @@ Shuttle.prototype.close = function () {
     this.queue.close()
 }
 
-Shuttle.prototype.exit = function (callback) {
+Shuttle.prototype.exit = function () {
     this.close()
     this.queue.exit(callback)
 }
