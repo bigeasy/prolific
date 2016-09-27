@@ -55,11 +55,9 @@ Queue.prototype.flush = cadence(function (async) {
             var chunk = this._chunks[0]
             async(function () {
                 this._checkTerminated()
-                this._stream.write(chunk.header(this._previousChecksum), async())
-            }, function () {
-                this._checkTerminated()
-    // TODO Wait for a response, let's get for reals here.
-                this._stream.write(chunk.buffer, async())
+                this._stream.write(Buffer.concat([
+                    chunk.header(this._previousChecksum), chunk.buffer
+                ]), async())
             }, function () {
                 this._checkTerminated()
                 this._previousChecksum = chunk.checksum
@@ -87,6 +85,10 @@ Queue.prototype.close = function () {
 }
 
 Queue.prototype.exit = function (callback) {
+    this._stderr.write(this.chunk(), callback)
+}
+
+Queue.prototype.chunk = function () {
     this._writing = false
 
     this.close()
@@ -107,7 +109,7 @@ Queue.prototype.exit = function (callback) {
         this._previousChecksum = chunk.checksum
     }
 
-    this._stderr.write(Buffer.concat(buffers), callback)
+    return Buffer.concat(buffers)
 }
 
 module.exports = Queue

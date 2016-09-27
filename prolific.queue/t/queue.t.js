@@ -1,4 +1,4 @@
-require('proof/redux')(7, require('cadence')(prove))
+require('proof/redux')(5, require('cadence')(prove))
 
 function prove (async, assert) {
     var stream = require('stream')
@@ -8,11 +8,8 @@ function prove (async, assert) {
     var count = 0
     var expected = [
         '% 0 aaaaaaaa 811c9dc5 1\n',
-        '',
-        '% 1 811c9dc5 fdaf7437 6\n',
-        '1\n2\n3\n',
-        '% 0 aaaaaaaa 811c9dc5 1\n',
-        ''
+        '% 1 811c9dc5 fdaf7437 6\n1\n2\n3\n',
+        '% 0 aaaaaaaa 811c9dc5 1\n'
     ]
     var writable = {
         write: function (buffer, callback) {
