@@ -88,6 +88,7 @@ Queue.prototype.exit = function (callback) {
     this._stderr.write(this.chunk(), callback)
 }
 
+// You can walk this back, put it back into `exit`.
 Queue.prototype.chunk = function () {
     this.close()
 
