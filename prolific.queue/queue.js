@@ -10,7 +10,7 @@ function Queue (stream, stderr) {
     this._previousChecksum = 'aaaaaaaa'
     this._stream = stream
     this._terminated = false
-    this.state = 'empty'
+    this._writiing = false
     this._closed = false
     this._stderr = stderr
     this._chunks.push(new Chunk(0, new Buffer(''), 1))
@@ -18,8 +18,8 @@ function Queue (stream, stderr) {
 
 Queue.prototype.write = function (buffer) {
     this._buffers.push(buffer)
-    if (this.state == 'empty') {
-        this.state = 'writing'
+    if (!this._writing) {
+        this._writing = true
         this.flush(abend)
     }
 }
@@ -48,7 +48,7 @@ Queue.prototype.flush = cadence(function (async) {
             if (this._chunks.length == 0) {
                 this._chunkEntries()
                 if (this._chunks.length == 0) {
-                    this.state = 'empty'
+                    this._writing = false
                     return [ loop.break ]
                 }
             }
@@ -84,12 +84,7 @@ Queue.prototype.close = function () {
     }
 }
 
-Queue.prototype.exit = function (callback) {
-    this._stderr.write(this.chunk(), callback)
-}
-
-// You can walk this back, put it back into `exit`.
-Queue.prototype.chunk = function () {
+Queue.prototype.exit = function () {
     this.close()
 
     this._chunkEntries()
@@ -108,9 +103,9 @@ Queue.prototype.chunk = function () {
         this._previousChecksum = chunk.checksum
     }
 
-    this.state = 'empty'
+    this._stderr.write(Buffer.concat(buffers))
 
-    return Buffer.concat(buffers)
+    this._writing = false
 }
 
 module.exports = Queue
