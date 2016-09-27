@@ -21,7 +21,7 @@ Shuttle.prototype.close = function () {
 
 Shuttle.prototype.exit = function () {
     this.close()
-    this.queue.exit(callback)
+    this.queue.exit()
 }
 
 Shuttle.shuttle = require('./bootstrap').createShuttle(require('net'), Shuttle)

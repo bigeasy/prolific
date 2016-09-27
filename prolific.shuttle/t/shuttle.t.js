@@ -1,4 +1,4 @@
-require('proof/redux')(1, prove)
+require('proof/redux')(2, prove)
 
 function prove (assert) {
     var Shuttle = require('../shuttle')
@@ -14,6 +14,6 @@ function prove (assert) {
     try {
         shuttle.uncaughtException(new Error('hello'))
     } catch (error) {
-        console.log(error.message, 'hello', 'thrown')
+        assert(error.message, 'hello', 'thrown')
     }
 }
