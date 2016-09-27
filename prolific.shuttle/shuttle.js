@@ -2,18 +2,17 @@ var Queue = require('prolific.queue')
 var createUncaughtExceptionHandler = require('./uncaught')
 var abend = require('abend')
 
-function Shuttle (input, output, sync, uncaught, process) {
+function Shuttle (input, output, sync, uncaught) {
     this.input = input
     this.output = output
     this.queue = new Queue(output, sync)
     this.uncaught = createUncaughtExceptionHandler(uncaught)
-    this.process = process
 }
 
 Shuttle.prototype.uncaughtException = function (error) {
-    console.error(error.stack)
     this.uncaught.call(null, error)
-    this.exit(this.process.exit.bind(this.process, 1))
+    this.exit()
+    throw error
 }
 
 Shuttle.prototype.close = function () {
