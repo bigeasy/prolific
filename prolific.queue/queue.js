@@ -10,16 +10,16 @@ function Queue (stream, stderr) {
     this._previousChecksum = 'aaaaaaaa'
     this._stream = stream
     this._terminated = false
+    this.state = 'empty'
     this._closed = false
-    this._writing = false
     this._stderr = stderr
     this._chunks.push(new Chunk(0, new Buffer(''), 1))
 }
 
 Queue.prototype.write = function (buffer) {
     this._buffers.push(buffer)
-    if (!this._writing) {
-        this._writing = true
+    if (this.state == 'empty') {
+        this.state = 'writing'
         this.flush(abend)
     }
 }
@@ -48,7 +48,7 @@ Queue.prototype.flush = cadence(function (async) {
             if (this._chunks.length == 0) {
                 this._chunkEntries()
                 if (this._chunks.length == 0) {
-                    this._writing = false
+                    this.state = 'empty'
                     return [ loop.break ]
                 }
             }
@@ -89,8 +89,6 @@ Queue.prototype.exit = function (callback) {
 }
 
 Queue.prototype.chunk = function () {
-    this._writing = false
-
     this.close()
 
     this._chunkEntries()
@@ -108,6 +106,8 @@ Queue.prototype.chunk = function () {
         buffers.push(chunk.header(this._previousChecksum), chunk.buffer)
         this._previousChecksum = chunk.checksum
     }
+
+    this.state = 'empty'
 
     return Buffer.concat(buffers)
 }
