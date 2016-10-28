@@ -20,7 +20,7 @@
     },
     "dependencies":
     {
-                            "arguable":                     "4.0.x",
+                            "arguable":                     "5.0.x",
                             "cadence":                      "1.0.x",
                             "prolific.collector":           "2.0.x",
                             "prolific.inherit":             "3.0.x",
