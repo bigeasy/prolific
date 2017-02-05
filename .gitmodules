@@ -1,0 +1,12 @@
+[submodule "docs"]
+	path = docs
+	url = https://github.com/bigeasy/prolific.git
+    branch = gh-pages
+[submodule "prolific.root/docs"]
+	path = prolific.root/docs
+	url = https://github.com/bigeasy/prolific.git
+    branch = root.gh-pages
+[submodule "prolific.stdio/docs"]
+	path = prolific.stdio/docs
+	url = https://github.com/bigeasy/prolific.git
+    branch = stdio.gh-pages
