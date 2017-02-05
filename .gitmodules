@@ -4,3 +4,6 @@
 [submodule "root"]
 	path = root
 	url = https://github.com/bigeasy/prolific.git
+[submodule "stdio"]
+	path = stdio
+	url = https://github.com/bigeasy/prolific.git
