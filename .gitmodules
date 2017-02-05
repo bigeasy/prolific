@@ -1,3 +1,6 @@
 [submodule "vendor/lesshat"]
 	path = vendor/lesshat
 	url = https://github.com/madebysource/lesshat.git
+[submodule "root"]
+	path = root
+	url = https://github.com/bigeasy/prolific.git
