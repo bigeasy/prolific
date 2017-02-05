@@ -4,6 +4,8 @@
 [submodule "root"]
 	path = root
 	url = https://github.com/bigeasy/prolific.git
+    branch = root.gh-pages
 [submodule "stdio"]
 	path = stdio
 	url = https://github.com/bigeasy/prolific.git
+    branch = stdio.gh-pages
