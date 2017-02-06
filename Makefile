@@ -183,7 +183,7 @@ tracking: tracking-specific
 		path=$$(basename "$$dir")/$$path; \
 		dir=$$(cd "$$dir" && cd .. && pwd); \
 	done; \
-	git config -f ../.gitmodules -l | \
+	git config -f "$$dir"/.gitmodules -l | \
 		sed -n 's/submodule\.\(.*\)\.branch/\1/p' | \
     while read -r line; do \
 		IFS='=' read -a pair <<< "$$line"; \
