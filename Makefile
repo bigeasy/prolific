@@ -212,9 +212,7 @@ tracking-specific:
 	echo git -C "$$pwd" checkout $$branch; \
 	git -C "$$pwd" checkout $$branch; \
 	echo git branch -C "$$pwd" --set-upstream-to=origin/$$branch; \
-	git -C "$$pwd" branch --set-upstream-to=origin/$$branch; \
-	echo git -C "$$pwd" pull; \
-	git -C "$$pwd" pull;
+	git -C "$$pwd" branch --set-upstream-to=origin/$$branch;
 
 tracking: tracking-specific
 	@ pwd=$$(pwd); \
