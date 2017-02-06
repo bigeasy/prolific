@@ -181,8 +181,8 @@ pull: pull-specific
     while read -r line; do \
 		IFS='=' read -a pair <<< "$$line"; \
 		if [ "$$dir"/"$${pair[0]}" != "$$pwd" ]; then \
-			echo make -C "$$dir"/"$${pair[0]}" tracking-specific; \
-			make -C "$$dir"/"$${pair[0]}" tracking-specific; \
+			echo make -C "$$dir"/"$${pair[0]}" pull-specific; \
+			make -C "$$dir"/"$${pair[0]}" pull-specific; \
 		fi \
 	done
 
