@@ -149,6 +149,43 @@ clean:
 serve: node_modules/.bin/serve all
 	node_modules/.bin/serve --no-less --port 4000
 
+pull-specific:
+	@ \
+	pwd=$$(pwd); \
+	if [ -e "$$pwd"/.gitmodules ]; then \
+		tail=$$( \
+			git config -f "$$pwd"/.gitmodules -l | \
+				sed -n 's/submodule\.\(.*\)\.branch/\1/p' | \
+				tail -n 1 \
+		); \
+		if [ ! -z "$$tail" ]; then \
+			IFS='=' read -a pair <<< "$$tail"; \
+			echo make -C "$$pwd"/"$${pair[0]}" pull; \
+			make -C "$$pwd"/"$${pair[0]}" pull; \
+		fi; \
+	fi; \
+	echo git -C "$$pwd" pull; \
+	git -C "$$pwd" pull;
+
+pull: pull-specific
+	@ \
+	pwd=$$(pwd); \
+	dir=$$(cd .. && pwd); \
+	path=$$(basename $$(pwd)); \
+	while ! [ -e "$$dir"/.gitmodules ]; do \
+		path=$$(basename "$$dir")/$$path; \
+		dir=$$(cd "$$dir" && cd .. && pwd); \
+	done; \
+	git config -f "$$dir"/.gitmodules -l | \
+		sed -n 's/submodule\.\(.*\)\.branch/\1/p' | \
+    while read -r line; do \
+		IFS='=' read -a pair <<< "$$line"; \
+		if [ "$$dir"/"$${pair[0]}" != "$$pwd" ]; then \
+			echo make -C "$$dir"/"$${pair[0]}" tracking-specific; \
+			make -C "$$dir"/"$${pair[0]}" tracking-specific; \
+		fi \
+	done
+
 tracking-specific:
 	@ \
 	pwd=$$(pwd); \
@@ -173,7 +210,11 @@ tracking-specific:
 	branch=$$(git config -f "$$dir"/.gitmodules submodule.$$path.branch); \
 	[ -z "$$branch" ] && echo no branch && exit 1; \
 	echo git -C "$$pwd" checkout $$branch; \
-	git -C "$$pwd" checkout $$branch;
+	git -C "$$pwd" checkout $$branch; \
+	echo git branch -C "$$pwd" --set-upstream-to=origin/$$branch; \
+	git -C "$$pwd" branch --set-upstream-to=origin/$$branch; \
+	echo git -C "$$pwd" pull; \
+	git -C "$$pwd" pull;
 
 tracking: tracking-specific
 	@ pwd=$$(pwd); \
