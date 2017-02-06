@@ -1,5 +1,5 @@
 var logger = require('prolific.logger').createLogger('bigeasy.prolific.test')
-var shuttle = require('prolific.shuttle').shuttle(process, 100, logger)
+var shuttle = require('prolific.shuttle').shuttle(process, logger)
 process.stderr.write(JSON.stringify(process.env) + '\n')
 logger.info('hello', {})
-setTimeout(function () { shuttle.stop() }, 250)
+setTimeout(function () { shuttle.close() }, 250)
