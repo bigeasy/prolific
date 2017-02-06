@@ -53,7 +53,10 @@ exports.json = function (path, level, qualifier, name, properties) {
             entry[key] = properties[key]
         }
     }
-// TODO Do not write out JSON.
+    // TODO Do not write out JSON. We want to allow decoration for extension.
+    // The reason you're serializing here is because you'd imagined that you
+    // could advise people to just put `stdout` as the `writer`, but that will
+    // never happen, and a simple decorator could do that anyway.
     this.writer.write(new Buffer(JSON.stringify(entry) + '\n'))
 }
 
