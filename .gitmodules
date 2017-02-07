@@ -33,10 +33,6 @@
 	path = inherit
 	url = https://github.com/bigeasy/prolific.git
     branch = inherit.gh-pages
-[submodule "ipc"]
-	path = ipc
-	url = https://github.com/bigeasy/prolific.git
-    branch = ipc.gh-pages
 [submodule "logger"]
 	path = logger
 	url = https://github.com/bigeasy/prolific.git
