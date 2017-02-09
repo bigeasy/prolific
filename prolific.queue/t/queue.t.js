@@ -21,9 +21,9 @@ function prove (async, assert) {
     }
     async(function () {
         queue = new Queue(writable, new stream.PassThrough)
-        queue.write(new Buffer(1 + '\n'))
-        queue.write(new Buffer(2 + '\n'))
-        queue.write(new Buffer(3 + '\n'))
+        queue.push(1)
+        queue.push(2)
+        queue.push(3)
     }, function () {
         while (writable.wait != null) {
             var wait = [writable.wait, writable.wait = null][0]
@@ -34,12 +34,12 @@ function prove (async, assert) {
     }, function () {
         var stderr = new stream.PassThrough
         queue = new Queue(writable, stderr)
-        queue.write(new Buffer(1 + '\n'))
+        queue.push(1)
         queue.exit()
         queue.close()
         var chunk = stderr.read().toString()
         assert(chunk, '% 0 aaaaaaaa 811c9dc5 0\n% 0 811c9dc5 811c9dc5 1\n% 1 811c9dc5 05eb07a2 2\n1\n', 'exit')
-        queue.write(new Buffer(1 + '\n'))
+        queue.push(1)
         var chunk = stderr.read().toString()
         assert(chunk, '% 2 05eb07a2 05eb07a2 2\n1\n', 'write after exit')
     })

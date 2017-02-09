@@ -16,8 +16,8 @@ function Queue (stream, stderr) {
     this._chunks.push(new Chunk(0, new Buffer(''), 1))
 }
 
-Queue.prototype.write = function (buffer) {
-    this._buffers.push(buffer)
+Queue.prototype.push = function (json) {
+    this._buffers.push(new Buffer(JSON.stringify(json) + '\n'))
     if (!this._writing) {
         this._writing = true
         this.flush(abend)
@@ -37,7 +37,7 @@ Queue.prototype._chunkEntries = function () {
 
 Queue.prototype._checkTerminated = function () {
     if (this._closed) {
-        throw new Error('bigeasy.prolific.queue#closed')
+        throw new Error('prolific.queue#closed')
     }
 }
 
@@ -64,7 +64,7 @@ Queue.prototype.flush = cadence(function (async) {
                 this._chunks.shift()
             })
         })()
-    }, rescue(/^bigeasy.prolific.queue#closed$/, function () {
+    }, rescue(/^prolific.queue#closed$/, function () {
         this.exit(async())
     })])
 })
