@@ -24,8 +24,8 @@
                             "arguable":                     "5.0.x",
                             "cadence":                      "1.0.x",
                             "delta":                        "1.2.x",
-                            "prolific":                     "7.0.x",
                             "prolific.sender.stream":       "3.0.x",
+                            "prolific.stringify":           "1.0.x",
                             "signal":                       "1.8.x"
     },
     "devDependencies":

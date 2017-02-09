@@ -6,7 +6,7 @@ var cadence = require('cadence')
 var Signal = require('signal')
 var delta = require('delta')
 
-var stringify = require('prolific/stringify')
+var stringify = require('prolific.stringify')
 var Sender = require('prolific.sender.stream')
 
 function Processor (parameters, next) {
