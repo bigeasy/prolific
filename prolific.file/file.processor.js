@@ -3,7 +3,7 @@ var stream = require('stream')
 
 var abend = require('abend')
 var cadence = require('cadence')
-var Vestibule = require('vestibule')
+var Signal = require('signal')
 var delta = require('delta')
 
 var stringify = require('prolific/stringify')
@@ -24,7 +24,7 @@ function Processor (parameters, next) {
     this._pid = parameters.pid || process.pid
     this._sender = this._nullSender
     this._Date = parameters.Date || Date
-    this._rotating = new Vestibule
+    this._rotating = new Signal
 }
 
 Processor.prototype.open = function (callback) { callback() }
@@ -71,7 +71,7 @@ Processor.prototype.process = function (entry) {
 
 Processor.prototype.close = cadence(function (async) {
     async(function () {
-        this._rotating.enter(async())
+        this._rotating.wait(async())
     }, function () {
         this._flush(async())
     })
