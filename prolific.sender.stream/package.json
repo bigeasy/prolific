@@ -1,6 +1,6 @@
 {
     "name":                 "prolific.sender.stream",
-    "version":              "3.0.0",
+    "version":              "3.0.1",
     "description":
 
       "A generic stream sender implementation for the Prolific logging framework.",
