@@ -1,11 +1,11 @@
 var cadence = require('cadence')
 var abend = require('abend')
-var Vestibule = require('vestibule')
+var Signal = require('signal')
 var stringify = require('prolific/stringify')
 
 function Processor (stream) {
     this.stream = stream
-    this._sending = new Vestibule
+    this._sending = new Signal
     this._sending.open = []
     this.lines = []
     this.sent = 0
@@ -46,7 +46,7 @@ Processor.prototype.process = function (entry) {
 }
 
 Processor.prototype.flush = cadence(function (async) {
-    this._sending.enter(async())
+    this._sending.wait(async())
 })
 
 module.exports = Processor
