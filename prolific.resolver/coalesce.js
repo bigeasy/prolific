@@ -16,4 +16,5 @@ module.exports = function () {
             return vargs[i]
         }
     }
+    return null
 }
