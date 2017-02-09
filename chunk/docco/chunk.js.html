@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+
+<html>
+<head>
+  <title>chunk.js</title>
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <meta name="viewport" content="width=device-width, target-densitydpi=160dpi, initial-scale=1.0; maximum-scale=1.0; user-scalable=0;">
+  <link rel="stylesheet" media="all" href="docco.css" />
+</head>
+<body>
+  <div id="container">
+    <div id="background"></div>
+
+      <ul id="jump_to">
+        <li>
+          <a class="large" href="javascript:void(0);">Jump To &hellip;</a>
+          <a class="small" href="javascript:void(0);">+</a>
+          <div id="jump_wrapper">
+          <div id="jump_page_wrapper">
+            <div id="jump_page">
+
+
+                <a class="source" href="chunk.js.html">
+                  chunk.js
+                </a>
+
+
+                <a class="source" href="hex.js.html">
+                  hex.js
+                </a>
+
+            </div>
+          </div>
+        </li>
+      </ul>
+
+    <ul class="sections">
+
+          <li id="title">
+              <div class="annotation">
+                  <h1>chunk.js</h1>
+              </div>
+          </li>
+
+
+
+        <li id="section-1">
+            <div class="annotation">
+
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-1">&#182;</a>
+              </div>
+
+            </div>
+
+            <div class="content"><div class='highlight'><pre><span class="hljs-keyword">var</span> fnv = <span class="hljs-built_in">require</span>(<span class="hljs-string">'hash.fnv'</span>)
+<span class="hljs-keyword">var</span> hex = <span class="hljs-built_in">require</span>(<span class="hljs-string">'./hex'</span>)
+
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">Chunk</span> (<span class="hljs-params">number, buffer, value</span>) </span>{
+    <span class="hljs-keyword">this</span>.number = number
+    <span class="hljs-keyword">this</span>.checksum = hex(fnv(<span class="hljs-number">0</span>, buffer, <span class="hljs-number">0</span>, buffer.length), <span class="hljs-number">8</span>)
+    <span class="hljs-keyword">this</span>.value = value
+    <span class="hljs-keyword">this</span>.buffer = buffer
+}
+
+Chunk.prototype.header = <span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params">previousChecksum, length</span>) </span>{
+    <span class="hljs-keyword">return</span> <span class="hljs-keyword">new</span> Buffer([
+        <span class="hljs-string">'% '</span>,
+        <span class="hljs-keyword">this</span>.number, <span class="hljs-string">' '</span>,
+        previousChecksum, <span class="hljs-string">' '</span>,
+        <span class="hljs-keyword">this</span>.checksum, <span class="hljs-string">' '</span>,
+        <span class="hljs-keyword">this</span>.value, <span class="hljs-string">'\n'</span>
+    ].join(<span class="hljs-string">''</span>))
+}
+
+<span class="hljs-built_in">module</span>.exports = Chunk
+
+</pre></div></div>
+
+        </li>
+
+    </ul>
+  </div>
+</body>
+</html>
