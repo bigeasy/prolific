@@ -30,8 +30,8 @@
     },
     "devDependencies":
     {
-                            "prolific.logger":              "2.0.x",
-                            "prolific.shuttle":             "7.0.x",
+                            "prolific.logger":              "3.0.x",
+                            "prolific.shuttle":             "9.0.x",
                             "proof":                        "1.2.x"
     },
     "main":                 "prolific.bin",
