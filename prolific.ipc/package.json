@@ -21,7 +21,7 @@
     "dependencies":
     {
                             "cadence":                      "1.0.x",
-                            "reactor":                      "2.2.x"
+                            "reactor":                      "2.4.x"
     },
     "devDependencies":
     {
