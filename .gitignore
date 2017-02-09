@@ -1,3 +1,5 @@
+/.wiseguy
+/docs
 /node_modules
 /*/node_modules/*
 !/prolific.rendezvous/node_modules/prolific.shuttle.js
