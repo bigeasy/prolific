@@ -21,7 +21,7 @@
     "dependencies":
     {
                             "hash.fnv":                     "1.0.x",
-                            "prolific.collector":           "2.0.x"
+                            "prolific.collector":           "3.0.x"
     },
     "devDependencies":
     {
