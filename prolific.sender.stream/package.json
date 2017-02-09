@@ -22,7 +22,7 @@
     {
                             "abend":                        "1.0.x",
                             "cadence":                      "1.0.x",
-                            "prolific":                     "4.0.x",
+                            "prolific":                     "7.0.x",
                             "signal":                       "1.8.x"
     },
     "devDependencies":
