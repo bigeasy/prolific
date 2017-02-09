@@ -57,10 +57,10 @@ exports.json = function (path, level, qualifier, name, properties) {
     // The reason you're serializing here is because you'd imagined that you
     // could advise people to just put `stdout` as the `writer`, but that will
     // never happen, and a simple decorator could do that anyway.
-    this.writer.write(new Buffer(JSON.stringify(entry) + '\n'))
+    this.queue.push(entry)
 }
 
-exports.writer = { write: function () {} }
+exports.queue = { push: function () {} }
 
 exports.setLevel = function (path, level) {
     if (level == null) {

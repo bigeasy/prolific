@@ -3,10 +3,10 @@ require('proof/redux')(6, prove)
 function prove (assert) {
     var prolific = require('..')
     prolific.Date = { now: function () { return 0 } }
-    prolific.writer.write()
-    prolific.writer = {
-        write: function (line) {
-            assert(JSON.parse(line.toString()), {
+    prolific.queue.push()
+    prolific.queue = {
+        push: function (json) {
+            assert(json, {
                 when: 0,
                 sequence: 0,
                 level: 'error',
@@ -33,6 +33,4 @@ function prove (assert) {
     assert(prolific.getLevel('hello.world'), 'debug', 'clear')
     prolific.clearLevel()
     assert(prolific.getLevel('hello.world'), 'info', 'clear default')
-
-    console.log(prolific.filename)
 }
