@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+
+<html>
+<head>
+  <title>consolidator.js</title>
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <meta name="viewport" content="width=device-width, target-densitydpi=160dpi, initial-scale=1.0; maximum-scale=1.0; user-scalable=0;">
+  <link rel="stylesheet" media="all" href="docco.css" />
+</head>
+<body>
+  <div id="container">
+    <div id="background"></div>
+
+    <ul class="sections">
+
+          <li id="title">
+              <div class="annotation">
+                  <h1>consolidator.js</h1>
+              </div>
+          </li>
+
+
+
+        <li id="section-1">
+            <div class="annotation">
+
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-1">&#182;</a>
+              </div>
+
+            </div>
+
+            <div class="content"><div class='highlight'><pre><span class="hljs-keyword">var</span> push = [].push
+
+<span class="hljs-keyword">var</span> Collector = <span class="hljs-built_in">require</span>(<span class="hljs-string">'prolific.collector'</span>)
+
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">Writer</span> (<span class="hljs-params">consolidator, async</span>) </span>{
+    <span class="hljs-keyword">this</span>.async = <span class="hljs-keyword">async</span>
+    <span class="hljs-keyword">this</span>.collector = <span class="hljs-keyword">new</span> Collector(<span class="hljs-keyword">async</span>)
+    <span class="hljs-keyword">this</span>.consolidator = consolidator
+    <span class="hljs-keyword">this</span>.previous = { <span class="hljs-attr">checksum</span>: <span class="hljs-number">0xaaaaaaaa</span> }
+    <span class="hljs-keyword">this</span>.chunkNumber = <span class="hljs-number">1</span>
+}
+
+Writer.prototype.data = <span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params">buffer</span>) </span>{
+    <span class="hljs-keyword">this</span>.collector.scan(buffer)
+    <span class="hljs-keyword">if</span> (<span class="hljs-keyword">this</span>.async) {
+        <span class="hljs-keyword">this</span>.chunkNumber = <span class="hljs-keyword">this</span>.collector.chunkNumber
+        push.apply(<span class="hljs-keyword">this</span>.consolidator.chunks, <span class="hljs-keyword">this</span>.collector.chunks.splice(<span class="hljs-number">0</span>, <span class="hljs-keyword">this</span>.collector.chunks.length))
+    } <span class="hljs-keyword">else</span> {
+        push.apply(<span class="hljs-keyword">this</span>.consolidator.stderr,
+            <span class="hljs-keyword">this</span>.collector.stderr.splice(<span class="hljs-number">0</span>, <span class="hljs-keyword">this</span>.collector.stderr.length))
+    }
+}
+
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">Consolidator</span> (<span class="hljs-params"></span>) </span>{
+    <span class="hljs-keyword">var</span> writers = {
+        <span class="hljs-attr">async</span>: <span class="hljs-keyword">new</span> Writer(<span class="hljs-keyword">this</span>, <span class="hljs-literal">true</span>),
+        <span class="hljs-attr">sync</span>: <span class="hljs-keyword">new</span> Writer(<span class="hljs-keyword">this</span>, <span class="hljs-literal">false</span>)
+    }
+    <span class="hljs-keyword">this</span>.async = {
+        <span class="hljs-attr">writer</span>: writers.async,
+        <span class="hljs-attr">ondata</span>: writers.async.data.bind(writers.async)
+    }
+    <span class="hljs-keyword">this</span>.sync = {
+        <span class="hljs-attr">writer</span>: writers.sync,
+        <span class="hljs-attr">ondata</span>: writers.sync.data.bind(writers.sync)
+    }
+    <span class="hljs-keyword">this</span>.chunks = []
+    <span class="hljs-keyword">this</span>.stderr = []
+}
+
+Consolidator.prototype.exit = <span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params"></span>) </span>{
+    <span class="hljs-keyword">var</span> chunks = <span class="hljs-keyword">this</span>.sync.writer.collector.chunks
+    <span class="hljs-keyword">while</span> (chunks.length &amp;&amp; chunks[<span class="hljs-number">0</span>].number != <span class="hljs-keyword">this</span>.async.writer.chunkNumber) {
+        chunks.shift()
+    }
+    push.apply(<span class="hljs-keyword">this</span>.chunks, chunks.splice(<span class="hljs-number">0</span>, chunks.length))
+}
+
+<span class="hljs-built_in">module</span>.exports = Consolidator
+
+</pre></div></div>
+
+        </li>
+
+    </ul>
+  </div>
+</body>
+</html>
