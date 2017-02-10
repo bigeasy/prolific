@@ -4,7 +4,7 @@ var url = require('url')
 var delta = require('delta')
 var net = require('net')
 
-var stringify = require('prolific/stringify')
+var stringify = require('prolific.stringify')
 
 function Processor (parameters, next) {
     var params = parameters.params
