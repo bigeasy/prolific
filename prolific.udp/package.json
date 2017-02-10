@@ -23,9 +23,9 @@
                             "arguable":                     "5.0.x",
                             "cadence":                      "1.0.x",
                             "delta":                        "1.1.x",
-                            "prolific":                     "4.0.x",
                             "prolific.logger":              "2.0.x",
                             "prolific.shuttle":             "7.0.x",
+                            "prolific.stringify":           "1.0.x",
                             "reactor":                      "2.2.x"
     },
     "devDependencies":
