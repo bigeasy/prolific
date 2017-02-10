@@ -24,7 +24,7 @@
                             "arguable":                     "5.0.x",
                             "byline":                       "5.0.0",
                             "cadence":                      "1.0.x",
-                            "delta":                        "1.1.x",
+                            "delta":                        "1.2.x",
                             "prolific.stringify":           "1.0.x",
                             "reactor":                      "2.4.x",
                             "server-destroy":               "1.0.1",
