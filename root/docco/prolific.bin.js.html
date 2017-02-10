@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+
+<html>
+<head>
+  <title>prolific.bin.js</title>
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <meta name="viewport" content="width=device-width, target-densitydpi=160dpi, initial-scale=1.0; maximum-scale=1.0; user-scalable=0;">
+  <link rel="stylesheet" media="all" href="docco.css" />
+</head>
+<body>
+  <div id="container">
+    <div id="background"></div>
+
+      <ul id="jump_to">
+        <li>
+          <a class="large" href="javascript:void(0);">Jump To &hellip;</a>
+          <a class="small" href="javascript:void(0);">+</a>
+          <div id="jump_wrapper">
+          <div id="jump_page_wrapper">
+            <div id="jump_page">
+
+
+                <a class="source" href="commandable.js.html">
+                  commandable.js
+                </a>
+
+
+                <a class="source" href="configure.js.html">
+                  configure.js
+                </a>
+
+
+                <a class="source" href="killer.js.html">
+                  killer.js
+                </a>
+
+
+                <a class="source" href="prolific.bin.js.html">
+                  prolific.bin.js
+                </a>
+
+
+                <a class="source" href="stringify.js.html">
+                  stringify.js
+                </a>
+
+            </div>
+          </div>
+        </li>
+      </ul>
+
+    <ul class="sections">
+
+          <li id="title">
+              <div class="annotation">
+                  <h1>prolific.bin.js</h1>
+              </div>
+          </li>
+
+
+
+        <li id="section-1">
+            <div class="annotation">
+
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-1">&#182;</a>
+              </div>
+
+            </div>
+
+            <div class="content"><div class='highlight'><pre><span class="hljs-meta">#!/usr/bin/env node</span>
+
+<span class="hljs-comment">/*
+    ___ usage ___ en_US ___
+    usage: node prolific.tcp.bin.js
+
+        -i, --inherit   &lt;number&gt;        file handles to inherit
+        -I, --ipc                       enable Node.js IPC forwarding
+            --configuration &lt;string&gt;    base configuration JSON or environment variable
+            --help                      display this message
+
+    ___ $ ___ en_US ___
+
+        log is required:
+            the `--log` address and port is a required argument
+
+        port is not an integer:
+            the `--log` port must be an integer
+
+    ___ . ___
+*/</span>
+
+<span class="hljs-keyword">var</span> monitor = <span class="hljs-built_in">require</span>(<span class="hljs-string">'prolific.monitor'</span>)
+<span class="hljs-keyword">var</span> children = <span class="hljs-built_in">require</span>(<span class="hljs-string">'child_process'</span>)
+<span class="hljs-keyword">var</span> inherit = <span class="hljs-built_in">require</span>(<span class="hljs-string">'prolific.inherit'</span>)
+<span class="hljs-keyword">var</span> ipc = <span class="hljs-built_in">require</span>(<span class="hljs-string">'prolific.ipc'</span>)
+<span class="hljs-keyword">var</span> url = <span class="hljs-built_in">require</span>(<span class="hljs-string">'url'</span>)
+
+<span class="hljs-built_in">require</span>(<span class="hljs-string">'arguable'</span>)(<span class="hljs-built_in">module</span>, <span class="hljs-built_in">require</span>(<span class="hljs-string">'cadence'</span>)(<span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params">async, program</span>) </span>{
+    <span class="hljs-keyword">var</span> configure = <span class="hljs-built_in">require</span>(<span class="hljs-string">'./configure'</span>)
+    <span class="hljs-keyword">var</span> killer = <span class="hljs-built_in">require</span>(<span class="hljs-string">'./killer'</span>)
+
+    program.helpIf(program.ultimate.help)
+
+    <span class="hljs-keyword">var</span> configuration = configure(program.env, program.ultimate.configuration)
+
+    <span class="hljs-keyword">var</span> inheritance = inherit(program)
+    configuration.fd = inheritance.fd
+
+    <span class="hljs-keyword">var</span> commandable = <span class="hljs-built_in">require</span>(<span class="hljs-string">'./commandable'</span>)
+    <span class="hljs-keyword">var</span> argv = program.argv.slice(), terminal = <span class="hljs-literal">false</span>
+    <span class="hljs-keyword">var</span> loop = <span class="hljs-keyword">async</span>(<span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params"></span>) </span>{
+        program.assert(argv.length != <span class="hljs-number">0</span>, <span class="hljs-string">'no program'</span>)
+        <span class="hljs-keyword">var</span> parser = commandable(terminal, argv)
+        <span class="hljs-keyword">if</span> (parser == <span class="hljs-literal">null</span>) {
+            process.env.PROLIFIC_CONFIGURATION = <span class="hljs-built_in">JSON</span>.stringify(configuration)
+            <span class="hljs-keyword">var</span> nullProcessor = { <span class="hljs-attr">process</span>: <span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params"></span>) </span>{} }, nextProcessor = nullProcessor
+            <span class="hljs-keyword">var</span> processors = configuration.processors.map(<span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params">configuration</span>) </span>{
+                <span class="hljs-keyword">var</span> Processor = <span class="hljs-built_in">require</span>(configuration.moduleName)
+                <span class="hljs-keyword">return</span> nextProcessor = <span class="hljs-keyword">new</span> Processor(configuration.parameters, nextProcessor)
+            })
+            processors.reverse()
+            <span class="hljs-keyword">var</span> initialized = []
+            <span class="hljs-keyword">async</span>([<span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params"></span>) </span>{
+                <span class="hljs-keyword">async</span>.forEach(<span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params">processor</span>) </span>{
+                    processor.close(<span class="hljs-keyword">async</span>())
+                })(initialized)
+            }], <span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params"></span>) </span>{
+                <span class="hljs-keyword">async</span>.forEach(<span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params">processor</span>) </span>{
+                    <span class="hljs-keyword">async</span>(<span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params"></span>) </span>{
+                        processor.open(<span class="hljs-keyword">async</span>())
+                    }, <span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params"></span>) </span>{
+                        initialized.push(processor)
+                    })
+                })(processors)
+            }, <span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params"></span>) </span>{
+                <span class="hljs-keyword">var</span> child = children.spawn(argv.shift(), argv, { <span class="hljs-attr">stdio</span>: inheritance.stdio })
+</pre></div></div>
+
+        </li>
+
+
+        <li id="section-2">
+            <div class="annotation">
+
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-2">&#182;</a>
+              </div>
+              <p>If you <code>ctl+c</code> from your shell, you’re going to get doubles.</p>
+
+            </div>
+
+            <div class="content"><div class='highlight'><pre>                program.on(<span class="hljs-string">'SIGINT'</span>, killer(child, <span class="hljs-string">'SIGINT'</span>))
+                program.on(<span class="hljs-string">'SIGTERM'</span>, killer(child, <span class="hljs-string">'SIGTERM'</span>))
+                <span class="hljs-keyword">var</span> io = { <span class="hljs-attr">async</span>: child.stdio[inheritance.fd], <span class="hljs-attr">sync</span>: child.stderr }
+                ipc(program.ultimate.ipc, process, child)
+                processors.push(nullProcessor)
+                monitor(processors[<span class="hljs-number">0</span>], child, io, program.stderr, <span class="hljs-keyword">async</span>())
+            }, <span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params">code</span>) </span>{
+                <span class="hljs-keyword">return</span> [ loop.break, code ]
+            })
+        } <span class="hljs-keyword">else</span> {
+            <span class="hljs-keyword">async</span>(<span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params"></span>) </span>{
+                parser(argv, {}, configuration, <span class="hljs-keyword">async</span>())
+            }, <span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params">processor</span>) </span>{
+                <span class="hljs-keyword">if</span> (processor.moduleName) {
+                    configuration.processors.push(processor)
+                }
+                argv = processor.argv
+                terminal = processor.terminal
+            })
+        }
+    })()
+}))
+
+</pre></div></div>
+
+        </li>
+
+    </ul>
+  </div>
+</body>
+</html>
