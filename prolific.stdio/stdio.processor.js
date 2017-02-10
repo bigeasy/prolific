@@ -1,4 +1,4 @@
-var stringify = require('prolific/stringify')
+var stringify = require('prolific.stringify')
 
 function Processor (configuration, next) {
     this._streamName = configuration.stderr ? 'stderr' : 'stdout'
