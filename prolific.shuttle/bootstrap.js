@@ -1,4 +1,4 @@
-var prolific = require('prolific.sink')
+var sink = require('prolific.sink')
 var abend = require('abend')
 var Isochronous = require('isochronous')
 var assert = require('assert')
@@ -14,10 +14,10 @@ exports.createShuttle = function (net, Shuttle) {
             var configuration = JSON.parse(program.env.PROLIFIC_CONFIGURATION)
             var pipe = new net.Socket({ fd: configuration.fd  })
             var shuttle = new Shuttle(pipe, pipe, program.stderr, finale, process)
-            prolific.writer = shuttle.queue
+            sink.queue = shuttle.queue
 // TODO Would love to be able to HUP this somehow.
             configuration.levels.forEach(function (level) {
-                prolific.setLevel.apply(prolific, level)
+                sink.setLevel.apply(sink, level)
             })
             program.on('uncaughtException', shuttle.uncaughtException.bind(shuttle))
             program.on('exit', shuttle.exit.bind(shuttle))
