@@ -1,7 +1,10 @@
 module.exports = function (program) {
     var seen = {}
     var stdio = [ 0, 1, 2 ].concat(program.grouped.inherit).map(function (number) {
-        return +number
+        if (/^\d+$/.test(number)) {
+            return +number
+        }
+        return +program.env[number]
     }).sort(function (a, b) {
         return a - b
     }).filter(function(number) {
