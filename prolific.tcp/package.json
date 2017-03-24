@@ -28,7 +28,7 @@
                             "prolific.stringify":           "1.0.x",
                             "reactor":                      "2.4.x",
                             "server-destroy":               "1.0.1",
-                            "staccato":                     "1.1.x"
+                            "staccato":                     "3.0.x"
     },
     "devDependencies":
     {

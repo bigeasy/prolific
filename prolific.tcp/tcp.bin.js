@@ -30,7 +30,7 @@ require('arguable')(module, require('cadence')(function (async, program) {
     var shuttle = Shuttle.shuttle(program, logger)
 
     var split = cadence(function (async, socket) {
-        var staccato = new Staccato(byline(socket))
+        var staccato = new Staccato.Readable(byline(socket))
         var loop = async(function () {
             async(function () {
                 staccato.read(async())
