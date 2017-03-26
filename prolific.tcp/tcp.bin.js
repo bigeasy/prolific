@@ -38,7 +38,7 @@ require('arguable')(module, require('cadence')(function (async, program) {
                 if (line == null) {
                     return loop.break
                 }
-                Shuttle.sink.writer.write(new Buffer(line.toString() + '\n'))
+                Shuttle.sink.queue.push(JSON.parse(line.toString()))
             })
         })()
     })
