@@ -1,4 +1,4 @@
-require('proof/redux')(7, prove)
+require('proof')(7, prove)
 
 function prove (assert) {
     var commandable = require('../commandable')
