@@ -1,18 +1,24 @@
 var slice = [].slice
-var Reactor = require('reactor')
+var Turnstile = require('turnstile')
+Turnstile.Queue = require('turnstile/queue')
 var cadence = require('cadence')
 
-var forward = cadence(function (async, timeout, work) {
-    if (work.async) {
-        work.vargs.push(async())
+var forward = cadence(function (async, envelope) {
+    var body = envelope.body
+    if (body.async) {
+        body.vargs.push(async())
     }
-    work.object.send.apply(work.object, work.vargs)
+    body.object.send.apply(body.object, body.vargs)
 })
 
 module.exports = function (ipc, process, child) {
     if (ipc) {
-        var down = new Reactor({ operation: forward, turnstiles: 256 })
-        var up = new Reactor({ operation: forward, turnstiles: 256 })
+        var turnstiles = {
+            down: new Turnstile({ turnstiles: 256 }),
+            up: new Turnstile({ turnstiles: 256 })
+        }
+        var down = new Turnstile.Queue(forward, turnstiles.down)
+        var up = new Turnstile.Queue(forward, turnstiles.up)
         var async = +process.versions.node.split('.')[0] != 0
         process.on('message', function () {
             up.push({ async: async, object: child, vargs: slice.call(arguments) })
