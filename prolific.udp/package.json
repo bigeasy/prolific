@@ -24,7 +24,7 @@
                             "cadence":                      "1.0.x",
                             "delta":                        "1.2.x",
                             "prolific.stringify":           "1.0.x",
-                            "reactor":                      "2.4.x"
+                            "turnstile":                    "2.5.x"
     },
     "devDependencies":
     {

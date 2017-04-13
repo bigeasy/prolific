@@ -4,10 +4,11 @@ var url = require('url')
 var stringify = require('prolific.stringify')
 var delta = require('delta')
 var cadence = require('cadence')
-var Reactor = require('reactor')
+var Turnstile = require('turnstile')
+Turnstile.Queue = require('turnstile/queue')
 
 function Processor (parameters, next) {
-    this._processing = new Reactor({ object: this, method: '_process' })
+    this._processing = new Turnstile.Queue(this, '_process', new Turnstile)
     this.url = url.parse(parameters.url)
     this._next = next
 }
@@ -19,7 +20,8 @@ Processor.prototype.process = function (entry) {
     this._next.process(entry)
 }
 
-Processor.prototype._process = cadence(function (async, timeout, line) {
+Processor.prototype._process = cadence(function (async, envelope) {
+    var line = envelope.body
     var client = dgram.createSocket('udp4')
     async(function () {
         var buffer = new Buffer(line)
