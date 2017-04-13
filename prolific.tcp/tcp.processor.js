@@ -1,5 +1,6 @@
 var cadence = require('cadence')
-var Reactor = require('reactor')
+var Turnstile = require('turnstile')
+Turnstile.Check = require('turnstile/check')
 var url = require('url')
 var delta = require('delta')
 var net = require('net')
@@ -8,7 +9,8 @@ var stringify = require('prolific.stringify')
 
 function Processor (parameters, next) {
     var params = parameters.params
-    this._processing = new Reactor({ object: this, method: '_process' })
+    this.turnstile = new Turnstile
+    this._processing = new Turnstile.Check(this, '_process', this.turnstile)
     this._url = url.parse(params.url)
     this._entries = []
     this._next = next
