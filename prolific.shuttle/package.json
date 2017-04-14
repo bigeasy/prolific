@@ -21,7 +21,6 @@
     "dependencies":
     {
                             "abend":                        "1.0.x",
-                            "isochronous":                  "1.0.x",
                             "prolific.queue":               "9.0.x",
                             "prolific.sink":                "3.0.x"
     },
