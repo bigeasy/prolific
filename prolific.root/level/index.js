@@ -7,7 +7,7 @@
 
     ___ . ___
 */
-require('arguable')(module, require('cadence')(function (async, program) {
+require('arguable')(module, require('cadence')(function (async, program, configuration) {
     program.helpIf(program.ultimate.help)
 
     var argv = program.argv.slice()
@@ -17,9 +17,9 @@ require('arguable')(module, require('cadence')(function (async, program) {
     while (argv.length && (~argv[0].indexOf('=') || ~LEVEL.indexOf(argv[0]))) {
         var level = argv.shift().split('=')
         if (level.length == 1) {
-            program.configuration.levels.push({ path: '', level: level[0] })
+            configuration.levels.push({ path: '', level: level[0] })
         } else {
-            program.configuration.levels.push({ path: level[1], level: level[0] })
+            configuration.levels.push({ path: level[1], level: level[0] })
         }
     }
 
