@@ -20,7 +20,8 @@ function prove (async, assert) {
         }
     }
     async(function () {
-        queue = new Queue(1, writable, new stream.PassThrough)
+        queue = new Queue(1, new stream.PassThrough)
+        queue.setPipe(writable)
         queue.push(1)
         queue.push(2)
         queue.push(3)
@@ -33,7 +34,8 @@ function prove (async, assert) {
         queue.exit()
     }, function () {
         var stderr = new stream.PassThrough
-        queue = new Queue(1, writable, stderr)
+        queue = new Queue(1, stderr)
+        queue.setPipe(writable)
         queue.push(1)
         queue.exit()
         queue.close()

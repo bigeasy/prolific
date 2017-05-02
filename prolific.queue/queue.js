@@ -2,19 +2,25 @@ var rescue = require('rescue')
 var abend = require('abend')
 var cadence = require('cadence')
 var Chunk = require('prolific.chunk')
+var stream = require('stream')
 
-function Queue (pid, stream, stderr) {
+function Queue (pid, stderr) {
     this._pid = pid
     this._buffers = []
     this._chunks = []
     this._chunkNumber = 1
     this._previousChecksum = 'aaaaaaaa'
-    this._stream = stream
+    this._stream = new stream.PassThrough // for an `end`
     this._terminated = false
-    this._writiing = false
+    this._writing = true
     this._closed = false
     this._stderr = stderr
     this._chunks.push(new Chunk(this._pid, 0, new Buffer(''), 1))
+}
+
+Queue.prototype.setPipe = function (stream) {
+    this._stream = stream
+    this._writing = false
 }
 
 Queue.prototype.push = function (json) {
