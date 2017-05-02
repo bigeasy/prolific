@@ -3,15 +3,27 @@ var abend = require('abend')
 var assert = require('assert')
 var slice = [].slice
 
-exports.createShuttle = function (net, Shuttle) {
+exports.createShuttle = function (net, Shuttle, Date) {
     return function (program, finale) {
-        var pid = process.pid + '/' + Date.now()
         assert(arguments.length == 2, 'old shuttle invocation')
         if (program.env.PROLIFIC_CONFIGURATION != null) {
 // TODO Maybe delete and internalize?
             var configuration = JSON.parse(program.env.PROLIFIC_CONFIGURATION)
-            var pipe = new net.Socket({ fd: configuration.fd  })
-            var shuttle = new Shuttle(pid, pipe, pipe, program.stderr, finale, process)
+            var pid = program.pid + '/' + Date.now()
+            var shuttle = new Shuttle(pid, program.stderr, finale, process)
+            var handle
+            if (configuration.fd == 'IPC') {
+                program.on('message', handle = function (message, pipe) {
+                    if (message.module == 'prolific' && message.method == 'socket') {
+                        shuttle.setPipe(pipe, pipe)
+                        program.removeListener('message', handle)
+                    }
+                })
+                program.send({ module: 'prolific', method: 'socket', pid: pid })
+            } else {
+                var pipe = new net.Socket({ fd: configuration.fd  })
+                shuttle.setPipe(pipe, pipe)
+            }
             sink.queue = shuttle.queue
 // TODO Would love to be able to HUP this somehow.
             configuration.levels.forEach(function (level) {

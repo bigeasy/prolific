@@ -8,7 +8,7 @@ function prove (assert) {
         output: new stream.PassThrough,
         sync: new stream.PassThrough
     }
-    var shuttle = new Shuttle(1, io.input, io.output, io.sync, function (error) {
+    var shuttle = new Shuttle(1, io.sync, function (error) {
         assert(error.message, 'hello', 'uncaught handled')
     })
     try {
