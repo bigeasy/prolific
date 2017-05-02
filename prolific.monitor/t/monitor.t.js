@@ -25,17 +25,17 @@ function prove (async, assert) {
             }
         }, child, io, stderr, async())
         io.sync.write(new Buffer('hello, world\n'))
-        var chunk = new Chunk(0, new Buffer(''), 1)
+        var chunk = new Chunk(1, 0, new Buffer(''), 1)
         io.async.write(chunk.header('aaaaaaaa'))
         io.async.write(chunk.buffer)
         var previousChecksum = chunk.checksum
         var buffer = new Buffer('{"when":0,"qualifier":"bigeasy.prolific","level":"trace","a":1}\n')
-        chunk = new Chunk(1, buffer, buffer.length)
+        chunk = new Chunk(1, 1, buffer, buffer.length)
         io.async.write(chunk.header(previousChecksum))
         io.async.write(chunk.buffer)
         previousChecksum = chunk.checksum
         buffer = new Buffer('{"when":0,"qualifier":"bigeasy.prolific","level":"trace","a":1}\n')
-        chunk = new Chunk(2, buffer, buffer.length)
+        chunk = new Chunk(1, 2, buffer, buffer.length)
         io.async.write(chunk.header(previousChecksum))
         io.async.write(chunk.buffer)
         io.async.emit('end')

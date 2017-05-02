@@ -22,12 +22,12 @@
     {
                             "cadence":                      "1.0.x",
                             "delta":                        "1.2.x",
-                            "prolific.consolidator":        "1.0.x",
+                            "prolific.consolidator":        "2.0.x",
                             "rescue":                       "3.0.x"
     },
     "devDependencies":
     {
-                            "prolific.chunk":               "1.0.x",
+                            "prolific.chunk":               "2.0.x",
                             "proof":                        "3.0.x"
     },
     "main":                 "monitor",
