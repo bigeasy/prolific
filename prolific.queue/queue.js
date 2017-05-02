@@ -3,7 +3,8 @@ var abend = require('abend')
 var cadence = require('cadence')
 var Chunk = require('prolific.chunk')
 
-function Queue (stream, stderr) {
+function Queue (pid, stream, stderr) {
+    this._pid = pid
     this._buffers = []
     this._chunks = []
     this._chunkNumber = 1
@@ -13,7 +14,7 @@ function Queue (stream, stderr) {
     this._writiing = false
     this._closed = false
     this._stderr = stderr
-    this._chunks.push(new Chunk(0, new Buffer(''), 1))
+    this._chunks.push(new Chunk(this._pid, 0, new Buffer(''), 1))
 }
 
 Queue.prototype.push = function (json) {
@@ -32,7 +33,7 @@ Queue.prototype._chunkEntries = function () {
     this._buffers = []
 
     var buffer = Buffer.concat(buffers)
-    this._chunks.push(new Chunk(this._chunkNumber++, buffer, buffer.length))
+    this._chunks.push(new Chunk(this._pid, this._chunkNumber++, buffer, buffer.length))
 }
 
 Queue.prototype._checkTerminated = function () {
@@ -91,7 +92,7 @@ Queue.prototype.exit = function () {
 
     if (!this._terminated) {
         var number = this._chunks.length ? this._chunks[0].number : this._chunkNumber
-        this._chunks.unshift(new Chunk(0, new Buffer(''), number))
+        this._chunks.unshift(new Chunk(this._pid, 0, new Buffer(''), number))
         this._previousChecksum = 'aaaaaaaa'
         this._terminated = true
     }
