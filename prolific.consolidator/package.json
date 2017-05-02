@@ -21,11 +21,11 @@
     "dependencies":
     {
                             "hash.fnv":                     "1.0.x",
-                            "prolific.collector":           "3.0.x"
+                            "prolific.collector":           "4.0.x"
     },
     "devDependencies":
     {
-                            "prolific.chunk":               "1.0.x",
+                            "prolific.chunk":               "2.0.x",
                             "proof":                        "3.0.x"
     },
     "main":                 "consolidator",

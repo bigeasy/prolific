@@ -9,27 +9,27 @@ function prove (assert) {
 
     var chunks = [], chunk, previousChecksum, buffer
 
-    chunk = new Chunk(0, new Buffer(''), 1)
+    chunk = new Chunk(1, 0, new Buffer(''), 1)
     write(consolidator.async.ondata, chunk, 'aaaaaaaa')
 
     assert(consolidator.async.writer.chunkNumber, 1, 'chunk number')
 
     previousChecksum = chunk.checksum
     buffer = new Buffer('a\n')
-    chunk = new Chunk(1, buffer, buffer.length)
+    chunk = new Chunk(1, 1, buffer, buffer.length)
     write(consolidator.async.ondata, chunk, previousChecksum)
 
-    chunk = new Chunk(0, new Buffer(''), 1)
+    chunk = new Chunk(1, 0, new Buffer(''), 1)
     write(consolidator.sync.ondata, chunk, 'aaaaaaaa')
 
     previousChecksum = chunk.checksum
     buffer = new Buffer('a\n')
-    chunk = new Chunk(1, buffer, buffer.length)
+    chunk = new Chunk(1, 1, buffer, buffer.length)
     write(consolidator.sync.ondata, chunk, previousChecksum)
 
     previousChecksum = chunk.checksum
     buffer = new Buffer('a\n')
-    chunk = new Chunk(2, buffer, buffer.length)
+    chunk = new Chunk(1, 2, buffer, buffer.length)
     write(consolidator.sync.ondata, chunk, previousChecksum)
 
     consolidator.exit()
