@@ -9,10 +9,10 @@ exports.createShuttle = function (net, Shuttle, Date) {
         if (program.env.PROLIFIC_CONFIGURATION != null) {
 // TODO Maybe delete and internalize?
             var configuration = JSON.parse(program.env.PROLIFIC_CONFIGURATION)
-            var pid = program.pid + '/' + Date.now()
-            var shuttle = new Shuttle(pid, program.stderr, finale, process)
-            var handle
+            var shuttle
             if (configuration.fd == 'IPC') {
+                var pid = program.pid + '/' + Date.now(), handle
+                shuttle = new Shuttle(pid, program.stderr, finale, process)
                 program.on('message', handle = function (message, pipe) {
                     if (message.module == 'prolific' && message.method == 'socket') {
                         shuttle.setPipe(pipe, pipe)
@@ -21,6 +21,7 @@ exports.createShuttle = function (net, Shuttle, Date) {
                 })
                 program.send({ module: 'prolific', method: 'socket', pid: pid })
             } else {
+                shuttle = new Shuttle('0', program.stderr, finale, process)
                 var pipe = new net.Socket({ fd: configuration.fd  })
                 shuttle.setPipe(pipe, pipe)
             }
