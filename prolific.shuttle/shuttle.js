@@ -1,11 +1,13 @@
 var Queue = require('prolific.queue')
 var createUncaughtExceptionHandler = require('./uncaught')
 var abend = require('abend')
+var assert = require('assert')
 
-function Shuttle (input, output, sync, uncaught) {
+function Shuttle (pid, input, output, sync, uncaught) {
+    assert(arguments.length == 5)
     this.input = input
     this.output = output
-    this.queue = new Queue(output, sync)
+    this.queue = new Queue(pid, output, sync)
     this.uncaught = createUncaughtExceptionHandler(uncaught)
 }
 
