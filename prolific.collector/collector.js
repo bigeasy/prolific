@@ -159,20 +159,31 @@ Collector.prototype._scanHeader = function (scan) {
     if (i != I) {
         this._push(scan, i + 1)
         var header = this._flush()
-        var $ = /^% (\d+) ([0-9a-f]{8}) ([0-9a-f]{8}) (\d+)\n$/i.exec(header.toString())
+        var $ = /^% ([^ ]+) (\d+) ([0-9a-f]{8}) ([0-9a-f]{8}) (\d+)\n$/i.exec(header.toString())
         if ($) {
             var chunk = {
-                number: +$[1],
-                checksum: parseInt($[3], 16),
-                length: +$[4],
-                remaining: +$[4]
+                pid: $[1],
+                number: +$[2],
+                checksum: parseInt($[4], 16),
+                length: +$[5],
+                remaining: +$[5]
             }
-            var previousChecksum = parseInt($[2], 16)
-            if (previousChecksum == this._previousChecksum) {
+            // TODO For now we leak, not removing from the `_previousChecksum`
+            // since our applications at the moment will have a fixed number of
+            // child processes. To collect entries after a processes has ended
+            // we can send a final chunk that has an incorrect checksum, say
+            // 0x00000000 and meaning ful buffer message, either a control
+            // character or maybe the previous checksum repeated. Something
+            // besides an empty string. Something deliberate so some sort of
+            // jitter in the future can be caught.
+            //
+            // Actually, easy enough to implemnet now.
+            var previousChecksum = parseInt($[3], 16)
+            if (previousChecksum == this._previousChecksum[chunk.pid] || 0xaaaaaaaa) {
                 if (chunk.number == 0) {
                     if (this._initializations == 0 || (this._initializations == 1 && !this._async)) {
                         this.chunkNumber = chunk.remaining
-                        this._previousChecksum = chunk.checksum
+                        this._previousChecksum[chunk.pid] = chunk.checksum
                         this._initializations++
                     } else {
                         assert(!this._async, 'already initialized')
@@ -180,7 +191,7 @@ Collector.prototype._scanHeader = function (scan) {
                 } else if (chunk.number == this.chunkNumber) {
                     this._state = 'chunk'
                     this._chunk = chunk
-                    this._previousChecksum = chunk.checksum
+                    this._previousChecksum[chunk.pid] = chunk.checksum
                 } else {
                     assert(!this._async, 'chunk numbers incorrect')
                 }
