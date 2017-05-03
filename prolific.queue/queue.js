@@ -102,9 +102,11 @@ Queue.prototype.exit = function () {
 
     this._chunkEntries()
 
-    var number = this._chunks.length ? this._chunks[0].number : this._chunkNumber
-    this._chunks.unshift(new Chunk(this._pid, 0, new Buffer(''), number))
-    this._previousChecksum = 'aaaaaaaa'
+    if (this._chunks.length > 0 && this._chunks[0].number != 0) {
+        var number = this._chunks.length ? this._chunks[0].number : this._chunkNumber
+        this._chunks.unshift(new Chunk(this._pid, 0, new Buffer(''), number))
+        this._previousChecksum = 'aaaaaaaa'
+    }
 
     var buffers = []
     while (this._chunks.length) {
