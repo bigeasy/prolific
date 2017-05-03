@@ -5,7 +5,7 @@ function Collector (async) {
     this._async = async
     this._buffers = []
     this.chunkNumber = 0
-    this._previousChecksum = 0xaaaaaaaa
+    this._previousChecksum = {}
     this._initializations = 0
     this.chunks = []
     this.stderr = []
@@ -180,7 +180,7 @@ Collector.prototype._scanHeader = function (scan) {
             //
             // Actually, easy enough to implemnet now.
             var previousChecksum = parseInt($[3], 16)
-            if (previousChecksum == this._previousChecksum[chunk.pid] || 0xaaaaaaaa) {
+            if (previousChecksum == (this._previousChecksum[chunk.pid] ||0xaaaaaaaa)) {
                 if (chunk.number == 0) {
                     if (this._initializations == 0 || (this._initializations == 1 && !this._async)) {
                         this.chunkNumber = chunk.remaining
