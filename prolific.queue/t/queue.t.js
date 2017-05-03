@@ -1,4 +1,4 @@
-require('proof')(5, require('cadence')(prove))
+require('proof')(6, require('cadence')(prove))
 
 function prove (async, assert) {
     var stream = require('stream')
@@ -43,5 +43,24 @@ function prove (async, assert) {
         assert(chunk, '% 1 0 aaaaaaaa 811c9dc5 1\n% 1 1 811c9dc5 05eb07a2 2\n1\n% 1 2 05eb07a2 aaaaaaaa 0\n', 'exit')
         queue.push(1)
         assert(stderr.read(), null, 'no write after exit')
+        var callback, count = 0
+        queue = new Queue(1, stderr)
+        queue.setPipe({
+            write: function (buffer, _callback) {
+                if (count++ == 2) {
+                    callback = _callback
+                } else {
+                    _callback()
+                }
+            },
+            end: function () {
+            }
+        })
+        queue.push(1)
+        queue.push(2)
+        queue.exit()
+        assert(stderr.read().toString(),
+            '% 1 0 aaaaaaaa 811c9dc5 2\n% 1 2 811c9dc5 87f2900d 2\n2\n% 1 3 87f2900d aaaaaaaa 0\n', 'exit')
+        callback()
     })
 }
