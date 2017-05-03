@@ -6,7 +6,8 @@ var stream = require('stream')
 
 function Queue (pid, stderr) {
     this._pid = pid
-    this._buffers = []
+    this._incoming = []
+    this._buffers = this._incoming
     this._chunks = []
     this._chunkNumber = 1
     this._previousChecksum = 'aaaaaaaa'
@@ -24,7 +25,7 @@ Queue.prototype.setPipe = function (stream) {
 }
 
 Queue.prototype.push = function (json) {
-    this._buffers.push(new Buffer(JSON.stringify(json) + '\n'))
+    this._incoming.push(new Buffer(JSON.stringify(json) + '\n'))
     if (!this._writing) {
         this._writing = true
         this.flush(abend)
@@ -94,6 +95,10 @@ Queue.prototype.close = function () {
 Queue.prototype.exit = function () {
     this.close()
 
+    // Setting incoming to a separate array from buffers means no more buffers
+    // to chunk.
+    this._incoming = []
+
     this._chunkEntries()
 
     if (!this._terminated) {
@@ -112,7 +117,8 @@ Queue.prototype.exit = function () {
 
     this._stderr.write(Buffer.concat(buffers))
 
-    this._writing = false
+    // Setting this to true means no more flush.
+    this._writing = true
 }
 
 module.exports = Queue
