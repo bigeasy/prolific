@@ -182,7 +182,7 @@ Collector.prototype._scanHeader = function (scan) {
             var previousChecksum = parseInt($[3], 16)
             if (previousChecksum == (this._previousChecksum[chunk.pid] ||0xaaaaaaaa)) {
                 if (chunk.number == 0) {
-                    if (this._initializations == 0 || (this._initializations == 1 && !this._async)) {
+                    if (this._initializations == 0) {
                         this.chunkNumber[chunk.pid] = chunk.remaining
                         this._previousChecksum[chunk.pid] = chunk.checksum
                         this._initializations++
