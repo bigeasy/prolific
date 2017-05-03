@@ -91,6 +91,7 @@ Collector.prototype._scanChunk = function (scan) {
         var checksum = fnv(0, buffer, 0, buffer.length)
         assert(checksum == this._chunk.checksum, 'invalid checksum')
         this.chunks.push({
+            pid: this._chunk.pid,
             number: this._chunk.number,
             previousChecksum: this._previousChecksum,
             checksum: this._chunk.checksum,
@@ -194,6 +195,7 @@ Collector.prototype._scanHeader = function (scan) {
                     this._previousChecksum[chunk.pid] = chunk.checksum
                 } else {
                     assert(!this._async, 'chunk numbers incorrect')
+                    this.stderr.push(header)
                 }
             } else {
                 assert(!this._async, 'async stream sequence break')
