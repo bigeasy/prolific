@@ -6,8 +6,7 @@ var stream = require('stream')
 
 function Queue (pid, stderr) {
     this._pid = pid
-    this._incoming = []
-    this._buffers = this._incoming
+    this._buffers = []
     this._chunks = []
     this._chunkNumber = 1
     this._previousChecksum = 'aaaaaaaa'
@@ -25,7 +24,7 @@ Queue.prototype.setPipe = function (stream) {
 }
 
 Queue.prototype.push = function (json) {
-    this._incoming.push(new Buffer(JSON.stringify(json) + '\n'))
+    this._buffers.push(new Buffer(JSON.stringify(json) + '\n'))
     if (!this._writing) {
         this._writing = true
         this.flush(abend)
@@ -93,20 +92,19 @@ Queue.prototype.close = function () {
 }
 
 Queue.prototype.exit = function () {
+    if (this._terminated) {
+        return
+    }
+
     this.close()
 
-    // Setting incoming to a separate array from buffers means no more buffers
-    // to chunk.
-    this._incoming = []
+    this._terminated = true
 
     this._chunkEntries()
 
-    if (!this._terminated) {
-        var number = this._chunks.length ? this._chunks[0].number : this._chunkNumber
-        this._chunks.unshift(new Chunk(this._pid, 0, new Buffer(''), number))
-        this._previousChecksum = 'aaaaaaaa'
-        this._terminated = true
-    }
+    var number = this._chunks.length ? this._chunks[0].number : this._chunkNumber
+    this._chunks.unshift(new Chunk(this._pid, 0, new Buffer(''), number))
+    this._previousChecksum = 'aaaaaaaa'
 
     var buffers = []
     while (this._chunks.length) {
@@ -114,6 +112,10 @@ Queue.prototype.exit = function () {
         buffers.push(chunk.header(this._previousChecksum), chunk.buffer)
         this._previousChecksum = chunk.checksum
     }
+
+    var chunk = new Chunk(this._pid, this._chunkNumber++, new Buffer(''), 0)
+    chunk.checksum = 'aaaaaaaa'
+    buffers.push(chunk.header(this._previousChecksum), chunk.buffer)
 
     this._stderr.write(Buffer.concat(buffers))
 

@@ -40,7 +40,7 @@ function prove (async, assert) {
         queue.exit()
         queue.close()
         var chunk = stderr.read().toString()
-        assert(chunk, '% 1 0 aaaaaaaa 811c9dc5 0\n% 1 0 811c9dc5 811c9dc5 1\n% 1 1 811c9dc5 05eb07a2 2\n1\n', 'exit')
+        assert(chunk, '% 1 0 aaaaaaaa 811c9dc5 0\n% 1 0 811c9dc5 811c9dc5 1\n% 1 1 811c9dc5 05eb07a2 2\n1\n% 1 2 05eb07a2 aaaaaaaa 0\n', 'exit')
         queue.push(1)
         assert(stderr.read(), null, 'no write after exit')
     })
