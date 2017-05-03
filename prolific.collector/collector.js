@@ -4,7 +4,7 @@ var assert = require('assert')
 function Collector (async) {
     this._async = async
     this._buffers = []
-    this.chunkNumber = 0
+    this.chunkNumber = {}
     this._previousChecksum = {}
     this._initializations = 0
     this.chunks = []
@@ -90,6 +90,7 @@ Collector.prototype._scanChunk = function (scan) {
         this._buffers.length = 0
         var checksum = fnv(0, buffer, 0, buffer.length)
         assert(checksum == this._chunk.checksum, 'invalid checksum')
+        this.chunkNumber[this._chunk.pid]++
         this.chunks.push({
             pid: this._chunk.pid,
             number: this._chunk.number,
@@ -100,7 +101,6 @@ Collector.prototype._scanChunk = function (scan) {
         })
         this._chunk = null
         this._state = 'seek'
-        this.chunkNumber++
         return true
     }
     return false
@@ -183,13 +183,13 @@ Collector.prototype._scanHeader = function (scan) {
             if (previousChecksum == (this._previousChecksum[chunk.pid] ||0xaaaaaaaa)) {
                 if (chunk.number == 0) {
                     if (this._initializations == 0 || (this._initializations == 1 && !this._async)) {
-                        this.chunkNumber = chunk.remaining
+                        this.chunkNumber[chunk.pid] = chunk.remaining
                         this._previousChecksum[chunk.pid] = chunk.checksum
                         this._initializations++
                     } else {
                         assert(!this._async, 'already initialized')
                     }
-                } else if (chunk.number == this.chunkNumber) {
+                } else if (chunk.number == this.chunkNumber[chunk.pid]) {
                     this._state = 'chunk'
                     this._chunk = chunk
                     this._previousChecksum[chunk.pid] = chunk.checksum

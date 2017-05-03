@@ -20,26 +20,26 @@ function prove (assert) {
 
     var previousChecksum = chunk.checksum
 
-    assert(collector.chunkNumber, 0, 'next chunk number stderr initialization')
+    assert(collector.chunkNumber[1], 0, 'next chunk number stderr initialization')
 
     chunk = new Chunk(1, 0, new Buffer(''), 1)
     collector.scan(chunk.header(previousChecksum))
     collector.scan(chunk.buffer)
 
-    assert(collector.chunkNumber, 1, 'next chunk number')
+    assert(collector.chunkNumber[1], 1, 'next chunk number')
 
     chunk = new Chunk(1, 0, new Buffer(''), 2)
     collector.scan(chunk.header(previousChecksum))
     collector.scan(chunk.buffer)
 
-    assert(collector.chunkNumber, 1, 'already initialized')
+    assert(collector.chunkNumber[1], 1, 'already initialized')
 
     var buffer = new Buffer('a\n')
     chunk = new Chunk(1, 2, buffer, buffer.length)
     collector.scan(chunk.header(previousChecksum))
     collector.scan(chunk.buffer)
 
-    assert(collector.chunkNumber, 1, 'wrong chunk number')
+    assert(collector.chunkNumber[1], 1, 'wrong chunk number')
 
     chunk = new Chunk(1, 1, buffer, buffer.length)
     collector.scan(chunk.header(previousChecksum))
@@ -49,5 +49,5 @@ function prove (assert) {
 
     collector.scan(chunk.header('00000000'))
 
-    assert(collector.chunkNumber, 2, 'wrong previous checksum')
+    assert(collector.chunkNumber[1], 2, 'wrong previous checksum')
 }
