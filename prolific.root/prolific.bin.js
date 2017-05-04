@@ -59,6 +59,27 @@ Pipeline.prototype.close = cadence(function (async) {
     })(this._opened)
 })
 
+Pipeline.parse = cadence(function (async, program, configuration) {
+    var commandable = require('./commandable')
+    var argv = program.argv.slice(), terminal = false
+    var loop = async(function () {
+        program.assert(argv.length != 0, 'no program')
+        var parser = commandable(terminal, argv)
+        if (parser == null) {
+            return [ loop.break, configuration, argv, terminal ]
+        }
+        async(function () {
+            parser(argv, {}, configuration, async())
+        }, function (processor) {
+            if (processor.moduleName) {
+                configuration.processors.push(processor)
+            }
+            argv = processor.argv
+            terminal = processor.terminal
+        })
+    })()
+})
+
 var direct = cadence(function (async, program, configuration, argv, inheritance) {
     var killer = require('./killer')
     var pipeline = new Pipeline(configuration)
@@ -107,33 +128,19 @@ require('arguable')(module, require('cadence')(function (async, program) {
     // TODO `inherit` skips write fd if cluster
     var inheritance = inherit(program)
     configuration.fd = program.ultimate.cluster ? 'IPC' : inheritance.fd
-
-    var commandable = require('./commandable')
-    var argv = program.argv.slice(), terminal = false
-    var loop = async(function () {
-        program.assert(argv.length != 0, 'no program')
-        var parser = commandable(terminal, argv)
-        if (parser == null) {
-            process.env.PROLIFIC_CONFIGURATION = JSON.stringify(configuration)
-            async(function () {
-                if (program.ultimate.cluster) {
-                    clustered(configuration, argv, async())
-                } else {
-                    direct(program, configuration, argv, inheritance, async())
-                }
-            }, function (code) {
-                return [ loop.break, code ]
-            })
-        } else {
-            async(function () {
-                parser(argv, {}, configuration, async())
-            }, function (processor) {
-                if (processor.moduleName) {
-                    configuration.processors.push(processor)
-                }
-                argv = processor.argv
-                terminal = processor.terminal
-            })
-        }
-    })()
+    async(function () {
+        Pipeline.parse(program, configuration, async())
+    }, function (configuration, argv) {
+        process.env.PROLIFIC_CONFIGURATION = JSON.stringify(configuration)
+        async(function () {
+            if (program.ultimate.cluster) {
+                clustered(configuration, argv, async())
+            } else {
+                direct(program, configuration, argv, inheritance, async())
+            }
+        }, function (code) {
+            // TODO We don't do it like this anymore.
+            return [ code ]
+        })
+    })
 }))
