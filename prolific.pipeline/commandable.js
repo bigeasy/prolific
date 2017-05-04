@@ -13,9 +13,7 @@ module.exports = function (terminal, argv) {
     while (packages.length) {
         var pkg = packages.shift()
         try {
-            console.log('trying', pkg)
             var required = require(pkg)
-            console.log('got', required)
             if (!required.isProlific) {
                 continue
             }
@@ -25,7 +23,6 @@ module.exports = function (terminal, argv) {
             }
             return required
         } catch (e) {
-            console.log(e.stack)
             continue
         }
     }

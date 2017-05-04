@@ -4,10 +4,6 @@ set -e
 
 echo ""
 
-ls 'prolific.pipeline/node_modules'
-find 'prolific.pipeline/node_modules/prolific.test'
-node prolific.pipeline/t/commandable.t.js
-
 (proof run */t/*.t.js | tee .proof.out | proof progress) || \
     (proof errors < .proof.out) || \
     exit 1
