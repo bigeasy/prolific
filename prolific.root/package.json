@@ -24,13 +24,13 @@
                             "cadence":                      "1.0.x",
                             "prolific.inherit":             "3.2.x",
                             "prolific.ipc":                 "1.0.x",
-                            "prolific.monitor":             "5.0.x",
+                            "prolific.monitor":             "6.1.x",
                             "rescue":                       "3.0.x"
     },
     "devDependencies":
     {
                             "prolific.logger":              "3.0.x",
-                            "prolific.shuttle":             "9.0.x",
+                            "prolific.shuttle":             "10.0.x",
                             "proof":                        "3.0.x"
     },
     "main":                 "prolific.bin",
