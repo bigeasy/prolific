@@ -25,7 +25,7 @@
     {
                             "proof":                        "3.0.x"
     },
-    "main":                 "inherit",
+    "main":                 "pipline",
     "scripts":
     {
                             "test": "proof test t/*.t.js"
