@@ -86,19 +86,12 @@ Collector.prototype._scanChunk = function (scan) {
     this._buffers.push(new Buffer(scan.buffer.slice(scan.index, scan.index + remaining)))
     scan.index += remaining
     if ((this._chunk.remaining -= remaining) == 0) {
-        var buffer = Buffer.concat(this._buffers)
+        var buffer = this._chunk.buffer = Buffer.concat(this._buffers)
         this._buffers.length = 0
         var checksum = fnv(0, buffer, 0, buffer.length)
         assert(checksum == this._chunk.checksum, 'invalid checksum')
         this.chunkNumber[this._chunk.pid]++
-        this.chunks.push({
-            pid: this._chunk.pid,
-            number: this._chunk.number,
-            previousChecksum: this._previousChecksum,
-            checksum: this._chunk.checksum,
-            length: this._chunk.length,
-            buffer: buffer
-        })
+        this.chunks.push(this._chunk)
         this._chunk = null
         this._state = 'seek'
         return true
@@ -167,6 +160,7 @@ Collector.prototype._scanHeader = function (scan) {
                 number: +$[2],
                 checksum: parseInt($[4], 16),
                 value: +$[5],
+                buffer: null,
                 length: null,
                 remaining: null
             }
