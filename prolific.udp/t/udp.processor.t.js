@@ -33,7 +33,7 @@ function prove (async, assert) {
             assert(message.toString(), 'foo\n', 'sent formatted')
             wait()
         })
-        processor.process({ formatted: 'foo\n' })
+        processor.process({ formatted: [ 'foo\n' ] })
     }, function () {
         processor.close(async())
         delta(async()).ee(server).on('close')
