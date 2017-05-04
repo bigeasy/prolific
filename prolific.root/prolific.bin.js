@@ -28,27 +28,45 @@ var inherit = require('prolific.inherit')
 var ipc = require('prolific.ipc')
 var url = require('url')
 
-var direct = cadence(function (async, program, configuration, argv, inheritance) {
-    var killer = require('./killer')
-    var nullProcessor = { process: function () {} }, nextProcessor = nullProcessor
+function Pipeline (configuration) {
+    var nullProcessor = {
+        open: function (callback) { callback() },
+        process: function () {},
+        close: function (callback) { callback() }
+    }, nextProcessor = nullProcessor
     var processors = configuration.processors.map(function (configuration) {
         var Processor = require(configuration.moduleName)
         return nextProcessor = new Processor(configuration.parameters, nextProcessor)
     })
-    processors.reverse()
+    processors.unshift(nullProcessor)
+    this.processors = processors.reverse()
+    this._opened = []
+}
+
+Pipeline.prototype.open = cadence(function (async) {
+    async.forEach(function (processor) {
+        async(function () {
+            processor.open(async())
+        }, function () {
+            this._opened.push(processor)
+        })
+    })(this.processors)
+})
+
+Pipeline.prototype.close = cadence(function (async) {
+    async.forEach(function (processor) {
+        processor.close(async())
+    })(this._opened)
+})
+
+var direct = cadence(function (async, program, configuration, argv, inheritance) {
+    var killer = require('./killer')
+    var pipeline = new Pipeline(configuration)
     var initialized = []
     async([function () {
-        async.forEach(function (processor) {
-            processor.close(async())
-        })(initialized)
+        pipeline.close(async())
     }], function () {
-        async.forEach(function (processor) {
-            async(function () {
-                processor.open(async())
-            }, function () {
-                initialized.push(processor)
-            })
-        })(processors)
+        pipeline.open(async())
     }, function () {
         var child = children.spawn(argv.shift(), argv, { stdio: inheritance.stdio })
         // If you `ctl+c` from your shell, you're going to get doubles.
@@ -56,8 +74,7 @@ var direct = cadence(function (async, program, configuration, argv, inheritance)
         program.on('SIGTERM', killer(child, 'SIGTERM'))
         var io = { async: child.stdio[inheritance.fd], sync: child.stderr }
         ipc(program.ultimate.ipc, process, child)
-        processors.push(nullProcessor)
-        monitor(processors[0], child, io, program.stderr, async())
+        monitor(pipeline.processors[0], child, io, program.stderr, async())
     }, function (code) {
         return [ code ]
     })
