@@ -25,6 +25,7 @@ module.exports = function (terminal, argv) {
             }
             return required
         } catch (e) {
+            console.log(e.stack)
             continue
         }
     }
