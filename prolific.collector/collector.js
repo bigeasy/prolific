@@ -166,8 +166,9 @@ Collector.prototype._scanHeader = function (scan) {
                 pid: $[1],
                 number: +$[2],
                 checksum: parseInt($[4], 16),
-                length: +$[5],
-                remaining: +$[5]
+                value: +$[5],
+                length: null,
+                remaining: null
             }
             // TODO For now we leak, not removing from the `_previousChecksum`
             // since our applications at the moment will have a fixed number of
@@ -183,7 +184,7 @@ Collector.prototype._scanHeader = function (scan) {
             if (chunk.number == 0) {
                 if (previousChecksum == 0xaaaaaaaa) {
                     if (this._initializations == 0) {
-                        this.chunkNumber[chunk.pid] = chunk.remaining
+                        this.chunkNumber[chunk.pid] = chunk.value
                         this._previousChecksum[chunk.pid] = chunk.checksum
                         this._initializations++
                     } else {
@@ -196,6 +197,7 @@ Collector.prototype._scanHeader = function (scan) {
                 }
             } else if (previousChecksum == this._previousChecksum[chunk.pid]) {
                 if (chunk.number == this.chunkNumber[chunk.pid]) {
+                    chunk.length = chunk.remaining = chunk.value
                     this._state = 'chunk'
                     this._chunk = chunk
                     this._previousChecksum[chunk.pid] = chunk.checksum
