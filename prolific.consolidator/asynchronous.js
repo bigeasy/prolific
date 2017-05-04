@@ -1,25 +1,33 @@
 var Collector = require('prolific.collector')
 
-function Asynchronous (input) {
+function Asynchronous (input, consumer) {
     var collector = new Collector(true)
-    var chunks = this.chunks = []
+    var asynchronous = this
     input.on('data', function (buffer) {
         collector.scan(buffer)
-        Array.prototype.push.apply(chunks, collector.chunks.splice(0, collector.chunks.length))
+        while (collector.chunks.length) {
+            var chunk = collector.chunks.shift()
+            asynchronous._chunkNumber = chunk.number
+            consumer(chunk)
+        }
     })
-    this.sync = []
+    this._chunkNumber = null
+    this._consumer = consumer
+    this._sync = []
 }
 
 Asynchronous.prototype.consume = function (chunk) {
-    this.sync.push(chunk)
+    this._sync.push(chunk)
 }
 
 Asynchronous.prototype.exit = function () {
-    var chunks = this.sync
-    while (chunks.length && chunks[0].number != this.chunkNumber) {
+    var chunks = this._sync
+    while (chunks.length && chunks[0].number <= this._chunkNumber) {
         chunks.shift()
     }
-    Array.prototype.push.apply(this.chunks, chunks.splice(0, chunks.length))
+    while (chunks.length) {
+        this._consumer.call(null, chunks.shift())
+    }
 }
 
 module.exports = Asynchronous
