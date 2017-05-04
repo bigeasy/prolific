@@ -27,7 +27,7 @@ var cadence = require('cadence')
 var inherit = require('prolific.inherit')
 var ipc = require('prolific.ipc')
 var url = require('url')
-var Pipeline = require('./pipeline')
+var Pipeline = require('prolific.pipeline')
 
 var direct = cadence(function (async, program, configuration, argv, inheritance) {
     var killer = require('./killer')
