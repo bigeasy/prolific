@@ -25,7 +25,7 @@
                             "byline":                       "5.0.0",
                             "cadence":                      "1.0.x",
                             "delta":                        "1.2.x",
-                            "prolific.stringify":           "1.0.x",
+                            "prolific.stringify":           "3.0.x",
                             "server-destroy":               "1.0.1",
                             "staccato":                     "3.0.x",
                             "turnstile":                    "2.5.x"
