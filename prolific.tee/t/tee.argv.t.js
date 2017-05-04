@@ -3,7 +3,7 @@ require('proof')(1, require('cadence')(prove))
 function prove (async, assert) {
     var argv = require('../tee.argv')
     async(function () {
-        argv([ 'test', '--key', 'value' ], {}, async())
+        argv([ 'test', '--key', 'value', 'node' ], {}, async())
     }, function (result) {
         assert(result, {
           moduleName: 'prolific.tee/tee.processor',
@@ -12,9 +12,9 @@ function prove (async, assert) {
               { processors:
                  [ { moduleName: 'prolific.test/test.processor',
                      parameters: { params: { key: 'value' } },
-                     argv: [],
+                     argv: [ 'node' ],
                      terminal: false } ] } },
-          argv: [],
+          argv: [ 'node' ],
           terminal: false
         }, 'configuration')
     })

@@ -2,14 +2,12 @@ require('proof')(1, require('cadence')(prove))
 
 function prove (async, assert) {
     var Processor = require('../tee.processor')
+    var processed = []
     var processor = new Processor({
-        configuration: {
-            processors: [{
-                moduleName: 'prolific.test/test.processor',
-                parameters: { params: { key: 'value' } },
-                argv: [],
-                terminal: false
-            }]
+        configuration: { processors: [] }
+    }, {
+        process: function (entry) {
+            processed.push(entry)
         }
     })
     async(function () {
@@ -19,6 +17,6 @@ function prove (async, assert) {
     }, function () {
         processor.close(async())
     }, function () {
-        assert(processor._processors[0]._gathered, [{ a: 1 }], 'processed')
+        assert(processed, [{ a: 1 }], 'processed')
     })
 }
