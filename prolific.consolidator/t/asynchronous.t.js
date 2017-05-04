@@ -1,4 +1,4 @@
-require('proof')(1, prove)
+require('proof')(2, prove)
 
 function prove (assert) {
     var stream = require('stream')
@@ -18,7 +18,35 @@ function prove (assert) {
     chunk = new Chunk(1, 1, buffer, buffer.length)
     write(through, chunk, previousChecksum)
 
-    assert(asynchronous.chunks.length, 1, 'read chunk')
+    assert(asynchronous.chunks.shift().buffer.toString(), 'a\n', 'read chunk')
+
+    asynchronous.consume({
+        pid: chunk.pid,
+        number: chunk.number,
+        previousChecksum: previousChecksum,
+        checksum: chunk.checksum,
+        buffer: chunk.buffer,
+        value: chunk.value
+    })
+
+    previousChecksum = chunk.checksum
+
+    buffer = new Buffer('b\n')
+    chunk = new Chunk(1, 2, buffer, buffer.length)
+    write(through, chunk, previousChecksum)
+
+    asynchronous.consume({
+        pid: chunk.pid,
+        number: chunk.number,
+        previousChecksum: previousChecksum,
+        checksum: chunk.checksum,
+        buffer: chunk.buffer,
+        value: chunk.value
+    })
+
+    asynchronous.exit()
+
+    assert(asynchronous.chunks.shift().buffer.toString(), 'b\n', 'read chunk from sync')
 
     function write (writable, chunk, previousChecksum) {
         writable.write(chunk.header(previousChecksum))

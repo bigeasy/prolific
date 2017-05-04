@@ -40,14 +40,19 @@ function prove (assert) {
 
     synchronous.addConsumer(1, consumer)
 
-    assert(consumer.chunks.length, 1, 'consumer join')
+    assert(consumer.chunks.shift().buffer.toString(), 'a\n', 'consumer join')
 
     previousChecksum = chunk.checksum
-    buffer = new Buffer('a\n')
+    buffer = new Buffer('b\n')
     chunk = new Chunk(1, 2, buffer, buffer.length)
     write(through, chunk, previousChecksum)
 
-    assert(consumer.chunks.length, 2, 'consumer consume')
+    assert(consumer.chunks.shift().buffer.toString(), 'b\n', 'consumer consume')
+
+    previousChecksum = chunk.checksum
+    chunk = new Chunk(1, 3, new Buffer(''), 0)
+    chunk.checksum = 'aaaaaaaa'
+    write(through, chunk, previousChecksum)
 
     function write (writable, chunk, previousChecksum) {
         writable.write(chunk.header(previousChecksum))

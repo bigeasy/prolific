@@ -19,7 +19,7 @@ Asynchronous.prototype.exit = function () {
     while (chunks.length && chunks[0].number != this.chunkNumber) {
         chunks.shift()
     }
-    Array.prototoype.push.apply(this.chunks, chunks.splice(0, chunks.length))
+    Array.prototype.push.apply(this.chunks, chunks.splice(0, chunks.length))
 }
 
 module.exports = Asynchronous
