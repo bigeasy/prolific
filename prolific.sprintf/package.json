@@ -1,6 +1,6 @@
 {
     "name":                 "prolific.sprintf",
-    "version":              "0.0.0",
+    "version":              "0.0.1",
     "description":
 
       "A filter that formats Prolific using a `sprintf` format.",
