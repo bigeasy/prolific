@@ -10,7 +10,7 @@ function prove (assert) {
     }
     var processor = new Processor({
         format: 'string: %s, integer: %d',
-        extractors: [ '$.json.string', '$.json.integer * 2' ]
+        extractors: [ '$.string', '$.integer * 2' ]
     }, sink)
     processor.open(function () {})
     processor.process({
@@ -24,7 +24,7 @@ function prove (assert) {
     processor.close(function () {})
 
     var processor = new Processor({
-        format: 'string: %(json.string)s, integer: %(json.integer)d',
+        format: 'string: %(string)s, integer: %(integer)d',
         extractors: [],
     }, sink)
     processor.open(function () {})

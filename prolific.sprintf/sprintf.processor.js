@@ -12,9 +12,9 @@ Processor.prototype.open = function (callback) { callback() }
 
 Processor.prototype.process = function (entry) {
     var extracted = this._extractors.length == 0
-        ? [ entry ]
+        ? [ entry.json ]
         : this._extractors.map(function (extractor) {
-            return extractor(entry)
+            return extractor(entry.json)
         })
 
     entry.formatted.push(sprintf.apply(null, [ this._format ].concat(extracted)))

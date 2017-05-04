@@ -14,12 +14,12 @@ function prove (async, assert) {
             argv: [],
             terminal: true
         }, 'configuration terminal')
-        argv([ 'string: %(json.string)s' ], async())
+        argv([ 'string: %(string)s' ], async())
     }, function (result) {
         assert(result, {
             moduleName: 'prolific.sprintf/sprintf.processor',
             parameters: {
-                format: 'string: %(json.string)s',
+                format: 'string: %(string)s',
                 extractors: []
             },
             argv: [],
