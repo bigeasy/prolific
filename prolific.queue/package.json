@@ -1,6 +1,6 @@
 {
     "name":                 "prolific.queue",
-    "version":              "10.0.5",
+    "version":              "11.0.0",
     "description":
 
       "A logging framework.",
