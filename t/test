@@ -5,6 +5,7 @@ set -e
 echo ""
 
 node prolific.pipeline/t/commandable.t.js
+find 'prolific.pipeline/node_modules/prolific.test'
 
 (proof run */t/*.t.js | tee .proof.out | proof progress) || \
     (proof errors < .proof.out) || \
