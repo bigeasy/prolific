@@ -1,0 +1,33 @@
+{
+    "name":                 "prolific.pipeline",
+    "version":              "9.9.9",
+    "description":
+
+      "Command line to pipeline defintion parser and pipeline constructor.",
+
+    "keywords":
+    [
+                            "logging", "log", "syslog", "proflific"
+    ],
+    "author":               "Alan Gutierrez <alan@prettyrobots.com>",
+    "homepage":             "https://github.com/bigeasy/prolific",
+    "bugs":                 "https://github.com/bigeasy/prolific/issues",
+    "license":              "MIT",
+    "repository":
+    {
+                            "type": "git",
+                            "url": "http://github.com/bigeasy/prolific.git"
+    },
+    "dependencies":
+    {
+    },
+    "devDependencies":
+    {
+                            "proof":                        "3.0.x"
+    },
+    "main":                 "inherit",
+    "scripts":
+    {
+                            "test": "proof test t/*.t.js"
+    }
+}
