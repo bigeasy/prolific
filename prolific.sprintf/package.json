@@ -1,0 +1,36 @@
+{
+    "name":                 "prolific.sprintf",
+    "version":              "9.9.9",
+    "description":
+
+      "A filter that formats Prolific using a `sprintf` format.",
+
+    "keywords":
+    [
+                            "logging", "log", "syslog", "prolific"
+    ],
+    "author":               "Alan Gutierrez <alan@prettyrobots.com>",
+    "homepage":             "https://github.com/bigeasy/prolific",
+    "bugs":                 "https://github.com/bigeasy/prolific/issues",
+    "license":              "MIT",
+    "repository":
+    {
+                            "type": "git",
+                            "url": "http://github.com/bigeasy/prolific.git"
+    },
+    "dependencies":
+    {
+                            "arguable":                     "5.0.x",
+                            "cadence":                      "1.0.x",
+                            "sprintf-js":                   "1.0.x"
+    },
+    "devDependencies":
+    {
+                            "proof":                        "3.0.x"
+    },
+    "main":                 "sprintf.argv",
+    "scripts":
+    {
+                            "test": "proof test t/*.t.js"
+    }
+}
