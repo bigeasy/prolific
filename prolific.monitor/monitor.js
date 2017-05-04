@@ -32,7 +32,7 @@ module.exports = cadence(function (async, processor, child, io, forward) {
         })
         qualifier.unshift(null)
         processor.process({
-            formatted: null,
+            formatted: [],
             when: json.when,
             qualifier: qualifier,
             level: LEVEL[json.level],

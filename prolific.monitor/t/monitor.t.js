@@ -17,7 +17,7 @@ function prove (async, assert) {
             process: function (entry) {
                 assert(entry, {
                     when: 0,
-                    formatted: null,
+                    formatted: [],
                     qualifier: [ null, 'bigeasy', 'bigeasy.prolific' ],
                     level: 0,
                     json: { when: 0, qualifier: 'bigeasy.prolific', level: 'trace', a: 1 }
