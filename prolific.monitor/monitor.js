@@ -1,4 +1,5 @@
-var Consolidator = require('prolific.consolidator')
+var Synchronous = require('prolific.consolidator/synchronous')
+var Asynchronous = require('prolific.consolidator/asynchronous')
 var delta = require('delta')
 var rescue = require('rescue')
 var cadence = require('cadence')
@@ -15,7 +16,15 @@ var LEVEL = {
 
 module.exports = cadence(function (async, processor, child, io, forward) {
     var configuration = null
-    var consolidator = new Consolidator
+
+    var synchronous = new Synchronous(io.sync, forward)
+    var asynchronous = new Asynchronous(io.async, function (chunk) {
+        var lines = chunk.buffer.toString().split(/\n/)
+        lines.pop()
+        lines.forEach(process)
+    })
+    synchronous.addConsumer('0', asynchronous)
+
     function process (line) {
         var json = JSON.parse(line)
         var qualifier = json.qualifier.split('.').map(function (value, index, array) {
@@ -30,26 +39,12 @@ module.exports = cadence(function (async, processor, child, io, forward) {
             json: json
         })
     }
-    function onChunk () {
-        consolidator.chunks.splice(0, consolidator.chunks.length).forEach(function (chunk) {
-            var lines = chunk.buffer.toString().split(/\n/)
-            lines.pop()
-            lines.forEach(process)
-        })
-    }
-    function onLine () {
-        forward.write(consolidator.stderr.splice(0, consolidator.stderr.length).join(''))
-    }
+
     async(function () {
-        delta(async())
-            .ee(child).on('exit')
-            .ee(io.sync).on('data', consolidator.sync.ondata)
-                        .on('data', onLine).on('end')
         async([function () {
-            delta(async())
-                .ee(io.async)
-                    .on('data', consolidator.async.ondata)
-                    .on('data', onChunk).on('end')
+            delta(async()).ee(child).on('exit')
+                          .ee(io.sync).on('end')
+                          .ee(io.async).on('end')
         }, function (error) {
             child.kill()
 // TODO Revisit this. Which operating system generated this error?
@@ -57,8 +52,7 @@ module.exports = cadence(function (async, processor, child, io, forward) {
             console.log(error.stack)
         }])
     }, function (code, signal) {
-        consolidator.exit()
-        onChunk()
+        asynchronous.exit()
         return [ code == null ? 1 : code, configuration ]
     })
 })
