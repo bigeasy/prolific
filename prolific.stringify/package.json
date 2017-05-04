@@ -1,6 +1,6 @@
 {
     "name":                 "prolific.stringify",
-    "version":              "1.0.1",
+    "version":              "2.0.0",
     "description":
 
       "Stringify a log entry.",
