@@ -51,10 +51,10 @@ Processor.prototype.open = function (callback) { callback() }
 
 Processor.prototype.process = function (entry) {
     var json = entry.json
-    entry.formatted = '<' + (this._facility * 8 + entry.level) + '>1 ' +
+    entry.formatted.push('<' + (this._facility * 8 + entry.level) + '>1 ' +
         new Date(json.when).toISOString() + ' ' +
         this._context +
-        this._serializer.stringify(json) + '\n'
+        this._serializer.stringify(json) + '\n')
     this._next.process(entry)
 }
 
