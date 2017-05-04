@@ -21,7 +21,7 @@ exports.createShuttle = function (net, Shuttle, Date) {
                 })
                 program.send({ module: 'prolific', method: 'socket', pid: pid })
             } else {
-                shuttle = new Shuttle('0', program.stderr, finale, process)
+                shuttle = new Shuttle('0', program.stderr, finale)
                 var pipe = new net.Socket({ fd: configuration.fd  })
                 shuttle.setPipe(pipe, pipe)
             }
