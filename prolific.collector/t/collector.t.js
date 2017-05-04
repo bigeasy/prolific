@@ -1,4 +1,4 @@
-require('proof')(11, prove)
+require('proof')(15, prove)
 
 function prove (assert) {
     var Chunk = require('prolific.chunk')
@@ -61,16 +61,65 @@ function prove (assert) {
     collector.scan(chunk.header(previousChecksum))
     collector.scan(chunk.buffer)
 
-    assert(collector.chunkNumber[1], 2, 'wrong chunk number')
+    assert({
+        number: collector.chunkNumber[1],
+        stderr: [
+            collector.stderr.shift().toString(),
+            collector.stderr.shift().toString()
+        ]
+    }, {
+        number: 2,
+        stderr: [ '% 1 1 2524c6d2 a72c4f3d 2\n', 'b\n' ]
+    }, 'wrong chunk number')
 
     chunk = new Chunk(1, 2, buffer, buffer.length)
     collector.scan(chunk.header(previousChecksum))
     collector.scan(chunk.buffer)
+
+    previousChecksum = chunk.checksum
 
     assert(collector.chunks.shift().buffer.toString(), 'a\n', 'chunk a')
     assert(collector.chunks.shift().buffer.toString(), 'b\n', 'chunk b')
 
     collector.scan(chunk.header('00000000'))
 
-    assert(collector.chunkNumber[1], 3, 'wrong previous checksum')
+    assert({
+        number: collector.chunkNumber[1],
+        stderr: collector.stderr.shift().toString(),
+    }, {
+        number: 3,
+        stderr: '% 1 2 00000000 a72c4f3d 2\n'
+    }, 'wrong previous checksum')
+
+    chunk = new Chunk(1, 3, new Buffer(''), 0)
+    chunk.checksum = 'aaaaaaaa'
+    collector.scan(Buffer.concat([
+        chunk.header(previousChecksum), new Buffer('hello, world')
+    ]))
+
+    assert(collector.chunks.shift().eos, 'end of stream')
+
+    collector.exit()
+
+    assert({
+        stderr: collector.stderr.shift().toString(),
+    }, {
+        stderr: 'hello, world'
+    }, 'exit')
+
+    var collector = new Collector(true)
+
+    chunk = new Chunk(1, 0, new Buffer(''), 1)
+    collector.scan(chunk.header('aaaaaaaa'))
+    collector.scan(chunk.buffer)
+
+    previousChecksum = chunk.checksum
+
+    assert(collector.chunks.length, 0, 'async header chunk')
+
+    chunk = new Chunk(1, 1, new Buffer(''), 0)
+    chunk.checksum = 'aaaaaaaa'
+    collector.scan(chunk.header(previousChecksum))
+
+    assert(collector.chunks.shift().eos, 'async end of stream')
 }

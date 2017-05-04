@@ -74,6 +74,10 @@ Collector.prototype.scan = function (buffer) {
         case 'chunk':
             scanned = this._scanChunk(scan)
             break
+        case 'eos':
+            assert(buffer.length - scan.index == 0, 'data after end of stream')
+            scanned = false
+            break
         }
     }
     if (scan.index < scan.buffer.length) {
@@ -156,6 +160,7 @@ Collector.prototype._scanHeader = function (scan) {
         var $ = /^% ([^ ]+) (\d+) ([0-9a-f]{8}) ([0-9a-f]{8}) (\d+)\n$/i.exec(header.toString())
         if ($) {
             var chunk = {
+                eos: false,
                 pid: $[1],
                 number: +$[2],
                 checksum: parseInt($[4], 16),
@@ -177,10 +182,10 @@ Collector.prototype._scanHeader = function (scan) {
             var previousChecksum = parseInt($[3], 16)
             if (chunk.number == 0) {
                 if (previousChecksum == 0xaaaaaaaa) {
-                    if (this._initializations == 0) {
+                    if (this.chunkNumber[chunk.pid] == null) {
                         this.chunkNumber[chunk.pid] = chunk.value
                         this._previousChecksum[chunk.pid] = chunk.checksum
-                        this._initializations++
+                        this._state = this._async ? 'header' : 'seek'
                     } else {
                         assert(!this._async, 'already initialized')
                         this.stderr.push(header)
@@ -191,10 +196,19 @@ Collector.prototype._scanHeader = function (scan) {
                 }
             } else if (previousChecksum == this._previousChecksum[chunk.pid]) {
                 if (chunk.number == this.chunkNumber[chunk.pid]) {
-                    chunk.length = chunk.remaining = chunk.value
-                    this._state = 'chunk'
-                    this._chunk = chunk
-                    this._previousChecksum[chunk.pid] = chunk.checksum
+                    if (chunk.checksum == 0xaaaaaaaa && chunk.value == 0) {
+                        chunk.eos = true
+                        chunk.buffer = new Buffer('')
+                        this.chunks.push(chunk)
+                        delete this._previousChecksum[chunk.pid]
+                        delete this.chunkNumber[chunk.pid]
+                        this._state = this._async ? 'eos' : 'seek'
+                    } else {
+                        chunk.length = chunk.remaining = chunk.value
+                        this._state = 'chunk'
+                        this._chunk = chunk
+                        this._previousChecksum[chunk.pid] = chunk.checksum
+                    }
                 } else {
                     assert(!this._async, 'chunk numbers incorrect')
                     this.stderr.push(header)
@@ -210,6 +224,11 @@ Collector.prototype._scanHeader = function (scan) {
         return true
     }
     return false
+}
+
+Collector.prototype.exit = function () {
+    assert(!this._async, 'exit called on async stream')
+    this._scanned({ buffer: new Buffer(''), index: 0 }, 0)
 }
 
 module.exports = Collector
