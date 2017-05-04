@@ -1,4 +1,4 @@
-require('proof')(9, prove)
+require('proof')(11, prove)
 
 function prove (assert) {
     var Chunk = require('prolific.chunk')
@@ -18,6 +18,8 @@ function prove (assert) {
     collector.scan(header.slice(4))
     collector.scan(chunk.buffer)
 
+    assert(collector.chunks.length, 0, 'no chunks after header chunk')
+
     var previousChecksum = chunk.checksum
 
     assert(collector.chunkNumber[1], 1, 'next chunk number stderr initialization')
@@ -27,15 +29,32 @@ function prove (assert) {
     collector.scan(chunk.buffer)
 
     previousChecksum = chunk.checksum
-    console.log(chunk)
 
     assert(collector.chunkNumber[1], 2, 'next chunk number')
 
     chunk = new Chunk(1, 0, new Buffer(''), 2)
-    collector.scan(chunk.header(previousChecksum))
+    collector.scan(chunk.header('aaaaaaaa'))
     collector.scan(chunk.buffer)
 
-    assert(collector.chunkNumber[1], 2, 'already initialized')
+    assert({
+        number: collector.chunkNumber[1],
+        stderr: collector.stderr.shift().toString(),
+    }, {
+        number: 2,
+        stderr: '% 1 0 aaaaaaaa 811c9dc5 2\n'
+    }, 'already initialized')
+
+    chunk = new Chunk(1, 0, new Buffer(''), 2)
+    collector.scan(chunk.header('00000000'))
+    collector.scan(chunk.buffer)
+
+    assert({
+        number: collector.chunkNumber[1],
+        stderr: collector.stderr.shift().toString(),
+    }, {
+        number: 2,
+        stderr: '% 1 0 00000000 811c9dc5 2\n'
+    }, 'initial entry wrong checksum')
 
     var buffer = new Buffer('b\n')
     chunk = new Chunk(1, 1, buffer, buffer.length)

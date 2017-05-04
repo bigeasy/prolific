@@ -180,16 +180,22 @@ Collector.prototype._scanHeader = function (scan) {
             //
             // Actually, easy enough to implemnet now.
             var previousChecksum = parseInt($[3], 16)
-            if (previousChecksum == (this._previousChecksum[chunk.pid] ||0xaaaaaaaa)) {
-                if (chunk.number == 0) {
+            if (chunk.number == 0) {
+                if (previousChecksum == 0xaaaaaaaa) {
                     if (this._initializations == 0) {
                         this.chunkNumber[chunk.pid] = chunk.remaining
                         this._previousChecksum[chunk.pid] = chunk.checksum
                         this._initializations++
                     } else {
                         assert(!this._async, 'already initialized')
+                        this.stderr.push(header)
                     }
-                } else if (chunk.number == this.chunkNumber[chunk.pid]) {
+                } else {
+                    assert(!this._async, 'initial entry malformed checksum')
+                    this.stderr.push(header)
+                }
+            } else if (previousChecksum == this._previousChecksum[chunk.pid]) {
+                if (chunk.number == this.chunkNumber[chunk.pid]) {
                     this._state = 'chunk'
                     this._chunk = chunk
                     this._previousChecksum[chunk.pid] = chunk.checksum
