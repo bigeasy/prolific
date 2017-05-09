@@ -21,14 +21,14 @@
     },
     "dependencies":
     {
-                            "prolific.shuttle":             "7.0.x",
-                            "prolific.logger":              "2.0.x",
-                            "prolific":                     "4.0.x",
-                            "prolific.stdio":               "1.0.x"
+                            "prolific.shuttle":             "11.0.x",
+                            "prolific.logger":              "3.0.x",
+                            "prolific":                     "9.0.x",
+                            "prolific.stdio":               "3.0.x"
     },
     "devDependencies":
     {
-                            "proof":                        "1.1.x"
+                            "proof":                        "3.0.x"
     },
     "main":                 "chunk",
     "scripts":

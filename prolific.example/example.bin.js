@@ -5,4 +5,5 @@ Shuttle.shuttle(process, logger)
 
 setInterval(function () {
     logger.info('greeting', { hello: 'world' })
+    logger.info('metric', { metric: true, measure: 1 })
 }, 1000).unref()
