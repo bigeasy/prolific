@@ -13,7 +13,7 @@ require('arguable')(module, require('cadence')(function (async, program) {
         moduleName: 'prolific.l2met/l2met.processor',
         parameters: {},
         argv: program.argv.slice(),
-        terminal: terminal
+        terminal: program.terminal
     }
 }))
 
