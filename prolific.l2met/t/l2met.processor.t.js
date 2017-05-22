@@ -14,6 +14,6 @@ function prove (assert) {
         json: { name: 'count', l2met: 'count', value: 1, tags: { key: 'value' } },
         formatted: []
     })
-    assert(sink.gathered.shift().formatted[0], 'c#count=1 tags=key:value', 'format')
+    assert(sink.gathered.shift().formatted[0], 'c#count=1 tags=key:value\n', 'format')
     processor.close(function () {})
 }
