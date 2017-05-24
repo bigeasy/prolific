@@ -18,27 +18,8 @@ module.exports = cadence(function (async, processor, child, io, forward) {
     var configuration = null
 
     var synchronous = new Synchronous(io.sync, forward)
-    var asynchronous = new Asynchronous(io.async, function (chunk) {
-        var lines = chunk.buffer.toString().split(/\n/)
-        lines.pop()
-        lines.forEach(process)
-    })
+    var asynchronous = new Asynchronous(io.async, processor)
     synchronous.addConsumer('0', asynchronous)
-
-    function process (line) {
-        var json = JSON.parse(line)
-        var qualifier = json.qualifier.split('.').map(function (value, index, array) {
-            return array.slice(0, index + 1).join('.')
-        })
-        qualifier.unshift(null)
-        processor.process({
-            formatted: [],
-            when: json.when,
-            qualifier: qualifier,
-            level: LEVEL[json.level],
-            json: json
-        })
-    }
 
     async(function () {
         async([function () {
