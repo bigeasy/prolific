@@ -60,7 +60,7 @@ function prove (assert) {
         number: chunk.number,
         previousChecksum: previousChecksum,
         checksum: chunk.checksum,
-        buffer: chunk.buffer,
+        buffer: chunk.buffer.toString('utf8'),
         value: chunk.value
     })
 

@@ -25,6 +25,7 @@ function Synchronous (input, forward) {
         while (collector.chunks.length) {
             var chunk = collector.chunks.shift()
             var consumer = consumers[chunk.pid] || backlog
+            chunk.buffer = chunk.buffer.toString('utf8')
             consumer.consume(chunk)
             if (chunk.eos) {
                 delete consumers[chunk.pid]
