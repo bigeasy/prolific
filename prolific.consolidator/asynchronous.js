@@ -1,4 +1,6 @@
 var Collector = require('prolific.collector')
+var cadence = require('cadence')
+var Staccato = require('staccato')
 
 var LEVEL = {
     trace: 0,
@@ -26,19 +28,26 @@ function process (line) {
     })
 }
 
-function Asynchronous (input, processor) {
-    var collector = new Collector(true)
-    var asynchronous = this
-    input.on('data', function (buffer) {
-        collector.scan(buffer)
-        while (collector.chunks.length) {
-            asynchronous._chunk(collector.chunks.shift())
-        }
-    })
+function Asynchronous (processor) {
     this._chunkNumber = null
     this._processor = processor
     this._sync = []
 }
+
+Asynchronous.prototype.listen = cadence(function (async, input) {
+    var collector = new Collector(true)
+    var readable = new Staccato.Readable(input)
+    var loop = async(function () {
+        async(function () {
+            readable.read(async())
+        }, function (buffer) {
+            collector.scan(buffer)
+            while (collector.chunks.length) {
+                this._chunk(collector.chunks.shift())
+            }
+        })
+    })()
+})
 
 Asynchronous.prototype.consume = function (chunk) {
     this._sync.push(chunk)

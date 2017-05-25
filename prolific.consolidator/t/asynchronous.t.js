@@ -4,16 +4,18 @@ function prove (assert) {
     var stream = require('stream')
     var Asynchronous = require('../asynchronous')
     var Chunk = require('prolific.chunk')
+    var abend = require('abend')
 
     var chunk, previousChecksum, buffer
 
     var entries = []
     var through = new stream.PassThrough
-    var asynchronous = new Asynchronous(through, {
+    var asynchronous = new Asynchronous({
         process: function (entry) {
             entries.push(entry)
         }
     })
+    asynchronous.listen(through, abend)
 
     var json = new Buffer(JSON.stringify({
         qualifier: 'prolific.consolidator',
