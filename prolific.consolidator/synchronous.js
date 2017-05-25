@@ -1,4 +1,6 @@
 var Collector = require('prolific.collector')
+var cadence = require('cadence')
+var Staccato = require('staccato')
 
 function Synchronous (input, forward) {
     var consumers = this._consumers = {}
@@ -18,21 +20,29 @@ function Synchronous (input, forward) {
             var index = 0
         }
     }
-    var collector = new Collector(false)
-    input.on('data', function (buffer) {
-        collector.scan(buffer)
-        forward.write(collector.stderr.splice(0, collector.stderr.length).join(''))
-        while (collector.chunks.length) {
-            var chunk = collector.chunks.shift()
-            var consumer = consumers[chunk.pid] || backlog
-            chunk.buffer = chunk.buffer.toString('utf8')
-            consumer.consume(chunk)
-            if (chunk.eos) {
-                delete consumers[chunk.pid]
-            }
-        }
-    })
 }
+
+Synchronous.prototype.listen = cadence(function (async, input, forward) {
+    var collector = new Collector(false)
+    var readable = new Staccato.Readable(input)
+    var loop = async(function () {
+        async(function () {
+            readable.read(async())
+        }, function (buffer) {
+            collector.scan(buffer)
+            forward.write(collector.stderr.splice(0, collector.stderr.length).join(''))
+            while (collector.chunks.length) {
+                var chunk = collector.chunks.shift()
+                var consumer = this._consumers[chunk.pid] || this._backlog
+                chunk.buffer = chunk.buffer.toString('utf8')
+                consumer.consume(chunk)
+                if (chunk.eos) {
+                    delete this._consumers[chunk.pid]
+                }
+            }
+        })
+    })()
+})
 
 Synchronous.prototype.addConsumer = function (pid, consumer) {
     this._backlog.empty(pid, consumer)
