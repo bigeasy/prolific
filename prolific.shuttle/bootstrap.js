@@ -14,12 +14,12 @@ exports.createShuttle = function (net, Shuttle, Date) {
                 var pid = program.pid + '/' + Date.now(), handle
                 shuttle = new Shuttle(pid, program.stderr, finale, process)
                 program.on('message', handle = function (message, pipe) {
-                    if (message.module == 'prolific' && message.method == 'socket') {
+                    if (message.module == 'prolific' && message.method == 'socket' && message.pid == pid) {
                         shuttle.setPipe(pipe, pipe)
                         program.removeListener('message', handle)
                     }
                 })
-                program.send({ module: 'prolific', method: 'socket', pid: pid })
+                program.send({ module: 'prolific', method: 'monitor', pid: pid })
             } else {
                 shuttle = new Shuttle('0', program.stderr, finale)
                 var pipe = new net.Socket({ fd: configuration.fd  })
