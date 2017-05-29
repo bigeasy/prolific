@@ -41,6 +41,9 @@ Asynchronous.prototype.listen = cadence(function (async, input) {
         async(function () {
             readable.read(async())
         }, function (buffer) {
+            if (buffer == null) {
+                return [ loop.break ]
+            }
             collector.scan(buffer)
             while (collector.chunks.length) {
                 this._chunk(collector.chunks.shift())
