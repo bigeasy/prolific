@@ -12,7 +12,7 @@ exports.createShuttle = function (net, Shuttle, Date) {
             var shuttle
             if (configuration.fd == 'IPC') {
                 var pid = program.pid + '/' + Date.now(), handle
-                shuttle = new Shuttle(pid, program.stderr, finale, process)
+                shuttle = new Shuttle(pid, program.stderr, finale)
                 program.on('message', handle = function (message, pipe) {
                     if (message.module == 'prolific' && message.method == 'socket' && message.pid == pid) {
                         shuttle.setPipe(pipe, pipe)
