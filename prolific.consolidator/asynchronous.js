@@ -53,7 +53,11 @@ Asynchronous.prototype.listen = cadence(function (async, input) {
 })
 
 Asynchronous.prototype.consume = function (chunk) {
-    this._sync.push(chunk)
+    if (chunk.eos) {
+        this.exit()
+    } else {
+        this._sync.push(chunk)
+    }
 }
 
 Asynchronous.prototype._chunk = function (chunk) {
@@ -66,7 +70,7 @@ Asynchronous.prototype._chunk = function (chunk) {
 }
 
 Asynchronous.prototype.exit = function () {
-    var chunks = this._sync
+    var chunks = this._sync.splice(0, this._sync.length)
     while (chunks.length && chunks[0].number <= this._chunkNumber) {
         chunks.shift()
     }
