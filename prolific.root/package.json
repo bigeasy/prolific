@@ -22,6 +22,7 @@
     {
                             "arguable":                     "5.0.x",
                             "cadence":                      "1.0.x",
+                            "delta":                        "1.2.x",
                             "destructible":                 "0.11.x",
                             "prolific.consolidator":        "4.0.x",
                             "prolific.pipeline":            "0.0.x",
