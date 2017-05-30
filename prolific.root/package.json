@@ -27,7 +27,6 @@
                             "prolific.pipeline":            "0.0.x",
                             "prolific.inherit":             "3.2.x",
                             "prolific.ipc":                 "1.0.x",
-                            "prolific.monitor":             "7.0.x",
                             "rescue":                       "3.0.x"
     },
     "devDependencies":

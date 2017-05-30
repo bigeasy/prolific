@@ -21,7 +21,6 @@
     ___ . ___
 */
 
-var monitor = require('prolific.monitor')
 var children = require('child_process')
 var cadence = require('cadence')
 var inherit = require('prolific.inherit')
