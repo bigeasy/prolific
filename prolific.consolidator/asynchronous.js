@@ -32,14 +32,15 @@ function Asynchronous (processor) {
     this._chunkNumber = null
     this._processor = processor
     this._sync = []
+    this._readable = null
 }
 
 Asynchronous.prototype.listen = cadence(function (async, input) {
     var collector = new Collector(true)
-    var readable = new Staccato.Readable(input)
+    this._readable = new Staccato.Readable(input)
     var loop = async(function () {
         async(function () {
-            readable.read(async())
+            this._readable.read(async())
         }, function (buffer) {
             if (buffer == null) {
                 return [ loop.break ]
@@ -70,6 +71,8 @@ Asynchronous.prototype._chunk = function (chunk) {
 }
 
 Asynchronous.prototype.exit = function () {
+    // TODO Must shutdown asynchronous scanning also, kill readable or set flag.
+    this._readable.destroy()
     var chunks = this._sync.splice(0, this._sync.length)
     while (chunks.length && chunks[0].number <= this._chunkNumber) {
         chunks.shift()

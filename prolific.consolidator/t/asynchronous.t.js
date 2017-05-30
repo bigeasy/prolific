@@ -66,8 +66,6 @@ function prove (assert) {
         value: chunk.value
     })
 
-    through.end()
-
     asynchronous.consume({ eos: true })
 
     asynchronous.exit()
