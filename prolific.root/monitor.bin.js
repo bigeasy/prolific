@@ -1,36 +1,68 @@
+/*
+    ___ usage ___ en_US ___
+    usage: node monitor.bin.js
+
+        -c, --configuration <string>    json configuration
+            --help                      display this message
+
+    ___ . ___
+*/
 require('arguable')(module, require('cadence')(function (async, program) {
-    var configuration = JSON.parse(program.ultimate.configuration)
-    var pipeline = new Pipeline(configuration)
+    // Node.js API.
+    var assert = require('assert')
+
+    // Construct a prolific pipeline from a configuration.
+    var Pipeline = require('prolific.pipeline')
+
+    // Controlled demolition of objects.
+    var Destructible = require('destructible')
+
+    // Consolidate chunks from async and sync streams.
+    var Asynchronous = require('prolific.consolidator/asynchronous')
+
+    var Thereafter = require('thereafter')
+
+    var thereafter = new Thereafter
+
     var destructible = new Destructible('monitor')
+
+    var configuration = JSON.parse(program.env.PROLIFIC_CONFIGURATION)
+    var pipeline = new Pipeline(configuration)
+
+    var net = require('net')
+
+    var asynchronous = new Asynchronous(pipeline.processors[0])
+
+    var listener
+    program.on('message', listener = function (message) {
+        assert(message.module == 'prolific' && message.method == 'chunk')
+        asynchronous.consume(message.body)
+    })
+    destructible.addDestructor('messages', function () {
+        program.removeListener('message', listener)
+    })
+
     program.on('shutdown', destructible.destroy.bind(destructible))
-    cadence(function (async) {
-        async([function () {
-            pipeline.close(async())
-        }], function () {
-            pipeline.open(async())
-        }, function () {
-            async([function () {
-                delta(async())
-                    .ee(child).on('exit')
-                    .ee(pipe).on('end')
-            }, function (error) {
-// TODO Revisit this. Which operating system generated this error?
-// Error was ECONNRESET.
-                child.kill()
-                console.log(error.stack)
-                return 1
-            }])
-        }, function (code, signal) {
-// TODO Now I need to get the information down into this bit. Do I know when
-// I've reached the end of a child in a paritcular stream?
-//
-// Send it down the IPC channel. No, don't use Conduit. The buffer is going to
-// be plain text anyway, right? You can base 64 encode it if it is going to make
-// you feel better. We do have an EOS now.
-            async(function () {
-            }, function () {
-            })
+
+    async(function () {
+        setImmediate(async()) // allows test to get handle
+    }, [function () {
+        pipeline.close(async())
+    }], function () {
+        pipeline.open(async())
+    }, function () {
+        thereafter.run(function (ready) {
+            var socket = new net.Socket({ fd: 3 })
+            destructible.addDestructor('socket', socket, 'destroy')
+            asynchronous.listen(socket, destructible.monitor(async, 'asynchronous'))
+            ready.unlatch()
         })
-    })(abend)
-    return []
-})
+        thereafter.run(function (ready) {
+            program.send({ module: 'prolific', method: 'ready' })
+            ready.unlatch()
+        })
+        destructible.completed(250, async())
+    }, function () {
+        return 0
+    })
+}))

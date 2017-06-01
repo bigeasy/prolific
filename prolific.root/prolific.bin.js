@@ -2,10 +2,10 @@
 
 /*
     ___ usage ___ en_US ___
-    usage: node prolific.tcp.bin.js
+    usage: prolific <pipeline> <program>
 
         -i, --inherit   <number>        file handles to inherit
-        -c, --cluster                   run in cluster mode
+        -s, --siblings                  run monitors as siblings
         -I, --ipc                       enable Node.js IPC forwarding
             --configuration <string>    base configuration JSON or environment variable
             --help                      display this message
@@ -21,15 +21,23 @@
     ___ . ___
 */
 
+// Node.js API.
+var assert = require('assert')
 var children = require('child_process')
+var path = require('path')
+var url = require('url')
+
 var cadence = require('cadence')
 var inherit = require('prolific.inherit')
 var ipc = require('prolific.ipc')
-var path = require('path')
-var url = require('url')
 var delta = require('delta')
 var exit = require('./exit')
+
+var Thereafter = require('thereafter')
+
+// Construct a prolific pipeline from a configuration.
 var Pipeline = require('prolific.pipeline')
+
 var Destructible = require('destructible')
 var Synchronous = require('prolific.consolidator/synchronous')
 var Asynchronous = require('prolific.consolidator/asynchronous')
@@ -40,8 +48,14 @@ var Asynchronous = require('prolific.consolidator/asynchronous')
 var direct = cadence(function (async, program, inheritance, configuration, argv) {
     var destructible = new Destructible('direct')
     program.on('shutdown', destructible.destroy.bind(destructible))
-    var killer = require('./killer')
+
+    var thereafter = new Thereafter
+    destructible.addDestructor('thereafter', thereafter, 'cancel')
+
     var pipeline = new Pipeline(configuration)
+    var synchronous = new Synchronous
+    var asynchronous = new Asynchronous(pipeline.processors[0])
+
     async([function () {
         pipeline.close(async())
     }], function () {
@@ -50,38 +64,39 @@ var direct = cadence(function (async, program, inheritance, configuration, argv)
         var child = children.spawn(argv.shift(), argv, { stdio: inheritance.stdio })
         ipc(program.ultimate.ipc, process, child)
         destructible.addDestructor('kill', child, 'kill')
-        var synchronous = new Synchronous
-        var asynchronous = new Asynchronous(pipeline.processors[0])
         synchronous.addConsumer('0', asynchronous)
 // This is a strange useage where the method is going to return an error, it
 // will be the error used to report.
-        destructible.monitor(async, 'child')(function (ready) {
-            async(function () {
-                delta(async()).ee(child).on('exit')
+        thereafter.run(function (ready) {
+            cadence(function (async) {
+                async(function () {
+                    delta(async()).ee(child).on('exit')
+                    ready.unlatch()
+                }, function (exitCode, signal) {
+                    return exit(exitCode, signal)
+                })
+            })(destructible.monitor('child'))
+        })
+        thereafter.run(function (ready) {
+            cadence(function (async) {
+                synchronous.listen(child.stderr, program.stderr, async())
                 ready.unlatch()
-            }, function (exitCode, signal) {
-                return exit(exitCode, signal)
-            })
+            })(destructible.monitor('synchronous'))
         })
-        destructible.monitor(async, 'synchronous')(function (ready) {
-// TODO Staccato instead of data.
-            synchronous.listen(child.stderr, program.stderr, async())
-            ready.unlatch()
-        })
-        destructible.monitor(async, 'asynchronous')(function (ready) {
-// TODO Staccato instead of data.
-//
+        thereafter.run(function (ready) {
 // It does not seem likely that you'll get an error out of the child pipes and
 // if you do, it is uncommon enough that there is not much more to do for now
 // besides crash. Can't do anything if the synchronous pipe crashes, so maybe
 // only worry about the asynchronous pipe. Ah, so, we could just shutdown when
 // we see the asynchronous pipe error, or maybe even finish for any reason.
-            async([function () {
-                child.kill()
-            }], function () {
-                asynchronous.listen(child.stdio[inheritance.fd], async())
-                ready.unlatch()
-            })
+            cadence(function (async) {
+                async([function () {
+                    child.kill()
+                }], function () {
+                    asynchronous.listen(child.stdio[inheritance.fd], async())
+                    ready.unlatch()
+                })
+            })(destructible.monitor('asynchronous'))
         })
 // TODO Considered giving `Destructible.completed` an array of gathered
 // responses. That way you could use it as the response from the function.
@@ -108,36 +123,76 @@ var direct = cadence(function (async, program, inheritance, configuration, argv)
 // Here I'm trying to funnel that exception to the completed latch. When using
 // the Cadence-friendly Destructible invocation this will mean that we're adding
 // a wait for many sub-Cadences.
-        destructible.timeout(5000)
+        destructible.completed(5000, async())
+    }, function () {
+        asynchronous.exit()
     })
 })
 
-var clustered = cadence(function (async, program, inheritance, configuration, argv) {
+var siblings = cadence(function (async, program, inheritance, configuration, argv) {
+    var destructible = new Destructible('siblings')
+    program.on('shutdown', destructible.destroy.bind(destructible))
+
+    var thereafter = new Thereafter
     var child = children.spawn(argv.shift(), argv, { stdio: inheritance.stdio })
+
     var synchronous = new Synchronous(child.stderr, program.stderr)
-    var monitors = []
+    destructible.addDestructor('thereafter', thereafter, 'cancel')
+
+    var monitors = 0
+    thereafter.run(function (ready) {
+        cadence(function (async) {
+            async(function () {
+                delta(async()).ee(child).on('exit')
+                ready.unlatch()
+            }, function (exitCode, signal) {
+                return exit(exitCode, signal)
+            })
+        })(destructible.monitor('child'))
+    })
     child.on('message', function (message) {
         if (message.module != 'prolific' || message.method != 'monitor') {
             return
         }
-        var monitor = children.spawn('node', [ path.join(__dirname, 'monitor.bin.js') ], {
+        var pid = message.pid
+        var monitor = children.spawn('node', [
+            path.join(__dirname, 'monitor.bin.js')
+        ], {
             stdio: [ 'inherit', 'inherit', 'inherit', 'pipe', 'ipc' ]
         })
-        child.send('message', {
-            module: 'prolific',
-            method: 'socket',
-            pid: message.pid
-        }, monitor.stdio[3])
-        synchronous.addConsumer(message.pid, function (chunk) {
-            monitor.send({
+        monitor.once('message', function (message) {
+            // TODO Maybe there's a race here.
+            child.send({
                 module: 'prolific',
-                method: 'chunk',
-                body: chunk
+                method: 'socket',
+                pid: pid
+            }, monitor.stdio[3])
+            synchronous.addConsumer(pid, {
+                consume: function (chunk) {
+                    monitor.send({
+                        module: 'prolific',
+                        method: 'chunk',
+                        body: chunk
+                    })
+                }
             })
         })
+        destructible.addDestructor([ 'kill', monitors ], monitor, 'kill')
+        thereafter.run(function (ready) {
+            cadence(function (async) {
+                async(function () {
+                    delta(async()).ee(monitor).on('exit')
+                    ready.unlatch()
+                }, function (errorCode, signal) {
+                    assert(signal == 'SIGTERM' || errorCode == 0)
+                    return []
+                })
+            })(destructible.monitor([ 'monitor', monitors ]))
+        })
+        monitors++
     })
-    destructible.monitor(async, 'synchronous')(function (ready) {
-        synchronous.listen(async())
+    thereafter.run(function (ready) {
+        synchronous.listen(child.stderr, program.stderr, destructible.monitor('synchronous'))
         ready.unlatch()
     })
     destructible.completed(10000, async())
@@ -146,7 +201,7 @@ var clustered = cadence(function (async, program, inheritance, configuration, ar
 require('arguable')(module, require('cadence')(function (async, program) {
     var configure = require('./configure')
 
-    if (program.ultimate.cluster) {
+    if (program.ultimate.siblings) {
         program.ultimate.ipc = true
     }
 
@@ -156,13 +211,13 @@ require('arguable')(module, require('cadence')(function (async, program) {
 
     // TODO `inherit` skips write fd if cluster
     var inheritance = inherit(program)
-    configuration.fd = program.ultimate.cluster ? 'IPC' : inheritance.fd
+    configuration.fd = program.ultimate.siblings ? 'IPC' : inheritance.fd
     async(function () {
         Pipeline.parse(program, configuration, async())
     }, function (configuration, argv) {
         process.env.PROLIFIC_CONFIGURATION = JSON.stringify(configuration)
-        if (program.ultimate.cluster) {
-            clustered(program, inheritance, configuration, argv, async())
+        if (program.ultimate.siblings) {
+            siblings(program, inheritance, configuration, argv, async())
         } else {
             direct(program, inheritance, configuration, argv, async())
         }

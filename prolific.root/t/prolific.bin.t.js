@@ -1,4 +1,4 @@
-require('proof')(2, require('cadence')(prove))
+require('proof')(4, require('cadence')(prove))
 
 function prove (async, assert) {
     var monitor = require('..')
@@ -12,6 +12,13 @@ function prove (async, assert) {
         program = monitor([ 'configure', 'test', '--key', 'value', 'node', child ], async())
     }, function (code) {
         assert(code, expectedExitCode, 'ran')
+        var env = JSON.parse(program.stderr.read().toString())
+        var configuration = JSON.parse(env.PROLIFIC_CONFIGURATION)
+        assert(configuration.configured, 'configured')
+    }, function () {
+        program = monitor([ '--siblings', 'configure', 'test', '--key', 'value', 'node', child ], async())
+    }, function (code) {
+        assert(code, 0, 'ran')
         var env = JSON.parse(program.stderr.read().toString())
         var configuration = JSON.parse(env.PROLIFIC_CONFIGURATION)
         assert(configuration.configured, 'configured')
