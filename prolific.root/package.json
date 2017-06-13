@@ -33,6 +33,7 @@
     },
     "devDependencies":
     {
+                            "prolific.chunk":               "3.0.x",
                             "prolific.logger":              "3.0.x",
                             "prolific.shuttle":             "11.0.x",
                             "proof":                        "3.0.x"
