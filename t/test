@@ -4,9 +4,6 @@ set -e
 
 echo ""
 
-node prolific.root/t/monitor.bin.t.js
-node prolific.root/t/prolific.bin.t.js
-
 (proof run */t/*.t.js | tee .proof.out | proof progress) || \
     (proof errors < .proof.out) || \
     exit 1
