@@ -61,7 +61,7 @@ require('arguable')(module, require('cadence')(function (async, program) {
             program.send({ module: 'prolific', method: 'ready' })
             ready.unlatch()
         })
-        destructible.completed(250, async())
+        destructible.completed(3000, async())
     }, function () {
         return 0
     })
