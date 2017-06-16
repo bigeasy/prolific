@@ -54,7 +54,7 @@ require('arguable')(module, require('cadence')(function (async, program) {
         thereafter.run(function (ready) {
             var socket = new net.Socket({ fd: 3 })
             destructible.addDestructor('socket', socket, 'destroy')
-            asynchronous.listen(socket, destructible.monitor(async, 'asynchronous'))
+            asynchronous.listen(socket, destructible.monitor('asynchronous'))
             ready.unlatch()
         })
         thereafter.run(function (ready) {
