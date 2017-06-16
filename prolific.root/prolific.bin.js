@@ -138,6 +138,9 @@ var siblings = cadence(function (async, program, inheritance, configuration, arg
 
     var synchronous = new Synchronous(child.stderr, program.stderr)
     destructible.addDestructor('thereafter', thereafter, 'cancel')
+    destructible.addDestructor('DEBUG TODO', function () {
+        console.log('DESTROYED!!!')
+    })
 
     var monitors = 0
     thereafter.run(function (ready) {
