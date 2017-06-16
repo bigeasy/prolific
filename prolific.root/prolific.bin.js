@@ -158,7 +158,7 @@ var siblings = cadence(function (async, program, inheritance, configuration, arg
         var monitor = children.spawn('node', [
             path.join(__dirname, 'monitor.bin.js')
         ], {
-            stdio: [ 'inherit', 'inherit', 'inherit', 'pipe', 'ipc' ]
+            stdio: [ 0, 1, 2, 'pipe', 'ipc' ]
         })
         monitor.once('message', function (message) {
             // TODO Maybe there's a race here.
