@@ -52,6 +52,7 @@ require('arguable')(module, require('cadence')(function (async, program) {
         pipeline.open(async())
     }, function () {
         thereafter.run(function (ready) {
+            console.log('async')
             var socket = new net.Socket({ fd: 3 })
             destructible.addDestructor('socket', socket, 'destroy')
             destructible.addDestructor('socket_x', function () {
@@ -61,11 +62,13 @@ require('arguable')(module, require('cadence')(function (async, program) {
             ready.unlatch()
         })
         thereafter.run(function (ready) {
+            console.log('ready')
             program.send({ module: 'prolific', method: 'ready' })
             ready.unlatch()
         })
         destructible.completed(3000, async())
     }, function () {
+            console.log('monitor done')
         return 0
     })
 }))

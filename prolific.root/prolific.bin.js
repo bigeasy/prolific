@@ -161,6 +161,7 @@ var siblings = cadence(function (async, program, inheritance, configuration, arg
             stdio: [ 0, 1, 2, 'pipe', 'ipc' ]
         })
         monitor.once('message', function (message) {
+            console.log('ONCE message', message)
             // TODO Maybe there's a race here.
             child.send({
                 module: 'prolific',
