@@ -3,7 +3,6 @@ var sink = require('prolific.resolver').sink
 function Logger (qualifier) {
     this.qualifier = qualifier
     this._path = ('.' + qualifier).split('.')
-    this.log = this._log.bind(this)
 }
 
 Logger.prototype.log = function (level, name, properties) {
