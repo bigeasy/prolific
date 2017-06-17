@@ -18,7 +18,7 @@ Logger.prototype.concat = function (level, name) {
             object[key] = properties[key]
         }
     }
-    this[level](name, properties)
+    sink.json(this._path, level, this.qualifier, name, properties)
 }
 
 ; [ 'error', 'warn', 'info', 'debug', 'trace' ].forEach(function (level) {
