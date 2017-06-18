@@ -183,6 +183,9 @@ var siblings = cadence(function (async, program, inheritance, configuration, arg
             })
         })
         destructible.addDestructor([ 'kill', monitors ], monitor, 'kill')
+        destructible.addDestructor([ 'kill', monitors, 'x' ], function () {
+            console.log('DID KILL')
+        })
         thereafter.run(function (ready) {
             cadence(function (async) {
                 async(function () {
