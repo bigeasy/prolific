@@ -33,6 +33,8 @@ require('arguable')(module, require('cadence')(function (async, program) {
 
     var asynchronous = new Asynchronous(pipeline.processors[0])
 
+    console.log('CAN YOU HEAR ME?')
+
     var listener
     program.on('message', listener = function (message) {
         assert(message.module == 'prolific' && message.method == 'chunk')
