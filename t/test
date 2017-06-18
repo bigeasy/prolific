@@ -4,6 +4,32 @@ set -e
 
 echo ""
 
+prolific.root/t/monitor.bin.t.js
+prolific.root/t/monitor.bin.t.js
+prolific.root/t/monitor.bin.t.js
+prolific.root/t/monitor.bin.t.js
+prolific.root/t/monitor.bin.t.js
+prolific.root/t/monitor.bin.t.js
+prolific.root/t/monitor.bin.t.js
+prolific.root/t/monitor.bin.t.js
+prolific.root/t/monitor.bin.t.js
+prolific.root/t/monitor.bin.t.js
+
+echo "PROLIFIC"
+
+prolific.root/t/prolific.bin.t.js
+prolific.root/t/prolific.bin.t.js
+prolific.root/t/prolific.bin.t.js
+prolific.root/t/prolific.bin.t.js
+prolific.root/t/prolific.bin.t.js
+prolific.root/t/prolific.bin.t.js
+prolific.root/t/prolific.bin.t.js
+prolific.root/t/prolific.bin.t.js
+prolific.root/t/prolific.bin.t.js
+prolific.root/t/prolific.bin.t.js
+
+exit 0
+
 (proof run */t/*.t.js | tee .proof.out | proof progress) || \
     (proof errors < .proof.out) || \
     exit 1
