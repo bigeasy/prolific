@@ -3,7 +3,6 @@
 set -e
 
 echo ""
-cp prolific.root/bootstrap.js prolific.root/node_modules/prolific.shuttle
 
 echo "========= PROLIFIC ==========="
 
