@@ -4,21 +4,6 @@ set -e
 
 echo ""
 
-echo "========= PROLIFIC ==========="
-
-node prolific.root/t/prolific.bin.t.js
-node prolific.root/t/prolific.bin.t.js
-node prolific.root/t/prolific.bin.t.js
-node prolific.root/t/prolific.bin.t.js
-node prolific.root/t/prolific.bin.t.js
-node prolific.root/t/prolific.bin.t.js
-node prolific.root/t/prolific.bin.t.js
-node prolific.root/t/prolific.bin.t.js
-node prolific.root/t/prolific.bin.t.js
-node prolific.root/t/prolific.bin.t.js
-
-exit 0
-
 (proof run */t/*.t.js | tee .proof.out | proof progress) || \
     (proof errors < .proof.out) || \
     exit 1

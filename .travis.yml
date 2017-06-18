@@ -15,7 +15,6 @@ branches:
     - travis-ci
 
 before_install:
-#  - for dir in prolific.*; do (cd $dir && npm install); done
-  - (cd prolific.root && npm install)
+  - for dir in prolific.*; do (cd $dir && npm install); done
   - npm install
-#  - npm install istanbul coveralls
+  - npm install istanbul coveralls
