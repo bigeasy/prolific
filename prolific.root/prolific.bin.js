@@ -184,6 +184,7 @@ var siblings = cadence(function (async, program, inheritance, configuration, arg
             synchronous.addConsumer(pid, {
                 consume: function (chunk) {
                     exited.unlatch()
+                    console.log('SEND FINAL CHUNK')
                     monitor.send({
                         module: 'prolific',
                         method: 'chunk',
