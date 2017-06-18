@@ -135,6 +135,7 @@ var siblings = cadence(function (async, program, inheritance, configuration, arg
 
     var thereafter = new Thereafter
     var child = children.spawn(argv.shift(), argv, { stdio: inheritance.stdio })
+    destructible.addDestructor('kill', child, 'kill')
 
     var synchronous = new Synchronous(child.stderr, program.stderr)
     destructible.addDestructor('thereafter', thereafter, 'cancel')
