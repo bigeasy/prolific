@@ -27,6 +27,8 @@ var children = require('child_process')
 var path = require('path')
 var url = require('url')
 
+var Signal = require('signal')
+
 var cadence = require('cadence')
 var inherit = require('prolific.inherit')
 var ipc = require('prolific.ipc')
@@ -143,6 +145,8 @@ var siblings = cadence(function (async, program, inheritance, configuration, arg
         console.log('DESTROYED!!!')
     })
 
+    var exited = new Signal
+
     var monitors = 0
     thereafter.run(function (ready) {
         cadence(function (async) {
@@ -151,7 +155,11 @@ var siblings = cadence(function (async, program, inheritance, configuration, arg
                 ready.unlatch()
             }, function (exitCode, signal) {
                 console.log('CHILD EXITED', exitCode, signal)
-                return exit(exitCode, signal)
+                async(function () {
+                    exited.wait(5000, async())
+                }, function () {
+                    return exit(exitCode, signal)
+                })
             })
         })(destructible.monitor('child'))
     })
@@ -175,6 +183,7 @@ var siblings = cadence(function (async, program, inheritance, configuration, arg
             }, monitor.stdio[3])
             synchronous.addConsumer(pid, {
                 consume: function (chunk) {
+                    exited.unlatch()
                     monitor.send({
                         module: 'prolific',
                         method: 'chunk',
@@ -183,10 +192,10 @@ var siblings = cadence(function (async, program, inheritance, configuration, arg
                 }
             })
         })
-        destructible.addDestructor([ 'kill', monitors ], monitor, 'kill')
-        destructible.addDestructor([ 'kill', monitors, 'x' ], function () {
-            console.log('DID KILL')
+        destructible.addDestructor([ 'kill', monitors ], function () {
+            assert(exited.open != null)
         })
+        destructible.addDestructor([ 'kill', monitors, 'x' ], function () { console.log('DID DESTRUCT') })
         thereafter.run(function (ready) {
             cadence(function (async) {
                 async(function () {
@@ -202,8 +211,14 @@ var siblings = cadence(function (async, program, inheritance, configuration, arg
         monitors++
     })
     thereafter.run(function (ready) {
-        synchronous.listen(child.stderr, program.stderr, destructible.monitor('synchronous'))
-        ready.unlatch()
+        cadence(function (async) {
+            async(function () {
+                synchronous.listen(child.stderr, program.stderr, async())
+                ready.unlatch()
+            }, function () {
+                exited.wait(10000, async())
+            })
+        })(destructible.monitor('synchronous'))
     })
     destructible.completed(10000, async())
 })
