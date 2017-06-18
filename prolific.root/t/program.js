@@ -9,4 +9,4 @@ logger.info('hello', {})
 setTimeout(function () {
     shuttle.close()
         console.log('xxxx child is over')
-}, 250)
+}, 3000)
