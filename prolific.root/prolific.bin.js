@@ -150,6 +150,7 @@ var siblings = cadence(function (async, program, inheritance, configuration, arg
                 delta(async()).ee(child).on('exit')
                 ready.unlatch()
             }, function (exitCode, signal) {
+                console.log('CHILD EXITED', exitCode, signal)
                 return exit(exitCode, signal)
             })
         })(destructible.monitor('child'))
@@ -192,6 +193,7 @@ var siblings = cadence(function (async, program, inheritance, configuration, arg
                     delta(async()).ee(monitor).on('exit')
                     ready.unlatch()
                 }, function (errorCode, signal) {
+                    console.log('MONITOR EXIT', errorCode, signal)
                     assert(signal == 'SIGTERM' || errorCode == 0)
                     return []
                 })

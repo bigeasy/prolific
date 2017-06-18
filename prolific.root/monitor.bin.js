@@ -20,6 +20,9 @@ require('arguable')(module, require('cadence')(function (async, program) {
     // Consolidate chunks from async and sync streams.
     var Asynchronous = require('prolific.consolidator/asynchronous')
 
+    var Signal = require('signal')
+    var cadence = require('cadence')
+
     var Thereafter = require('thereafter')
 
     var thereafter = new Thereafter
@@ -35,10 +38,14 @@ require('arguable')(module, require('cadence')(function (async, program) {
 
     console.log('CAN YOU HEAR ME?')
 
+    var finalized = new Signal
+
     var listener
     program.on('message', listener = function (message) {
         assert(message.module == 'prolific' && message.method == 'chunk')
+        console.log('FINAL CHUNK', message)
         asynchronous.consume(message.body)
+        finalized.unlatch()
     })
     destructible.addDestructor('messages', function () {
         program.removeListener('message', listener)
@@ -58,16 +65,22 @@ require('arguable')(module, require('cadence')(function (async, program) {
     }, function () {
         thereafter.run(function (ready) {
             console.log('async')
-            var socket = new net.Socket({ fd: 3 })
-            destructible.addDestructor('socket_x', function () {
-                console.log('destroying socket')
-            })
-            destructible.addDestructor('socket', socket, 'destroy')
-            destructible.addDestructor('socket_x', function () {
-                console.log('socket would be destroyed by now')
-            })
-            asynchronous.listen(socket, destructible.monitor('asynchronous'))
-            ready.unlatch()
+            cadence(function () {
+                var socket = new net.Socket({ fd: 3 })
+                destructible.addDestructor('socket_x', function () {
+                    console.log('destroying socket')
+                })
+                destructible.addDestructor('socket', socket, 'destroy')
+                destructible.addDestructor('socket_x', function () {
+                    console.log('socket would be destroyed by now')
+                })
+                async(function () {
+                    asynchronous.listen(socket, async())
+                    ready.unlatch()
+                }, function () {
+                    finalized.wait(5000, async())
+                })
+            })(destructible.monitor('asynchronous'))
         })
         thereafter.run(function (ready) {
             console.log('ready')
@@ -76,7 +89,7 @@ require('arguable')(module, require('cadence')(function (async, program) {
         })
         destructible.completed(3000, async())
     }, function () {
-            console.log('monitor done')
+        console.log('monitor done')
         return 0
     })
 }))
