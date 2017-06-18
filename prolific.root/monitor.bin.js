@@ -43,6 +43,9 @@ require('arguable')(module, require('cadence')(function (async, program) {
     })
 
     program.on('shutdown', destructible.destroy.bind(destructible))
+    program.on('shutdown', function () {
+        console.log('GOT SHUTDOWN')
+    })
 
     async(function () {
         setImmediate(async()) // allows test to get handle
