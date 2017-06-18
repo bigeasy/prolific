@@ -141,9 +141,6 @@ var siblings = cadence(function (async, program, inheritance, configuration, arg
 
     var synchronous = new Synchronous(child.stderr, program.stderr)
     destructible.addDestructor('thereafter', thereafter, 'cancel')
-    destructible.addDestructor('DEBUG TODO', function () {
-        console.log('DESTROYED!!!')
-    })
 
     var exited = new Signal
 
@@ -154,7 +151,6 @@ var siblings = cadence(function (async, program, inheritance, configuration, arg
                 delta(async()).ee(child).on('exit')
                 ready.unlatch()
             }, function (exitCode, signal) {
-                console.log('CHILD EXITED', exitCode, signal)
                 async(function () {
                     exited.wait(5000, async())
                 }, function () {
@@ -174,7 +170,6 @@ var siblings = cadence(function (async, program, inheritance, configuration, arg
             stdio: [ 0, 1, 2, 'pipe', 'ipc' ]
         })
         monitor.once('message', function (message) {
-            console.log('ONCE message', message)
             // TODO Maybe there's a race here.
             child.send({
                 module: 'prolific',
@@ -184,7 +179,6 @@ var siblings = cadence(function (async, program, inheritance, configuration, arg
             synchronous.addConsumer(pid, {
                 consume: function (chunk) {
                     exited.unlatch()
-                    console.log('SEND FINAL CHUNK')
                     monitor.send({
                         module: 'prolific',
                         method: 'chunk',
@@ -196,14 +190,12 @@ var siblings = cadence(function (async, program, inheritance, configuration, arg
         destructible.addDestructor([ 'kill', monitors ], function () {
             assert(exited.open != null)
         })
-        destructible.addDestructor([ 'kill', monitors, 'x' ], function () { console.log('DID DESTRUCT') })
         thereafter.run(function (ready) {
             cadence(function (async) {
                 async(function () {
                     delta(async()).ee(monitor).on('exit')
                     ready.unlatch()
                 }, function (errorCode, signal) {
-                    console.log('MONITOR EXIT', errorCode, signal)
                     assert(signal == 'SIGTERM' || errorCode == 0)
                     return []
                 })

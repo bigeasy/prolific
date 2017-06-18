@@ -4,7 +4,4 @@ if (process.send) {
     process.send({})
 }
 process.stderr.write(JSON.stringify(process.env) + '\n')
-setTimeout(function () {
-    shuttle.close()
-        console.log('xxxx child is over')
-}, 250)
+setTimeout(function () { shuttle.close() }, 250)
