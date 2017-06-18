@@ -15,6 +15,32 @@ fi
 
 rm -rf coverage
 
+prolific.root/t/monitor.bin.t.js
+prolific.root/t/monitor.bin.t.js
+prolific.root/t/monitor.bin.t.js
+prolific.root/t/monitor.bin.t.js
+prolific.root/t/monitor.bin.t.js
+prolific.root/t/monitor.bin.t.js
+prolific.root/t/monitor.bin.t.js
+prolific.root/t/monitor.bin.t.js
+prolific.root/t/monitor.bin.t.js
+prolific.root/t/monitor.bin.t.js
+
+echo "PROLIFIC"
+
+prolific.root/t/prolific.bin.t.js
+prolific.root/t/prolific.bin.t.js
+prolific.root/t/prolific.bin.t.js
+prolific.root/t/prolific.bin.t.js
+prolific.root/t/prolific.bin.t.js
+prolific.root/t/prolific.bin.t.js
+prolific.root/t/prolific.bin.t.js
+prolific.root/t/prolific.bin.t.js
+prolific.root/t/prolific.bin.t.js
+prolific.root/t/prolific.bin.t.js
+
+exit 0
+
 count=1;
 for file in $(find . ! -path '*/node_modules/*' -name \*.t.js); do
   node_modules/.bin/istanbul cover -x 't/**' -x '*/t/**' $file > /dev/null 2>&1
