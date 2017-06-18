@@ -4,29 +4,29 @@ set -e
 
 echo ""
 
-prolific.root/t/monitor.bin.t.js
-prolific.root/t/monitor.bin.t.js
-prolific.root/t/monitor.bin.t.js
-prolific.root/t/monitor.bin.t.js
-prolific.root/t/monitor.bin.t.js
-prolific.root/t/monitor.bin.t.js
-prolific.root/t/monitor.bin.t.js
-prolific.root/t/monitor.bin.t.js
-prolific.root/t/monitor.bin.t.js
-prolific.root/t/monitor.bin.t.js
+node prolific.root/t/monitor.bin.t.js
+node prolific.root/t/monitor.bin.t.js
+node prolific.root/t/monitor.bin.t.js
+node prolific.root/t/monitor.bin.t.js
+node prolific.root/t/monitor.bin.t.js
+node prolific.root/t/monitor.bin.t.js
+node prolific.root/t/monitor.bin.t.js
+node prolific.root/t/monitor.bin.t.js
+node prolific.root/t/monitor.bin.t.js
+node prolific.root/t/monitor.bin.t.js
 
 echo "PROLIFIC"
 
-prolific.root/t/prolific.bin.t.js
-prolific.root/t/prolific.bin.t.js
-prolific.root/t/prolific.bin.t.js
-prolific.root/t/prolific.bin.t.js
-prolific.root/t/prolific.bin.t.js
-prolific.root/t/prolific.bin.t.js
-prolific.root/t/prolific.bin.t.js
-prolific.root/t/prolific.bin.t.js
-prolific.root/t/prolific.bin.t.js
-prolific.root/t/prolific.bin.t.js
+node prolific.root/t/prolific.bin.t.js
+node prolific.root/t/prolific.bin.t.js
+node prolific.root/t/prolific.bin.t.js
+node prolific.root/t/prolific.bin.t.js
+node prolific.root/t/prolific.bin.t.js
+node prolific.root/t/prolific.bin.t.js
+node prolific.root/t/prolific.bin.t.js
+node prolific.root/t/prolific.bin.t.js
+node prolific.root/t/prolific.bin.t.js
+node prolific.root/t/prolific.bin.t.js
 
 exit 0
 
