@@ -15,7 +15,7 @@ node prolific.root/t/monitor.bin.t.js
 node prolific.root/t/monitor.bin.t.js
 node prolific.root/t/monitor.bin.t.js
 
-echo "PROLIFIC"
+echo "========= PROLIFIC ==========="
 
 node prolific.root/t/prolific.bin.t.js
 node prolific.root/t/prolific.bin.t.js
