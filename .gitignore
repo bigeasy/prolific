@@ -2,7 +2,6 @@
 /docs
 /node_modules
 /*/node_modules/*
-!/prolific.rendezvous/node_modules/prolific.shuttle.js
 !/prolific.tee/node_modules/prolific.test
 !/prolific.pipeline/node_modules/prolific.test
 !/prolific.root/node_modules/prolific.configure.js

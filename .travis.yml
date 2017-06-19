@@ -7,6 +7,7 @@ node_js:
   - '0.12'
   - '4'
   - '6'
+  - '8'
 
 branches:
   only:
@@ -17,3 +18,4 @@ before_install:
   - for dir in prolific.*; do (cd $dir && npm install); done
   - npm install
   - npm install istanbul coveralls
+  - git checkout .
