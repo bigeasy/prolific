@@ -14,8 +14,8 @@ branches:
     - master
     - travis-ci
 
-before_install:
+install:
   - for dir in prolific.*; do (cd $dir && npm install); done
-  - git checkout .
   - npm install --no-shrinkwrap
   - npm install --no-shrinkwrap istanbul coveralls
+  - git checkout .
