@@ -4,12 +4,15 @@ function prove (assert) {
     var stream = require('stream')
     var Synchronous = require('../synchronous')
     var Chunk = require('prolific.chunk')
+    var abend = require('abend')
 
     var chunk, previousChecksum, buffer
 
     var through = new stream.PassThrough
     var forward = new stream.PassThrough
-    var synchronous = new Synchronous(through, forward)
+    var synchronous = new Synchronous
+
+    synchronous.listen(through, forward, abend)
 
     through.write('hello, world\n')
 

@@ -1,6 +1,6 @@
 {
     "name":                 "prolific",
-    "version":              "9.0.1",
+    "version":              "11.0.0",
     "description":
 
       "Main Prolific supervisor executable.",
@@ -20,16 +20,21 @@
     },
     "dependencies":
     {
-                            "arguable":                     "5.0.x",
+                            "arguable":                     "5.2.x",
                             "cadence":                      "1.0.x",
+                            "delta":                        "1.2.x",
+                            "destructible":                 "0.12.x",
+                            "prolific.consolidator":        "4.0.x",
                             "prolific.pipeline":            "0.0.x",
                             "prolific.inherit":             "3.2.x",
                             "prolific.ipc":                 "1.0.x",
-                            "prolific.monitor":             "7.0.x",
-                            "rescue":                       "3.0.x"
+                            "rescue":                       "3.0.x",
+                            "signal":                       "1.10.x",
+                            "thereafter":                   "0.0.x"
     },
     "devDependencies":
     {
+                            "prolific.chunk":               "3.0.x",
                             "prolific.logger":              "3.0.x",
                             "prolific.shuttle":             "11.0.x",
                             "proof":                        "3.0.x"

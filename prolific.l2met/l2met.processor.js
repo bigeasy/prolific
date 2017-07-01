@@ -16,6 +16,7 @@ Processor.prototype.process = function (entry) {
             formatted.push(separator, name, ':', value)
             separator = ','
         }
+        formatted.push('\n')
         entry.formatted.push(formatted.join(''))
     }
     this._next.process(entry)

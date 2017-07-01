@@ -9,13 +9,13 @@ function prove (assert) {
     program.send = function (message) {
         assert(message, {
             module: 'prolific',
-            method: 'socket',
+            method: 'monitor',
             pid: '1/0'
         }, 'request')
         program.emit('message', {})
         program.emit('message', {
             module: 'prolific',
-            method: 'socket'
+            method: 'monitor'
         }, new stream.PassThrough)
     }
     program.pid = 1

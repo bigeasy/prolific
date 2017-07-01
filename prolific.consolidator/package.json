@@ -1,6 +1,6 @@
 {
     "name":                 "prolific.consolidator",
-    "version":              "3.0.1",
+    "version":              "4.0.5",
     "description":
 
       "Consolidate chunks emitted from the logging stream and standard error of a supervised process.",
@@ -20,11 +20,14 @@
     },
     "dependencies":
     {
+                            "cadence":                      "1.0.x",
                             "hash.fnv":                     "1.0.x",
-                            "prolific.collector":           "5.0.x"
+                            "prolific.collector":           "5.0.x",
+                            "staccato":                     "3.0.x"
     },
     "devDependencies":
     {
+                            "abend":                        "1.0.x",
                             "prolific.chunk":               "3.0.x",
                             "proof":                        "3.0.x"
     },

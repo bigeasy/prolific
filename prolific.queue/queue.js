@@ -19,8 +19,12 @@ function Queue (pid, stderr) {
 }
 
 Queue.prototype.setPipe = function (stream) {
-    this._stream = stream
-    this._writing = false
+    if (this._closed) {
+        stream.end()
+    } else {
+        this._stream = stream
+        this.flush(abend)
+    }
 }
 
 Queue.prototype.push = function (json) {

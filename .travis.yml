@@ -7,14 +7,15 @@ node_js:
   - '0.12'
   - '4'
   - '6'
-  - '7'
+  - '8'
 
 branches:
   only:
     - master
     - travis-ci
 
-before_install:
-  - for dir in prolific*; do (cd $dir && npm install); done
-  - npm install
-  - npm install istanbul coveralls
+install:
+  - for dir in prolific.*; do (cd $dir && npm install); done
+  - npm install --no-shrinkwrap
+  - npm install --no-shrinkwrap istanbul coveralls
+  - git checkout .
