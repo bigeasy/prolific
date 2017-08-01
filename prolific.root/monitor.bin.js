@@ -27,7 +27,7 @@ require('arguable')(module, require('cadence')(function (async, program) {
 
     var thereafter = new Thereafter
 
-    var destructible = new Destructible('monitor')
+    var destructible = new Destructible('prolific.monitor')
 
     var configuration = JSON.parse(program.env.PROLIFIC_CONFIGURATION)
     var pipeline = new Pipeline(configuration)

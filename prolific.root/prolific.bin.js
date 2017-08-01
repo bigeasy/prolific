@@ -48,7 +48,7 @@ var Asynchronous = require('prolific.consolidator/asynchronous')
 // this pointer.
 
 var direct = cadence(function (async, program, inheritance, configuration, argv) {
-    var destructible = new Destructible('direct')
+    var destructible = new Destructible('prolific')
     program.on('shutdown', destructible.destroy.bind(destructible))
 
     var thereafter = new Thereafter
@@ -132,7 +132,7 @@ var direct = cadence(function (async, program, inheritance, configuration, argv)
 })
 
 var siblings = cadence(function (async, program, inheritance, configuration, argv) {
-    var destructible = new Destructible('siblings')
+    var destructible = new Destructible('prolific')
     program.on('shutdown', destructible.destroy.bind(destructible))
 
     var thereafter = new Thereafter
