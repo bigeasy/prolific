@@ -1,7 +1,8 @@
-var sink = require('prolific.sink')
 var abend = require('abend')
+
 var assert = require('assert')
-var slice = [].slice
+
+var sink = require('prolific.resolver').sink
 
 exports.createShuttle = function (net, Shuttle, Date) {
     return function (program, finale) {
