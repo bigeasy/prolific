@@ -2,8 +2,6 @@ var abend = require('abend')
 
 var assert = require('assert')
 
-var sink = require('prolific.resolver').sink
-
 exports.createShuttle = function (net, Shuttle, Date) {
     return function (program, finale) {
         assert(arguments.length == 2, 'old shuttle invocation')
@@ -26,6 +24,7 @@ exports.createShuttle = function (net, Shuttle, Date) {
                 var pipe = new net.Socket({ fd: configuration.fd  })
                 shuttle.setPipe(pipe, pipe)
             }
+            var sink = require('prolific.resolver').sink
             sink.queue = shuttle.queue
 // TODO Would love to be able to HUP this somehow.
             configuration.levels.forEach(function (level) {
