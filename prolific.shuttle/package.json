@@ -22,6 +22,7 @@
     {
                             "abend":                        "1.0.x",
                             "prolific.queue":               "11.0.x",
+                            "prolific.resolver":            "5.0.x",
                             "prolific.sink":                "3.0.x"
     },
     "devDependencies":
