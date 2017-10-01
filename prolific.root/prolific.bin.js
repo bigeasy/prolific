@@ -141,21 +141,26 @@ var siblings = cadence(function (async, program, inheritance, configuration, arg
     var destructible = new Destructible('prolific')
     program.on('shutdown', destructible.destroy.bind(destructible))
 
-    var thereafter = new Thereafter
     var child = children.spawn(argv.shift(), argv, { stdio: inheritance.stdio })
+    // TODO Maybe have something to call to notify of failure to finish.
     destructible.addDestructor('kill', child, 'kill')
 
     var synchronous = new Synchronous(child.stderr, program.stderr)
-    destructible.addDestructor('thereafter', thereafter, 'cancel')
 
     var exited = new Signal
 
-    var monitors = 0
-    thereafter.run(function (ready) {
+    async(function () {
+        destructible.completed.wait(async())
+    }, function (exitCode) {
+        return [ exitCode ]
+    })
+
+    async([function () {
+        destructible.destroy()
+    }], function () {
         cadence(function (async) {
             async(function () {
-                delta(async()).ee(child).on('exit')
-                ready.unlatch()
+                delta(async()).ee(child).on('close')
             }, function (exitCode, signal) {
                 async(function () {
                     exited.wait(5000, async())
@@ -164,7 +169,13 @@ var siblings = cadence(function (async, program, inheritance, configuration, arg
                 })
             })
         })(destructible.monitor('child'))
+
+        synchronous.listen(child.stderr, program.stderr, destructible.monitor('synchronous'))
+    }, function () {
+        destructible.completed.wait(async())
     })
+
+    var monitors = 0
     child.on('message', function (message) {
         if (message.module != 'prolific' || message.method != 'monitor') {
             return
@@ -175,6 +186,7 @@ var siblings = cadence(function (async, program, inheritance, configuration, arg
         ], {
             stdio: [ 0, 1, 2, 'pipe', 'ipc' ]
         })
+
         monitor.once('message', function (message) {
             // TODO Maybe there's a race here.
             child.send({
@@ -193,33 +205,18 @@ var siblings = cadence(function (async, program, inheritance, configuration, arg
                 }
             })
         })
-        destructible.addDestructor([ 'kill', monitors ], function () {
-            assert(exited.open != null)
-        })
-        thereafter.run(function (ready) {
-            cadence(function (async) {
-                async(function () {
-                    delta(async()).ee(monitor).on('exit')
-                    ready.unlatch()
-                }, function (errorCode, signal) {
-                    assert(signal == 'SIGTERM' || errorCode == 0)
-                    return []
-                })
-            })(destructible.monitor([ 'monitor', monitors ]))
-        })
-        monitors++
-    })
-    thereafter.run(function (ready) {
+
         cadence(function (async) {
             async(function () {
-                synchronous.listen(child.stderr, program.stderr, async())
-                ready.unlatch()
-            }, function () {
-                exited.wait(10000, async())
+                delta(async()).ee(monitor).on('exit')
+            }, function (errorCode, signal) {
+                assert(signal == 'SIGTERM' || errorCode == 0)
+                return []
             })
-        })(destructible.monitor('synchronous'))
+        })(destructible.monitor([ 'monitor', monitors ]))
+
+        monitors++
     })
-    destructible.completed(10000, async())
 })
 
 require('arguable')(module, require('cadence')(function (async, program) {

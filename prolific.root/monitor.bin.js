@@ -23,11 +23,8 @@ require('arguable')(module, require('cadence')(function (async, program) {
     var Signal = require('signal')
     var cadence = require('cadence')
 
-    var Thereafter = require('thereafter')
-
-    var thereafter = new Thereafter
-
     var destructible = new Destructible('prolific.monitor')
+    program.on('shutdown', destructible.destroy.bind(destructible))
 
     var configuration = JSON.parse(program.env.PROLIFIC_CONFIGURATION)
     var pipeline = new Pipeline(configuration)
@@ -36,45 +33,38 @@ require('arguable')(module, require('cadence')(function (async, program) {
 
     var asynchronous = new Asynchronous(pipeline.processors[0])
 
-    var finalized = new Signal
-
     var listener
     program.on('message', listener = function (message) {
         assert(message.module == 'prolific' && message.method == 'chunk')
+        // TODO Consuming a message indicates we got an exit from stderr in the
+        // parent, so we should trigger a shutdown.
         asynchronous.consume(message.body)
-        finalized.unlatch()
+        destructible.destroy()
     })
     destructible.addDestructor('messages', function () {
         program.removeListener('message', listener)
     })
 
-    program.on('shutdown', destructible.destroy.bind(destructible))
+    async(function () {
+        destructible.completed.wait(async())
+    }, function () {
+        return 0
+    })
 
     async(function () {
         setImmediate(async()) // allows test to get handle
     }, [function () {
+        destructible.destroy()
         pipeline.close(async())
     }], function () {
         pipeline.open(async())
     }, function () {
-        thereafter.run(function (ready) {
-            cadence(function () {
-                var socket = new net.Socket({ fd: 3 })
-                destructible.addDestructor('socket', socket, 'destroy')
-                async(function () {
-                    asynchronous.listen(socket, async())
-                    ready.unlatch()
-                }, function () {
-                    finalized.wait(5000, async())
-                })
-            })(destructible.monitor('asynchronous'))
-        })
-        thereafter.run(function (ready) {
-            program.send({ module: 'prolific', method: 'ready' })
-            ready.unlatch()
-        })
-        destructible.completed(3000, async())
-    }, function () {
-        return 0
+        var socket = new net.Socket({ fd: 3 })
+        destructible.addDestructor('socket', socket, 'destroy')
+        asynchronous.listen(socket, destructible.monitor('asynchronous'))
+
+        program.send({ module: 'prolific', method: 'ready' })
+
+        destructible.completed.wait(async())
     })
 }))
