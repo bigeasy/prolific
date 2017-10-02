@@ -20,9 +20,9 @@
     },
     "dependencies":
     {
-                            "arguable":                     "5.0.x",
+                            "arguable":                     "6.0.x",
                             "cadence":                      "1.0.x",
-                            "prolific.pipeline":            "0.0.x"
+                            "prolific.pipeline":            "0.1.x"
     },
     "devDependencies":
     {
