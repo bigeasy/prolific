@@ -27,16 +27,15 @@ var path = require('path')
 var url = require('url')
 var children = require('child_process')
 
-// An evented semaphore.
-var Signal = require('signal')
-
 // Control-flow utilities.
 var cadence = require('cadence')
 var delta = require('delta')
-var or = require('finalist')
 
 // Controlled demolition of objects.
 var Destructible = require('destructible')
+
+// Route messages through a process hierarchy using Node.js IPC.
+var Descendent = require('descendent')
 
 // Command line and environment interpretation utilities.
 var inherit = require('prolific.inherit')
@@ -141,13 +140,16 @@ var siblings = cadence(function (async, program, inheritance, configuration, arg
     var destructible = new Destructible('prolific')
     program.on('shutdown', destructible.destroy.bind(destructible))
 
+    var descendent = new Descendent(program)
+    destructible.addDestructor('descendent', descendent, 'destroy')
+
     var child = children.spawn(argv.shift(), argv, { stdio: inheritance.stdio })
     // TODO Maybe have something to call to notify of failure to finish.
     destructible.addDestructor('kill', child, 'kill')
 
-    var synchronous = new Synchronous(child.stderr, program.stderr)
+    descendent.addChild(child, child)
 
-    var exited = new Signal
+    var synchronous = new Synchronous(child.stderr, program.stderr)
 
     async(function () {
         destructible.completed.wait(async())
@@ -162,11 +164,7 @@ var siblings = cadence(function (async, program, inheritance, configuration, arg
             async(function () {
                 delta(async()).ee(child).on('close')
             }, function (exitCode, signal) {
-                async(function () {
-                    exited.wait(5000, async())
-                }, function () {
-                    return exit(exitCode, signal)
-                })
+                return exit(exitCode, signal)
             })
         })(destructible.monitor('child'))
 
@@ -175,36 +173,24 @@ var siblings = cadence(function (async, program, inheritance, configuration, arg
         destructible.completed.wait(async())
     })
 
+    descendent.on('prolific:ready', function (from, cookie) {
+        synchronous.addConsumer(cookie.pid, {
+            consume: function (chunk) {
+                descendent.down([ cookie.monitor.pid ], 'prolific:chunk', chunk)
+            }
+        })
+        descendent.down(cookie.from, 'prolific:pipe', true, cookie.monitor.stdio[3])
+    })
+
     var monitors = 0
-    child.on('message', function (message) {
-        if (message.module != 'prolific' || message.method != 'monitor') {
-            return
-        }
-        var pid = message.pid
+    descendent.on('prolific:monitor', function (from, child, pid) {
         var monitor = children.spawn('node', [
             path.join(__dirname, 'monitor.bin.js')
         ], {
             stdio: [ 0, 1, 2, 'pipe', 'ipc' ]
         })
 
-        monitor.once('message', function (message) {
-            // TODO Maybe there's a race here.
-            child.send({
-                module: 'prolific',
-                method: 'socket',
-                pid: pid
-            }, monitor.stdio[3])
-            synchronous.addConsumer(pid, {
-                consume: function (chunk) {
-                    exited.unlatch()
-                    monitor.send({
-                        module: 'prolific',
-                        method: 'chunk',
-                        body: chunk
-                    })
-                }
-            })
-        })
+        descendent.addChild(monitor, { monitor: monitor, from: from, pid: pid })
 
         cadence(function (async) {
             async(function () {
@@ -213,9 +199,7 @@ var siblings = cadence(function (async, program, inheritance, configuration, arg
                 assert(signal == 'SIGTERM' || errorCode == 0)
                 return []
             })
-        })(destructible.monitor([ 'monitor', monitors ]))
-
-        monitors++
+        })(destructible.monitor([ 'monitor', monitors++ ]))
     })
 })
 

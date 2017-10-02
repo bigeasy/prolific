@@ -11,6 +11,9 @@ require('arguable')(module, require('cadence')(function (async, program) {
     // Node.js API.
     var assert = require('assert')
 
+    // Route messages through a process hierarchy using Node.js IPC.
+    var Descendent = require('descendent')
+
     // Construct a prolific pipeline from a configuration.
     var Pipeline = require('prolific.pipeline')
 
@@ -26,6 +29,9 @@ require('arguable')(module, require('cadence')(function (async, program) {
     var destructible = new Destructible('prolific.monitor')
     program.on('shutdown', destructible.destroy.bind(destructible))
 
+    var descendent = new Descendent(program)
+    destructible.addDestructor('descendent', descendent, 'destroy')
+
     var configuration = JSON.parse(program.env.PROLIFIC_CONFIGURATION)
     var pipeline = new Pipeline(configuration)
 
@@ -33,16 +39,9 @@ require('arguable')(module, require('cadence')(function (async, program) {
 
     var asynchronous = new Asynchronous(pipeline.processors[0])
 
-    var listener
-    program.on('message', listener = function (message) {
-        assert(message.module == 'prolific' && message.method == 'chunk')
-        // TODO Consuming a message indicates we got an exit from stderr in the
-        // parent, so we should trigger a shutdown.
-        asynchronous.consume(message.body)
+    descendent.on('prolific:chunk', function (from, chunk) {
+        asynchronous.consume(chunk)
         destructible.destroy()
-    })
-    destructible.addDestructor('messages', function () {
-        program.removeListener('message', listener)
     })
 
     async(function () {
@@ -63,7 +62,7 @@ require('arguable')(module, require('cadence')(function (async, program) {
         destructible.addDestructor('socket', socket, 'destroy')
         asynchronous.listen(socket, destructible.monitor('asynchronous'))
 
-        program.send({ module: 'prolific', method: 'ready' })
+        descendent.up(0, 'prolific:ready', true)
 
         destructible.completed.wait(async())
     })

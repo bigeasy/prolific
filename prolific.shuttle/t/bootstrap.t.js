@@ -1,27 +1,32 @@
 require('proof')(2, prove)
 
-function prove (assert) {
+function prove (okay) {
     var events = require('events')
     var stream = require('stream')
     var bootstrap = require('../bootstrap')
     var program = new events.EventEmitter
     program.env = { PROLIFIC_CONFIGURATION: JSON.stringify({ levels: [['TRACE']], fd: 3 }) }
     program.send = function (message) {
-        assert(message, {
-            module: 'prolific',
-            method: 'monitor',
-            pid: '1/0'
+        okay(message, {
+            module: 'descendent',
+            name: 'prolific:monitor',
+            to: 0,
+            path: [ 1 ],
+            body: '1/0'
         }, 'request')
         program.emit('message', {})
         program.emit('message', {
-            module: 'prolific',
-            method: 'monitor'
+            module: 'descendent',
+            name: 'prolific:pipe',
+            to: [],
+            path: [ 0, 1 ],
+            body: true
         }, new stream.PassThrough)
     }
     program.pid = 1
     var net = {
         Socket: function (options) {
-            assert(options, { fd: 3 }, 'socket')
+            okay(options, { fd: 3 }, 'socket')
         }
     }
     function Shuttle () {

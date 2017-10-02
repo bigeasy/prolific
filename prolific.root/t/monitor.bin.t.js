@@ -1,6 +1,6 @@
 require('proof')(2, require('cadence')(prove))
 
-function prove (async, assert) {
+function prove (async, okay) {
     var monitor = require('../monitor.bin')
     var path = require('path')
 
@@ -28,15 +28,25 @@ function prove (async, assert) {
                 })
             },
             send: function (message) {
-                assert(message, { module: 'prolific', method: 'ready' }, 'message')
+                var pid = message.path[0]
+                message.path[0] = 1
+                okay(message, {
+                    module: 'descendent',
+                    name: 'prolific:ready',
+                    to: 0,
+                    path: [ 1 ],
+                    body: true
+                }, 'message')
                 program.emit('message', {
-                    module: 'prolific',
-                    method: 'chunk',
+                    module: 'descendent',
+                    name: 'prolific:chunk',
+                    to: [],
+                    path: [ 1, pid ],
                     body: { eos: true }
                 })
             }
         }, async())
     }, function (code) {
-        assert(code, 0, 'ran')
+        okay(code, 0, 'ran')
     })
 }
