@@ -21,7 +21,7 @@
     "dependencies":
     {
                             "abend":                        "1.0.x",
-                            "arguable":                     "5.0.x",
+                            "arguable":                     "6.0.x",
                             "cadence":                      "1.0.x",
                             "delta":                        "1.2.x",
                             "prolific.sender.stream":       "3.0.x",
