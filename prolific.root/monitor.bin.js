@@ -30,7 +30,7 @@ require('arguable')(module, require('cadence')(function (async, program) {
     program.on('shutdown', destructible.destroy.bind(destructible))
 
     var descendent = new Descendent(program)
-    destructible.addDestructor('descendent', descendent, 'destroy')
+    destructible.addDestructor('descendent', descendent, 'decrement')
 
     var configuration = JSON.parse(program.env.PROLIFIC_CONFIGURATION)
     var pipeline = new Pipeline(configuration)
@@ -42,6 +42,7 @@ require('arguable')(module, require('cadence')(function (async, program) {
     descendent.on('prolific:chunk', function (from, chunk) {
         asynchronous.consume(chunk)
         destructible.destroy()
+        descendent.decrement()
     })
 
     async(function () {

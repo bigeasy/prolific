@@ -141,7 +141,7 @@ var siblings = cadence(function (async, program, inheritance, configuration, arg
     program.on('shutdown', destructible.destroy.bind(destructible))
 
     var descendent = new Descendent(program)
-    destructible.addDestructor('descendent', descendent, 'destroy')
+    destructible.addDestructor('descendent', descendent, 'decrement')
 
     var child = children.spawn(argv.shift(), argv, { stdio: inheritance.stdio })
     // TODO Maybe have something to call to notify of failure to finish.
@@ -173,10 +173,13 @@ var siblings = cadence(function (async, program, inheritance, configuration, arg
         destructible.completed.wait(async())
     })
 
+    var chunks = 0
     descendent.on('prolific:ready', function (from, cookie) {
+        descendent.increment()
         synchronous.addConsumer(cookie.pid, {
             consume: function (chunk) {
                 descendent.down([ cookie.monitor.pid ], 'prolific:chunk', chunk)
+                descendent.decrement()
             }
         })
         descendent.down(cookie.from, 'prolific:pipe', true, cookie.monitor.stdio[3])
