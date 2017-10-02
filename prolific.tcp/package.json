@@ -27,7 +27,7 @@
                             "delta":                        "1.2.x",
                             "prolific.stringify":           "3.0.x",
                             "server-destroy":               "1.0.1",
-                            "staccato":                     "3.0.x",
+                            "staccato":                     "5.0.x",
                             "turnstile":                    "3.2.x"
     },
     "devDependencies":
