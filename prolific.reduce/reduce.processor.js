@@ -2,38 +2,20 @@ var url = require('url')
 var Cache = require('magazine')
 var noop = require('nop')
 
+var Evaluator = require('prolific.evaluator')
+
 var coalesce = require('extant')
-
-var LEVEL = {
-    trace: 0,
-    debug: 0,
-    info: 1,
-    warn: 3,
-    error: 4
-// TODO: Fatal.
-}
-
-function createFunction (source) {
-    return new Function(
-        '$', '$qualifier', '$level', 'ERROR', 'WARN', 'INFO', 'DEBUG', 'TRACE', '$gathered',
-        'return ' + source
-    )
-}
-
-function invokeFunction (f, entry) {
-    return f.call(null, entry.json, entry.qualifier, entry.level, 4, 3, 2, 1, 0, 0, coalesce(entry.$gathered))
-}
 
 function Processor (parameters, next, options) {
     options || (options = {})
     this._timeout = coalesce(options.timeout, 30000)
     this._delay = coalesce(options.delay, 5000)
-    this._pivot = createFunction(parameters.pivot)
-    this._end = createFunction(parameters.end)
+    this._pivot = Evaluator.create(parameters.pivot)
+    this._end = Evaluator.create('$gathered', parameters.end)
     this._calculations = parameters.calculate.forEach(function (calculate) {
-        return createFunction(calculate)
+        return Evaluator.create('$gathered', calculate)
     })
-    this._gather = parameters.gather && createFunction(parameters.gather)
+    this._gather = parameters.gather && Evaluator.create(parameters.gather)
     this._building = new Cache().createMagazine()
     this._sending = new Cache().createMagazine()
     this._next = next
@@ -45,7 +27,7 @@ Processor.prototype.process = function (entry) {
     this._maybeSend(this._sending, Date.now() - this._delay)
     this._maybeSend(this._building, Date.now() - this._timeout)
 
-    var pivot = invokeFunction(this._pivot, entry)
+    var pivot = this._pivot.call(null, entry)
     if (pivot == null) {
         this._next.process(entry)
     } else {
@@ -59,7 +41,7 @@ Processor.prototype.process = function (entry) {
                 }
             }
         }
-        var gathered = invokeFunction(coalesce(this._gather, noop), entry)
+        var gathered = coalesce(this._gather, noop)(entry)
         if (gathered != null) {
             got.entry.json.$gathered.push(gathered)
         }
@@ -68,7 +50,7 @@ Processor.prototype.process = function (entry) {
                 got.entry.json[key] = entry.json[key]
             }
         }
-        if (invokeFunction(this._end, got.entry)) {
+        if (this._end.call(null, got.entry, coalesce(got.entry.json.$gathered))) {
             this._sending.put(pivot, got)
             this._building.remove(pivot)
         }
