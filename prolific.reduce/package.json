@@ -22,10 +22,10 @@
     {
                             "arguable":                     "5.2.x",
                             "cadence":                      "1.0.x",
-                            "nop":                          "1.0.0",
-                            "prolific.evaluator":           "0.0.x",
+                            "extant":                       "1.0.x",
                             "magazine":                     "3.0.x",
-                            "extant":                       "1.0.x"
+                            "nop":                          "1.0.0",
+                            "prolific.evaluator":           "0.0.x"
     },
     "devDependencies":
     {
