@@ -136,7 +136,7 @@ var direct = cadence(function (async, program, inheritance, configuration, argv)
     })
 })
 
-var siblings = cadence(function (async, program, inheritance, configuration, argv) {
+var parallel = cadence(function (async, program, inheritance, configuration, argv) {
     var destructible = new Destructible('prolific')
     program.on('shutdown', destructible.destroy.bind(destructible))
 
@@ -225,7 +225,7 @@ require('arguable')(module, require('cadence')(function (async, program) {
         if (program.ultimate.single) {
             direct(program, inheritance, configuration, argv, async())
         } else {
-            siblings(program, inheritance, configuration, argv, async())
+            parallel(program, inheritance, configuration, argv, async())
         }
     })
 }))
