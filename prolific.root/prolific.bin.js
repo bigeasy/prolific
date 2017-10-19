@@ -5,7 +5,7 @@
     usage: prolific <pipeline> <program>
 
         -i, --inherit   <number>        file handles to inherit
-        -s, --siblings                  run monitors as siblings
+        -s, --single                    with a single direct child
         -I, --ipc                       enable Node.js IPC forwarding
             --configuration <string>    base configuration JSON or environment variable
             --help                      display this message
@@ -209,9 +209,7 @@ var siblings = cadence(function (async, program, inheritance, configuration, arg
 require('arguable')(module, require('cadence')(function (async, program) {
     var configure = require('./configure')
 
-    if (program.ultimate.siblings) {
-        program.ultimate.ipc = true
-    }
+    program.ultimate.ipc = !program.ultimate.single
 
     program.helpIf(program.ultimate.help)
 
@@ -219,15 +217,15 @@ require('arguable')(module, require('cadence')(function (async, program) {
 
     // TODO `inherit` skips write fd if cluster
     var inheritance = inherit(program)
-    configuration.fd = program.ultimate.siblings ? 'IPC' : inheritance.fd
+    configuration.fd = program.ultimate.single ? inheritance.fd : 'IPC'
     async(function () {
         Pipeline.parse(program, configuration, async())
     }, function (configuration, argv) {
         process.env.PROLIFIC_CONFIGURATION = JSON.stringify(configuration)
-        if (program.ultimate.siblings) {
-            siblings(program, inheritance, configuration, argv, async())
-        } else {
+        if (program.ultimate.single) {
             direct(program, inheritance, configuration, argv, async())
+        } else {
+            siblings(program, inheritance, configuration, argv, async())
         }
     })
 }))
