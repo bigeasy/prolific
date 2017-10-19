@@ -5,6 +5,9 @@
         -u, --url <string>
             The URL of the logging destination.
 
+        -s, --select <string>
+            The path to get the URL of the logging destination.
+
         --help
             Display this message.
     ___ . ___

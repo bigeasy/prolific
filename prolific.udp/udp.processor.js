@@ -7,25 +7,42 @@ var cadence = require('cadence')
 var Turnstile = require('turnstile')
 Turnstile.Queue = require('turnstile/queue')
 
+var Evaluator = require('prolific.evaluator')
+
+var host = require('./host')
+
 function Processor (parameters, next) {
     this._processing = new Turnstile.Queue(this, '_process', new Turnstile)
-    this.url = url.parse(parameters.url)
+    if (parameters.url != null) {
+        var parsed = host(parameters.url)
+        this._select = function () { return parsed }
+    } else {
+        var select = Evaluator.create(parameters.select)
+        this._select = function (entry) { return host(select(entry)) }
+    }
     this._next = next
 }
 
 Processor.prototype.open = function (callback) { callback() }
 
 Processor.prototype.process = function (entry) {
-    this._processing.push(stringify(entry))
+    var server = this._select.call(null, entry)
+    if (server != null) {
+        this._processing.push({
+            server: server,
+            stringified: stringify(entry)
+        })
+    }
     this._next.process(entry)
 }
 
 Processor.prototype._process = cadence(function (async, envelope) {
-    var line = envelope.body
     var client = dgram.createSocket('udp4')
+    var body = envelope.body
     async(function () {
-        var buffer = new Buffer(line)
-        client.send(buffer, 0, buffer.length, this.url.port, this.url.hostname, Processor.youHaveGotToBeKiddingMe(async()))
+        var buffer = new Buffer(body.stringified)
+        var server = body.server
+        client.send(buffer, 0, buffer.length, server.port, server.hostname, Processor.youHaveGotToBeKiddingMe(async()))
     }, function () {
 // ACHTUNG Node.js 0.10 does not accept a callback to `close()`, you must set a handler.
         delta(async()).ee(client).on('close')
