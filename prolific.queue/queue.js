@@ -46,38 +46,34 @@ Queue.prototype._chunkEntries = function () {
     this._chunks.push(new Chunk(this._pid, this._chunkNumber++, buffer, buffer.length))
 }
 
-Queue.prototype._checkTerminated = function () {
-    if (this._closed) {
-        throw new Error('prolific.queue#closed')
-    }
-}
+// Flush logs to the dedicated logging pipe. Chunks entries so that we can send
+// many lines in a single chunk. Then writes. When it comes back from a write it
+// checks to see if the pipe has ended and breaks early, otherwise it continues
+// until there are no lines or chunks to flush.
 
+//
 Queue.prototype.flush = cadence(function (async) {
-    async([function () {
-        var loop = async(function () {
-            this._checkTerminated()
+    var loop = async(function () {
+        if (this._chunks.length == 0) {
+            this._chunkEntries()
             if (this._chunks.length == 0) {
-                this._chunkEntries()
-                if (this._chunks.length == 0) {
-                    this._writing = false
-                    return [ loop.break ]
-                }
+                this._writing = false
+                return [ loop.break ]
             }
-            var chunk = this._chunks[0]
-            async(function () {
-                this._checkTerminated()
-                this._stream.write(Buffer.concat([
-                    chunk.header(this._previousChecksum), chunk.buffer
-                ]), async())
-            }, function () {
-                this._checkTerminated()
-                this._previousChecksum = chunk.checksum
-                this._chunks.shift()
-            })
-        })()
-    }, rescue(/^prolific.queue#closed$/, function () {
-        this.exit(async())
-    })])
+        }
+        var chunk = this._chunks[0]
+        async(function () {
+            this._stream.write(Buffer.concat([
+                chunk.header(this._previousChecksum), chunk.buffer
+            ]), async())
+        }, function () {
+            if (this._closed) {
+                return [ loop.break ]
+            }
+            this._previousChecksum = chunk.checksum
+            this._chunks.shift()
+        })
+    })()
 })
 
 // Necessary for uncaught exception when the default shutdown hooks in Node.js
@@ -88,13 +84,41 @@ Queue.prototype.flush = cadence(function (async) {
 // write, then you will not flush STDERR.
 
 // Put this note somewhere where you'll not delete it.
+
+// Close will close the logging pipe. We will continue logging to STDERR until
+// the `exit` function is called. We set an `uncaughtException` and `exit`
+// handler in Prolific Shuttle to call `Queue.exit`. `Queue.exit` will write an
+// end of stream indicator to the log. Both the `uncaughtException` and `exit`
+// events indicate that that is the end of user code, this is the last time the
+// program will be called. `exit` because that's what it signals.
+// `uncaughtException` because we retrown the reported uncaught exception.
+
+// Note that if you decided to call close and then run the program for a while
+// you're going to leak memory because STDERR logging will not be flushed until
+// `Queue.exit` is called. The STDERR logging is intended to capture a few final
+// logging messages between the initiation of program shutdown and actual exit
+// as well as any buffered and unflushed logs that didn't make it out the
+// dedicated logging pipe.
+
+//
 Queue.prototype.close = function () {
     if (!this._closed) {
         this._closed = true
+        this._writing = true
         this._stream.end()
     }
 }
 
+// Called by the Prolific Shuttle `uncaughtException` and `exit` handlers. Those
+// handlers indicate the end of the program, no other iterations of the event
+// loop. That's what the `exit` event means. The `uncaughtException` event
+// will short-circuit the `exit` event. We rethrow the reported uncaught
+// exception and Node.js exits immediately with no `exit` event.
+
+// Because this is the last event loop we can write an end of stream indicator.
+// This will let our monitor know that it can terminate.
+
+//
 Queue.prototype.exit = function () {
     if (this._terminated) {
         return

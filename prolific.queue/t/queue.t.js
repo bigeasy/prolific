@@ -21,6 +21,10 @@ function prove (async, assert) {
     }
     async(function () {
         queue = new Queue(1, new stream.PassThrough)
+        queue.close()
+        queue.setPipe(writable)
+    }, function () {
+        queue = new Queue(1, new stream.PassThrough)
         queue.setPipe(writable)
         queue.push(1)
         queue.push(2)
