@@ -179,7 +179,9 @@ var parallel = cadence(function (async, program, inheritance, configuration, arg
         synchronous.addConsumer(cookie.pid, {
             consume: function (chunk) {
                 descendent.down([ cookie.monitor.pid ], 'prolific:chunk', chunk)
-                descendent.decrement()
+                if (chunk.eos) {
+                    descendent.decrement()
+                }
             }
         })
         descendent.down(cookie.from, 'prolific:pipe', true, cookie.monitor.stdio[3])
