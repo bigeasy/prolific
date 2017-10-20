@@ -40,8 +40,10 @@ require('arguable')(module, require('cadence')(function (async, program) {
 
     descendent.on('prolific:chunk', function (from, chunk) {
         asynchronous.consume(chunk)
-        destructible.destroy()
-        descendent.decrement()
+        if (chunk.eos) {
+            destructible.destroy()
+            descendent.decrement()
+        }
     })
 
     async(function () {
