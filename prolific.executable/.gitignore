@@ -1,5 +1,5 @@
 /node_modules/*
-!/prolific.root/node_modules/prolific.configure.js
-!/prolific.root/node_modules/prolific.test
+!/node_modules/prolific.configure.js
+!/node_modules/prolific.test
 /.proof.out
 /coverage
