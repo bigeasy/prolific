@@ -8,9 +8,6 @@
         -c, --calculate <string>
             A calculated value to add to the record at the end of collection.
 
-        -g, --gather <string>
-            An action to perform on each incoming record.
-
         -p, --pivot <string>
             A generated key to pivot upon.
 
@@ -31,7 +28,6 @@ require('arguable')(module, require('cadence')(function (async, program) {
         qualified: program.ultimate.qualified,
         pivot: program.ultimate.pivot,
         calculate: program.grouped.calculate,
-        gather: program.grouped.gather,
         end: program.ultimate.end,
         timeout: coalesce(program.ultimate.timeout, '30000')
     }

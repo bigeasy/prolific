@@ -16,7 +16,7 @@ function prove (okay, callback) {
                         end: 1,
                         ended: true,
                         qualified: 'prolific.example#start',
-                        $gathered: [ 'prolific.example#start', 'prolific.example#end' ]
+                        array: [ 'a', 'b' ]
                     }
                 }, {
                     json: {
@@ -30,8 +30,7 @@ function prove (okay, callback) {
     var processor = new Processor({
         pivot: '$.instance',
         end: '$.ended',
-        calculate: [ '$.duration = $.end - $.start' ],
-        gather: '$.qualified'
+        calculate: [ '$.duration = $.end - $.start' ]
     }, sink, { delay: 250 })
 
     processor.open(function () {})
@@ -42,7 +41,8 @@ function prove (okay, callback) {
         json: {
             instance: 1,
             start: 0,
-            qualified: 'prolific.example#start'
+            qualified: 'prolific.example#start',
+            array: [ 'a' ]
         }
     })
     processor.process({
@@ -51,7 +51,8 @@ function prove (okay, callback) {
             start: 1,
             end: 1,
             ended: true,
-            qualified: 'prolific.example#end'
+            qualified: 'prolific.example#end',
+            array: [ 'b' ]
         }
     })
 
