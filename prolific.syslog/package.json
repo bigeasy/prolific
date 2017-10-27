@@ -21,7 +21,8 @@
     "dependencies":
     {
                             "arguable":                     "6.0.x",
-                            "cadence":                      "1.0.x"
+                            "cadence":                      "1.0.x",
+                            "extant":                       "1.0.x"
     },
     "devDependencies":
     {

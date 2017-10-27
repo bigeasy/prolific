@@ -11,8 +11,7 @@ function prove (assert) {
     }
     var processor = new Processor({
         application: 'a',
-        host: 'h',
-        pid: 0,
+        hostname: 'h',
         serializer: 'json',
         Date: { now: function () { return 0 } }
     }, sink)
@@ -22,6 +21,7 @@ function prove (assert) {
         level: 4,
         json: {
             when: 0,
+            pid: 0,
             sequence: 0,
             level: 'error',
             context: 'hello.world',
@@ -31,6 +31,6 @@ function prove (assert) {
         formatted: []
     })
     assert(sink.gathered[0].formatted.shift(),
-        '<132>1 1970-01-01T00:00:00.000Z h a 0 - - {"when":0,"sequence":0,"level":"error","context":"hello.world","name":"greeting","a":1,"b":3}\n', 'format')
+        '<132>1 1970-01-01T00:00:00.000Z h a 0 - - {"sequence":0,"level":"error","context":"hello.world","name":"greeting","a":1,"b":3}\n', 'format')
     processor.close(function () {})
 }

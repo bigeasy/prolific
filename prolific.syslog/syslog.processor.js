@@ -1,4 +1,5 @@
 var url = require('url')
+var coalesce = require('extant')
 
 var FACILITY = {
     kern: 0,
@@ -37,11 +38,9 @@ var LEVEL = {
 
 function Processor (parameters, next) {
     this._format = parameters.format || 'json'
-    var application = parameters.application || process.title
-    var host = parameters.host || 'localhost'
-    var pid = parameters.pid == null ? 'pid' : parameters.pid
+    this._application = parameters.application || process.title
+    this._hostname = parameters.hostname || 'localhost'
     this._facility = FACILITY[parameters.facility || 'local0']
-    this._context = host + ' ' + application + ' ' + pid + ' - - '
     this._serializer = parameters.serializer ? require(parameters.serializer) : JSON
     this._Date = parameters.Date || Date
     this._next = next
@@ -50,11 +49,22 @@ function Processor (parameters, next) {
 Processor.prototype.open = function (callback) { callback() }
 
 Processor.prototype.process = function (entry) {
-    var json = entry.json
-    entry.formatted.push('<' + (this._facility * 8 + entry.level) + '>1 ' +
-        new Date(json.when).toISOString() + ' ' +
-        this._context +
-        this._serializer.stringify(json) + '\n')
+    var json = entry.json, pid = json.pid, when = json.when
+    delete json.when
+    delete json.pid
+    var line = [
+        '<' + (this._facility * 8 + entry.level) + '>1',
+        new Date(when).toISOString(),
+        this._hostname,
+        this._application,
+        coalesce(pid, '-'),
+        '-',
+        '-',
+        this._serializer.stringify(json)
+    ]
+    json.when = when
+    json.pid = pid
+    entry.formatted.push(line.join(' ') + '\n')
     this._next.process(entry)
 }
 
