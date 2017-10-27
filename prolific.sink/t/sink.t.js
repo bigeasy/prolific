@@ -9,6 +9,7 @@ function prove (assert) {
             assert(json, {
                 when: 0,
                 sequence: 0,
+                pid: process.pid,
                 level: 'error',
                 name: 'greeting',
                 qualifier: 'hello',

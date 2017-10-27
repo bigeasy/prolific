@@ -38,6 +38,7 @@ exports.json = function (path, level, qualifier, name, properties) {
     var entry = {
         when: exports.Date.now(),
         sequence: sequence++,
+        pid: process.pid,
         level: level,
         qualifier: qualifier,
         name: name,
