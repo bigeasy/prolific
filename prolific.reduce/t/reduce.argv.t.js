@@ -7,7 +7,6 @@ function prove (async, assert) {
         argv([
             '--qualified', 'application#request',
             '--calculate', '$.duration = $.end - $.start',
-            '--gather', '$.records.push($$.qualified)',
             '--pivot', '$.instance',
             '--end', '$.end',
             '--timeout', '10000'
@@ -18,7 +17,6 @@ function prove (async, assert) {
             parameters: {
                 qualified: 'application#request',
                 calculate: [ '$.duration = $.end - $.start' ],
-                gather: [ '$.records.push($$.qualified)' ],
                 pivot: '$.instance',
                 end: '$.end',
                 timeout: '10000'
