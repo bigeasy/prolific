@@ -17,4 +17,6 @@ function prove (assert) {
         console.log(error.stack)
         assert(error.message, 'hello', 'thrown')
     }
+    var pipe = new stream.PassThrough
+    shuttle.setPipe(pipe, pipe)
 }
