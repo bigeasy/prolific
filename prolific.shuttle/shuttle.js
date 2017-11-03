@@ -3,10 +3,10 @@ var createUncaughtExceptionHandler = require('./uncaught')
 var abend = require('abend')
 var assert = require('assert')
 
-function Shuttle (pid, sync, uncaught) {
-    assert(arguments.length == 3)
+function Shuttle (pid, sync, uncaught, descendent) {
     this.queue = new Queue(pid, sync)
     this.uncaught = createUncaughtExceptionHandler(uncaught)
+    this._descendent = descendent
 }
 
 Shuttle.prototype.uncaughtException = function (error) {
@@ -16,6 +16,7 @@ Shuttle.prototype.uncaughtException = function (error) {
 }
 
 Shuttle.prototype.close = function () {
+    this._descendent.destroy()
     this.queue.close()
 }
 
