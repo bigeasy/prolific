@@ -35,10 +35,9 @@
 <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">Logger</span> (<span class="hljs-params">qualifier</span>) </span>{
     <span class="hljs-keyword">this</span>.qualifier = qualifier
     <span class="hljs-keyword">this</span>._path = (<span class="hljs-string">'.'</span> + qualifier).split(<span class="hljs-string">'.'</span>)
-    <span class="hljs-keyword">this</span>.log = <span class="hljs-keyword">this</span>._log.bind(<span class="hljs-keyword">this</span>)
 }
 
-Logger.prototype._log = <span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params">level, name, properties</span>) </span>{
+Logger.prototype.log = <span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params">level, name, properties</span>) </span>{
     sink.json(<span class="hljs-keyword">this</span>._path, level, <span class="hljs-keyword">this</span>.qualifier, name, properties)
 }
 
@@ -50,7 +49,7 @@ Logger.prototype.concat = <span class="hljs-function"><span class="hljs-keyword"
             object[key] = properties[key]
         }
     }
-    <span class="hljs-keyword">this</span>[level](name, properties)
+    sink.json(<span class="hljs-keyword">this</span>._path, level, <span class="hljs-keyword">this</span>.qualifier, name, properties)
 }
 
 ; [ <span class="hljs-string">'error'</span>, <span class="hljs-string">'warn'</span>, <span class="hljs-string">'info'</span>, <span class="hljs-string">'debug'</span>, <span class="hljs-string">'trace'</span> ].forEach(<span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params">level</span>) </span>{
