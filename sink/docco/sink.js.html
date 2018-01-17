@@ -197,6 +197,7 @@ find more use for it.</p>
     <span class="hljs-keyword">var</span> entry = {
         <span class="hljs-attr">when</span>: exports.Date.now(),
         <span class="hljs-attr">sequence</span>: sequence++,
+        <span class="hljs-attr">pid</span>: process.pid,
         <span class="hljs-attr">level</span>: level,
         <span class="hljs-attr">qualifier</span>: qualifier,
         <span class="hljs-attr">name</span>: name,
@@ -230,10 +231,10 @@ never happen, and a simple decorator could do that anyway.</p>
 
             </div>
 
-            <div class="content"><div class='highlight'><pre>    <span class="hljs-keyword">this</span>.writer.write(<span class="hljs-keyword">new</span> Buffer(<span class="hljs-built_in">JSON</span>.stringify(entry) + <span class="hljs-string">'\n'</span>))
+            <div class="content"><div class='highlight'><pre>    <span class="hljs-keyword">this</span>.queue.push(entry)
 }
 
-exports.writer = { <span class="hljs-attr">write</span>: <span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params"></span>) </span>{} }
+exports.queue = { <span class="hljs-attr">push</span>: <span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params"></span>) </span>{} }
 
 exports.setLevel = <span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params">path, level</span>) </span>{
     <span class="hljs-keyword">if</span> (level == <span class="hljs-literal">null</span>) {
