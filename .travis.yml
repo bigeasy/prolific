@@ -13,7 +13,7 @@ branches:
     - travis-ci
 
 install:
-  - for dir in prolific.*; do (cd $dir && npm install); done
-  - npm install --no-shrinkwrap
-  - npm install -g --no-shrinkwrap istanbul coveralls
+  - for dir in prolific.*; do (cd $dir && npm install --no-save --no-package-lock); done
+  - npm install --no-save --no-package-lock
+  - npm install -g istanbul coveralls
   - git checkout .
