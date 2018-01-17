@@ -15,5 +15,5 @@ branches:
 install:
   - for dir in prolific.*; do (cd $dir && npm install); done
   - npm install --no-shrinkwrap
-  - npm install --no-shrinkwrap istanbul coveralls
+  - npm install -g --no-shrinkwrap istanbul coveralls
   - git checkout .
