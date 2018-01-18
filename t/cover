@@ -2,7 +2,7 @@
 
 set -e
 
-if which istanbul > /dev/null; then
+if ! which istanbul > /dev/null; then
     cat << EOF 1>&2
 
 Istanbul is required to run coverage. Install Istanbul:
