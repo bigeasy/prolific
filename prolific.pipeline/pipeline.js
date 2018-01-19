@@ -1,3 +1,4 @@
+var assert = require('assert')
 var cadence = require('cadence')
 var commandable = require('./commandable')
 
@@ -43,9 +44,8 @@ Pipeline.parse = cadence(function (async, program, configuration) {
         async(function () {
             parser(argv, {}, configuration, async())
         }, function (processor) {
-            if (processor.moduleName) {
-                configuration.processors.push(processor)
-            }
+            assert(processor) // TODO Temporary.
+            configuration.processors.push(processor)
             argv = processor.argv
             terminal = processor.terminal
         })
