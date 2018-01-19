@@ -12,6 +12,8 @@ function prove (async, assert) {
         }, {
             name: 'count',
             value: 'messages'
+        }, {
+            name: 'steve'
         }]
     })
     assert(processor, 'required')

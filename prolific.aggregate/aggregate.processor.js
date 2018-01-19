@@ -1,3 +1,4 @@
+var coalesce = require('extant')
 var cadence = require('cadence')
 var Logger = require('prolific.logger')
 
@@ -14,7 +15,7 @@ function Processor (parameters) {
     this._duration = +(parameters.duration || 60000)
     this._operations = []
     this._timer = null
-    var out = (parameters.out || 'prolific.aggregate#summary').split('#')
+    var out = coalesce(parameters.out, 'prolific.aggregate#summary').split('#')
     this._out = {
         logger: Logger.createLogger(out[0]),
         name: out[1]
