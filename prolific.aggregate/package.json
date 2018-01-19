@@ -1,6 +1,6 @@
 {
     "name":                 "prolific.aggregate",
-    "version":              "9.9.10",
+    "version":              "9.10.0",
     "description":
 
       "Create aggregate log entries from existing log entries.",
