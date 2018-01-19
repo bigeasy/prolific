@@ -1,7 +1,7 @@
 var sprintf = require('sprintf-js').sprintf
 
 function Processor (parameters, next) {
-    this._format = parameters.format || 'json'
+    this._format = parameters.format
     this._extractors = parameters.extractors.map(function (source) {
         return new Function('$', 'return ' + source)
     })
