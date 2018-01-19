@@ -1,6 +1,6 @@
-require('proof')(3, prove)
+require('proof')(4, prove)
 
-function prove (okay) {
+function prove (okay, callback) {
     var stream = require('stream')
     var Synchronous = require('../synchronous')
     var Chunk = require('prolific.chunk')
@@ -12,7 +12,10 @@ function prove (okay) {
     var forward = new stream.PassThrough
     var synchronous = new Synchronous
 
-    synchronous.listen(through, forward, abend)
+    synchronous.listen(through, forward, function (error) {
+        okay(! error, 'listen exit okay')
+        callback()
+    })
 
     through.write('hello, world\n')
 
@@ -56,6 +59,8 @@ function prove (okay) {
     chunk = new Chunk(1, 3, new Buffer(''), 0)
     chunk.checksum = 'aaaaaaaa'
     write(through, chunk, previousChecksum)
+
+    through.end()
 
     function write (writable, chunk, previousChecksum) {
         writable.write(chunk.header(previousChecksum))
