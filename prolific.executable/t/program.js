@@ -4,4 +4,7 @@ if (process.send) {
     process.send({})
 }
 process.stderr.write(JSON.stringify(process.env) + '\n')
-setTimeout(function () { shuttle.close() }, 250)
+setTimeout(function () {
+    logger.info('foo', {})
+    shuttle.close()
+}, 250)

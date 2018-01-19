@@ -42,6 +42,16 @@ function prove (async, okay) {
                     name: 'prolific:chunk',
                     to: [],
                     path: [ 1, pid ],
+                    body: {
+                        eos: false,
+                        buffer: ''
+                    }
+                })
+                program.emit('message', {
+                    module: 'descendent',
+                    name: 'prolific:chunk',
+                    to: [],
+                    path: [ 1, pid ],
                     body: { eos: true }
                 })
             }
