@@ -10,7 +10,7 @@ function prove (async, okay) {
     })
     async(function () {
         Pipeline.parse({
-            argv: [ 'test', '--key', 'x', 'program' ],
+            argv: [ 'configure', 'test', '--key', 'x', 'program' ],
             assert: function () {}
         }, {
             processors: []
@@ -22,6 +22,7 @@ function prove (async, okay) {
             terminal: terminal
         }, {
             configuration: {
+                configured: true,
                 processors: [{
                     moduleName: 'prolific.test/test.processor',
                     parameters: { params: { key: 'x' } },

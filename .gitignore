@@ -4,6 +4,7 @@
 /*/node_modules/*
 !/prolific.tee/node_modules/prolific.test
 !/prolific.pipeline/node_modules/prolific.test
+!/prolific.pipeline/node_modules/prolific.configure.js
 !/prolific.executable/node_modules/prolific.configure.js
 !/prolific.executable/node_modules/prolific.test
 !/prolific.supervisor/node_modules/prolific.test.js

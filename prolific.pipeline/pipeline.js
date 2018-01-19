@@ -44,8 +44,9 @@ Pipeline.parse = cadence(function (async, program, configuration) {
         async(function () {
             parser(argv, {}, configuration, async())
         }, function (processor) {
-            assert(processor.moduleName) // TODO Temporary.
-            configuration.processors.push(processor)
+            if (processor.moduleName) {
+                configuration.processors.push(processor)
+            }
             argv = processor.argv
             terminal = processor.terminal
         })
