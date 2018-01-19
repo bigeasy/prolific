@@ -1,6 +1,6 @@
 require('proof')(3, prove)
 
-function prove (assert) {
+function prove (okay) {
     var stream = require('stream')
     var Synchronous = require('../synchronous')
     var Chunk = require('prolific.chunk')
@@ -32,7 +32,7 @@ function prove (assert) {
     chunk = new Chunk(1, 1, buffer, buffer.length)
     write(through, chunk, previousChecksum)
 
-    assert(forward.read().toString(), 'hello, world\n', 'through')
+    okay(forward.read().toString(), 'hello, world\n', 'through')
 
     var consumer = {
         chunks: [],
@@ -43,14 +43,14 @@ function prove (assert) {
 
     synchronous.addConsumer(1, consumer)
 
-    assert(consumer.chunks.shift().buffer.toString(), 'a\n', 'consumer join')
+    okay(consumer.chunks.shift().buffer.toString(), 'a\n', 'consumer join')
 
     previousChecksum = chunk.checksum
     buffer = new Buffer('b\n')
     chunk = new Chunk(1, 2, buffer, buffer.length)
     write(through, chunk, previousChecksum)
 
-    assert(consumer.chunks.shift().buffer.toString(), 'b\n', 'consumer consume')
+    okay(consumer.chunks.shift().buffer.toString(), 'b\n', 'consumer consume')
 
     previousChecksum = chunk.checksum
     chunk = new Chunk(1, 3, new Buffer(''), 0)
