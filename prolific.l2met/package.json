@@ -1,6 +1,6 @@
 {
     "name":                 "prolific.l2met",
-    "version":              "1.0.0",
+    "version":              "1.0.1",
     "description":
 
       "A filter that formats Prolific entries into l2met entries.",
