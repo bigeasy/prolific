@@ -16,6 +16,7 @@ function prove (okay, callback) {
                         end: 1,
                         ended: true,
                         qualified: 'prolific.example#start',
+                        name: 'steve',
                         array: [ 'a', 'b' ]
                     }
                 }, {
@@ -27,6 +28,11 @@ function prove (okay, callback) {
             }
         }
     }
+    new Processor({
+        pivot: '$.instance',
+        end: '$.ended',
+        calculate: [ '$.duration = $.end - $.start' ]
+    }, sink)
     var processor = new Processor({
         pivot: '$.instance',
         end: '$.ended',
@@ -53,6 +59,13 @@ function prove (okay, callback) {
             ended: true,
             qualified: 'prolific.example#end',
             array: [ 'b' ]
+        }
+    })
+    processor.process({
+        json: {
+            instance: 1,
+            name: 'steve',
+            qualified: 'prolific.example#name'
         }
     })
 
