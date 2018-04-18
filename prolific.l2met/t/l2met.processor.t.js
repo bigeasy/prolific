@@ -11,11 +11,11 @@ function prove (assert) {
     var processor = new Processor({}, sink)
     processor.open(function () {})
     processor.process({
-        json: { name: 'count', l2met: 'count', value: 1, tags: { key: 'value' } },
+        json: { label: 'count', l2met: 'count', value: 1, tags: { key: 'value' } },
         formatted: []
     })
     processor.process({
-        json: { name: 'count', l2met: 'count', value: 1 },
+        json: { label: 'count', l2met: 'count', value: 1 },
         formatted: []
     })
     processor.process({
