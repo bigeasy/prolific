@@ -5,11 +5,11 @@ function Logger (qualifier) {
     this._path = ('.' + qualifier).split('.')
 }
 
-Logger.prototype.log = function (level, name, properties) {
-    sink.json(this._path, level, this.qualifier, name, properties)
+Logger.prototype.log = function (level, label, properties) {
+    sink.json(this._path, level, this.qualifier, label, properties)
 }
 
-Logger.prototype.concat = function (level, name) {
+Logger.prototype.concat = function (level, label) {
     var object = {}
     for (var i = 2, I = arguments.length; i < I; i++) {
         var properties = arguments[i]
@@ -17,12 +17,12 @@ Logger.prototype.concat = function (level, name) {
             object[key] = properties[key]
         }
     }
-    sink.json(this._path, level, this.qualifier, name, properties)
+    sink.json(this._path, level, this.qualifier, label, properties)
 }
 
 ; [ 'error', 'warn', 'info', 'debug', 'trace' ].forEach(function (level) {
-    Logger.prototype[level] = function (name, properties) {
-        sink.json(this._path, level, this.qualifier, name, properties)
+    Logger.prototype[level] = function (label, properties) {
+        sink.json(this._path, level, this.qualifier, label, properties)
     }
 })
 
