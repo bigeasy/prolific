@@ -11,7 +11,7 @@ function prove (assert) {
                 sequence: 0,
                 pid: process.pid,
                 level: 'error',
-                name: 'greeting',
+                label: 'greeting',
                 qualifier: 'hello',
                 qualified: 'hello#greeting',
                 z: 26,

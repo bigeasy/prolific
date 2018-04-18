@@ -31,7 +31,7 @@ exports.Date = Date
 // Accept a log entry and turn it into a JSON object.
 
 //
-exports.json = function (path, level, qualifier, name, properties) {
+exports.json = function (path, level, qualifier, label, properties) {
     if (LEVEL[level] > LEVEL[levels.get(path)]) {
         return
     }
@@ -41,8 +41,8 @@ exports.json = function (path, level, qualifier, name, properties) {
         pid: process.pid,
         level: level,
         qualifier: qualifier,
-        name: name,
-        qualified: qualifier + '#' + name
+        label: label,
+        qualified: qualifier + '#' + label
     }
     for (var key in exports.properties) {
         if (!(key in entry)) {
