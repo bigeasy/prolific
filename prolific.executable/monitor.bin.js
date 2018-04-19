@@ -7,7 +7,7 @@
 
     ___ . ___
 */
-require('arguable')(module, require('cadence')(function (async, program) {
+require('arguable')(module, { properties: { net: require('net') } }, require('cadence')(function (async, program) {
     // Node.js API.
     var assert = require('assert')
 
@@ -60,7 +60,7 @@ require('arguable')(module, require('cadence')(function (async, program) {
     }], function () {
         pipeline.open(async())
     }, function () {
-        var socket = new net.Socket({ fd: 3 })
+        var socket = new program.net.Socket({ fd: 3 })
         destructible.addDestructor('socket', socket, 'destroy')
         asynchronous.listen(socket, destructible.monitor('asynchronous'))
 

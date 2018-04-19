@@ -11,6 +11,15 @@ function prove (async, okay) {
 
     var Chunk = require('prolific.chunk')
 
+    var stream = require('stream')
+    var util = require('util')
+
+    function Socket () {
+        stream.PassThrough.call(this)
+    }
+    util.inherits(Socket, stream.PassThrough)
+
+
     var program
     async(function () {
         program = monitor([], {
@@ -54,7 +63,8 @@ function prove (async, okay) {
                     path: [ 1, pid ],
                     body: { eos: true }
                 })
-            }
+            },
+            properties: { net: { Socket: Socket } }
         }, async())
     }, function (code) {
         okay(code, 0, 'ran')
