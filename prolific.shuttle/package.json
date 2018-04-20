@@ -23,7 +23,7 @@
                             "abend":                        "1.0.x",
                             "descendent":                   "0.0.x",
                             "prolific.queue":               "13.0.x",
-                            "prolific.resolver":            "5.0.x",
+                            "prolific.resolver":            "6.0.x",
                             "prolific.sink":                "4.0.x"
     },
     "devDependencies":
