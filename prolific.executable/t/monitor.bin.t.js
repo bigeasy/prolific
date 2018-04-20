@@ -20,6 +20,9 @@ function prove (async, okay) {
     util.inherits(Socket, stream.PassThrough)
 
 
+    Socket.prototype.destroy = function () {
+    }
+
     var program
     async(function () {
         program = monitor([], {
