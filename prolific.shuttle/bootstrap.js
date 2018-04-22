@@ -22,7 +22,7 @@ exports.createShuttle = function (net, Shuttle, Date) {
                 })
                 descendent.up(0, 'prolific:monitor', pid)
             } else {
-                shuttle = new Shuttle('0', program.stderr, finale)
+                shuttle = new Shuttle('0', program.stderr, finale, new Descendent(program))
                 var pipe = new net.Socket({ fd: configuration.fd  })
                 shuttle.setPipe(pipe, pipe)
             }
