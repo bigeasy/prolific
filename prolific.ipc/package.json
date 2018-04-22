@@ -21,7 +21,7 @@
     "dependencies":
     {
                             "cadence":                      "1.0.x",
-                            "turnstile":                    "3.2.x"
+                            "turnstile":                    "4.1.x"
     },
     "devDependencies":
     {
