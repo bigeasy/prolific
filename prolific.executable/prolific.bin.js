@@ -80,7 +80,7 @@ var direct = cadence(function (async, program, inheritance, configuration, argv)
     }, function () {
         var child = children.spawn(argv.shift(), argv, { stdio: inheritance.stdio })
         ipc(program.ultimate.ipc, process, child)
-        destructible.addDestructor('kill', child, 'kill')
+        destructible.destruct.wait(child, 'kill')
         synchronous.addConsumer('0', asynchronous)
 
         cadence(function (async) {
@@ -141,11 +141,11 @@ var parallel = cadence(function (async, program, inheritance, configuration, arg
     program.on('shutdown', destructible.destroy.bind(destructible))
 
     var descendent = new Descendent(program)
-    destructible.addDestructor('descendent', descendent, 'decrement')
+    destructible.destruct.wait(descendent, 'decrement')
 
     var child = children.spawn(argv.shift(), argv, { stdio: inheritance.stdio })
     // TODO Maybe have something to call to notify of failure to finish.
-    destructible.addDestructor('kill', child, 'kill')
+    destructible.destruct.wait(child, 'kill')
 
     descendent.addChild(child, child)
 
