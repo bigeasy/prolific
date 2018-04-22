@@ -67,7 +67,7 @@ function prove (async, okay) {
                     body: { eos: true }
                 })
             },
-            properties: { net: { Socket: Socket } }
+            attributes: { net: { Socket: Socket } }
         }, async())
     }, function (code) {
         okay(code, 0, 'ran')

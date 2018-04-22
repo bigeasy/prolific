@@ -7,7 +7,7 @@
 
     ___ . ___
 */
-require('arguable')(module, { properties: { net: require('net') } }, require('cadence')(function (async, program) {
+require('arguable')(module, require('cadence')(function (async, program) {
     // Node.js API.
     var assert = require('assert')
 
@@ -34,8 +34,6 @@ require('arguable')(module, { properties: { net: require('net') } }, require('ca
     var configuration = JSON.parse(program.env.PROLIFIC_CONFIGURATION)
     var pipeline = new Pipeline(configuration)
 
-    var net = require('net')
-
     var asynchronous = new Asynchronous(pipeline.processors[0])
 
     descendent.on('prolific:chunk', function (from, chunk) {
@@ -60,7 +58,7 @@ require('arguable')(module, { properties: { net: require('net') } }, require('ca
     }], function () {
         pipeline.open(async())
     }, function () {
-        var socket = new program.net.Socket({ fd: 3 })
+        var socket = new program.attribute.net.Socket({ fd: 3 })
         destructible.addDestructor('socket', socket, 'destroy')
         asynchronous.listen(socket, destructible.monitor('asynchronous'))
 
@@ -68,4 +66,4 @@ require('arguable')(module, { properties: { net: require('net') } }, require('ca
 
         destructible.completed.wait(async())
     })
-}))
+}), { net: require('net') })
