@@ -1,5 +1,5 @@
 var slice = [].slice
-var Turnstile = require('turnstile')
+var Turnstile = require('turnstile/redux')
 Turnstile.Queue = require('turnstile/queue')
 var cadence = require('cadence')
 
