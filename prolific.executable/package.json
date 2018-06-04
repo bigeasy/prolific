@@ -25,7 +25,6 @@
                             "delta":                        "1.2.x",
                             "destructible":                 "0.30.x",
                             "descendent":                   "0.0.x",
-                            "finalist":                     "0.0.x",
                             "prolific.consolidator":        "5.0.x",
                             "prolific.pipeline":            "0.1.x",
                             "prolific.inherit":             "3.2.x",
