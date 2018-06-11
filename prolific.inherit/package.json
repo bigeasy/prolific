@@ -1,6 +1,6 @@
 {
     "name":                 "prolific.inherit",
-    "version":              "4.0.0",
+    "version":              "4.0.1",
     "description":
 
       "Utility to determine which file handles the user wants a child to inherit from its Prolific supervisor.",
