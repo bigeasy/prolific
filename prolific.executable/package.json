@@ -27,7 +27,7 @@
                             "descendent":                   "0.0.x",
                             "prolific.consolidator":        "5.0.x",
                             "prolific.pipeline":            "0.1.x",
-                            "prolific.inherit":             "4.0.x",
+                            "prolific.inherit":             "5.0.x",
                             "prolific.ipc":                 "1.0.x",
                             "rescue":                       "3.2.x",
                             "signal":                       "4.0.x"
