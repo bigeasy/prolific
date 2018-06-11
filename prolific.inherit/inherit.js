@@ -1,6 +1,6 @@
 module.exports = function (program) {
     var seen = {}
-    var stdio = [ 0, 1, 2 ].concat(program.grouped.inherit).map(function (number) {
+    var stdio = [ 0, 1, 2 ].concat(program.arrayed.inherit).map(function (number) {
         if (/^\d+$/.test(number)) {
             return +number
         }
