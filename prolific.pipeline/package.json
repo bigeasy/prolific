@@ -24,7 +24,7 @@
     },
     "devDependencies":
     {
-                            "arguable":                     "6.6.x",
+                            "arguable":                     "6.7.x",
                             "proof":                        "3.0.x"
     },
     "main":                 "pipeline",
