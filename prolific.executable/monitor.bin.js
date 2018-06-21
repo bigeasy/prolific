@@ -58,7 +58,7 @@ require('arguable')(module, require('cadence')(function (async, program) {
     }], function () {
         pipeline.open(async())
     }, function () {
-        var socket = new program.attribute.net.Socket({ fd: 3 })
+        var socket = new program.attributes.net.Socket({ fd: 3 })
         destructible.destruct.wait(socket, 'destroy')
         asynchronous.listen(socket, destructible.monitor('asynchronous'))
 
