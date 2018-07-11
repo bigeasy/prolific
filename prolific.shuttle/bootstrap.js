@@ -16,7 +16,7 @@ exports.createShuttle = function (net, Shuttle, Date) {
                 // it the moment we get our pipe.
                 var descendent = new Descendent(program)
                 shuttle = new Shuttle(pid, program.stderr, finale, descendent)
-                descendent.once('prolific:pipe', function (from, message, handle) {
+                descendent.once('prolific:pipe', function (message, handle) {
                     shuttle.setPipe(handle, handle)
                     descendent.destroy()
                 })

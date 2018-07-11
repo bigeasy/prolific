@@ -9,6 +9,7 @@ function prove (okay) {
     program.send = function (message) {
         okay(message, {
             module: 'descendent',
+            method: 'route',
             name: 'prolific:monitor',
             to: 0,
             path: [ 1 ],
