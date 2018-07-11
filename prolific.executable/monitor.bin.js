@@ -36,9 +36,9 @@ require('arguable')(module, require('cadence')(function (async, program) {
 
     var asynchronous = new Asynchronous(pipeline.processors[0])
 
-    descendent.on('prolific:chunk', function (from, chunk) {
-        asynchronous.consume(chunk)
-        if (chunk.eos) {
+    descendent.on('prolific:chunk', function (chunk) {
+        asynchronous.consume(chunk.body)
+        if (chunk.body.eos) {
             destructible.destroy()
             descendent.decrement()
         }

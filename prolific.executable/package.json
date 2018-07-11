@@ -24,7 +24,7 @@
                             "cadence":                      "1.0.x",
                             "delta":                        "1.4.x",
                             "destructible":                 "0.30.x",
-                            "descendent":                   "0.0.x",
+                            "descendent":                   "0.1.x",
                             "prolific.consolidator":        "5.0.x",
                             "prolific.pipeline":            "0.3.x",
                             "prolific.inherit":             "5.0.x",

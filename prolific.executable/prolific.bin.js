@@ -147,7 +147,7 @@ var parallel = cadence(function (async, program, inheritance, configuration, arg
     // TODO Maybe have something to call to notify of failure to finish.
     destructible.destruct.wait(child, 'kill')
 
-    descendent.addChild(child, child)
+    descendent.addChild(child, null)
 
     var synchronous = new Synchronous(child.stderr, program.stderr)
 
@@ -174,28 +174,30 @@ var parallel = cadence(function (async, program, inheritance, configuration, arg
     })
 
     var chunks = 0
-    descendent.on('prolific:ready', function (from, cookie) {
+    descendent.on('prolific:ready', function (message) {
         descendent.increment()
-        synchronous.addConsumer(cookie.pid, {
+        synchronous.addConsumer(message.cookie.pid, {
             consume: function (chunk) {
-                descendent.down([ cookie.monitor.pid ], 'prolific:chunk', chunk)
+                descendent.down([ message.cookie.monitor ], 'prolific:chunk', chunk)
                 if (chunk.eos) {
                     descendent.decrement()
                 }
             }
         })
-        descendent.down(cookie.from, 'prolific:pipe', true, cookie.monitor.stdio[3])
+        descendent.down(message.cookie.from, 'prolific:pipe', true, monitors[message.cookie.monitor].stdio[3])
     })
 
-    var monitors = 0
-    descendent.on('prolific:monitor', function (from, child, pid) {
+    var monitors = {}
+    descendent.on('prolific:monitor', function (message) {
         var monitor = children.spawn('node', [
             path.join(__dirname, 'monitor.bin.js')
         ], {
             stdio: [ 0, 1, 2, 'pipe', 'ipc' ]
         })
 
-        descendent.addChild(monitor, { monitor: monitor, from: from, pid: pid })
+        monitors[monitor.pid] = monitor
+
+        descendent.addChild(monitor, { monitor: monitor.pid, from: message.path, pid: message.body })
 
         cadence(function (async) {
             async(function () {
@@ -204,7 +206,7 @@ var parallel = cadence(function (async, program, inheritance, configuration, arg
                 assert(signal == 'SIGTERM' || errorCode == 0)
                 return []
             })
-        })(destructible.monitor([ 'monitor', monitors++ ]))
+        })(destructible.monitor([ 'monitor', Object.keys(monitors).length ]))
     })
 })
 

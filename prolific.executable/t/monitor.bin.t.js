@@ -44,6 +44,7 @@ function prove (async, okay) {
                 message.path[0] = 1
                 okay(message, {
                     module: 'descendent',
+                    method: 'route',
                     name: 'prolific:ready',
                     to: 0,
                     path: [ 1 ],
@@ -51,6 +52,7 @@ function prove (async, okay) {
                 }, 'message')
                 program.emit('message', {
                     module: 'descendent',
+                    method: 'route',
                     name: 'prolific:chunk',
                     to: [],
                     path: [ 1, pid ],
@@ -61,6 +63,7 @@ function prove (async, okay) {
                 })
                 program.emit('message', {
                     module: 'descendent',
+                    method: 'route',
                     name: 'prolific:chunk',
                     to: [],
                     path: [ 1, pid ],
