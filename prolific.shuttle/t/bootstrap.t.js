@@ -18,6 +18,7 @@ function prove (okay) {
         program.emit('message', {})
         program.emit('message', {
             module: 'descendent',
+            method: 'route',
             name: 'prolific:pipe',
             to: [],
             path: [ 0, 1 ],
