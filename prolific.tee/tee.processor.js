@@ -3,7 +3,7 @@ var cadence = require('cadence')
 var Pipeline = require('prolific.pipeline')
 
 function Processor (parameters, next) {
-    this._pipeline = new Pipeline(parameters.configuration)
+    this._pipeline = new Pipeline(parameters.pipeline)
     this._next = next
 }
 
@@ -19,5 +19,7 @@ Processor.prototype.process = function (entry) {
 Processor.prototype.close = cadence(function (async) {
     this._pipeline.close(async())
 })
+
+Processor.isProlificProcessor = true
 
 module.exports = Processor

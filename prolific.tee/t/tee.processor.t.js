@@ -1,10 +1,10 @@
 require('proof')(1, require('cadence')(prove))
 
 function prove (async, assert) {
-    var Processor = require('../tee.processor')
+    var Processor = require('..')
     var processed = []
     var processor = new Processor({
-        configuration: { processors: [] }
+        pipeline: []
     }, {
         process: function (entry) {
             processed.push(entry)

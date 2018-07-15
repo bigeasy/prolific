@@ -20,15 +20,14 @@
     },
     "dependencies":
     {
-                            "arguable":                     "6.0.x",
                             "cadence":                      "1.0.x",
-                            "prolific.pipeline":            "0.1.x"
+                            "prolific.pipeline":            "0.4.x"
     },
     "devDependencies":
     {
                             "proof":                        "3.0.x"
     },
-    "main":                 "tee.argv",
+    "main":                 "tee.processor",
     "scripts":
     {
                             "test": "proof test t/*.t.js"
