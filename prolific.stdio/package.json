@@ -29,7 +29,7 @@
     {
                             "proof":                        "3.0.x"
     },
-    "main":                 "stdio.argv",
+    "main":                 "stdio.processor",
     "scripts":
     {
                             "test": "proof test t/*.t.js"
