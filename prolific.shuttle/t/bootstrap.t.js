@@ -1,20 +1,19 @@
-require('proof')(2, prove)
+require('proof')(1, prove)
 
 function prove (okay) {
     var events = require('events')
     var stream = require('stream')
     var bootstrap = require('../bootstrap')
     var program = new events.EventEmitter
-    program.env = { PROLIFIC_CONFIGURATION: JSON.stringify({ levels: [['TRACE']], fd: 3 }) }
     program.send = function (message) {
         okay(message, {
             module: 'descendent',
             method: 'route',
             name: 'prolific:monitor',
-            to: 0,
+            to: 1,
             path: [ 1 ],
             body: '1/0'
-        }, 'request')
+        }, 'monitor')
         program.emit('message', {})
         program.emit('message', {
             module: 'descendent',
@@ -39,8 +38,7 @@ function prove (okay) {
         this.setPipe = function () {}
     }
     var createShuttle = bootstrap.createShuttle(net, Shuttle, { now: function () { return 0 } })
-    createShuttle(program, function () {})
-    program.env = { PROLIFIC_CONFIGURATION: JSON.stringify({ levels: [['TRACE']], fd: 'IPC' }) }
+    program.env = { PROLIFIC_CONFIGURATION: JSON.stringify({ levels: [['TRACE']], pid: 1 }) }
     createShuttle(program, function () {})
     createShuttle({ env: {} }, function () {}).close()
 }

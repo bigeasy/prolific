@@ -10,22 +10,16 @@ exports.createShuttle = function (net, Shuttle, Date) {
 // TODO Maybe delete and internalize?
             var configuration = JSON.parse(program.env.PROLIFIC_CONFIGURATION)
             var shuttle
-            if (configuration.fd == 'IPC') {
-                var pid = program.pid + '/' + Date.now()
-                // If we have to create our own `Descendent`, then we'll destroy
-                // it the moment we get our pipe.
-                var descendent = new Descendent(program)
-                shuttle = new Shuttle(pid, program.stderr, finale, descendent)
-                descendent.once('prolific:pipe', function (message, handle) {
-                    shuttle.setPipe(handle, handle)
-                    descendent.destroy()
-                })
-                descendent.up(0, 'prolific:monitor', pid)
-            } else {
-                shuttle = new Shuttle('0', program.stderr, finale, new Descendent(program))
-                var pipe = new net.Socket({ fd: configuration.fd  })
-                shuttle.setPipe(pipe, pipe)
-            }
+            var pid = program.pid + '/' + Date.now()
+            // If we have to create our own `Descendent`, then we'll destroy
+            // it the moment we get our pipe.
+            var descendent = new Descendent(program)
+            shuttle = new Shuttle(pid, program.stderr, finale, descendent)
+            descendent.once('prolific:pipe', function (message, handle) {
+                shuttle.setPipe(handle, handle)
+                descendent.destroy()
+            })
+            descendent.up(configuration.pid, 'prolific:monitor', pid)
             var sink = require('prolific.resolver').sink
             sink.queue = shuttle.queue
 // TODO Would love to be able to HUP this somehow.
