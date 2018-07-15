@@ -6,7 +6,8 @@ function prove (okay) {
     prolific.Date = { now: function () { return 0 } }
     prolific.properties = { z: 26, when: 0 }
     prolific.json([ '', 'hello' ], 'error', 'hello', 'greeting', { a: 1, when: 0 })
-    prolific.acceptor = new Acceptor(false, [])
+    prolific.queue = []
+    prolific.acceptor = new Acceptor(true, [])
     prolific.json([ '', 'hello' ], 'error', 'hello', 'greeting', { a: 1, when: 0 })
     okay(prolific.queue, [
          [{
