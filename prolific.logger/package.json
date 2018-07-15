@@ -20,7 +20,7 @@
     },
     "dependencies":
     {
-                            "prolific.resolver":            "6.0.x"
+                            "prolific.resolver":            "8.0.x"
     },
     "devDependencies":
     {

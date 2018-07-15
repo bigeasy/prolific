@@ -20,7 +20,7 @@ Logger.prototype.concat = function (level, label) {
     sink.json(this._path, level, this.qualifier, label, properties)
 }
 
-; [ 'error', 'warn', 'info', 'debug', 'trace' ].forEach(function (level) {
+; [ 'panic', 'emerg', 'alert', 'crit', 'err', 'error', 'warning', 'warn', 'notice', 'info', 'debug', 'trace' ].forEach(function (level) {
     Logger.prototype[level] = function (label, properties) {
         sink.json(this._path, level, this.qualifier, label, properties)
     }
