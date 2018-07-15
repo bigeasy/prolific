@@ -2,14 +2,19 @@ var assert = require('assert')
 var cadence = require('cadence')
 
 function Pipeline (pipeline) {
-    var nextProcessor = {
-        process: function () {}
+    var nullProcessor = {
+        open: function (callback) { callback() },
+        process: function () {},
+        close: function (callback) { callback() }
     }
+    var nextProcessor = nullProcessor
     this.processors = pipeline.slice().reverse().map(function (processor) {
         var Processor = require(processor.module)
         assert(Processor.isProlificProcessor, 'not a processor')
         return nextProcessor = new Processor(processor, nextProcessor)
-    }).reverse()
+    })
+    this.processors.unshift(nullProcessor)
+    this.processors.reverse()
     this._opened = []
 }
 
