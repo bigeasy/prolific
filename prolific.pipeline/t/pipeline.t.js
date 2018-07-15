@@ -1,38 +1,12 @@
-require('proof')(2, require('cadence')(prove))
+require('proof')(1, require('cadence')(prove))
 
 function prove (async, okay) {
     var Pipeline = require('..')
-    var pipeline = new Pipeline({
-        processors: [{
-            moduleName: 'prolific.test/test.processor',
-            parameters: {}
-        }]
-    })
+    var pipeline = new Pipeline([{
+        module: 'prolific.test',
+        key: 'x'
+    }])
     async(function () {
-        Pipeline.parse({
-            argv: [ 'configure', 'test', '--key', 'x', 'program' ],
-            assert: function () {}
-        }, {
-            processors: []
-        }, async())
-    }, function (configuration, argv, terminal) {
-        okay({
-            configuration: configuration,
-            argv: argv,
-            terminal: terminal
-        }, {
-            configuration: {
-                configured: true,
-                processors: [{
-                    moduleName: 'prolific.test/test.processor',
-                    parameters: { params: { key: 'x' } },
-                    argv: [ 'program' ],
-                    terminal: false
-                }]
-            },
-            argv: [ 'program' ],
-            terminal: false
-        }, 'parse')
         pipeline.open(async())
     }, function () {
         pipeline.processors[0].process({})
