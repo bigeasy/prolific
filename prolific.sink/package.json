@@ -20,7 +20,7 @@
     },
     "dependencies":
     {
-                            "supersede":                    "1.0.x"
+                            "prolific.accept":              "0.0.x"
     },
     "devDependencies":
     {
