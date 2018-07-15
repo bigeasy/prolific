@@ -4,7 +4,15 @@ if (process.send) {
     process.send({})
 }
 process.stderr.write(JSON.stringify(process.env) + '\n')
-setTimeout(function () {
+if (process.argv[2]) {
+    process.once('SIGTERM', function () {
+        shuttle.close()
+    })
+    // process.once('SIGTERM', function () { process.kill(process.pid) })
     logger.info('foo', {})
-    shuttle.close()
-}, 250)
+} else {
+    setTimeout(function () {
+        logger.info('foo', {})
+        shuttle.close()
+    }, 250)
+}

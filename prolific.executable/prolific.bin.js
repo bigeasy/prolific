@@ -37,12 +37,12 @@ var Destructible = require('destructible')
 // Route messages through a process hierarchy using Node.js IPC.
 var Descendent = require('descendent')
 
+// Exceptions that you can catch by type.
+var interrupt = require('interrupt').createInterrupter('prolific')
+
 // Command line and environment interpretation utilities.
 var inherit = require('prolific.inherit')
 var ipc = require('prolific.ipc')
-
-// Make sense of child exit code.
-var exit = require('./exit')
 
 // Construct a prolific pipeline from a configuration.
 var Pipeline = require('prolific.pipeline')
@@ -53,89 +53,6 @@ var Asynchronous = require('prolific.consolidator/asynchronous')
 
 // TODO Now we require that anyone standing between a root Prolific monitor and
 // a leaf child process use the Descendent library.
-
-// Lots of struggle as I reconsider how to manage errors, return values and the
-// this pointer.
-
-//
-var direct = cadence(function (async, program, inheritance, configuration, argv) {
-    var destructible = new Destructible(5000, 'prolific')
-    program.on('shutdown', destructible.destroy.bind(destructible))
-
-    var pipeline = new Pipeline(configuration)
-    var synchronous = new Synchronous
-    var asynchronous = new Asynchronous(pipeline.processors[0])
-
-    async(function () {
-        destructible.completed.wait(async())
-    }, function (exitCode) {
-        return [ exitCode ]
-    })
-
-    async([function () {
-        destructible.destroy()
-        pipeline.close(async())
-    }], function () {
-        pipeline.open(async())
-    }, function () {
-        var child = children.spawn(argv.shift(), argv, { stdio: inheritance.stdio })
-        ipc(program.ultimate.ipc, process, child)
-        destructible.destruct.wait(child, 'kill')
-        synchronous.addConsumer('0', asynchronous)
-
-        cadence(function (async) {
-            async(function () {
-                delta(async()).ee(child).on('close')
-            }, function (exitCode, signal) {
-                return exit(exitCode, signal)
-            })
-        })(destructible.monitor('child'))
-
-        // No additional destructor. Will close when standard error closes.
-        synchronous.listen(child.stderr, program.stderr, destructible.monitor('synchronous'))
-        // It does not seem likely that you'll get an error out of the child
-        // pipes and if you do, it is uncommon enough that there is not much
-        // more to do for now besides crash. Can't do anything if the
-        // synchronous pipe crashes, so maybe only worry about the asynchronous
-        // pipe. Ah, so, we could just shutdown when we see the asynchronous
-        // pipe error, or maybe even finish for any reason.
-        asynchronous.listen(child.stdio[inheritance.fd], destructible.monitor('asynchronous'))
-
-        // TODO Considered giving `Destructible.completed` an array of gathered
-        // responses. That way you could use it as the response from the
-        // function. Instead I'm calling it here first, except that isn't how
-        // Cadence works. Cadence returns the first error caught. Thus, the
-        // callback we create above could catch an error, that error would be
-        // returned from this function, swallowing a nicer hung interrupt
-        // exception.
-        //
-        // Two directions to go. First, make Cadence return errors in the order
-        // specified by their callback creation. Then this can move to the top
-        // it is always the first error returns. Second, make destructible
-        // gather responeses from monitor and return them in completed. But, the
-        // moment I try to work that out in Destructible, it gets confusing.
-        // Where to keep them. How to signal you want them gathered. Always
-        // gather? What about rescue. Don't gather, right?
-        //
-        // If you do use some sort of gathered completed, then you can't really
-        // make too much use of the returns. Also, you'll note that all of the
-        // above will rethrow their errors, so this timeout is not actually
-        // going to cause a hang to timeout.
-        //
-        // Hello, again. Considering how it worked before. There was this
-        // orthoginal timer that would raise an uncatchable exception and crash
-        // the program because the inability to quit is more of a programmer
-        // error than a run time error. Here I'm trying to funnel that exception
-        // to the completed latch. When using the Cadence-friendly Destructible
-        // invocation this will mean that we're adding a wait for many
-        // sub-Cadences.
-        destructible.completed.wait(async())
-    }, function () {
-        asynchronous.exit()
-        return []
-    })
-})
-
 var parallel = cadence(function (async, program, inheritance, configuration, argv) {
     var destructible = new Destructible('prolific')
     program.on('shutdown', destructible.destroy.bind(destructible))
@@ -145,6 +62,9 @@ var parallel = cadence(function (async, program, inheritance, configuration, arg
 
     var child = children.spawn(argv.shift(), argv, { stdio: inheritance.stdio })
     // TODO Maybe have something to call to notify of failure to finish.
+    destructible.destruct.wait(function () {
+        console.log('TERMINATING')
+    })
     destructible.destruct.wait(child, 'kill')
 
     descendent.addChild(child, null)
@@ -164,12 +84,25 @@ var parallel = cadence(function (async, program, inheritance, configuration, arg
             async(function () {
                 delta(async()).ee(child).on('close')
             }, function (exitCode, signal) {
-                return exit(exitCode, signal)
+                console.log(exitCode, signal)
+                // Will only ever equal zero. We do not have the `null, "SIGTERM"`
+                // combo because we always register a `SIGTERM` handler. The
+                // `"SIGTERM"` response is only when the default hander fires.
+                // The `"SIGTERM"` is determined by whether or not the child has
+                // a `"SIGTERM"` handler, not by any action by the parent. (i.e.
+                // whether or not the parent calles `child.kill()`. The behavior
+                // is still the same if we send a kill signal from the shell.
+                interrupt.assert(exitCode == 0,  {
+                    exitCode: exitCode,
+                    signal: signal,
+                    argv: argv
+                })
             })
         })(destructible.monitor('child'))
 
         synchronous.listen(child.stderr, program.stderr, destructible.monitor('synchronous'))
     }, function () {
+        program.ready.unlatch()
         destructible.completed.wait(async())
     })
 
@@ -226,10 +159,6 @@ require('arguable')(module, require('cadence')(function (async, program) {
         Pipeline.parse(program, configuration, async())
     }, function (configuration, argv) {
         process.env.PROLIFIC_CONFIGURATION = JSON.stringify(configuration)
-        if (program.ultimate.single) {
-            direct(program, inheritance, configuration, argv, async())
-        } else {
-            parallel(program, inheritance, configuration, argv, async())
-        }
+        parallel(program, inheritance, configuration, argv, async())
     })
 }))
