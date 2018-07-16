@@ -1,7 +1,7 @@
 require('proof')(1, prove)
 
 function prove (okay) {
-    var Acceptor = require('prolific.accept')
+    var Acceptor = require('prolific.acceptor')
     var prolific = require('..')
     prolific.Date = { now: function () { return 0 } }
     prolific.properties = { z: 26, when: 0 }

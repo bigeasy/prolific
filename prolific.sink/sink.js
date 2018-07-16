@@ -1,4 +1,4 @@
-var Acceptor = require('prolific.accept')
+var Acceptor = require('prolific.acceptor')
 
 
 module.exports = {
