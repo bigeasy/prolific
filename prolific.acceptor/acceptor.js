@@ -28,7 +28,7 @@ function select (entry, path) {
 }
 
 Acceptor.prototype.accept = function (entry) {
-    var path = ('.' + entry.qualifier + '.').split('.'), accept = false
+    var path = ('.' + entry[0].qualifier + '.').split('.'), accept = false
     var i = 0
     var node = this._root
     var links = []
@@ -43,15 +43,16 @@ Acceptor.prototype.accept = function (entry) {
     }
     ACCEPT: for (;;) {
         var link = links.pop()
-        if (link.level == null || LEVEL[entry.level] <= LEVEL[link.level]) {
+        if (link.level == null || LEVEL[entry[0].level] <= LEVEL[link.level]) {
             if (link.test == null) {
                 accept = !! link.accept
                 break ACCEPT
             }
             TEST: for (var i = 0, I = link.test.length; i < I; i++) {
                 var test = link.test[i]
-                var values = select(entry, test.path)
-                if (values.length == 0) {
+                var values = []
+                for (var j = entry.length - 1; j != -1 && values.length == 0; j--) {
+                    values = select(entry[j], test.path)
                 }
                 switch (test.type) {
                 case 'equals':

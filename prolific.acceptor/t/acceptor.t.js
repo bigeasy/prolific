@@ -15,9 +15,9 @@ function prove (okay) {
         okay(e.message, 'invalid test', 'invalid test')
     }
     acceptor = new Acceptor(false, [])
-    okay(!acceptor.accept({ qualifier: 'example' }), 'default drop')
+    okay(!acceptor.accept([{ qualifier: 'example' }]), 'default drop')
     acceptor = new Acceptor(true, [])
-    okay(acceptor.accept({ qualifier: 'example' }), 'default accept')
+    okay(acceptor.accept([{ qualifier: 'example' }]), 'default accept')
     acceptor = new Acceptor(false, [{
         path: '.',
         level: 'warn',
@@ -39,17 +39,17 @@ function prove (okay) {
         test: [{ path: 'id', regex: '/a/' }, { path: 'tag', equals: 'send' }],
         accept: true
     }])
-    okay(acceptor.accept({ qualifier: 'anything', level: 'err' }), 'level')
-    okay(!acceptor.accept({ qualifier: 'anything', level: 'info' }), 'level fail')
-    okay(!acceptor.accept({ qualifier: 'example.equals'}), 'equals missing')
-    okay(!acceptor.accept({ qualifier: 'example.equals', tag: 'receive' }), 'equals unequal')
-    okay(!acceptor.accept({ qualifier: 'example.equals', tag: [ 'receive' ] }), 'equals not in array')
-    okay(acceptor.accept({ qualifier: 'example.equals', tag: 'send' }), 'equals equal')
-    okay(acceptor.accept({ qualifier: 'example.equals', tag: [ 'send' ] }), 'equals in array')
-    okay(!acceptor.accept({ qualifier: 'example.regex'}), 'regex missing')
-    okay(!acceptor.accept({ qualifier: 'example.regex', tag: 'b' }), 'regex fail')
-    okay(!acceptor.accept({ qualifier: 'example.regex', tag: [ 'b' ] }), 'regex array fail')
-    okay(acceptor.accept({ qualifier: 'example.regex', tag: 'baz' }), 'regex match')
-    okay(acceptor.accept({ qualifier: 'example.regex', tag: [ 'zzz', 'baz' ] }), 'regex match array')
-    okay(acceptor.accept({ qualifier: 'example.and', id: 'a', tag: [ 'user', 'send' ]}), 'and')
+    okay(acceptor.accept([{ qualifier: 'anything', level: 'err' }]), 'level')
+    okay(!acceptor.accept([{ qualifier: 'anything', level: 'info' }]), 'level fail')
+    okay(!acceptor.accept([{ qualifier: 'example.equals'}]), 'equals missing')
+    okay(!acceptor.accept([{ qualifier: 'example.equals', tag: 'receive' }]), 'equals unequal')
+    okay(!acceptor.accept([{ qualifier: 'example.equals', tag: [ 'receive' ] }]), 'equals not in array')
+    okay(acceptor.accept([{ qualifier: 'example.equals', tag: 'send' }]), 'equals equal')
+    okay(acceptor.accept([{ qualifier: 'example.equals', tag: [ 'send' ] }]), 'equals in array')
+    okay(!acceptor.accept([{ qualifier: 'example.regex' }]), 'regex missing')
+    okay(!acceptor.accept([{ qualifier: 'example.regex', tag: 'b' }]), 'regex fail')
+    okay(!acceptor.accept([{ qualifier: 'example.regex', tag: [ 'b' ] }]), 'regex array fail')
+    okay(acceptor.accept([{ qualifier: 'example.regex', tag: 'baz' }]), 'regex match')
+    okay(acceptor.accept([{ qualifier: 'example.regex', tag: [ 'zzz', 'baz' ] }]), 'regex match array')
+    okay(acceptor.accept([{ qualifier: 'example.and', id: 'a', tag: [ 'user', 'send' ] }]), 'and')
 }
