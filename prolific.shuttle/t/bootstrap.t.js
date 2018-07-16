@@ -23,6 +23,18 @@ function prove (okay) {
             path: [ 0, 1 ],
             body: true
         }, new stream.PassThrough)
+        program.emit('message', {
+            module: 'descendent',
+            method: 'route',
+            name: 'prolific:accept',
+            to: [],
+            path: [ 0, 1 ],
+            body: {
+                version: 1,
+                accept: true,
+                chain: []
+            }
+        }, new stream.PassThrough)
     }
     program.pid = 1
     var net = {
@@ -31,14 +43,14 @@ function prove (okay) {
         }
     }
     function Shuttle () {
-        this.queue = {}
+        this.queue = []
         this.uncaughtException = function () {}
         this.close = function () {}
         this.exit = function () {}
         this.setPipe = function () {}
     }
     var createShuttle = bootstrap.createShuttle(net, Shuttle, { now: function () { return 0 } })
-    program.env = { PROLIFIC_CONFIGURATION: JSON.stringify({ levels: [['TRACE']], pid: 1 }) }
+    program.env = { PROLIFIC_MONITOR_PID: '1' }
     createShuttle(program, function () {})
     createShuttle({ env: {} }, function () {}).close()
 }
