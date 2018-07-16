@@ -5,7 +5,7 @@ require('proof')(16, prove)
 // level or specifically by values in payload. Equality is coercive. Relative
 // comparisons convert to numbers.
 function prove (okay) {
-    var Acceptor = require('../accept'), acceptor
+    var Acceptor = require('..'), acceptor
     try {
     acceptor = new Acceptor(false, [{
         path: '.',

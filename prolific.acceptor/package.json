@@ -1,9 +1,9 @@
 {
-    "name":                 "prolific.accept",
-    "version":              "0.0.0",
+    "name":                 "prolific.acceptor",
+    "version":              "9.9.9",
     "description":
 
-      "Discoverable common output sink for the Prolific logging framework.",
+      "Logging message filter chain for the Prolific logging framework.",
 
     "keywords":
     [
@@ -25,7 +25,7 @@
     {
                             "proof":                        "3.0.x"
     },
-    "main":                 "accept",
+    "main":                 "acceptor",
     "scripts":
     {
                             "test": "proof test t/*.t.js"
