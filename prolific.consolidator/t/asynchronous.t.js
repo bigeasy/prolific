@@ -8,20 +8,23 @@ function prove (async, okay) {
 
     var chunk, previousChecksum, buffer
 
+    var consumer = []
     var entries = []
     var through = new stream.PassThrough
-    var asynchronous = new Asynchronous({
-        process: function (entry) {
-            entries.push(entry)
-        }
-    })
+    var asynchronous = new Asynchronous(consumer)
     asynchronous.listen(through, abend)
 
     var json = Buffer.from(JSON.stringify({
         qualifier: 'prolific.consolidator',
-        level: 'warn',
+        level: 'error',
         when: 0
     }) + '\n')
+
+    function lines (chunk) {
+        var lines = chunk.buffer.toString().split('\n')
+        lines.pop()
+        return lines.map(JSON.parse)
+    }
 
     chunk = new Chunk(1, 0, Buffer.from(''), 1)
     async(function () {
@@ -32,16 +35,13 @@ function prove (async, okay) {
         chunk = new Chunk(1, 1, json, json.length)
         write(through, chunk, previousChecksum, async())
     }, function () {
-
-        okay(entries.shift(), {
-            level: 3,
+        okay(lines(consumer.shift()), [{
+            level: 'error',
             when: 0,
-            qualifier: [ null, 'prolific', 'prolific.consolidator' ],
-            formatted: [],
-            json: { when: 0, level: 'warn', qualifier: 'prolific.consolidator' }
-        }, 'read chunk')
+            qualifier: 'prolific.consolidator'
+        }], 'read chunk')
 
-        asynchronous.consume({
+        asynchronous.push({
             pid: chunk.pid,
             number: chunk.number,
             previousChecksum: previousChecksum,
@@ -56,10 +56,10 @@ function prove (async, okay) {
             qualifier: 'prolific.consolidator',
             level: 'warn',
             when: 0
-        }))
+        }) + '\n')
         chunk = new Chunk(1, 2, json, json.length)
 
-        asynchronous.consume({
+        asynchronous.push({
             pid: chunk.pid,
             number: chunk.number,
             previousChecksum: previousChecksum,
@@ -68,17 +68,15 @@ function prove (async, okay) {
             value: chunk.value
         })
 
-        asynchronous.consume({ eos: true })
+        asynchronous.push({ eos: true })
 
         asynchronous.exit()
 
-        okay(entries.shift(), {
-            level: 3,
-            when: 0,
-            qualifier: [ null, 'prolific', 'prolific.consolidator' ],
-            formatted: [],
-            json: { when: 0, level: 'warn', qualifier: 'prolific.consolidator' }
-        }, 'read chunk from sync')
+        okay(lines(consumer.shift()), [{
+            qualifier: 'prolific.consolidator',
+            level: 'warn',
+            when: 0
+        }], 'read chunk from sync')
     })
 
     function write (writable, chunk, previousChecksum, callback) {
