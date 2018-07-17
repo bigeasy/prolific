@@ -20,11 +20,13 @@
     },
     "dependencies":
     {
-                            "cadence":                      "1.0.x"
+                            "cadence":                      "1.0.x",
+                            "interrupt":                    "6.2.x"
     },
     "devDependencies":
     {
                             "arguable":                     "6.7.x",
+                            "destructible":                 "0.30.x",
                             "proof":                        "3.0.x"
     },
     "main":                 "pipeline",
