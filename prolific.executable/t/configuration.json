@@ -1,0 +1,7 @@
+{
+    "accept": false,
+    "chain": [{ "path": ".", "level": "warn", "accept": true }],
+    "pipeline": [{
+        "module": "prolific.test"
+    }]
+}

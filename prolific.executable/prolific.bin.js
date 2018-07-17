@@ -5,9 +5,7 @@
     usage: prolific <pipeline> <program>
 
         -i, --inherit   <number>        file handles to inherit
-        -s, --single                    with a single direct child
-        -I, --ipc                       enable Node.js IPC forwarding
-            --configuration <string>    base configuration JSON or environment variable
+        -c, --configuration <path>      path to configuration
             --help                      display this message
 
     ___ $ ___ en_US ___
@@ -42,7 +40,6 @@ var interrupt = require('interrupt').createInterrupter('prolific')
 
 // Command line and environment interpretation utilities.
 var inherit = require('prolific.inherit')
-var ipc = require('prolific.ipc')
 
 // Construct a prolific pipeline from a configuration.
 var Pipeline = require('prolific.pipeline')
@@ -106,31 +103,38 @@ var parallel = cadence(function (async, program, inheritance, configuration, arg
         destructible.completed.wait(async())
     })
 
-    var chunks = 0
-    descendent.on('prolific:ready', function (message) {
-        descendent.increment()
-        synchronous.addConsumer(message.cookie.pid, {
-            consume: function (chunk) {
-                descendent.down([ message.cookie.monitor ], 'prolific:chunk', chunk)
-                if (chunk.eos) {
-                    descendent.decrement()
-                }
-            }
-        })
+    descendent.on('prolific:pipe', function (message) {
         descendent.down(message.cookie.from, 'prolific:pipe', true, monitors[message.cookie.monitor].stdio[3])
+    })
+
+    descendent.on('prolific:accept', function (message) {
+        descendent.down(message.cookie.from, 'prolific:accept', message.body)
     })
 
     var monitors = {}
     descendent.on('prolific:monitor', function (message) {
         var monitor = children.spawn('node', [
-            path.join(__dirname, 'monitor.bin.js')
+            path.join(__dirname, 'monitor.bin.js'),
+            '--configuration', configuration,
+            '--supervisor', process.pid
         ], {
-            stdio: [ 0, 1, 2, 'pipe', 'ipc' ]
+            stdio: [ 'pipe', 1, 2, 'pipe', 'ipc' ]
         })
 
         monitors[monitor.pid] = monitor
 
+        synchronous.addConsumer(message.body, {
+            consume: function (chunk) {
+                monitor.stdin.write(JSON.stringify(chunk) + '\n')
+                if (chunk.eos) {
+                    monitor.stdin.end()
+                    descendent.decrement()
+                }
+            }
+        })
+
         descendent.addChild(monitor, { monitor: monitor.pid, from: message.path, pid: message.body })
+        descendent.increment()
 
         cadence(function (async) {
             async(function () {
@@ -144,21 +148,15 @@ var parallel = cadence(function (async, program, inheritance, configuration, arg
 })
 
 require('arguable')(module, require('cadence')(function (async, program) {
-    var configure = require('./configure')
-
-    program.ultimate.ipc = !program.ultimate.single
+    program.ultimate.ipc = true
 
     program.helpIf(program.ultimate.help)
 
-    var configuration = configure(program.env, program.ultimate.configuration)
+    var configuration = program.ultimate.configuration
 
-    // TODO `inherit` skips write fd if cluster
-    var inheritance = inherit(program)
-    configuration.fd = program.ultimate.single ? inheritance.fd : 'IPC'
     async(function () {
-        Pipeline.parse(program, configuration, async())
-    }, function (configuration, argv) {
-        process.env.PROLIFIC_CONFIGURATION = JSON.stringify(configuration)
-        parallel(program, inheritance, configuration, argv, async())
+        var inheritance = inherit(program)
+        process.env.PROLIFIC_MONITOR_PID = process.pid
+        parallel(program, inheritance, configuration, program.argv, async())
     })
 }))

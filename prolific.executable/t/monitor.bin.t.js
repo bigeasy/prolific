@@ -1,4 +1,4 @@
-require('proof')(2, require('cadence')(prove))
+require('proof')(3, require('cadence')(prove))
 
 function prove (async, okay) {
     var monitor = require('../monitor.bin')
@@ -7,7 +7,6 @@ function prove (async, okay) {
     var delta = require('delta')
 
     var child = path.join(__dirname, 'program.js')
-    var expectedExitCode = /^v0\.10\./.test(process.version) ? 143 : 0
 
     var Chunk = require('prolific.chunk')
 
@@ -21,54 +20,48 @@ function prove (async, okay) {
 
 
     Socket.prototype.destroy = function () {
+        this.end()
     }
+
+    var senders = [function (message) {
+        var pid = message.path[0]
+        message.path[0] = 2
+        okay(message, {
+            module: 'descendent',
+            method: 'route',
+            name: 'prolific:pipe',
+            to: 1,
+            path: [ 2 ],
+            body: true
+        }, 'pipe message')
+    }, function (message) {
+        var pid = message.path[0]
+        message.path[0] = 2
+        okay(message, {
+            module: 'descendent',
+            method: 'route',
+            name: 'prolific:accept',
+            to: 1,
+            path: [ 2 ],
+            body: { version: 0, accept: false, chain: [{ path: '.', level: 'warn', accept: true }] }
+        }, 'accept message')
+        // TODO Move the close to the part above to see that we hang on exit
+        // with the current destructible. Need to decide what to do when monitor
+        // is called
+        program.stdin.end(JSON.stringify({
+            eos: true,
+            buffer: ''
+        }) + '\n')
+    }]
 
     var program
     async(function () {
-        program = monitor([], {
-            env: {
-                PROLIFIC_CONFIGURATION: JSON.stringify({ processors:
-                   [ { moduleName: 'prolific.test/test.processor',
-                       parameters: { params: { key: 'value' } },
-                       argv:
-                        [ 'node',
-                          '/Users/alan/git/ecma/prolific/prolific.root/t/program.js' ],
-                       terminal: false } ],
-                  levels: [],
-                  fd: 'IPC',
-                  configured: true
-                })
-            },
+        program = monitor({
+            configuration: path.join(__dirname, 'configuration.json'),
+            supervisor: '1'
+        }, {
             send: function (message) {
-                var pid = message.path[0]
-                message.path[0] = 1
-                okay(message, {
-                    module: 'descendent',
-                    method: 'route',
-                    name: 'prolific:ready',
-                    to: 0,
-                    path: [ 1 ],
-                    body: true
-                }, 'message')
-                program.emit('message', {
-                    module: 'descendent',
-                    method: 'route',
-                    name: 'prolific:chunk',
-                    to: [],
-                    path: [ 1, pid ],
-                    body: {
-                        eos: false,
-                        buffer: ''
-                    }
-                })
-                program.emit('message', {
-                    module: 'descendent',
-                    method: 'route',
-                    name: 'prolific:chunk',
-                    to: [],
-                    path: [ 1, pid ],
-                    body: { eos: true }
-                })
+                senders.shift().call(null, message)
             },
             attributes: { net: { Socket: Socket } }
         }, async())
