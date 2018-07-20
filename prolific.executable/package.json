@@ -24,6 +24,7 @@
                             "byline":                       "5.0.0",
                             "cadence":                      "1.0.x",
                             "delta":                        "1.4.x",
+                            "demur":                        "0.1.x",
                             "destructible":                 "0.30.x",
                             "descendent":                   "0.2.x",
                             "interrupt":                    "6.2.x",

@@ -12,6 +12,7 @@ var Pipeline = require('prolific.pipeline')
 var Acceptor = require('prolific.acceptor')
 
 var interrupt = require('interrupt').createInterrupter('prolific')
+var logger = require('prolific.logger').createLogger('prolific.supervisor')
 
 // Construct a processor that will reload it's configuration from the given
 // configuration and call the given function with the new in-process Acceptor
@@ -120,8 +121,8 @@ Processor.prototype._reload = cadence(function (async, configuration) {
         this._pipeline(async())
     }, function (error) {
         // TODO Logging with the notion of a separate log for the monitor.
-        console.error(error.stack)
-        return [ async.break ]
+        logger.error('pipeline', { configuration: configuration, error: error.stack })
+        return [ async.break, null ]
     }], function (configuration, pipeline, destructible) {
         var version = this._version++
         this._versions.push({
@@ -141,11 +142,12 @@ Processor.prototype._reload = cadence(function (async, configuration) {
         })
         this._pipelineDestructible = destructible
         this._reloaded({ version: version, accept: configuration.accept, chain: configuration.chain })
+        return [ configuration ]
     })
 })
 
-Processor.prototype.reload = function () {
-    this._check.check()
+Processor.prototype.reload = function (callback) {
+    this._check.check(callback)
 }
 
 module.exports = cadence(function (async, destructible, configuration, reloaded) {
