@@ -78,6 +78,7 @@ function prove (async, okay) {
             setTimeout(async(), 250)
         }, function () {
             watcher.destroy()
+            watcher.destroy()
         })
     }), null)
 }
