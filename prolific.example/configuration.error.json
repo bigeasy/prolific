@@ -1,0 +1,10 @@
+{
+    "accept": false,
+    "chain": [{
+        "path": ".",
+        "level": "error"
+    }],
+    "pipeline": [{
+        "module": "prolific.stdio"
+    }]
+}

@@ -21,10 +21,10 @@
     },
     "dependencies":
     {
-                            "prolific.shuttle":             "11.0.x",
-                            "prolific.logger":              "3.0.x",
-                            "prolific":                     "9.0.x",
-                            "prolific.stdio":               "3.0.x"
+                            "prolific.shuttle":             "20.0.x",
+                            "prolific.logger":              "8.0.x",
+                            "prolific":                     "18.0.x",
+                            "prolific.stdio":               "6.0.x"
     },
     "devDependencies":
     {

@@ -1,14 +1,20 @@
 var Processor = require('../stdio.processor')
 
-var sink = { process: function () {} }
-new Processor({ stderr: true }, sink)
+process.stdout.write('1..2\n')
+process.stderr.write = function (buffer) {
+    process.stdout.write(buffer)
+}
 
-var processor = new Processor({}, sink)
+Processor(null, {
+    stderr: true
+}, {
+    process: function () {}
+}, function (error, processor) {
+    processor.process({ formatted: [ Buffer.from('ok 1 stderr\n') ] })
+})
 
-process.stdout.write('1..1\n')
-
-processor.open(function () {})
-
-processor.process({ formatted: [ new Buffer('ok 1 stdout\n') ] })
-
-processor.close(function () {})
+Processor(null, {}, {
+    process: function () {}
+}, function (error, processor) {
+    processor.process({ formatted: [ Buffer.from('ok 2 stdout\n') ] })
+})
