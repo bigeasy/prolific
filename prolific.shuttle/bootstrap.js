@@ -26,7 +26,7 @@ exports.createShuttle = function (net, Shuttle, Date) {
             })
             descendent.on('prolific:accept', function (message) {
                 sink.acceptor = new Acceptor(message.body.accept, message.body.chain)
-                sink.queue.push([{ acceptor: message.body.version }])
+                sink.queue.push([{ version: message.body.version }])
             })
             descendent.up(monitorProcessId, 'prolific:monitor', instanceId)
 
