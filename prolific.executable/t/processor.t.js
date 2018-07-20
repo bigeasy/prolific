@@ -15,8 +15,9 @@ function prove (async, okay) {
     }
 
     var fs = require('fs')
+    var fse = require('fs-extra')
 
-    fs.copyFileSync(configuration.template, configuration.copy)
+    fse.copySync(configuration.template, configuration.copy)
 
     var wait = null
 

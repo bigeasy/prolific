@@ -37,6 +37,7 @@
     },
     "devDependencies":
     {
+                            "fs-extra":                     "7.0.0",
                             "prolific.chunk":               "3.0.x",
                             "prolific.logger":              "8.0.x",
                             "prolific.shuttle":             "20.0.x",
