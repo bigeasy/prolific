@@ -134,7 +134,7 @@ Processor.prototype._reload = cadence(function (async, configuration) {
                             entry[0][key] = entry[i][key]
                         }
                     }
-                    pipeline.process({ json: entry[0], formatted: null })
+                    pipeline.process({ json: entry[0], formatted: [] })
                 }
             }
         })
