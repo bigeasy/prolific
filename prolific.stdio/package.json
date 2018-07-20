@@ -21,7 +21,6 @@
     },
     "dependencies":
     {
-                            "arguable":                     "6.0.x",
                             "cadence":                      "1.0.x",
                             "prolific.stringify":           "3.0.x"
     },
