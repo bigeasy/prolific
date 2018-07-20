@@ -12,6 +12,8 @@ Processor.prototype.process = function (entry) {
     this._next.process(entry)
 }
 
+Processor.isProlificProcessor = true
+
 module.exports = function (destructible, configuration, nextProcessor, callback) {
     callback(null, new Processor(configuration, nextProcessor))
 }
