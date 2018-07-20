@@ -47,7 +47,10 @@ function prove (async, okay) {
                         }
                     }, async())
                 }, function () {
-                    okay(entries.shift(), { qualifier: 'prolific', level: 'warn', key: 'value' }, 'process')
+                    okay(entries.shift(), {
+                        json: { qualifier: 'prolific', level: 'warn', key: 'value' },
+                        formatted: null
+                    }, 'process')
                     wait = async()
                     processor.reload()
                 }, function () {
