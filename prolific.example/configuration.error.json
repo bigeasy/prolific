@@ -2,7 +2,8 @@
     "accept": false,
     "chain": [{
         "path": ".",
-        "level": "error"
+        "level": "error",
+        "accept": true
     }],
     "pipeline": [{
         "module": "prolific.stdio"

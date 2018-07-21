@@ -1,7 +1,11 @@
 var Shuttle = require('prolific.shuttle')
 var logger = require('prolific.logger').createLogger('prolific.example')
 
-Shuttle.shuttle(process, logger)
+var shuttle = Shuttle.shuttle(process, logger)
+
+process.once('SIGTERM', function () {
+    shuttle.close()
+})
 
 setInterval(function () {
     console.log('sending')
