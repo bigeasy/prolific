@@ -59,9 +59,6 @@ var parallel = cadence(function (async, program, inheritance, configuration, arg
 
     var child = children.spawn(argv.shift(), argv, { stdio: inheritance.stdio })
     // TODO Maybe have something to call to notify of failure to finish.
-    destructible.destruct.wait(function () {
-        console.log('TERMINATING')
-    })
     destructible.destruct.wait(child, 'kill')
 
     descendent.addChild(child, null)
