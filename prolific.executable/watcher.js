@@ -29,7 +29,6 @@ Watcher.prototype.monitor = cadence(function (async) {
         }
     }, function (contents) {
         var watcher = null
-        console.log('>', this.destroyed, contents)
         if (this.destroyed) {
             return [ loop.break ]
         } else if (contents == null) {

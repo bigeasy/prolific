@@ -42,6 +42,8 @@ require('arguable')(module, require('cadence')(function (async, program) {
     var Turnstile = require('turnstile')
     Turnstile.Queue = require('turnstile/queue')
 
+    var Watcher = require('./watcher')
+
     async(function () {
         destructible.completed.wait(async())
     }, function () {
@@ -84,7 +86,9 @@ require('arguable')(module, require('cadence')(function (async, program) {
 
             // Reload immediately because the reload will cause the first
             // round of filtering to get pushed into the monitored process.
-            processor.reload()
+            var watcher = new Watcher(program.ultimate.configuration, processor)
+            destructible.destruct.wait(watcher, 'destroy')
+            watcher.monitor(destructible.monitor('watch'))
 
             // Ready for testing.
             program.ready.unlatch()
