@@ -41,7 +41,7 @@ function prove (async, okay) {
             value: 'x',
             signal: new Signal
         }, {
-            value: fs.readFileSync(configuration.template, 'utf8'),
+            value: JSON.parse(fs.readFileSync(configuration.template, 'utf8')),
             signal: new Signal
         }]
 

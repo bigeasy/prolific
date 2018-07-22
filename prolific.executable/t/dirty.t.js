@@ -1,4 +1,4 @@
-require('proof')(3, require('cadence')(prove))
+require('proof')(4, require('cadence')(prove))
 
 function prove (async, okay) {
     var dirty = require('../dirty')
@@ -11,8 +11,7 @@ function prove (async, okay) {
 
     var configuration = path.join(__dirname, 'configuration.json')
 
-    var body = fs.readFileSync(configuration, 'utf8')
-
+    var body = JSON.parse(fs.readFileSync(configuration, 'utf8'))
 
     async(function () {
         dirty(configuration, body, async())
@@ -21,7 +20,10 @@ function prove (async, okay) {
         dirty(path.join(__dirname, 'missing.json'), body, async())
     }, function (isDirty) {
         okay(isDirty, 'ENOENT')
-        dirty(configuration, 'x', async())
+        dirty(__filename, {}, async())
+    }, function (isDirty) {
+        okay(isDirty, 'bad JSON')
+        dirty(configuration, {}, async())
     }, function (isDirty) {
         okay(isDirty, 'actually dirty')
     })
