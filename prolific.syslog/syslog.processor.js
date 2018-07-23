@@ -28,12 +28,18 @@ var FACILITY = {
 }
 
 var LEVEL = {
-    trace: 0,
-    debug: 0,
-    info: 1,
-    warn: 3,
-    error: 4
-// TODO: Fatal.
+    trace: 7,
+    debug: 7,
+    info: 6,
+    notice: 5,
+    warning: 4,
+    warn: 4,
+    error: 3,
+    err: 3,
+    crit: 2,
+    alert: 1,
+    panic: 0,
+    emerg: 0
 }
 
 function Processor (parameters, next) {
@@ -53,7 +59,7 @@ Processor.prototype.process = function (entry) {
     delete json.when
     delete json.pid
     var line = [
-        '<' + (this._facility * 8 + entry.level) + '>1',
+        '<' + (this._facility * 8 + LEVEL[entry.json.level]) + '>1',
         new Date(when).toISOString(),
         this._hostname,
         this._application,
