@@ -1,6 +1,5 @@
 var url = require('url')
 var Cache = require('magazine')
-var noop = require('nop')
 var merge = require('./merge')
 
 var Evaluator = require('prolific.evaluator')
