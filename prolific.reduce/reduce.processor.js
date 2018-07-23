@@ -12,9 +12,6 @@ function Processor (parameters, next, options) {
     this._delay = coalesce(options.delay, 5000)
     this._pivot = Evaluator.create(parameters.pivot)
     this._end = Evaluator.create(parameters.end)
-    this._calculations = parameters.calculate.forEach(function (calculate) {
-        return Evaluator.create(calculate)
-    })
     this._building = new Cache().createMagazine()
     this._sending = new Cache().createMagazine()
     this._next = next
