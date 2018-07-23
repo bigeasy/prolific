@@ -30,13 +30,11 @@ function prove (okay, callback) {
     }
     new Processor({
         pivot: '$.instance',
-        end: '$.ended',
-        calculate: [ '$.duration = $.end - $.start' ]
+        end: '$.ended'
     }, sink)
     var processor = new Processor({
         pivot: '$.instance',
-        end: '$.ended',
-        calculate: [ '$.duration = $.end - $.start' ]
+        end: '$.ended'
     }, sink, { delay: 250 })
 
     processor.open(function () {})
