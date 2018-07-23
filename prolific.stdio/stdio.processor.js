@@ -1,5 +1,3 @@
-var cadence = require('cadence')
-
 var stringify = require('prolific.stringify')
 
 function Processor (configuration, next) {

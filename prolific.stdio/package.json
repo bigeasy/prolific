@@ -21,7 +21,6 @@
     },
     "dependencies":
     {
-                            "cadence":                      "1.0.x",
                             "prolific.stringify":           "3.0.x"
     },
     "devDependencies":
