@@ -2,24 +2,22 @@ var cadence = require('cadence')
 
 var Pipeline = require('prolific.pipeline')
 
-function Processor (parameters, next) {
-    this._pipeline = new Pipeline(parameters.pipeline)
-    this._next = next
+function Processor (pipeline, nextProcessor) {
+    this._pipeline = pipeline
+    this._nextProcessor = nextProcessor
 }
-
-Processor.prototype.open = cadence(function (async) {
-    this._pipeline.open(async())
-})
 
 Processor.prototype.process = function (entry) {
-    this._pipeline.processors[0].process(JSON.parse(JSON.stringify(entry)))
-    this._next.process(entry)
+    this._pipeline.process(JSON.parse(JSON.stringify(entry)))
+    this._nextProcessor.process(entry)
 }
 
-Processor.prototype.close = cadence(function (async) {
-    this._pipeline.close(async())
+module.exports = cadence(function (async, destructible, configuration, nextProcessor) {
+    async(function () {
+        destructible.monitor('pipeline', Pipeline, configuration.pipeline, async())
+    }, function (pipeline) {
+        return new Processor(pipeline, nextProcessor)
+    })
 })
 
-Processor.isProlificProcessor = true
-
-module.exports = Processor
+module.exports.isProlificProcessor = true

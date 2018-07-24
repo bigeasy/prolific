@@ -1,22 +1,24 @@
 require('proof')(1, require('cadence')(prove))
 
-function prove (async, assert) {
-    var Processor = require('..')
+function prove (async, okay) {
+    var Tee = require('..')
+
     var processed = []
-    var processor = new Processor({
-        pipeline: []
-    }, {
+    var nextProcessor = {
         process: function (entry) {
             processed.push(entry)
         }
-    })
-    async(function () {
-        processor.open(async())
-    }, function () {
+    }
+
+    var Destructible = require('destructible')
+    var destructible = new Destructible('t/tee.processor.t')
+
+    async([function () {
+        destructible.destroy()
+    }], function () {
+        destructible.monitor('tee', Tee, { pipeline: [] }, nextProcessor, async())
+    }, function (processor) {
         processor.process({ a: 1 })
-    }, function () {
-        processor.close(async())
-    }, function () {
-        assert(processed, [{ a: 1 }], 'processed')
+        okay(processed, [{ a: 1 }], 'processed')
     })
 }
