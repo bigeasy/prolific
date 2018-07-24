@@ -26,9 +26,12 @@ Processor.prototype.process = function (entry) {
     } else {
         var got = this._sending.get(pivot)
         if (got == null) {
-            got = this._building.get(pivot, { entry: {} })
+            got = this._building.get(pivot, { when: entry.json.when, entry: { json: {} } })
         }
-        merge(got.entry, entry)
+        console.log(got.when)
+        if (this._timestamps != null) {
+        }
+        merge(got.entry.json, entry.json)
         if (this._end.call(null, got.entry)) {
             this._sending.put(pivot, got)
             this._building.remove(pivot)
