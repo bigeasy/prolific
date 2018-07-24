@@ -28,6 +28,8 @@
     },
     "devDependencies":
     {
+                            "cadence":                      "1.0.x",
+                            "destructible":                 "0.30.x",
                             "proof":                        "3.0.x"
     },
     "main":                 "reduce.processor",

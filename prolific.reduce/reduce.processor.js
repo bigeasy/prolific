@@ -6,18 +6,15 @@ var Evaluator = require('prolific.evaluator')
 
 var coalesce = require('extant')
 
-function Processor (parameters, next, options) {
-    options || (options = {})
-    this._timeout = coalesce(options.timeout, 30000)
-    this._delay = coalesce(options.delay, 5000)
-    this._pivot = Evaluator.create(parameters.pivot)
-    this._end = Evaluator.create(parameters.end)
+function Processor (configuration, next, options) {
+    this._timeout = coalesce(configuration.timeout, 30000)
+    this._delay = coalesce(configuration.delay, 5000)
+    this._pivot = Evaluator.create(configuration.pivot)
+    this._end = Evaluator.create(configuration.end)
     this._building = new Cache().createMagazine()
     this._sending = new Cache().createMagazine()
     this._next = next
 }
-
-Processor.prototype.open = function (callback) { callback() }
 
 Processor.prototype.process = function (entry) {
     this._maybeSend(this._sending, Date.now() - this._delay)
@@ -49,6 +46,8 @@ Processor.prototype._maybeSend = function (magazine, before) {
     }
 }
 
-Processor.prototype.close = function (callback) { callback() }
+module.exports = function (destructible, configuration, nextProcessor, callback) {
+    callback(null, new Processor(configuration, nextProcessor))
+}
 
-module.exports = Processor
+module.exports.isProlificProcessor = true
