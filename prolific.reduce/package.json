@@ -30,7 +30,7 @@
     {
                             "proof":                        "3.0.x"
     },
-    "main":                 "reduce.argv",
+    "main":                 "reduce.processor",
     "scripts":
     {
                             "test": "proof test t/*.t.js"
