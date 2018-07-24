@@ -28,7 +28,7 @@ function prove (okay) {
         accept: true
     }, {
         path: '.example.equals',
-        test: [{ path: 'tag', equals: 'send' }],
+        test: [{ path: "[?tag == 'send']" }],
         accept: true
     }, {
         path: '.example.regex',
