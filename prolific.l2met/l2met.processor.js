@@ -1,10 +1,8 @@
 var coalesce = require('extant')
 
-function Processor (parameters, next) {
-    this._next = next
+function Processor (nextProcessor) {
+    this._nextProcessor = nextProcessor
 }
-
-Processor.prototype.open = function (callback) { callback() }
 
 Processor.prototype.process = function (entry) {
     if (/^(count|measure|sample)$/.test(entry.json.l2met)) {
@@ -19,9 +17,11 @@ Processor.prototype.process = function (entry) {
         formatted.push('\n')
         entry.formatted.push(formatted.join(''))
     }
-    this._next.process(entry)
+    this._nextProcessor.process(entry)
 }
 
-Processor.prototype.close = function (callback) { callback() }
+module.exports = function (destructible, configuration, nextProcessor, callback) {
+    callback(null, new Processor(nextProcessor))
+}
 
-module.exports = Processor
+module.exports.isProlificProcessor = true
