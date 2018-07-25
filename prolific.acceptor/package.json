@@ -1,6 +1,6 @@
 {
     "name":                 "prolific.acceptor",
-    "version":              "0.2.0",
+    "version":              "0.2.1",
     "description":
 
       "Logging message filter chain for the Prolific logging framework.",
