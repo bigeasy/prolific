@@ -60,3 +60,5 @@ module.exports = cadence(function (async, destructible, configuration, nextProce
      */
     return [ new Processor(turnstile, configuration, nextProcessor) ]
 })
+
+module.exports.isProlificProcessor = true
