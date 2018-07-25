@@ -11,6 +11,13 @@ exports.createShuttle = function (net, Shuttle, Date) {
             var monitorProcessId = +program.env.PROLIFIC_MONITOR_PID
             var instanceId = program.pid + '/' + Date.now()
 
+            // We create a descendent and pass it to the Shuttle so the Shuttle
+            // can destroy it.
+            // TODO Troubles me to create an extra descendent, feel like it
+            // might be a good idea to split it into Up and Down. Down would
+            // allow you to intercept messages and recall that they are
+            // addressed, so they are not going to be given to a Descendent that
+            // is not expecting them.
             var descendent = new Descendent(program)
             var shuttle = new Shuttle(instanceId, program.stderr, finale, descendent)
 
@@ -19,7 +26,6 @@ exports.createShuttle = function (net, Shuttle, Date) {
             var sink = require('prolific.resolver').sink
             sink.queue = shuttle.queue
             sink.acceptor = new Acceptor(true, [])
-
 
             descendent.once('prolific:pipe', function (message, handle) {
                 shuttle.setPipe(handle, handle)
