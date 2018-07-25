@@ -42,17 +42,13 @@ var LEVEL = {
     emerg: 0
 }
 
-function Processor (parameters, next) {
-    this._format = parameters.format || 'json'
-    this._application = parameters.application || process.title
-    this._hostname = parameters.hostname || 'localhost'
-    this._facility = FACILITY[parameters.facility || 'local0']
-    this._serializer = parameters.serializer ? require(parameters.serializer) : JSON
-    this._Date = parameters.Date || Date
-    this._next = next
+function Processor (configuration, nextProcessor) {
+    this._application = configuration.application || process.title
+    this._hostname = configuration.hostname || 'localhost'
+    this._facility = FACILITY[configuration.facility || 'local0']
+    this._serializer = configuration.serializer ? require(configuration.serializer) : JSON
+    this._nextProcessor = nextProcessor
 }
-
-Processor.prototype.open = function (callback) { callback() }
 
 Processor.prototype.process = function (entry) {
     var json = entry.json, pid = json.pid, when = json.when
@@ -71,9 +67,11 @@ Processor.prototype.process = function (entry) {
     json.when = when
     json.pid = pid
     entry.formatted.push(line.join(' ') + '\n')
-    this._next.process(entry)
+    this._nextProcessor.process(entry)
 }
 
-Processor.prototype.close = function (callback) { callback() }
+module.exports = function (destructible, configuration, nextProcessor, callback) {
+    callback(null, new Processor(configuration, nextProcessor))
+}
 
-module.exports = Processor
+module.exports.isProlificProcessor = true
