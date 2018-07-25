@@ -20,7 +20,7 @@
     },
     "dependencies":
     {
-                            "prolific.evaluator":           "0.0.x"
+                            "prolific.evaluator":           "0.2.x"
     },
     "devDependencies":
     {

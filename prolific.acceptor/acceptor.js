@@ -12,80 +12,90 @@ var LEVEL = {
     debug: 7
 }
 
+var Evaluator = require('prolific.evaluator')
+
 function Acceptor (accept, chain) {
     this._root = {}
     this._append([{ path: '.', accept: !! accept }])
     this._append(chain)
 }
 
-function select (entry, path) {
-    var objects = [ entry ]
-    for (var i = 0, I = path.length; i < I; i++) {
-        var expanded = []
-        for (var j = 0, J = objects.length; j < J; j++) {
-            var value = objects[j][path[i]]
-            if (value != null) {
-                if (Array.isArray(value)) {
-                    Array.prototype.push.apply(expanded, value)
-                } else {
-                    expanded.push(value)
-                }
-            }
-        }
-        objects = expanded
-    }
-    return objects
-}
-
-Acceptor.prototype.accept = function (entry) {
-    var path = ('.' + entry[0].qualifier + '.').split('.'), accept = false
+Acceptor.prototype._chain = function (path) {
     var i = 0
     var node = this._root
-    var links = []
+    var chain = []
     for (;;) {
         var child = node[path[i]]
         if (child == null) {
             break
         }
-        Array.prototype.push.apply(links, child['.links'])
+        Array.prototype.push.apply(chain, child['.links'])
         node = child
         i++
     }
-    ACCEPT: for (;;) {
-        var link = links.pop()
-        if (link.level == null || LEVEL[entry[0].level] <= LEVEL[link.level]) {
-            if (link.test == null) {
-                accept = !! link.accept
-                break ACCEPT
-            }
-            TEST: for (var i = 0, I = link.test.length; i < I; i++) {
-                var test = link.test[i]
-                var values = []
-                for (var j = entry.length - 1; j != -1 && values.length == 0; j--) {
-                    values = select(entry[j], test.path)
-                }
-                switch (test.type) {
-                case 'equals':
-                    for (var j = 0, J = values.length; j < J; j++) {
-                        if (values[j] == test.equals) {
-                            continue TEST
-                        }
-                    }
-                    continue ACCEPT
-                case 'regex':
-                    for (var j = 0, J = values.length; j < J; j++) {
-                        if (test.regex.test(values[j])) {
-                            continue TEST
-                        }
-                    }
-                    continue ACCEPT
-                }
-            }
-            accept = !! link.accept
-            break ACCEPT
+    return chain
+}
+
+Acceptor.prototype._createContext = function (path, level, properties) {
+    var qualifier = properties[0].qualifier.split('.').map(function (value, index, array) {
+        return array.slice(0, index + 1).join('.')
+    })
+    qualifier.unshift(null)
+    for (var i = 1, I = properties.length; i < I; i++) {
+        for (var key in properties[i]) {
+            properties[0][key] = properties[i][key]
         }
     }
-    return accept
+    return {
+        path: path,
+        level: level,
+        qualifier: qualifier,
+        formatted: [],
+        json: properties[0]
+    }
+}
+
+Acceptor.prototype._test = function (chain, context) {
+    for (;;) {
+        var link = chain.pop()
+        if (link.level == null || context.level <= LEVEL[link.level]) {
+            if (link.test == null) {
+                return !! link.accept
+            } else if (link.test(context)) {
+                return true
+            }
+        }
+    }
+}
+
+Acceptor.prototype.acceptByProperties = function (properties) {
+    var path = ('.' + properties[0].qualifier + '.').split('.')
+    var chain = this._chain(path)
+    var level = LEVEL[properties[0].level]
+    for (;;) {
+        var link = chain.pop()
+        if (link.level == null || level <= LEVEL[link.level]) {
+            if (link.test == null) {
+                if (! link.accept) {
+                    return null
+                }
+                return this._createContext(path, level, properties)
+            } else {
+                var context = this._createContext(path, level, properties)
+                if (link.test(context)) {
+                    return context
+                }
+                if (this._test(chain, context)) {
+                    return context
+                }
+                return null
+            }
+        }
+    }
+}
+
+Acceptor.prototype.acceptByContext = function (context) {
+    return this._test(this._chain(context.path), context)
 }
 
 Acceptor.prototype._append = function (chain) {
@@ -100,18 +110,7 @@ Acceptor.prototype._append = function (chain) {
             node = node[path[j]]
         }
         if (link.test != null) {
-            link.test.forEach(function (condition) {
-                condition.path = condition.path.split('.')
-                if (condition.equals) {
-                    condition.type = 'equals'
-                } else if (condition.regex) {
-                    var regex = /^\/(.*)\/(?!.*(.).*\2)([gimuy]*)$/.exec(condition.regex)
-                    condition.type = 'regex'
-                    condition.regex = new RegExp(regex[1], regex[3])
-                } else {
-                    throw new Error('invalid test')
-                }
-            })
+            link.test = Evaluator.create(link.test)
         }
         node['.links'].push(link)
     }

@@ -6,18 +6,10 @@ require('proof')(16, prove)
 // comparisons convert to numbers.
 function prove (okay) {
     var Acceptor = require('..'), acceptor
-    try {
-    acceptor = new Acceptor(false, [{
-        path: '.',
-        test: [{ path: 'id', test: [{}] }]
-    }])
-    } catch (e) {
-        okay(e.message, 'invalid test', 'invalid test')
-    }
     acceptor = new Acceptor(false, [])
-    okay(!acceptor.accept([{ qualifier: 'example' }]), 'default drop')
+    okay(!acceptor.acceptByProperties([{ qualifier: 'example' }]), 'default drop')
     acceptor = new Acceptor(true, [])
-    okay(acceptor.accept([{ qualifier: 'example' }]), 'default accept')
+    okay(!! acceptor.acceptByProperties([{ qualifier: 'example' }]), 'default accept')
     acceptor = new Acceptor(false, [{
         path: '.',
         level: 'warn',
@@ -28,28 +20,48 @@ function prove (okay) {
         accept: true
     }, {
         path: '.example.equals',
-        test: [{ path: 'tag', equals: 'send' }],
+        test: '$.tag && $.tag.indexOf &&  ~$.tag.indexOf("send")',
+        accept: true
+    }, {
+        path: '.example.equals',
+        test: '$.id == 1',
         accept: true
     }, {
         path: '.example.regex',
-        test: [{ path: 'tag', regex: '/a/' }],
+        test: '/a/.test($.value)',
         accept: true
     }, {
         path: '.example.and',
-        test: [{ path: 'id', regex: '/a/' }, { path: 'tag', equals: 'send' }],
+        test: '/a/.test($.id) && ~($.tag || []).indexOf("send")',
         accept: true
     }])
-    okay(acceptor.accept([{ qualifier: 'anything', level: 'err' }]), 'level')
-    okay(!acceptor.accept([{ qualifier: 'anything', level: 'info' }]), 'level fail')
-    okay(!acceptor.accept([{ qualifier: 'example.equals'}]), 'equals missing')
-    okay(!acceptor.accept([{ qualifier: 'example.equals', tag: 'receive' }]), 'equals unequal')
-    okay(!acceptor.accept([{ qualifier: 'example.equals', tag: [ 'receive' ] }]), 'equals not in array')
-    okay(acceptor.accept([{ qualifier: 'example.equals', tag: 'send' }]), 'equals equal')
-    okay(acceptor.accept([{ qualifier: 'example.equals', tag: [ 'send' ] }]), 'equals in array')
-    okay(!acceptor.accept([{ qualifier: 'example.regex' }]), 'regex missing')
-    okay(!acceptor.accept([{ qualifier: 'example.regex', tag: 'b' }]), 'regex fail')
-    okay(!acceptor.accept([{ qualifier: 'example.regex', tag: [ 'b' ] }]), 'regex array fail')
-    okay(acceptor.accept([{ qualifier: 'example.regex', tag: 'baz' }]), 'regex match')
-    okay(acceptor.accept([{ qualifier: 'example.regex', tag: [ 'zzz', 'baz' ] }]), 'regex match array')
-    okay(acceptor.accept([{ qualifier: 'example.and', id: 'a', tag: [ 'user', 'send' ] }]), 'and')
+    okay(acceptor.acceptByProperties([{ qualifier: 'anything', level: 'err' }]), 'level')
+    okay(!acceptor.acceptByProperties([{ qualifier: 'anything', level: 'info' }]), 'level fail')
+    okay(!acceptor.acceptByProperties([{ qualifier: 'example.equals'}]), 'equals missing')
+    okay(!acceptor.acceptByProperties([{ qualifier: 'example.equals', tag: 'receive' }]), 'equals unequal')
+    okay(!acceptor.acceptByProperties([{ qualifier: 'example.equals', tag: [ 'receive' ] }]), 'equals not in array')
+    okay(acceptor.acceptByProperties([{
+        qualifier: 'example.equals', tag: [ 'send' ], level: 'warn'
+    }, {
+        key: 'value'
+    }]), {
+        path: [ '', 'example', 'equals', '' ],
+        level: 4,
+        qualifier: [ null, 'example', 'example.equals' ],
+        formatted: [],
+        json: {
+            qualifier: 'example.equals',
+            tag: [ 'send' ],
+            level: 'warn',
+            key: 'value'
+        }
+    }, 'equals equal')
+    okay(acceptor.acceptByProperties([{ qualifier: 'example.equals', tag: [ 'send' ] }]), 'equals in array')
+    okay(!acceptor.acceptByProperties([{ qualifier: 'example.regex' }]), 'regex missing')
+    okay(!acceptor.acceptByProperties([{ qualifier: 'example.regex', tag: 'b' }]), 'regex fail')
+    okay(!acceptor.acceptByProperties([{ qualifier: 'example.regex', tag: [ 'b' ] }]), 'regex array fail')
+    okay(acceptor.acceptByProperties([{ qualifier: 'example.regex', value: 'baz' }]), 'regex match')
+    okay(acceptor.acceptByProperties([{ qualifier: 'example.regex', value: 'baz' }]), 'regex match array')
+    okay(acceptor.acceptByProperties([{ qualifier: 'example.and', id: 'a', tag: [ 'user', 'send' ] }]), 'and')
+    okay(acceptor.acceptByContext({ path: [ '', 'example', 'equals' ], level: 7, json: { tag: [ 'send' ] } }), 'by context')
 }
