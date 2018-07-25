@@ -1,7 +1,7 @@
 require('proof')(2, prove)
 
 function prove (assert) {
-    var Processor = require('../l2met.processor')
+    var Processor = require('..')
     var sink = {
         gathered: [],
         process: function (entry) {
