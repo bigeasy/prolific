@@ -11,8 +11,10 @@ var Evaluator = require('prolific.evaluator')
 
 var host = require('./host')
 
-function Processor (parameters, next) {
-    this._processing = new Turnstile.Queue(this, '_process', new Turnstile)
+var youHaveGotToBeKiddingMe = require('./error')
+
+function Processor (turnstile, parameters, nextProcessor) {
+    this._queue = new Turnstile.Queue(this, '_process', turnstile)
     if (parameters.url != null) {
         var parsed = host(parameters.url)
         this._select = function () { return parsed }
@@ -20,29 +22,27 @@ function Processor (parameters, next) {
         var select = Evaluator.create(parameters.select)
         this._select = function (entry) { return host(select(entry)) }
     }
-    this._next = next
+    this._nextProcessor = nextProcessor
 }
-
-Processor.prototype.open = function (callback) { callback() }
 
 Processor.prototype.process = function (entry) {
     var server = this._select.call(null, entry)
     if (server != null) {
-        this._processing.push({
+        this._queue.push({
             server: server,
             stringified: stringify(entry)
         })
     }
-    this._next.process(entry)
+    this._nextProcessor.process(entry)
 }
 
 Processor.prototype._process = cadence(function (async, envelope) {
     var client = dgram.createSocket('udp4')
     var body = envelope.body
     async(function () {
-        var buffer = new Buffer(body.stringified)
+        var buffer = Buffer.from(body.stringified)
         var server = body.server
-        client.send(buffer, 0, buffer.length, server.port, server.hostname, Processor.youHaveGotToBeKiddingMe(async()))
+        client.send(buffer, 0, buffer.length, server.port, server.hostname, youHaveGotToBeKiddingMe(async()))
     }, function () {
 // ACHTUNG Node.js 0.10 does not accept a callback to `close()`, you must set a handler.
         delta(async()).ee(client).on('close')
@@ -50,15 +50,13 @@ Processor.prototype._process = cadence(function (async, envelope) {
     })
 })
 
-var count = 0
-
-Processor.youHaveGotToBeKiddingMe = function (callback) {
-    return function (error) {
-        if (error) callback(error)
-        else callback()
-    }
-}
-
-Processor.prototype.close = function (callback) { callback() }
-
-module.exports = Processor
+module.exports = cadence(function (async, destructible, configuration, nextProcessor) {
+    var turnstile = new Turnstile
+    // TODO We're probably doing this wrong. We don't want to just stop the
+    // turnstile, we want to wait for it to empty.
+    /*
+    destructible.destruct.wait(turnstile, 'close')
+    turnstile.listen(destructible.monitor('turnstile'))
+     */
+    return [ new Processor(turnstile, configuration, nextProcessor) ]
+})

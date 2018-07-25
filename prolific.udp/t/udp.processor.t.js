@@ -1,4 +1,4 @@
-require('proof')(4, require('cadence')(prove))
+require('proof')(3, require('cadence')(prove))
 
 function prove (async, assert) {
     var Processor = require('../udp.processor')
@@ -8,49 +8,53 @@ function prove (async, assert) {
     var delta = require('delta')
 
     var sink = { process: function () {} }
-    var processor = new Processor({ url: 'udp://127.0.0.1:9898' }, sink)
+    // var processor = new Processor({ url: 'udp://127.0.0.1:9898' }, sink)
 
     var server = dgram.createSocket('udp4')
 
-    Processor.youHaveGotToBeKiddingMe(function (error) {
-        assert(error.message, 'smh', 'shaking my head')
-    })(new Error('smh'))
+    var Destructible = require('destructible')
+    var destructible = new Destructible('t/udp.processor.t')
 
-    async(function () {
-        processor.open(async())
-    }, function () {
+    destructible.completed.wait(async())
+
+    async([function () {
+        destructible.destroy()
+    }], function () {
         server.bind(9898, '127.0.0.1', async())
     }, function () {
-        var wait = async()
-        server.once('message', function (message, remote) {
-            assert(message.toString(), '{"a":1}\n', 'sent')
-            wait()
+        destructible.monitor('UDP', Processor, {
+            url: 'udp://127.0.0.1:9898'
+        }, sink, async())
+    }, function (processor) {
+        async(function () {
+            var wait = async()
+            server.once('message', function (message, remote) {
+                assert(message.toString(), '{"a":1}\n', 'sent')
+                wait()
+            })
+            processor.process({ formatted: [], json: { a: 1 } })
+        }, function () {
+            var wait = async()
+            server.once('message', function (message, remote) {
+                assert(message.toString(), 'foo\n', 'sent formatted')
+                wait()
+            })
+            processor.process({ formatted: [ 'foo\n' ] })
         })
-        processor.process({ formatted: [], json: { a: 1 } })
     }, function () {
-        var wait = async()
-        server.once('message', function (message, remote) {
-            assert(message.toString(), 'foo\n', 'sent formatted')
-            wait()
+        destructible.monitor('UDP', Processor, { select: '$.host' }, sink, async())
+    }, function (processor) {
+        async(function () {
+            var wait = async()
+            server.once('message', function (message, remote) {
+                assert(message.toString(), '{"host":"127.0.0.1:9898"}\n', 'sent selected')
+                wait()
+            })
+            processor.process({ formatted: [], json: { a: 1 } })
+            processor.process({ formatted: [], json: { host: '127.0.0.1:9898' } })
+        }, function () {
+            delta(async()).ee(server).on('close')
+            server.close()
         })
-        processor.process({ formatted: [ 'foo\n' ] })
-    }, function () {
-        processor.close(async())
-    }, function () {
-        processor = new Processor({ select: '$.host' }, sink)
-        processor.open(async())
-    }, function () {
-        var wait = async()
-        server.once('message', function (message, remote) {
-            assert(message.toString(), '{"host":"127.0.0.1:9898"}\n', 'sent selected')
-            wait()
-        })
-        processor.process({ formatted: [], json: { a: 1 } })
-        processor.process({ formatted: [], json: { host: '127.0.0.1:9898' } })
-    }, function () {
-        processor.close(async())
-    }, function () {
-        delta(async()).ee(server).on('close')
-        server.close()
     })
 }
