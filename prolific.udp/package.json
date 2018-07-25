@@ -25,7 +25,7 @@
                             "delta":                        "1.2.x",
                             "prolific.evaluator":           "0.0.x",
                             "prolific.stringify":           "3.0.x",
-                            "turnstile":                    "3.2.x"
+                            "turnstile":                    "4.5.x"
     },
     "devDependencies":
     {
