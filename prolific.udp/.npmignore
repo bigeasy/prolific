@@ -1,0 +1,5 @@
+/.proof.out
+/.tmux.run.sh
+/coverage
+/node_modules
+/t
