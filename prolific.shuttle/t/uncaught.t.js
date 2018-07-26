@@ -7,7 +7,7 @@ function prove (assert) {
     })(new Error('function'))
     var error = new Error('handled')
     createUncaughtExceptionHandler({
-        error: function (message, properties) {
+        panic: function (message, properties) {
             assert(message, 'uncaught', 'message')
             assert(properties.stack, error.stack, 'stack')
         }
