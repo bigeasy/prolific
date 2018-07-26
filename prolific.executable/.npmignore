@@ -1,7 +1,4 @@
-/.git
-/.gitignore
-/.proof.out
-/.tmux.run.sh
+/.*
+/*.md
 /coverage
-/node_modules
 /t
