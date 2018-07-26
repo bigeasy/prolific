@@ -76,13 +76,8 @@ Processor.prototype.load = cadence(function (async) {
         var acceptor = new Acceptor(configuration.accept, configuration.chain)
         this._processor = {
             process: function (entry) {
-                if (acceptor.accept(entry)) {
-                    for (var i = 1, I = entry.length; i < I; i++) {
-                        for (var key in entry[i]) {
-                            entry[0][key] = entry[i][key]
-                        }
-                    }
-                    pipeline.process({ json: entry[0], formatted: null })
+                if (acceptor.acceptByContext(entry)) {
+                    pipeline.process(entry)
                 }
             }
         }
@@ -104,7 +99,7 @@ Processor.prototype.process = cadence(function (async, envelope) {
     }
     var entries = lines.map(JSON.parse)
     var loop = async(function () {
-        while (entries.length && !('version' in entries[0][0])) {
+        while (entries.length && !Array.isArray(entries[0])) {
             this._processor.process(entries.shift())
         }
         if (entries.length == 0) {

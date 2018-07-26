@@ -22,7 +22,6 @@ function prove (async, okay) {
     var wait = null
 
     function reloaded (configuration) {
-        console.log(configuration)
         wait()
     }
 
@@ -40,27 +39,39 @@ function prove (async, okay) {
                 async(function () {
                     processor.process({
                         body: {
-                            buffer: ([
-                                [{ qualifier: 'prolific', level: 'debug' }, { key: 'value' }],
-                                [{ qualifier: 'prolific', level: 'warn' }, { key: 'value' }]
-                            ]).map(JSON.stringify).join('\n')
+                            buffer: ([{
+                                path: [ '', 'prolific' ],
+                                level: 7,
+                                json: { qualifier: 'prolific', level: 'debug', key: 'value' }
+                            }, {
+                                path: [ '', 'prolific' ],
+                                level: 4,
+                                json: { qualifier: 'prolific', level: 'warn', key: 'value' }
+                            }]).map(JSON.stringify).join('\n')
                         }
                     }, async())
                 }, function () {
                     okay(entries.shift(), {
-                        json: { qualifier: 'prolific', level: 'warn', key: 'value' },
-                        formatted: null
+                        path: [ '', 'prolific' ],
+                        level: 4,
+                        json: { qualifier: 'prolific', level: 'warn', key: 'value' }
                     }, 'process')
                     wait = async()
                     processor.reload()
                 }, function () {
                     processor.process({
                         body: {
-                            buffer: ([
-                                [{ qualifier: 'prolific', level: 'debug' }, { key: 'value' }],
-                                [{ version: 0 }],
-                                [{ qualifier: 'prolific', level: 'warn' }, { key: 'value' }]
-                            ]).map(JSON.stringify).join('\n') + '\n'
+                            buffer: ([{
+                                path: [ '', 'prolific' ],
+                                level: 7,
+                                json: { qualifier: 'prolific', level: 'debug', key: 'value' }
+                            },
+                            [{ version: 0 }],
+                            {
+                                path: [ '', 'prolific' ],
+                                level: 4,
+                                json: { qualifier: 'prolific', level: 'warn', key: 'value' }
+                            }]).map(JSON.stringify).join('\n') + '\n'
                         }
                     }, async())
                 }, function () {
