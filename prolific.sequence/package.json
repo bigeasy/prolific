@@ -1,6 +1,6 @@
 {
     "name":                 "prolific.sequence",
-    "version":              "9.9.9",
+    "version":              "0.0.0",
     "description":
 
       "Add a sequence number to a stream of logging message.",
