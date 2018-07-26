@@ -1,6 +1,5 @@
 var Acceptor = require('prolific.acceptor')
 
-
 module.exports = {
     // Replace with a dummy date for testing.
     Date: Date,
