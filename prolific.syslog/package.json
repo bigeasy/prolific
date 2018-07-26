@@ -20,7 +20,8 @@
     },
     "dependencies":
     {
-                            "extant":                       "1.0.x"
+                            "extant":                       "1.0.x",
+                            "prolific.facility":            "0.0.x"
     },
     "devDependencies":
     {
