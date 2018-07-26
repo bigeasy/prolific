@@ -20,10 +20,12 @@
     },
     "dependencies":
     {
+                            "prolific.acceptor":            "0.2.x"
     },
     "devDependencies":
     {
                             "cadence":                      "1.0.x",
+                            "destructible":                 "0.30.x",
                             "proof":                        "3.0.x"
     },
     "main":                 "filter.processor",

@@ -1,19 +1,18 @@
-function Processor (parameters, next) {
-    this._select = new Function(
-        '$', '$qualifier', '$level', 'ERROR', 'WARN', 'INFO', 'DEBUG', 'TRACE',
-        'return ' + parameters.select
-    )
-    this._next = next
+var Acceptor = require('prolific.acceptor')
+
+function Processor (configuration, nextProcessor) {
+    this._acceptor = new Acceptor(configuration.accept, configuration.chain)
+    this._nextProcessor = nextProcessor
 }
 
-Processor.prototype.open = function (callback) { callback () }
-
 Processor.prototype.process = function (entry) {
-    if (this._select.call(null, entry.json, entry.qualifier, entry.level, 4, 3, 1, 0, 0)) {
-        this._next.process(entry)
+    if (this._acceptor.acceptByContext(entry)) {
+        this._nextProcessor.process(entry)
     }
 }
 
-Processor.prototype.close = function (callback) { callback () }
+module.exports = function (destructible, configuration, nextProcessor, callback) {
+    callback(null, new Processor(configuration, nextProcessor))
+}
 
-module.exports = Processor
+module.exports.isProlificProcessor = true
