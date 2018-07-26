@@ -1,6 +1,6 @@
 require('proof')(1, require('cadence')(prove))
 
-function prove (async, assert) {
+function prove (async, okay) {
     var prolific = require('..')
     var path = require('path')
 
@@ -11,6 +11,6 @@ function prove (async, assert) {
     async(function () {
         program = prolific([ '--configuration', configuration, 'node', child ], async())
     }, function (code) {
-        assert(code, 0, 'ran')
+        okay(code, 0, 'ran')
     })
 }
