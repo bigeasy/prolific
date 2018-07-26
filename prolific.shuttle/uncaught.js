@@ -3,7 +3,7 @@ module.exports = function (finale) {
         return finale
     } else {
         return function (error) {
-            finale.error('uncaught', { stack: error.stack })
+            finale.panic('uncaught', { stack: error.stack })
         }
     }
 }
