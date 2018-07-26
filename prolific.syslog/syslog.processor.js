@@ -3,20 +3,7 @@ var coalesce = require('extant')
 
 var FACILITY = require('prolific.facility')
 
-var LEVEL = {
-    trace: 7,
-    debug: 7,
-    info: 6,
-    notice: 5,
-    warning: 4,
-    warn: 4,
-    error: 3,
-    err: 3,
-    crit: 2,
-    alert: 1,
-    panic: 0,
-    emerg: 0
-}
+var LEVEL = require('prolific.level')
 
 function Processor (configuration, nextProcessor) {
     this._application = configuration.application || process.title
