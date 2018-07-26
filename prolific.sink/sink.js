@@ -13,8 +13,9 @@ module.exports = {
             label: label,
             qualified: qualifier + '#' + label
         }, this.properties, properties]
-        if (this.acceptor.accept(joined)) {
-            this.queue.push(joined)
+        var entry = this.acceptor.acceptByProperties(joined)
+        if (entry != null) {
+            this.queue.push(entry)
         }
     },
     // We start with a noop acceptor, so we have a `null` queue to assert that

@@ -9,18 +9,20 @@ function prove (okay) {
     prolific.queue = []
     prolific.acceptor = new Acceptor(true, [])
     prolific.json([ '', 'hello' ], 'error', 'hello', 'greeting', { a: 1, when: 0 })
-    okay(prolific.queue, [
-         [{
+    okay(prolific.queue, [{
+        path: [ '', 'hello', '' ],
+        level: 3,
+        qualifier: [ null, 'hello' ],
+        formatted: [],
+        json: {
             when: 0,
             pid: process.pid,
             level: 'error',
             label: 'greeting',
             qualifier: 'hello',
-            qualified: 'hello#greeting'
-        }, {
-            z: 26, when: 0
-        }, {
-            a: 1, when: 0
-        }]
-    ], 'json')
+            qualified: 'hello#greeting',
+            z: 26,
+            a: 1
+        }
+    }], 'json')
 }
