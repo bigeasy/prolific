@@ -20,14 +20,13 @@
     },
     "dependencies":
     {
-                            "arguable":                     "6.0.x",
-                            "cadence":                      "1.0.x"
     },
     "devDependencies":
     {
+                            "cadence":                      "1.0.x",
                             "proof":                        "3.0.x"
     },
-    "main":                 "filter.argv",
+    "main":                 "filter.processor",
     "scripts":
     {
                             "test": "proof test t/*.t.js"
