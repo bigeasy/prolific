@@ -1,6 +1,6 @@
 {
     "name":                 "prolific.tee",
-    "version":              "2.0.1",
+    "version":              "2.0.2",
     "description":
 
       "Tap into the stream of logging messages and send them in a different direction.",
