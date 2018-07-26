@@ -29,7 +29,7 @@
                             "destructible":                 "0.30.x",
                             "descendent":                   "0.2.x",
                             "interrupt":                    "6.2.x",
-                            "prolific.acceptor":            "0.1.x",
+                            "prolific.acceptor":            "0.2.x",
                             "prolific.consolidator":        "6.0.x",
                             "prolific.pipeline":            "0.5.x",
                             "prolific.inherit":             "5.0.x",
