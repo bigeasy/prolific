@@ -1,6 +1,6 @@
 {
     "name":                 "prolific.pipeline",
-    "version":              "0.5.0",
+    "version":              "0.5.1",
     "description":
 
       "Command line to pipeline defintion parser and pipeline constructor.",
