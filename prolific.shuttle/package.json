@@ -22,7 +22,7 @@
     {
                             "abend":                        "1.0.x",
                             "descendent":                   "0.2.x",
-                            "prolific.acceptor":            "0.1.x",
+                            "prolific.acceptor":            "0.2.x",
                             "prolific.queue":               "13.0.x",
                             "prolific.resolver":            "8.0.x",
                             "prolific.sink":                "6.0.x"
