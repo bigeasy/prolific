@@ -18,6 +18,7 @@ function prove (async, okay) {
             }], async())
         }, function (processor, destructible) {
             okay(typeof processor.process, 'function', 'processor created')
+            processor.process({})
             destructible.destroy()
         })
     }), null)
