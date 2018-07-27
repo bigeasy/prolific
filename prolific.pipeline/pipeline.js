@@ -10,7 +10,11 @@ module.exports = cadence(function (async, destructible, pipeline) {
         async.map(function (configuration, index) {
             var Processor = require(configuration.module)
             assert(Processor.isProlificProcessor, 'not a Prolific processor module')
-            destructible.monitor([ 'processor', index ], Processor, configuration, nextProcessor, async())
+            async(function () {
+                destructible.monitor([ 'processor', index ], Processor, configuration, nextProcessor, async())
+            }, function (processor) {
+                nextProcessor = processor
+            })
         })(pipeline.slice().reverse())
     }, function (processors) {
         processors.reverse()
