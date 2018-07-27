@@ -26,7 +26,7 @@
                             "deep-equal":                   "1.0.1",
                             "delta":                        "1.4.x",
                             "demur":                        "0.1.x",
-                            "destructible":                 "0.31.x",
+                            "destructible":                 "0.32.x",
                             "descendent":                   "0.2.x",
                             "interrupt":                    "6.2.x",
                             "prolific.acceptor":            "0.2.x",
