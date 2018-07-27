@@ -1,6 +1,6 @@
 {
     "name":                 "prolific.stdio",
-    "version":              "6.0.5",
+    "version":              "6.0.6",
     "description":
 
       "A standard I/O logger for the Prolific logging framework.",
