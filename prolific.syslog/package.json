@@ -27,7 +27,7 @@
     "devDependencies":
     {
                             "cadence":                      "1.0.x",
-                            "destructible":                 "0.30.x",
+                            "destructible":                 "0.32.x",
                             "proof":                        "3.0.x"
     },
     "main":                 "syslog.processor",
