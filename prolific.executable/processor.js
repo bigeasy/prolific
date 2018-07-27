@@ -122,16 +122,7 @@ Processor.prototype._reload = cadence(function (async, configuration) {
         this._versions.push({
             destructible: this._pipelineDestructible,
             version: version,
-            processor: {
-                process: function (entry) {
-                    for (var i = 1, I = entry.length; i < I; i++) {
-                        for (var key in entry[i]) {
-                            entry[0][key] = entry[i][key]
-                        }
-                    }
-                    pipeline.process({ json: entry[0], formatted: [] })
-                }
-            }
+            processor: pipeline
         })
         this._pipelineDestructible = destructible
         this._reloaded({ version: version, accept: configuration.accept, chain: configuration.chain })
