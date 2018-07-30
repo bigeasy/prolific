@@ -86,7 +86,7 @@ var parallel = cadence(function (async, program, inheritance, configuration, arg
                 // a `"SIGTERM"` handler, not by any action by the parent. (i.e.
                 // whether or not the parent calles `child.kill()`. The behavior
                 // is still the same if we send a kill signal from the shell.
-                interrupt.assert(exitCode == 0,  {
+                interrupt.assert(exitCode == 0, 'child.exit', {
                     exitCode: exitCode,
                     signal: signal,
                     argv: argv
@@ -136,8 +136,12 @@ var parallel = cadence(function (async, program, inheritance, configuration, arg
         cadence(function (async) {
             async(function () {
                 delta(async()).ee(monitor).on('exit')
-            }, function (errorCode, signal) {
-                assert(signal == 'SIGTERM' || errorCode == 0)
+            }, function (exitCode, signal) {
+                interrupt.assert(exitCode == 0, 'monitor.exit', {
+                    exitCode: exitCode,
+                    signal: signal,
+                    argv: argv
+                })
                 return []
             })
         })(destructible.monitor([ 'monitor', Object.keys(monitors).length ]))
