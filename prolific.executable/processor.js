@@ -100,7 +100,6 @@ Processor.prototype.process = cadence(function (async, envelope) {
     var entries = lines.map(JSON.parse)
     var loop = async(function () {
         while (entries.length && !Array.isArray(entries[0])) {
-            console.log(entries)
             this._processor.process(entries.shift())
         }
         if (entries.length == 0) {
