@@ -32,7 +32,17 @@ require('arguable')(module, require('cadence')(function (async, program) {
     var destructible = new Destructible('prolific.monitor')
     program.on('shutdown', destructible.destroy.bind(destructible))
 
+    program.on('SIGTERM', function () { console.log('MONITOR GOT SIGTERM') })
+    program.on('SIGINT', function () { console.log('MONITOR GOT SIGINT') })
+
     destructible.completed.wait(async())
+
+    destructible.destruct.wait(function () {
+        var stackTraceLimit = Error.stackTraceLimit
+        Error.stackTraceLimit = Infinity
+        console.log(new Error().stack)
+        Error.stackTraceLimit = stackTraceLimit
+    })
 
     var descendent = new Descendent(program)
     destructible.destruct.wait(descendent, 'decrement')
