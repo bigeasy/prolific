@@ -29,7 +29,7 @@ require('arguable')(module, require('cadence')(function (async, program) {
     var Signal = require('signal')
     var cadence = require('cadence')
 
-    var destructible = new Destructible('prolific.monitor')
+    var destructible = new Destructible(15000, 'prolific.monitor')
     program.on('shutdown', destructible.destroy.bind(destructible))
 
     program.on('SIGTERM', function () { console.log('MONITOR GOT SIGTERM') })
