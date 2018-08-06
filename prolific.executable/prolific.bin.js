@@ -157,7 +157,7 @@ require('arguable')(module, require('cadence')(function (async, program) {
 
     async(function () {
         var inheritance = inherit(program)
-        process.env.PROLIFIC_SUPERVISOR_PID = process.pid
+        process.env.PROLIFIC_SUPERVISOR_PROCESS_ID = process.pid
         parallel(program, inheritance, configuration, program.argv, async())
     })
 }))

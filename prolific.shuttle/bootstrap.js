@@ -7,8 +7,8 @@ var assert = require('assert')
 
 exports.createShuttle = function (net, Shuttle, Date) {
     return function (program, finale) {
-        if (program.env.PROLIFIC_SUPERVISOR_PID != null) {
-            var monitorProcessId = +program.env.PROLIFIC_SUPERVISOR_PID
+        if (program.env.PROLIFIC_SUPERVISOR_PROCESS_ID != null) {
+            var monitorProcessId = +program.env.PROLIFIC_SUPERVISOR_PROCESS_ID
             var instanceId = program.pid + '/' + Date.now()
 
             // We create a descendent and pass it to the Shuttle so the Shuttle
