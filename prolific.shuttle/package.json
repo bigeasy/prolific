@@ -1,6 +1,6 @@
 {
     "name":                 "prolific.shuttle",
-    "version":              "20.0.5",
+    "version":              "20.1.0",
     "description":
 
       "The log shuttle that makes a program Prolific-enabled.",
