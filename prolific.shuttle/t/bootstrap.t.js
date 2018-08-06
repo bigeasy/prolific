@@ -10,7 +10,7 @@ function prove (okay) {
             module: 'descendent',
             method: 'route',
             name: 'prolific:monitor',
-            to: 1,
+            to: [ 1 ],
             path: [ 1 ],
             body: '1/0'
         }, 'monitor')
