@@ -7,7 +7,6 @@ function Shuttle (pid, sync, uncaught, descendent) {
     this.queue = new Queue(pid, sync)
     this.uncaught = createUncaughtExceptionHandler(uncaught)
     this._descendent = descendent
-    this._descendent.increment()
 }
 
 Shuttle.prototype.uncaughtException = function (error) {
@@ -17,7 +16,7 @@ Shuttle.prototype.uncaughtException = function (error) {
 }
 
 Shuttle.prototype.close = function () {
-    this._descendent.decrement()
+    this._descendent.destroy()
     this.queue.close()
 }
 
