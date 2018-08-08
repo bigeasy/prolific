@@ -50,7 +50,7 @@ function prove (okay) {
         this.setPipe = function () {}
     }
     var createShuttle = bootstrap.createShuttle(net, Shuttle, { now: function () { return 0 } })
-    program.env = { PROLIFIC_SUPERVISOR_PID: '1' }
+    program.env = { PROLIFIC_SUPERVISOR_PROCESS_ID: '1' }
     createShuttle(program, function () {})
     createShuttle({ env: {} }, function () {}).close()
 }
