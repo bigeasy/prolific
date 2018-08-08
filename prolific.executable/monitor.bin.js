@@ -32,19 +32,6 @@ require('arguable')(module, require('cadence')(function (async, program) {
     var destructible = new Destructible(15000, 'prolific.monitor')
     program.on('shutdown', destructible.destroy.bind(destructible))
 
-    program.on('SIGTERM', function () { console.log('MONITOR GOT SIGTERM') })
-    program.on('SIGINT', function () { console.log('MONITOR GOT SIGINT') })
-
-    destructible.completed.wait(async())
-
-    // TODO Remove this debugging stuff and the debugging stuff above.
-    destructible.destruct.wait(function () {
-        var stackTraceLimit = Error.stackTraceLimit
-        Error.stackTraceLimit = Infinity
-        console.log(new Error().stack)
-        Error.stackTraceLimit = stackTraceLimit
-    })
-
     var descendent = new Descendent(program)
     destructible.destruct.wait(descendent, 'decrement')
 
@@ -100,9 +87,6 @@ require('arguable')(module, require('cadence')(function (async, program) {
             var watcher = new Watcher(program.ultimate.configuration, processor)
             destructible.destruct.wait(watcher, 'destroy')
             watcher.monitor(destructible.monitor('watch'))
-
-            // Ready for testing.
-            program.ready.unlatch()
         })
     }), program.ready.unlatch.bind(program.ready))
 }), { net: require('net') })
