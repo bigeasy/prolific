@@ -1,4 +1,4 @@
-require('proof')(1, require('cadence')(prove))
+require('proof')(2, require('cadence')(prove))
 
 function prove (async, okay) {
     var Tee = require('..')
@@ -19,6 +19,10 @@ function prove (async, okay) {
         destructible.monitor('tee', Tee, { pipeline: [] }, nextProcessor, async())
     }, function (processor) {
         processor.process({ a: 1 })
-        okay(processed, [{ a: 1 }], 'processed')
+        okay(processed.shift(), { a: 1 }, 'processed')
+        destructible.monitor('tee', Tee, { pipeline: [], consume: true }, nextProcessor, async())
+    }, function (processor) {
+        processor.process({ a: 1 })
+        okay(processed.length, 0, 'consumed')
     })
 }
