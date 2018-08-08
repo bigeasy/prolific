@@ -130,7 +130,7 @@ var parallel = cadence(function (async, program, inheritance, configuration, arg
             }
         })
 
-        descendent.addChild(monitor, { monitor: monitor.pid, from: message.path, pid: message.body })
+        descendent.addChild(monitor, { monitor: monitor.pid, from: message.from, pid: message.body })
         descendent.increment()
 
         cadence(function (async) {

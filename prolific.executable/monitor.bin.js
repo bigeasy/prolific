@@ -37,6 +37,7 @@ require('arguable')(module, require('cadence')(function (async, program) {
 
     destructible.completed.wait(async())
 
+    // TODO Remove this debugging stuff and the debugging stuff above.
     destructible.destruct.wait(function () {
         var stackTraceLimit = Error.stackTraceLimit
         Error.stackTraceLimit = Infinity

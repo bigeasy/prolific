@@ -30,7 +30,7 @@ function prove (async, okay) {
             module: 'descendent',
             method: 'route',
             name: 'prolific:pipe',
-            to: 1,
+            to: [ 1 ],
             path: [ 2 ],
             body: true
         }, 'pipe message')
@@ -41,7 +41,7 @@ function prove (async, okay) {
             module: 'descendent',
             method: 'route',
             name: 'prolific:accept',
-            to: 1,
+            to: [ 1 ],
             path: [ 2 ],
             body: { version: 0, accept: false, chain: [{ path: '.', level: 'warn', accept: true }] }
         }, 'accept message')
