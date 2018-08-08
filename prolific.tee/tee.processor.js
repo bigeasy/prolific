@@ -1,16 +1,24 @@
 var cadence = require('cadence')
 
+var coalesce = require('extant')
+
 var Pipeline = require('prolific.pipeline')
+var Acceptor = require('prolific.acceptor')
 
 function Processor (pipeline, configuration, nextProcessor) {
+    this._acceptor = new Acceptor(coalesce(configuration.accept, true), coalesce(configuration.chain, []))
     this._pipeline = pipeline
     this._nextProcessor = nextProcessor
     this._consume = !! configuration.consume
 }
 
 Processor.prototype.process = function (entry) {
-    this._pipeline.process(JSON.parse(JSON.stringify(entry)))
-    if (!this._consume) {
+    var forward = true
+    if (this._acceptor.acceptByContext(entry)) {
+        this._pipeline.process(JSON.parse(JSON.stringify(entry)))
+        forward = ! this._consume
+    }
+    if (forward) {
         this._nextProcessor.process(entry)
     }
 }

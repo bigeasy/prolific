@@ -13,16 +13,23 @@ function prove (async, okay) {
     var Destructible = require('destructible')
     var destructible = new Destructible('t/tee.processor.t')
 
+    var entry = { path: [ '', 'module' ], level: 'info', json: { a: 1 } }
     async([function () {
         destructible.destroy()
     }], function () {
         destructible.monitor('tee', Tee, { pipeline: [] }, nextProcessor, async())
     }, function (processor) {
-        processor.process({ a: 1 })
-        okay(processed.shift(), { a: 1 }, 'processed')
-        destructible.monitor('tee', Tee, { pipeline: [], consume: true }, nextProcessor, async())
+        processor.process(entry)
+        okay(processed.shift(), entry, 'processed')
+        destructible.monitor('tee', Tee, {
+            accept: false,
+            chain: [{ accept: true, path: '.other' }],
+            pipeline: [],
+            consume: true
+        }, nextProcessor, async())
     }, function (processor) {
-        processor.process({ a: 1 })
-        okay(processed.length, 0, 'consumed')
+        processor.process({ path: [ '', 'other' ], level: 'info', json: { a: 1 } })
+        processor.process(entry)
+        okay(processed, [ entry ], 'consumed')
     })
 }

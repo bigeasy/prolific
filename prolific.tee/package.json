@@ -21,6 +21,8 @@
     "dependencies":
     {
                             "cadence":                      "1.0.x",
+                            "extant":                       "1.0.x",
+                            "prolific.acceptor":            "0.2.x",
                             "prolific.pipeline":            "0.5.x"
     },
     "devDependencies":
