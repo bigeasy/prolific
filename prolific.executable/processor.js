@@ -108,6 +108,7 @@ Processor.prototype.process = cadence(function (async, envelope) {
         if (entries.length == 0) {
             return [ loop.break ]
         } else {
+            console.log('ENTRIES', entries)
             this.updated(entries.shift()[0].version, async())
         }
     })()
