@@ -76,15 +76,18 @@ Processor.prototype.load = cadence(function (async) {
         var acceptor = new Acceptor(configuration.accept, configuration.chain)
         this._processor = {
             process: function (entry) {
+                console.log('processing', entry)
                 if (acceptor.acceptByContext(entry)) {
                     pipeline.process(entry)
                 }
+                console.log('done')
             }
         }
     })
 })
 
 Processor.prototype.updated = cadence(function (async, version) {
+    console.log('UPDATED')
     var configuration = this._versions.shift()
     assert(version == configuration.version)
     this._processor = configuration.processor
