@@ -23,7 +23,7 @@
                             "cadence":                      "1.0.x",
                             "extant":                       "1.0.x",
                             "magazine":                     "3.2.x",
-                            "prolific.evaluator":           "0.0.x"
+                            "prolific.evaluator":           "0.2.x"
     },
     "devDependencies":
     {
