@@ -57,7 +57,6 @@ require('arguable')(module, require('cadence')(function (async, program) {
             var reloaded = descendent.up.bind(descendent, +program.ultimate.supervisor, 'prolific:accept')
             destructible.monitor('processor', Processor, program.ultimate.configuration, reloaded, async())
         }, function (processor) {
-            console.log('processor created')
             // Drain all chunks immediately into a turnstile.
             var turnstile = new Turnstile
             var queue = new Turnstile.Queue(processor, 'process', turnstile)
@@ -88,8 +87,6 @@ require('arguable')(module, require('cadence')(function (async, program) {
             var watcher = new Watcher(program.ultimate.configuration, processor)
             destructible.destruct.wait(watcher, 'destroy')
             watcher.monitor(destructible.monitor('watch'))
-
-            console.log('monitoring')
         })
     }), program.ready.unlatch.bind(program.ready))
 }), { net: require('net') })

@@ -76,18 +76,15 @@ Processor.prototype.load = cadence(function (async) {
         var acceptor = new Acceptor(configuration.accept, configuration.chain)
         this._processor = {
             process: function (entry) {
-                console.log('processing', entry)
                 if (acceptor.acceptByContext(entry)) {
                     pipeline.process(entry)
                 }
-                console.log('done')
             }
         }
     })
 })
 
 Processor.prototype.updated = cadence(function (async, version) {
-    console.log('UPDATED')
     var configuration = this._versions.shift()
     assert(version == configuration.version)
     this._processor = configuration.processor
@@ -108,7 +105,6 @@ Processor.prototype.process = cadence(function (async, envelope) {
         if (entries.length == 0) {
             return [ loop.break ]
         } else {
-            console.log('ENTRIES', entries)
             this.updated(entries.shift()[0].version, async())
         }
     })()
@@ -118,7 +114,6 @@ Processor.prototype._reload = cadence(function (async, configuration) {
     async([function () {
         this._pipeline(async())
     }, function (error) {
-        console.log(error.stack)
         // TODO Logging with the notion of a separate log for the monitor.
         logger.error('pipeline', { configuration: configuration, error: error.stack })
         return [ async.break, null ]
@@ -136,7 +131,6 @@ Processor.prototype._reload = cadence(function (async, configuration) {
 })
 
 Processor.prototype.reload = function (callback) {
-    console.log('YES RELOAD')
     this._check.check(callback)
 }
 
