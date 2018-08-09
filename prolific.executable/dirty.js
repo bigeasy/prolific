@@ -13,8 +13,10 @@ module.exports = cadence(function (async, filename, previous) {
         try {
             json = JSON.parse(current)
         } catch (error) {
+            console.log(error.stack)
             return true
         }
+        console.log(json, previous)
         return ! deepEqual(json, previous, { strict: true })
     })
 })

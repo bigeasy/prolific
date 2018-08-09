@@ -136,6 +136,7 @@ Processor.prototype._reload = cadence(function (async, configuration) {
 })
 
 Processor.prototype.reload = function (callback) {
+    console.log('YES RELOAD')
     this._check.check(callback)
 }
 
