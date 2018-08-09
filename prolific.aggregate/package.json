@@ -20,7 +20,7 @@
     },
     "dependencies":
     {
-                            "assessment":                   "1.1.x",
+                            "assessment":                   "2.0.x",
                             "cadence":                      "1.0.x",
                             "extant":                       "1.0.x",
                             "prolific.logger":              "3.0.x"
