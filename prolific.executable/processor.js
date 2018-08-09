@@ -114,6 +114,7 @@ Processor.prototype._reload = cadence(function (async, configuration) {
     async([function () {
         this._pipeline(async())
     }, function (error) {
+        console.log(error.stack)
         // TODO Logging with the notion of a separate log for the monitor.
         logger.error('pipeline', { configuration: configuration, error: error.stack })
         return [ async.break, null ]
