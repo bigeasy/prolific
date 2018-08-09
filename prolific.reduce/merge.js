@@ -1,11 +1,14 @@
-function merge (current, additional) {
+function merge (current, additional, skip) {
     if (typeof current == 'object' && current != null) {
         if (Array.isArray(current) && Array.isArray(additional)) {
             current.push.apply(current, additional)
         } else if (typeof additional == 'object' && additional != null) {
             for (var key in additional) {
+                if (skip[key]) {
+                    continue
+                }
                 if (key in current) {
-                    merge(current[key], additional[key])
+                    merge(current[key], additional[key], {})
                 } else if (typeof additional[key] == 'object') {
                     current[key] = JSON.parse(JSON.stringify(additional[key]))
                 } else {

@@ -6,7 +6,13 @@ var Evaluator = require('prolific.evaluator')
 
 var coalesce = require('extant')
 
-function Processor (configuration, nextProcessor, options) {
+var SKIP = {}
+
+'when, level, label, qualified, qualifier, pid'.split(/, /).forEach(function (skip) {
+    SKIP[skip] = true
+})
+
+function Processor (destructible, configuration, nextProcessor, options) {
     this._timeout = coalesce(configuration.timeout, 30000)
     this._delay = coalesce(configuration.delay, 5000)
     this._pivot = Evaluator.create(configuration.pivot)
@@ -14,6 +20,12 @@ function Processor (configuration, nextProcessor, options) {
     this._building = new Cache().createMagazine()
     this._sending = new Cache().createMagazine()
     this._nextProcessor = nextProcessor
+    this._arrivals = coalesce(configuration.arrivals, {})
+
+    destructible.destruct.wait(this, function () {
+        this._maybeSend(this._sending, Infinity)
+        this._maybeSend(this._building, Infinity)
+    })
 }
 
 Processor.prototype.process = function (entry) {
@@ -26,13 +38,40 @@ Processor.prototype.process = function (entry) {
     } else {
         var got = this._sending.get(pivot)
         if (got == null) {
-            got = this._building.get(pivot, { when: entry.json.when, entry: { json: {} } })
+            got = this._building.get(pivot, {
+                when: entry.json.when,
+                arrivals: [],
+                skip: {},
+                entry: {
+                    path: entry.path,
+                    level: entry.level,
+                    qualifier: entry.qualifier,
+                    formatted: entry.formatted,
+                    json: {}
+                }
+            })
         }
-        console.log(got.when)
-        if (this._timestamps != null) {
-        }
-        merge(got.entry.json, entry.json)
+        got.arrivals.push({
+            qualified: entry.json.qualified,
+            when: entry.json.when,
+            offset: entry.json.when - got.when
+        })
+        merge(got.entry.json, entry.json, got.skip)
+        got.skip = SKIP
         if (this._end.call(null, got.entry)) {
+            got.entry.json.when = got.when
+            var arrivals = got.arrivals
+            if (this._arrivals.arrayed != null) {
+                got.entry.json[this._arrivals.arrayed] = arrivals
+            }
+            if (this._arrivals.mapped != null) {
+                var map = {}
+                arrivals.forEach(function (arrival) {
+                    map[arrival.qualified] = arrival
+                })
+                got.entry.json[this._arrivals.mapped] = map
+            }
+            var arrayed = this._arrayed
             this._sending.put(pivot, got)
             this._building.remove(pivot)
         }
@@ -50,7 +89,7 @@ Processor.prototype._maybeSend = function (magazine, before) {
 }
 
 module.exports = function (destructible, configuration, nextProcessor, callback) {
-    callback(null, new Processor(configuration, nextProcessor))
+    callback(null, new Processor(destructible, configuration, nextProcessor))
 }
 
 module.exports.isProlificProcessor = true

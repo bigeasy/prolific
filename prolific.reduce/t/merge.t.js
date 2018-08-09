@@ -9,8 +9,9 @@ function prove (okay) {
     }, {
         a: 1,
         b: { a: 0, b: 0 },
-        c: [ 'b', 'c' ]
-    }), {
+        c: [ 'b', 'c' ],
+        d: 0,
+    }, { d: true }), {
         a: {},
         b: { a: 1, b: 0 },
         c: [ 'a', 'b', 'c' ]

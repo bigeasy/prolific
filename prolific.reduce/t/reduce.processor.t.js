@@ -1,4 +1,4 @@
-require('proof')(1, require('cadence')(prove))
+require('proof')(2, require('cadence')(prove))
 
 function prove (async, okay) {
     var Processor = require('../reduce.processor')
@@ -11,11 +11,17 @@ function prove (async, okay) {
                 okay(this.gathered, [{
                     json: {}
                 }, {
+                    path: [ '', 'prolific', 'example' ],
+                    qualifier: [ null, 'prolific', 'prolific.example' ],
+                    formatted: [],
+                    level: 0,
                     json: {
+                        when: 0,
                         instance: 1,
                         start: 0,
                         end: 1,
                         ended: true,
+                        level: 'panic',
                         qualified: 'prolific.example#start',
                         name: 'steve',
                         array: [ 'a', 'b' ]
@@ -49,9 +55,16 @@ function prove (async, okay) {
         async(function () {
             processor.process({ json: { } })
             processor.process({
+                when: 0,
+                path: [ '', 'prolific', 'example' ],
+                qualifier: [ null, 'prolific', 'prolific.example' ],
+                formatted: [],
+                level: 0,
                 json: {
+                    when: 0,
                     instance: 1,
                     start: 0,
+                    level: 'panic',
                     qualified: 'prolific.example#start',
                     array: [ 'a' ]
                 }
@@ -77,6 +90,61 @@ function prove (async, okay) {
         }, function () {
             wait = async()
             processor.process({ json: { callback: true } })
+        })
+    }, function () {
+        async(function () {
+            destructible.monitor('processor', Processor, {
+                pivot: '$.instance',
+                end: '$.ended',
+                delay: 50,
+                arrivals: { arrayed: '$arrayed', mapped: '$mapped' }
+            }, sink, async())
+        }, function (processor) {
+            async(function () {
+                sink.gathered = []
+                processor.process({
+                    when: 0,
+                    path: [ '', 'prolific', 'example' ],
+                    qualifier: [ null, 'prolific', 'prolific.example' ],
+                    formatted: [],
+                    level: 0,
+                    json: {
+                        when: 0,
+                        instance: 1,
+                        start: 1,
+                        end: 1,
+                        ended: true,
+                        qualified: 'prolific.example#end',
+                        array: [ 'b' ]
+                    }
+                })
+                setTimeout(async(), 250)
+            }, function () {
+                processor.process({ json: {} })
+                okay(sink.gathered.shift(), {
+                    path: [ '', 'prolific', 'example' ],
+                    qualifier: [ null, 'prolific', 'prolific.example' ],
+                    formatted: [],
+                    level: 0,
+                    json: {
+                        when: 0,
+                        instance: 1,
+                        start: 1,
+                        end: 1,
+                        ended: true,
+                        qualified: 'prolific.example#end',
+                        array: [ 'b' ],
+                        $mapped: {
+                            'prolific.example#end': {
+                                qualified: 'prolific.example#end', when: 0, offset: 0
+                            }
+                        },
+                        $arrayed: [{
+                            qualified: 'prolific.example#end', when: 0, offset: 0
+                        }]
+                    }
+                }, 'logged')
+            })
         })
     })
 }
