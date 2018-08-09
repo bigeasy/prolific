@@ -50,7 +50,7 @@ Acceptor.prototype._test = function (chain, context) {
                 return !! link.accept
             } else {
                 console.log('will run test')
-                var outcome = link.test(context))
+                var outcome = link.test(context)
                 console.log('did run test', outcome)
                 if (outcome) {
                     return true
