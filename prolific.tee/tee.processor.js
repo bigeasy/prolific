@@ -14,10 +14,13 @@ function Processor (pipeline, configuration, nextProcessor) {
 
 Processor.prototype.process = function (entry) {
     var forward = true
+    console.log('got', entry)
     if (this._acceptor.acceptByContext(entry)) {
+        console.log('accepted')
         this._pipeline.process(JSON.parse(JSON.stringify(entry)))
         forward = ! this._consume
     }
+    console.log('forward', forward)
     if (forward) {
         this._nextProcessor.process(entry)
     }
