@@ -48,8 +48,13 @@ Acceptor.prototype._test = function (chain, context) {
         if (link.level == null || context.level <= LEVEL[link.level]) {
             if (link.test == null) {
                 return !! link.accept
-            } else if (link.test(context)) {
-                return true
+            } else {
+                console.log('will run test')
+                var outcome = link.test(context))
+                console.log('did run test', outcome)
+                if (outcome) {
+                    return true
+                }
             }
         }
     }
