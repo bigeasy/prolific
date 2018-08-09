@@ -28,6 +28,7 @@ Processor.prototype.process = function (entry) {
 
 module.exports = cadence(function (async, destructible, configuration, nextProcessor) {
     async(function () {
+        console.log('rebuilding')
         destructible.monitor('pipeline', Pipeline, configuration.pipeline, async())
     }, function (pipeline) {
         return new Processor(pipeline, configuration, nextProcessor)
