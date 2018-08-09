@@ -20,6 +20,7 @@
     },
     "dependencies":
     {
+                            "extant":                       "1.0.x",
                             "prolific.evaluator":           "0.2.x",
                             "prolific.level":               "0.0.x"
     },

@@ -1,6 +1,8 @@
 var LEVEL = require('prolific.level')
 var Evaluator = require('prolific.evaluator')
 
+var coalesce = require('extant')
+
 function Acceptor (accept, chain) {
     this._root = {}
     this._append([{ path: '.', accept: !! accept }])
@@ -49,10 +51,7 @@ Acceptor.prototype._test = function (chain, context) {
             if (link.test == null) {
                 return !! link.accept
             } else {
-                console.log('will run test')
-                var outcome = link.test(context)
-                console.log('did run test', outcome)
-                if (outcome) {
+                if (link.test(context)) {
                     return true
                 }
             }
@@ -92,7 +91,12 @@ Acceptor.prototype.acceptByContext = function (context) {
 
 Acceptor.prototype._append = function (chain) {
     for (var i = 0, I = chain.length; i < I; i++) {
-        var link = chain[i]
+        var link = {
+            path: chain[i].path,
+            level: coalesce(chain[i].level),
+            test: coalesce(chain[i].test),
+            accept: !! chain[i].accept
+        }
         var path = link.path == '.' ? [ '' ] : link.path.split('.')
         var node = this._root
         for (var j = 0, J = path.length; j < J; j++) {
