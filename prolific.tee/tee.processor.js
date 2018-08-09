@@ -24,11 +24,12 @@ Processor.prototype.process = function (entry) {
     if (forward) {
         this._nextProcessor.process(entry)
     }
+    console.log('processed')
 }
 
 module.exports = cadence(function (async, destructible, configuration, nextProcessor) {
+    console.log('rebuilding')
     async(function () {
-        console.log('rebuilding')
         destructible.monitor('pipeline', Pipeline, configuration.pipeline, async())
     }, function (pipeline) {
         return new Processor(pipeline, configuration, nextProcessor)
