@@ -28,7 +28,7 @@
                             "demur":                        "0.1.x",
                             "destructible":                 "0.32.x",
                             "descendent":                   "0.5.x",
-                            "interrupt":                    "6.2.x",
+                            "interrupt":                    "6.3.x",
                             "prolific.acceptor":            "0.2.x",
                             "prolific.consolidator":        "6.0.x",
                             "prolific.pipeline":            "0.5.x",

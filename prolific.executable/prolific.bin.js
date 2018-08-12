@@ -36,7 +36,7 @@ var Destructible = require('destructible')
 var Descendent = require('descendent')
 
 // Exceptions that you can catch by type.
-var interrupt = require('interrupt').createInterrupter('prolific')
+var Interrupt = require('interrupt').createInterrupter('prolific')
 
 // Command line and environment interpretation utilities.
 var inherit = require('prolific.inherit')
@@ -86,7 +86,7 @@ var parallel = cadence(function (async, program, inheritance, configuration, arg
                 // a `"SIGTERM"` handler, not by any action by the parent. (i.e.
                 // whether or not the parent calles `child.kill()`. The behavior
                 // is still the same if we send a kill signal from the shell.
-                interrupt.assert(exitCode == 0, 'child.exit', {
+                Interrupt.assert(exitCode == 0, 'child.exit', {
                     exitCode: exitCode,
                     signal: signal,
                     argv: argv
@@ -137,7 +137,7 @@ var parallel = cadence(function (async, program, inheritance, configuration, arg
             async(function () {
                 delta(async()).ee(monitor).on('exit')
             }, function (exitCode, signal) {
-                interrupt.assert(exitCode == 0, 'monitor.exit', {
+                Interrupt.assert(exitCode == 0, 'monitor.exit', {
                     exitCode: exitCode,
                     signal: signal,
                     argv: argv

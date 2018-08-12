@@ -11,7 +11,7 @@ Turnstile.Check = require('turnstile/check')
 var Pipeline = require('prolific.pipeline')
 var Acceptor = require('prolific.acceptor')
 
-var interrupt = require('interrupt').createInterrupter('prolific')
+var Interrupt = require('interrupt').createInterrupter('prolific')
 var logger = require('prolific.logger').createLogger('prolific.supervisor')
 
 // Construct a processor that will reload it's configuration from the given
@@ -58,7 +58,7 @@ Processor.prototype._pipeline = cadence(function (async) {
     async(function () {
         fs.readFile(this._configuration, 'utf8', async())
     }, function (configuration) {
-        interrupt.assert(!this.destroyed, 'destroyed')
+        Interrupt.assert(!this.destroyed, 'destroyed')
         configuration = JSON.parse(configuration)
         async(function () {
             this._destructible.monitor([ 'pipeline', this._version ], true, Pipeline, configuration.pipeline, async())
