@@ -24,7 +24,6 @@
     },
     "devDependencies":
     {
-                            "arguable":                     "6.7.x",
                             "destructible":                 "0.32.x",
                             "proof":                        "3.0.x"
     },
