@@ -20,8 +20,7 @@
     },
     "dependencies":
     {
-                            "cadence":                      "1.0.x",
-                            "interrupt":                    "6.2.x"
+                            "cadence":                      "1.0.x"
     },
     "devDependencies":
     {
