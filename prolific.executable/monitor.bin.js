@@ -51,7 +51,9 @@ require('arguable')(module, require('cadence')(function (async, program) {
     var reader = require('./stdin')(destructible.destroy.bind(destructible))
 
     destructible.monitor('main', cadence(function (async) {
-        async(function () {
+        async([function () {
+            program.ready.unlatch()
+        }], function () {
             setImmediate(async()) // allows test to get handle
         }, function () {
             var reloaded = descendent.up.bind(descendent, +program.ultimate.supervisor, 'prolific:accept')
@@ -88,5 +90,5 @@ require('arguable')(module, require('cadence')(function (async, program) {
             destructible.destruct.wait(watcher, 'destroy')
             watcher.monitor(destructible.monitor('watch'))
         })
-    }), program.ready.unlatch.bind(program.ready))
+    }), null)
 }), { net: require('net') })
