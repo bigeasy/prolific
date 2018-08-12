@@ -34,7 +34,6 @@
                             "prolific.pipeline":            "0.5.x",
                             "prolific.inherit":             "5.0.x",
                             "prolific.ipc":                 "1.0.x",
-                            "rescue":                       "3.2.x",
                             "signal":                       "4.0.x"
     },
     "devDependencies":
