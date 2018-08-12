@@ -1,4 +1,3 @@
-var rescue = require('rescue')
 var abend = require('abend')
 var cadence = require('cadence')
 var Chunk = require('prolific.chunk')
