@@ -52,10 +52,7 @@ Acceptor.prototype._test = function (chain, context) {
                 return !! link.accept
             } else {
                 if (link.test(context)) {
-                    console.log('passed', link)
                     return !! link.accept
-                } else {
-                    console.log('failed', link)
                 }
             }
         }
@@ -77,7 +74,7 @@ Acceptor.prototype.acceptByProperties = function (properties) {
             } else {
                 var context = this._createContext(path, level, properties)
                 if (link.test(context)) {
-                    return context
+                    return link.accept ? context : null
                 }
                 if (this._test(chain, context)) {
                     return context
