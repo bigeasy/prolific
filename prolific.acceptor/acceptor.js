@@ -52,7 +52,10 @@ Acceptor.prototype._test = function (chain, context) {
                 return !! link.accept
             } else {
                 if (link.test(context)) {
+                    console.log('passed', link)
                     return !! link.accept
+                } else {
+                    console.log('failed', link)
                 }
             }
         }

@@ -1,4 +1,4 @@
-require('proof')(16, prove)
+require('proof')(17, prove)
 
 // Limited language that is ment to match specific entries in addition to
 // winnowing by package and level. Select first by package name, then winnow by
@@ -34,6 +34,10 @@ function prove (okay) {
         path: '.example.and',
         test: '/a/.test($.id) && ~($.tag || []).indexOf("send")',
         accept: true
+    }, {
+        path: '.',
+        test: '$.nope',
+        accept: false
     }])
     okay(acceptor.acceptByProperties([{ qualifier: 'anything', level: 'err' }]), 'level')
     okay(!acceptor.acceptByProperties([{ qualifier: 'anything', level: 'info' }]), 'level fail')
@@ -64,4 +68,5 @@ function prove (okay) {
     okay(acceptor.acceptByProperties([{ qualifier: 'example.regex', value: 'baz' }]), 'regex match array')
     okay(acceptor.acceptByProperties([{ qualifier: 'example.and', id: 'a', tag: [ 'user', 'send' ] }]), 'and')
     okay(acceptor.acceptByContext({ path: [ '', 'example', 'equals' ], level: 7, json: { tag: [ 'send' ] } }), 'by context')
+    okay(!acceptor.acceptByProperties([{ qualifier: 'example.and', nope: 1 }]), 'nope')
 }
