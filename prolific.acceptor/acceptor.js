@@ -52,7 +52,7 @@ Acceptor.prototype._test = function (chain, context) {
                 return !! link.accept
             } else {
                 if (link.test(context)) {
-                    return true
+                    return !! link.accept
                 }
             }
         }
