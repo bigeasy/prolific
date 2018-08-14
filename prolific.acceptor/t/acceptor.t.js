@@ -1,4 +1,4 @@
-require('proof')(17, prove)
+require('proof')(18, prove)
 
 // Limited language that is ment to match specific entries in addition to
 // winnowing by package and level. Select first by package name, then winnow by
@@ -67,5 +67,13 @@ function prove (okay) {
     okay(acceptor.acceptByProperties([{ qualifier: 'example.regex', level: 'debug', value: 'baz' }]), 'regex match array')
     okay(acceptor.acceptByProperties([{ qualifier: 'example.and', level: 'debug', id: 'a', tag: [ 'user', 'send' ] }]), 'and')
     okay(acceptor.acceptByContext({ path: '.example.equals.', level: 7, json: { tag: [ 'send' ] } }), 'by context')
-    okay(!acceptor.acceptByProperties([{ qualifier: 'example.and', level: 'debug', nope: 1 }]), 'nope')
+    // The following test the branches of the initial test against a user
+    // function.
+    okay(!acceptor.acceptByProperties([{ qualifier: 'example.and', level: 'debug', nope: 1 }]), 'match first test and drop')
+    acceptor = new Acceptor(false, [{
+        path: '.',
+        test: 'true',
+        accept: true
+    }])
+    okay(acceptor.acceptByProperties([{ qualifier: 'example.and', level: 'debug' }]), 'match first test and accept')
 }
