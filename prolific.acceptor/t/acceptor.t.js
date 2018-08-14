@@ -49,9 +49,8 @@ function prove (okay) {
     }, {
         key: 'value'
     }]), {
-        path: [ '', 'example', 'equals', '' ],
+        path: '.example.equals.',
         level: 4,
-        qualifier: [ null, 'example', 'example.equals' ],
         formatted: [],
         json: {
             qualifier: 'example.equals',
@@ -67,6 +66,6 @@ function prove (okay) {
     okay(acceptor.acceptByProperties([{ qualifier: 'example.regex', level: 'debug', value: 'baz' }]), 'regex match')
     okay(acceptor.acceptByProperties([{ qualifier: 'example.regex', level: 'debug', value: 'baz' }]), 'regex match array')
     okay(acceptor.acceptByProperties([{ qualifier: 'example.and', level: 'debug', id: 'a', tag: [ 'user', 'send' ] }]), 'and')
-    okay(acceptor.acceptByContext({ qualifier: [ null, 'example', 'example.equals' ], level: 7, json: { tag: [ 'send' ] } }), 'by context')
+    okay(acceptor.acceptByContext({ path: '.example.equals.', level: 7, json: { tag: [ 'send' ] } }), 'by context')
     okay(!acceptor.acceptByProperties([{ qualifier: 'example.and', level: 'debug', nope: 1 }]), 'nope')
 }

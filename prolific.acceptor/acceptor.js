@@ -10,11 +10,7 @@ function Acceptor (accept, chain) {
     this._chain.reverse()
 }
 
-Acceptor.prototype._createContext = function (path, parts, level, properties) {
-    var qualifier = parts.map(function (value, index, array) {
-        return array.slice(0, index + 1).join('.')
-    })
-    qualifier.unshift(null)
+Acceptor.prototype._createContext = function (path, level, properties) {
     for (var i = 1, I = properties.length; i < I; i++) {
         for (var key in properties[i]) {
             properties[0][key] = properties[i][key]
@@ -23,7 +19,6 @@ Acceptor.prototype._createContext = function (path, parts, level, properties) {
     return {
         path: path,
         level: level,
-        qualifier: qualifier,
         formatted: [],
         json: properties[0]
     }
@@ -34,7 +29,8 @@ Acceptor.prototype._test = function (i, context) {
         var link = this._chain[i]
         if (
             context.level <= link.level &&
-            context.qualifier[link.index] == link.part &&
+            context.path.startsWith(link.path) &&
+            context.path[link.path.length] == '.' &&
             (link.test == null || link.test(context))
         ) {
             return link.accept
@@ -43,20 +39,22 @@ Acceptor.prototype._test = function (i, context) {
 }
 
 Acceptor.prototype.acceptByProperties = function (properties) {
-    var path = ('.' + properties[0].qualifier + '.').split('.')
+    var path = '.' + properties[0].qualifier + '.'
+    var level = LEVEL[properties[0].level]
     for (var i = 0, I = this._chain.length; i < I; i++) {
         var link = this._chain[i]
-        var parts = properties[0].qualifier.split('.')
-        if (link.part == null || parts.slice(0, link).join('.') == link.part) {
-            var level = LEVEL[properties[0].level]
-            if (level <= link.level) {
+        if (level <= link.level) {
+            if (
+                path.startsWith(link.path) &&
+                path[link.path.length] == '.'
+            ) {
                 if (link.test == null) {
                     if (! link.accept) {
                         return null
                     }
-                    return this._createContext(path, parts, level, properties)
+                    return this._createContext(path, level, properties)
                 }
-                var context = this._createContext(path, parts, level, properties)
+                var context = this._createContext(path, level, properties)
                 if (link.test(context)) {
                     return link.accept ? context : null
                 }
@@ -75,10 +73,9 @@ Acceptor.prototype.acceptByContext = function (context) {
 
 Acceptor.prototype._append = function (chain) {
     for (var i = 0, I = chain.length; i < I; i++) {
-        var path = coalesce(chain[i].path, ''), part = null, index = 0, level = 7, test = null
-        if (path != '.') {
-            index = path.split('.').length - 1
-            part = path.substring(1)
+        var path = coalesce(chain[i].path, ''), level = 7, test = null
+        if (path == '.') {
+            path = ''
         }
         if (chain[i].level != null) {
             level = LEVEL[chain[i].level]
@@ -87,8 +84,7 @@ Acceptor.prototype._append = function (chain) {
             test = Evaluator.create(chain[i].test)
         }
         this._chain.push({
-            index: index,
-            part: part,
+            path: path,
             level: level,
             test: test,
             accept: !! chain[i].accept

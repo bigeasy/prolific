@@ -30,7 +30,7 @@ function fn () {
 }
 
 function fn_ () {
-    acceptor.acceptByProperties([{ level: 'info', qualifier: 'example.service' }])
+    acceptor_.acceptByProperties([{ level: 'info', qualifier: 'example.service' }])
 }
 
 fn()
