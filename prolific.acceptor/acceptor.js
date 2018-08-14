@@ -29,8 +29,14 @@ Acceptor.prototype._test = function (i, context) {
         var link = this._chain[i]
         if (
             context.level <= link.level &&
-            context.path.startsWith(link.path) &&
-            context.path[link.path.length] == '.' &&
+            (
+                link.path === '' ||
+                link.path === context.path ||
+                (
+                    context.path.startsWith(link.path) &&
+                    context.path[link.path.length] == '.'
+                )
+            ) &&
             (link.test == null || link.test(context))
         ) {
             return link.accept
@@ -39,14 +45,18 @@ Acceptor.prototype._test = function (i, context) {
 }
 
 Acceptor.prototype.acceptByProperties = function (properties) {
-    var path = '.' + properties[0].qualifier + '.'
+    var path = properties[0].qualifier
     var level = LEVEL[properties[0].level]
     for (var i = 0, I = this._chain.length; i < I; i++) {
         var link = this._chain[i]
         if (level <= link.level) {
             if (
-                path.startsWith(link.path) &&
-                path[link.path.length] == '.'
+                link.path === '' ||
+                link.path === path ||
+                (
+                    path.startsWith(link.path) &&
+                    path[link.path.length] == '.'
+                )
             ) {
                 if (link.test == null) {
                     if (! link.accept) {
@@ -74,8 +84,8 @@ Acceptor.prototype.acceptByContext = function (context) {
 Acceptor.prototype._append = function (chain) {
     for (var i = 0, I = chain.length; i < I; i++) {
         var path = coalesce(chain[i].path, ''), level = 7, test = null
-        if (path == '.') {
-            path = ''
+        if (path[0] == '.') {
+            path = path.substring(1)
         }
         if (chain[i].level != null) {
             level = LEVEL[chain[i].level]
