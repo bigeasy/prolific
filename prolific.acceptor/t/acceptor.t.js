@@ -38,6 +38,8 @@ function prove (okay) {
         path: '.',
         test: '$.nope',
         accept: false
+    }, { // Test by properties path mismatch.
+        path: '.miss'
     }])
     okay(acceptor.acceptByProperties([{ qualifier: 'anything', level: 'err' }]), 'level')
     okay(!acceptor.acceptByProperties([{ qualifier: 'anything', level: 'info' }]), 'level fail')
