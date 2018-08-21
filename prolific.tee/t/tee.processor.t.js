@@ -13,7 +13,7 @@ function prove (async, okay) {
     var Destructible = require('destructible')
     var destructible = new Destructible('t/tee.processor.t')
 
-    var entry = { path: [ '', 'module' ], level: 'info', json: { a: 1 } }
+    var entry = { path: 'module', level: 'info', json: { a: 1 } }
     async([function () {
         destructible.destroy()
     }], function () {
@@ -28,7 +28,7 @@ function prove (async, okay) {
             consume: true
         }, nextProcessor, async())
     }, function (processor) {
-        processor.process({ path: [ '', 'other' ], level: 'info', json: { a: 1 } })
+        processor.process({ path: 'other', level: 7, json: { a: 1 } })
         processor.process(entry)
         okay(processed, [ entry ], 'consumed')
     })
