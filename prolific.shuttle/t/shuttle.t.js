@@ -1,7 +1,7 @@
 require('proof')(2, prove)
 
 function prove (assert) {
-    var Descendent = require('descendent')
+    var descendent = require('descendent')
     var Shuttle = require('../shuttle')
     var stream = require('stream')
     var io = {
@@ -11,7 +11,7 @@ function prove (assert) {
     }
     var shuttle = new Shuttle(1, io.sync, function (error) {
         assert(error.message, 'hello', 'uncaught handled')
-    }, new Descendent(process))
+    }, descendent)
     try {
         shuttle.uncaughtException(new Error('hello'))
     } catch (error) {

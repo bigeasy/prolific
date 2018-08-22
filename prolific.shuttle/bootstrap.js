@@ -1,5 +1,6 @@
 var Descendent = require('descendent')
 var Acceptor = require('prolific.acceptor')
+var foremost = require('foremost')
 
 var abend = require('abend')
 
@@ -18,7 +19,8 @@ exports.createShuttle = function (net, Shuttle, Date) {
             // allow you to intercept messages and recall that they are
             // addressed, so they are not going to be given to a Descendent that
             // is not expecting them.
-            var descendent = new Descendent(program)
+            var descendent = foremost('descendent')
+            descendent.increment()
             var shuttle = new Shuttle(instanceId, program.stderr, finale, descendent)
 
             // All filtering will be performed by the monitor initially. Until

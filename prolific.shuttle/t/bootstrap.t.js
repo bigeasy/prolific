@@ -5,6 +5,7 @@ function prove (okay) {
     var stream = require('stream')
     var bootstrap = require('../bootstrap')
     var program = new events.EventEmitter
+    require('descendent').process = program
     program.send = function (message) {
         okay(message, {
             module: 'descendent',

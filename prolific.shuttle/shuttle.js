@@ -16,7 +16,7 @@ Shuttle.prototype.uncaughtException = function (error) {
 }
 
 Shuttle.prototype.close = function () {
-    this._descendent.destroy()
+    this._descendent.decrement()
     this.queue.close()
 }
 
