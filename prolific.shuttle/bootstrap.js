@@ -7,19 +7,13 @@ var abend = require('abend')
 var assert = require('assert')
 
 exports.createShuttle = function (net, Shuttle, Date) {
-    return function (program, finale) {
+    return function (finale) {
+        var descendent = foremost('descendent')
+        var program = descendent.process
         if (program.env.PROLIFIC_SUPERVISOR_PROCESS_ID != null) {
             var monitorProcessId = +program.env.PROLIFIC_SUPERVISOR_PROCESS_ID
             var instanceId = program.pid + '/' + Date.now()
 
-            // We create a descendent and pass it to the Shuttle so the Shuttle
-            // can destroy it.
-            // TODO Troubles me to create an extra descendent, feel like it
-            // might be a good idea to split it into Up and Down. Down would
-            // allow you to intercept messages and recall that they are
-            // addressed, so they are not going to be given to a Descendent that
-            // is not expecting them.
-            var descendent = foremost('descendent')
             descendent.increment()
             var shuttle = new Shuttle(instanceId, program.stderr, finale, descendent)
 
@@ -39,6 +33,7 @@ exports.createShuttle = function (net, Shuttle, Date) {
             descendent.up(monitorProcessId, 'prolific:monitor', instanceId)
 
             program.on('uncaughtException', shuttle.uncaughtException.bind(shuttle))
+            // TODO Isn't this a bit dubious? Let's force caller to close.
             program.on('exit', shuttle.exit.bind(shuttle))
             return shuttle
         }
