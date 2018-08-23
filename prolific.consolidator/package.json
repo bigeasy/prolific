@@ -28,7 +28,6 @@
     "devDependencies":
     {
                             "abend":                        "1.0.x",
-                            "destructible":                 "1.0.x",
                             "prolific.chunk":               "3.0.x",
                             "proof":                        "3.0.x"
     },
