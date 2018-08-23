@@ -14,7 +14,7 @@ function Queue (pid, stderr) {
     this._writing = true
     this._closed = false
     this._stderr = stderr
-    this._chunks.push(new Chunk(this._pid, 0, new Buffer(''), 1))
+    this._chunks.push(new Chunk(this._pid, 0, Buffer.from(''), 1))
 }
 
 Queue.prototype.setPipe = function (stream) {
@@ -27,7 +27,7 @@ Queue.prototype.setPipe = function (stream) {
 }
 
 Queue.prototype.push = function (json) {
-    this._buffers.push(new Buffer(JSON.stringify(json) + '\n'))
+    this._buffers.push(Buffer.from(JSON.stringify(json) + '\n'))
     if (!this._writing) {
         this._writing = true
         this.flush(abend)
@@ -130,10 +130,10 @@ Queue.prototype.exit = function () {
     this._chunkEntries()
 
     if (this._chunks.length == 0) {
-        this._chunks.unshift(new Chunk(this._pid, 0, new Buffer(''), this._chunkNumber))
+        this._chunks.unshift(new Chunk(this._pid, 0, Buffer.from(''), this._chunkNumber))
         this._previousChecksum = 'aaaaaaaa'
     } else if (this._chunks.length > 0 && this._chunks[0].number != 0) {
-        this._chunks.unshift(new Chunk(this._pid, 0, new Buffer(''), this._chunks[0].number))
+        this._chunks.unshift(new Chunk(this._pid, 0, Buffer.from(''), this._chunks[0].number))
         this._previousChecksum = 'aaaaaaaa'
     }
 
@@ -144,7 +144,7 @@ Queue.prototype.exit = function () {
         this._previousChecksum = chunk.checksum
     }
 
-    var chunk = new Chunk(this._pid, this._chunkNumber++, new Buffer(''), 0)
+    var chunk = new Chunk(this._pid, this._chunkNumber++, Buffer.from(''), 0)
     chunk.checksum = 'aaaaaaaa'
     buffers.push(chunk.header(this._previousChecksum), chunk.buffer)
 
