@@ -81,13 +81,13 @@ Collector.prototype.scan = function (buffer) {
         }
     }
     if (scan.index < scan.buffer.length) {
-        this._buffers.push(new Buffer(buffer.slice(scan.index)))
+        this._buffers.push(Buffer.from(buffer.slice(scan.index)))
     }
 }
 
 Collector.prototype._scanChunk = function (scan) {
     var remaining = Math.min(this._chunk.remaining, scan.buffer.length - scan.index)
-    this._buffers.push(new Buffer(scan.buffer.slice(scan.index, scan.index + remaining)))
+    this._buffers.push(Buffer.from(scan.buffer.slice(scan.index, scan.index + remaining)))
     scan.index += remaining
     if ((this._chunk.remaining -= remaining) == 0) {
         var buffer = this._chunk.buffer = Buffer.concat(this._buffers)
@@ -104,7 +104,7 @@ Collector.prototype._scanChunk = function (scan) {
 }
 
 Collector.prototype._push = function (scan, i) {
-    this._buffers.push(new Buffer(scan.buffer.slice(scan.index, i)))
+    this._buffers.push(Buffer.from(scan.buffer.slice(scan.index, i)))
     scan.index = i
 }
 
@@ -198,7 +198,7 @@ Collector.prototype._scanHeader = function (scan) {
                 if (chunk.number == this.chunkNumber[chunk.pid]) {
                     if (chunk.checksum == 0xaaaaaaaa && chunk.value == 0) {
                         chunk.eos = true
-                        chunk.buffer = new Buffer('')
+                        chunk.buffer = Buffer.from('')
                         this.chunks.push(chunk)
                         delete this._previousChecksum[chunk.pid]
                         delete this.chunkNumber[chunk.pid]
@@ -228,7 +228,7 @@ Collector.prototype._scanHeader = function (scan) {
 
 Collector.prototype.exit = function () {
     assert(!this._async, 'exit called on async stream')
-    this._scanned({ buffer: new Buffer(''), index: 0 }, 0)
+    this._scanned({ buffer: Buffer.from(''), index: 0 }, 0)
 }
 
 module.exports = Collector
