@@ -1,4 +1,4 @@
-require('proof')(4, require('cadence')(prove))
+require('proof')(3, require('cadence')(prove))
 
 function prove (async, okay) {
     var stream = require('stream')
@@ -8,15 +8,17 @@ function prove (async, okay) {
 
     var chunk, previousChecksum, buffer
 
+    var chunks = [ [], [] ]
+
     var through = new stream.PassThrough
     var forward = new stream.PassThrough
-    var synchronous = new Synchronous
-
-    var done = async()
-    synchronous.listen(through, forward, function (error) {
-        okay(! error, 'listen exit okay')
-        done()
+    var synchronous = new Synchronous(function (pid) {
+        synchronous.setConsumer(pid, {
+            consume: function (chunk) { chunks[+pid].push(chunk) }
+        })
     })
+
+    synchronous.listen(through, forward, abend)
 
     through.write('hello, world\n')
 
@@ -47,16 +49,14 @@ function prove (async, okay) {
             }
         }
 
-        synchronous.addConsumer(1, consumer)
-
-        okay(consumer.chunks.shift().buffer.toString(), 'a\n', 'consumer join')
+        okay(chunks[1].shift().buffer.toString(), 'a\n', 'consumer join')
 
         previousChecksum = chunk.checksum
         buffer = Buffer.from('b\n')
         chunk = new Chunk(1, 2, buffer, buffer.length)
         write(through, chunk, previousChecksum, async())
     }, function () {
-        okay(consumer.chunks.shift().buffer.toString(), 'b\n', 'consumer consume')
+        okay(chunks[1].shift().buffer.toString(), 'b\n', 'consumer consume')
 
         previousChecksum = chunk.checksum
         chunk = new Chunk(1, 3, Buffer.from(''), 0)
