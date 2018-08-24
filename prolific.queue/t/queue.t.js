@@ -1,4 +1,4 @@
-require('proof')(6, require('cadence')(prove))
+require('proof')(7, require('cadence')(prove))
 
 function prove (async, okay) {
     var stream = require('stream')
@@ -9,6 +9,7 @@ function prove (async, okay) {
     var expected = [
         '% 1 0 aaaaaaaa 811c9dc5 1\n',
         '% 1 1 811c9dc5 fdaf7437 6\n1\n2\n3\n',
+        '% 1 2 fdaf7437 9fe3ab4b 2\n4\n',
         '% 1 0 aaaaaaaa 811c9dc5 1\n'
     ]
     var writable = {
@@ -34,19 +35,23 @@ function prove (async, okay) {
             var wait = [writable.wait, writable.wait = null][0]
             wait()
         }
-        queue.exit()
-        queue.exit()
+        queue.push(4)
+        while (writable.wait != null) {
+            var wait = [writable.wait, writable.wait = null][0]
+            wait()
+        }
+            queue.close()
+        queue.close()
     }, function () {
         var stderr = new stream.PassThrough
         queue = new Queue(1, stderr)
         queue.setPipe(writable)
         queue.push(1)
-        queue.exit()
         queue.close()
         var chunk = stderr.read().toString()
-        okay(chunk, '% 1 0 aaaaaaaa 811c9dc5 1\n% 1 1 811c9dc5 05eb07a2 2\n1\n% 1 2 05eb07a2 aaaaaaaa 0\n', 'exit')
-        queue.push(1)
-        okay(stderr.read(), null, 'no write after exit')
+        okay(chunk, '% 1 0 aaaaaaaa 811c9dc5 1\n% 1 1 811c9dc5 05eb07a2 2\n1\n', 'exit')
+        queue.push(3)
+        okay(stderr.read().toString(), '% 1 2 05eb07a2 5df00f58 2\n3\n', 'write after close')
         var callback, count = 0
         queue = new Queue(1, stderr)
         queue.setPipe({
@@ -62,9 +67,9 @@ function prove (async, okay) {
         })
         queue.push(1)
         queue.push(2)
-        queue.exit()
+        queue.close()
         okay(stderr.read().toString(),
-            '% 1 0 aaaaaaaa 811c9dc5 2\n% 1 2 811c9dc5 87f2900d 2\n2\n% 1 3 87f2900d aaaaaaaa 0\n', 'exit')
+            '% 1 0 aaaaaaaa 811c9dc5 2\n% 1 2 811c9dc5 87f2900d 2\n2\n', 'exit')
         callback()
     })
 }

@@ -22,15 +22,18 @@ Queue.prototype.setPipe = function (stream) {
         stream.end()
     } else {
         this._stream = stream
-        this.flush(abend)
+        this._sendAsync(abend)
     }
 }
 
 Queue.prototype.push = function (json) {
     this._buffers.push(Buffer.from(JSON.stringify(json) + '\n'))
-    if (!this._writing) {
+    if (this._closed) {
+        this._chunkEntries()
+        this._sendSync()
+    } else if (!this._writing) {
         this._writing = true
-        this.flush(abend)
+        this._sendAsync(abend)
     }
 }
 
@@ -48,10 +51,10 @@ Queue.prototype._chunkEntries = function () {
 // Flush logs to the dedicated logging pipe. Chunks entries so that we can send
 // many lines in a single chunk. Then writes. When it comes back from a write it
 // checks to see if the pipe has ended and breaks early, otherwise it continues
-// until there are no lines or chunks to flush.
+// until there are no lines or chunks to _sendAsync.
 
 //
-Queue.prototype.flush = cadence(function (async) {
+Queue.prototype._sendAsync = cadence(function (async) {
     var loop = async(function () {
         if (this._chunks.length == 0) {
             this._chunkEntries()
@@ -81,51 +84,35 @@ Queue.prototype.flush = cadence(function (async) {
 // and child. That is closed by `exit`. Anything else is going to keep the
 // socket open, so you need to exit explicitly. If you exit immediately after
 // write, then you will not flush STDERR.
-
+//
 // Put this note somewhere where you'll not delete it.
-
-// Close will close the logging pipe. We will continue logging to STDERR until
-// the `exit` function is called. We set an `uncaughtException` and `exit`
-// handler in Prolific Shuttle to call `Queue.exit`. `Queue.exit` will write an
-// end of stream indicator to the log. Both the `uncaughtException` and `exit`
-// events indicate that that is the end of user code, this is the last time the
-// program will be called. `exit` because that's what it signals.
-// `uncaughtException` because we retrown the reported uncaught exception.
-
-// Note that if you decided to call close and then run the program for a while
-// you're going to leak memory because STDERR logging will not be flushed until
-// `Queue.exit` is called. The STDERR logging is intended to capture a few final
-// logging messages between the initiation of program shutdown and actual exit
-// as well as any buffered and unflushed logs that didn't make it out the
-// dedicated logging pipe.
+//
+// The `close` method closes the asynchronous logging pipe to the monitor. We
+// continue to log each line to `STDERR` for the remainder of the program's
+// execution.
+//
+// In order to get every last logging message, the user needs to disable default
+// signal handling because the default signal handler for `SIGTERM` will close
+// the asynchronous pipe abruptly so that messages waiting to go out the
+// asynchronous pipe will be lost. The default signal handlers will prevent an
+// `process` from emitting and `"exit"` event. Thus, a `SIGTERM` signal handler
+// should close the Prolific Queue so that any waiting messages can be sent
+// synchronously via `STDERR`.
+//
+// This can also be done to capture an `uncaughtException`. Register an
+// `uncaughtException` handler that closes the queue, logs the exception, then
+// rethrows the exception. Because the log entry is written after queue is
+// closed, the uncaught exception log entry will be send synchronously.
 
 //
 Queue.prototype.close = function () {
-    if (!this._closed) {
-        this._closed = true
-        this._writing = true
-        this._stream.end()
-    }
-}
-
-// Called by the Prolific Shuttle `uncaughtException` and `exit` handlers. Those
-// handlers indicate the end of the program, no other iterations of the event
-// loop. That's what the `exit` event means. The `uncaughtException` event
-// will short-circuit the `exit` event. We rethrow the reported uncaught
-// exception and Node.js exits immediately with no `exit` event.
-
-// Because this is the last event loop we can write an end of stream indicator.
-// This will let our monitor know that it can terminate.
-
-//
-Queue.prototype.exit = function () {
-    if (this._terminated) {
+    if (this._closed) {
         return
     }
 
-    this.close()
-
-    this._terminated = true
+    this._closed = true
+    this._writing = true
+    this._stream.end()
 
     this._chunkEntries()
 
@@ -137,21 +124,17 @@ Queue.prototype.exit = function () {
         this._previousChecksum = 'aaaaaaaa'
     }
 
+    this._sendSync()
+}
+
+Queue.prototype._sendSync = function () {
     var buffers = []
     while (this._chunks.length) {
         var chunk = this._chunks.shift()
         buffers.push(chunk.header(this._previousChecksum), chunk.buffer)
         this._previousChecksum = chunk.checksum
     }
-
-    var chunk = new Chunk(this._pid, this._chunkNumber++, Buffer.from(''), 0)
-    chunk.checksum = 'aaaaaaaa'
-    buffers.push(chunk.header(this._previousChecksum), chunk.buffer)
-
     this._stderr.write(Buffer.concat(buffers))
-
-    // Setting this to true means no more flush.
-    this._writing = true
 }
 
 module.exports = Queue
