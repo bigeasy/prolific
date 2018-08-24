@@ -6,7 +6,7 @@ var abend = require('abend')
 
 var assert = require('assert')
 
-exports.createShuttle = function (net, Shuttle, Date) {
+exports.createShuttle = function (Shuttle, Date) {
     return function (finale) {
         var descendent = foremost('descendent')
         var program = descendent.process

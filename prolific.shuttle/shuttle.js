@@ -28,7 +28,7 @@ Shuttle.prototype.setPipe = function (input, output) {
     this.queue.setPipe(output)
 }
 
-Shuttle.shuttle = require('./bootstrap').createShuttle(require('net'), Shuttle, Date)
+Shuttle.shuttle = require('./bootstrap').createShuttle(Shuttle, Date)
 
 Shuttle.filename = module.filename
 

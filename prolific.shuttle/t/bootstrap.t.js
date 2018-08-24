@@ -38,11 +38,6 @@ function prove (okay) {
         }, new stream.PassThrough)
     }
     program.pid = 1
-    var net = {
-        Socket: function (options) {
-            okay(options, { fd: 3 }, 'socket')
-        }
-    }
     function Shuttle () {
         this.queue = []
         this.uncaughtException = function () {}
@@ -50,7 +45,7 @@ function prove (okay) {
         this.exit = function () {}
         this.setPipe = function () {}
     }
-    var createShuttle = bootstrap.createShuttle(net, Shuttle, { now: function () { return 0 } })
+    var createShuttle = bootstrap.createShuttle(Shuttle, { now: function () { return 0 } })
     program.env = { PROLIFIC_SUPERVISOR_PROCESS_ID: '1' }
     createShuttle(function () {})
     program.env = {}
