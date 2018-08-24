@@ -13,7 +13,7 @@ function prove (okay) {
             name: 'prolific:monitor',
             to: [ 1 ],
             path: [ 1 ],
-            body: '1/0'
+            body: 'H/1/0'
         }, 'monitor')
         program.emit('message', {})
         program.emit('message', {

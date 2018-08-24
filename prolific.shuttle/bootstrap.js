@@ -12,7 +12,7 @@ exports.createShuttle = function (Shuttle, Date) {
         var program = descendent.process
         if (program.env.PROLIFIC_SUPERVISOR_PROCESS_ID != null) {
             var monitorProcessId = +program.env.PROLIFIC_SUPERVISOR_PROCESS_ID
-            var instanceId = program.pid + '/' + Date.now()
+            var instanceId = 'H/' + program.pid + '/' + Date.now()
 
             descendent.increment()
             var shuttle = new Shuttle(instanceId, program.stderr, finale, descendent)
