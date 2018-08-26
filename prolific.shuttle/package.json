@@ -24,6 +24,7 @@
                             "descendent":                   "0.6.x",
                             "foremost":                     "0.0.x",
                             "prolific.acceptor":            "0.3.x",
+                            "prolific.chunk":               "3.0.x",
                             "prolific.queue":               "13.0.x",
                             "prolific.resolver":            "8.0.x",
                             "prolific.sink":                "6.1.x"

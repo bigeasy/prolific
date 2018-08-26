@@ -1,23 +1,84 @@
-require('proof')(2, prove)
+require('proof')(5, prove)
 
-function prove (assert) {
+function prove (okay) {
     var descendent = require('descendent')
-    var Shuttle = require('../shuttle')
+    var Shuttle = require('..')
+    var shuttle = new Shuttle
+    var events = require('events')
+
     var stream = require('stream')
-    var io = {
-        input: new stream.PassThrough,
-        output: new stream.PassThrough,
-        sync: new stream.PassThrough
+
+    var descendent = require('foremost')('descendent')
+
+    descendent.process = new events.EventEmitter
+    descendent.process.env = { PROLIFIC_SUPERVISOR_PROCESS_ID: '1' }
+    descendent.process.pid = 2
+    descendent.process.stderr = new stream.PassThrough
+
+    var sent = [ 'start message', 'start message again' ]
+    descendent.process.connected = true
+    descendent.process.send = function (message) {
+        okay(message, {
+            module: 'descendent',
+            method: 'route',
+            name: 'prolific:shuttle',
+            to: [ 1 ],
+            path: [ 2 ],
+            body: 'H/2/0'
+        }, sent.shift())
     }
-    var shuttle = new Shuttle(1, io.sync, function (error) {
-        assert(error.message, 'hello', 'uncaught handled')
-    }, descendent)
-    try {
-        shuttle.uncaughtException(new Error('hello'))
-    } catch (error) {
-        console.log(error.stack)
-        assert(error.message, 'hello', 'thrown')
-    }
+
+    shuttle.start({
+        uncaughtException: function (error) {
+            okay(error.message, 'error', 'uncaught')
+        },
+        Date: { now: function () { return 0 } }
+    })
+
+    shuttle.start()
+
+    okay(descendent.process.stderr.read().toString(),
+        '% H/2/0 0 aaaaaaaa 811c9dc5 1\n' +
+        '% H/2/0 1 811c9dc5 a536687e 10\n' +
+        '{"pid":2}\n'
+    , 'stderr start')
+
     var pipe = new stream.PassThrough
-    shuttle.setPipe(pipe, pipe)
+    descendent.emit('prolific:pipe', {}, pipe)
+    descendent.emit('prolific:accept', {
+        body: {
+            accept: true,
+            chain: [],
+            version: 1
+        }
+    })
+
+    try {
+        descendent.process.emit('uncaughtException', new Error('error'))
+    } catch (e) {
+        console.log(e.stack)
+        console.log('caught')
+    }
+
+    // Already closed.
+    shuttle.close()
+
+    shuttle = new Shuttle
+
+    shuttle.start({ Date: { now: function () { return 0 } } })
+
+    okay(descendent.process.stderr.read().toString(),
+        '% H/2/0 0 aaaaaaaa 811c9dc5 1\n' +
+        '% H/2/0 1 811c9dc5 a536687e 10\n' +
+        '{"pid":2}\n'
+    , 'stderr start again')
+
+    shuttle.close()
+
+    shuttle = new Shuttle
+
+    descendent.process.env = {}
+
+    shuttle.start()
+    shuttle.close()
 }
