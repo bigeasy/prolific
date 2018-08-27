@@ -57,16 +57,11 @@ function prove (async, okay) {
         write(through, chunk, previousChecksum, async())
     }, function () {
         okay(chunks[1].shift().buffer.toString(), 'b\n', 'consumer consume')
-
-        previousChecksum = chunk.checksum
-        chunk = new Chunk(1, 3, Buffer.from(''), 0)
-        chunk.checksum = 'aaaaaaaa'
-        write(through, chunk, previousChecksum, async())
-    }, function () {
         through.end()
     }, function () {
         synchronous.clearConsumer(0)
-        okay(Object.keys(synchronous._consumers), [], 'deleted consumer')
+        synchronous.clearConsumer(1)
+        okay(Object.keys(synchronous._consumers), [], 'deleted consumers')
     })
 
     function write (writable, chunk, previousChecksum, callback) {

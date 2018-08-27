@@ -28,9 +28,6 @@ Synchronous.prototype.listen = cadence(function (async, input, forward) {
                 }
                 chunk.buffer = chunk.buffer.toString('utf8')
                 consumer.consume(chunk)
-                if (chunk.eos) {
-                    delete this._consumers[chunk.id]
-                }
             }
         })
     })()
