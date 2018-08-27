@@ -1,4 +1,4 @@
-require('proof')(5, prove)
+require('proof')(6, prove)
 
 function prove (okay) {
     var descendent = require('descendent')
@@ -62,6 +62,12 @@ function prove (okay) {
 
     // Already closed.
     shuttle.close()
+
+    okay(descendent.process.stderr.read().toString(),
+        '% S/2/0 0 aaaaaaaa 811c9dc5 1\n' +
+        '% S/2/0 1 811c9dc5 c0c3ae50 16\n' +
+        '[{"version":1}]\n'
+    , 'stderr after close')
 
     shuttle = new Shuttle
 

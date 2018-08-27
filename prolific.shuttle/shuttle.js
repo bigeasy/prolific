@@ -26,8 +26,10 @@ Shuttle.prototype.start = function (options) {
 }
 
 Shuttle.prototype._listen = function (descendent, options) {
+    var now = coalesce(options.Date, Date).now()
     var monitorProcessId = +descendent.process.env.PROLIFIC_SUPERVISOR_PROCESS_ID
-    var headerId = 'H/' + descendent.process.pid + '/' + coalesce(options.Date, Date).now()
+    var headerId = 'H/' + descendent.process.pid + '/' +  now
+    var streamId = 'S/' + descendent.process.pid + '/' +  now
 
     descendent.increment()
 
@@ -36,7 +38,7 @@ Shuttle.prototype._listen = function (descendent, options) {
         descendent.process.on('uncaughtException', uncaughtException)
     }
 
-    var queue = new Queue(descendent.process.pid, descendent.process.stderr)
+    var queue = new Queue(streamId, descendent.process.stderr)
     this._queue = queue
 
     // All filtering will be performed by the monitor initially. Until
