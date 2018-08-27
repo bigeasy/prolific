@@ -23,7 +23,7 @@ Synchronous.prototype.listen = cadence(function (async, input, forward) {
                 var chunk = collector.chunks.shift()
                 var consumer = this._consumers[chunk.id]
                 if (consumer == null) {
-                    this._selectConsumer.call(null, chunk.id)
+                    this._selectConsumer.call(null, chunk)
                     consumer = this._consumers[chunk.id]
                 }
                 chunk.buffer = chunk.buffer.toString('utf8')
