@@ -22,7 +22,7 @@
     {
                             "abend":                        "1.0.x",
                             "cadence":                      "1.0.x",
-                            "prolific.chunk":               "3.0.x"
+                            "prolific.chunk":               "4.0.x"
     },
     "devDependencies":
     {
