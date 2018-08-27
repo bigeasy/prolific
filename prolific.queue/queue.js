@@ -3,8 +3,8 @@ var cadence = require('cadence')
 var Chunk = require('prolific.chunk')
 var stream = require('stream')
 
-function Queue (pid, stderr) {
-    this._pid = pid
+function Queue (streamId, stderr) {
+    this._streamId = streamId
     this._buffers = []
     this._chunks = []
     this._chunkNumber = 1
@@ -14,7 +14,7 @@ function Queue (pid, stderr) {
     this._writing = true
     this._closed = false
     this._stderr = stderr
-    this._chunks.push(new Chunk(this._pid, 0, Buffer.from(''), 1))
+    this._chunks.push(new Chunk(this._streamId, 0, Buffer.from(''), 1))
 }
 
 Queue.prototype.setPipe = function (stream) {
@@ -45,7 +45,7 @@ Queue.prototype._chunkEntries = function () {
     this._buffers = []
 
     var buffer = Buffer.concat(buffers)
-    this._chunks.push(new Chunk(this._pid, this._chunkNumber++, buffer, buffer.length))
+    this._chunks.push(new Chunk(this._streamId, this._chunkNumber++, buffer, buffer.length))
 }
 
 // Flush logs to the dedicated logging pipe. Chunks entries so that we can send
@@ -117,10 +117,10 @@ Queue.prototype.close = function () {
     this._chunkEntries()
 
     if (this._chunks.length == 0) {
-        this._chunks.unshift(new Chunk(this._pid, 0, Buffer.from(''), this._chunkNumber))
+        this._chunks.unshift(new Chunk(this._streamId, 0, Buffer.from(''), this._chunkNumber))
         this._previousChecksum = 'aaaaaaaa'
     } else if (this._chunks.length > 0 && this._chunks[0].number != 0) {
-        this._chunks.unshift(new Chunk(this._pid, 0, Buffer.from(''), this._chunks[0].number))
+        this._chunks.unshift(new Chunk(this._streamId, 0, Buffer.from(''), this._chunks[0].number))
         this._previousChecksum = 'aaaaaaaa'
     }
 
