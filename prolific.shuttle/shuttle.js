@@ -9,10 +9,7 @@ var Queue = require('prolific.queue')
 var createUncaughtExceptionHandler = require('./uncaught')
 
 function Shuttle () {
-    var descendent = require('foremost')('descendent')
-    this._descendent = descendent
     this._state = 'created'
-    this._Date = Date
 }
 
 Shuttle.prototype.start = function (options) {
