@@ -1,4 +1,4 @@
-require('proof')(4, require('cadence')(prove))
+require('proof')(5, require('cadence')(prove))
 
 function prove (async, okay) {
     var stream = require('stream')
@@ -10,12 +10,19 @@ function prove (async, okay) {
 
     var chunks = [ [], [] ]
 
+    var scanned = []
+
     var through = new stream.PassThrough
     var forward = new stream.PassThrough
-    var synchronous = new Synchronous(function (chunk) {
-        synchronous.setConsumer(chunk.id, {
-            consume: function (chunk) { chunks[+chunk.id].push(chunk) }
-        })
+    var synchronous = new Synchronous({
+        selectConsumer: function (chunk) {
+            synchronous.setConsumer(chunk.id, {
+                consume: function (chunk) { chunks[+chunk.id].push(chunk) }
+            })
+        },
+        scanned: function (bytes) {
+            scanned.push(bytes)
+        }
     })
 
     synchronous.listen(through, forward, abend)
@@ -59,6 +66,7 @@ function prove (async, okay) {
         okay(chunks[1].shift().buffer.toString(), 'b\n', 'consumer consume')
         through.end()
     }, function () {
+        okay(scanned, [ 121, 28 ], 'scanned')
         synchronous.clearConsumer(0)
         synchronous.clearConsumer(1)
         okay(Object.keys(synchronous._consumers), [], 'deleted consumers')

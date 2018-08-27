@@ -2,8 +2,8 @@ var Collector = require('prolific.collector')
 var cadence = require('cadence')
 var Staccato = require('staccato')
 
-function Synchronous (selectConsumer) {
-    this._selectConsumer = selectConsumer
+function Synchronous (controller) {
+    this._controller = controller
     this._consumers = {}
 }
 
@@ -23,12 +23,13 @@ Synchronous.prototype.listen = cadence(function (async, input, forward) {
                 var chunk = collector.chunks.shift()
                 var consumer = this._consumers[chunk.id]
                 if (consumer == null) {
-                    this._selectConsumer.call(null, chunk)
+                    this._controller.selectConsumer(chunk)
                     consumer = this._consumers[chunk.id]
                 }
                 chunk.buffer = chunk.buffer.toString('utf8')
                 consumer.consume(chunk)
             }
+            this._controller.scanned(buffer.length)
         })
     })()
 })
