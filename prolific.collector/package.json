@@ -1,6 +1,6 @@
 {
     "name":                 "prolific.collector",
-    "version":              "5.0.4",
+    "version":              "5.1.0",
     "description":
 
       "Gather chunks of logs emitted from a monitored, Prolific-enabled program.",
