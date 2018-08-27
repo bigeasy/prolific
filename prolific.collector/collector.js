@@ -94,7 +94,7 @@ Collector.prototype._scanChunk = function (scan) {
         this._buffers.length = 0
         var checksum = fnv(0, buffer, 0, buffer.length)
         assert(checksum == this._chunk.checksum, 'invalid checksum')
-        this.chunkNumber[this._chunk.identifier]++
+        this.chunkNumber[this._chunk.id]++
         this.chunks.push(this._chunk)
         this._chunk = null
         this._state = 'seek'
@@ -161,7 +161,7 @@ Collector.prototype._scanHeader = function (scan) {
         if ($) {
             var chunk = {
                 eos: false,
-                identifier: $[1],
+                id: $[1],
                 number: +$[2],
                 checksum: parseInt($[4], 16),
                 value: +$[5],
@@ -182,9 +182,9 @@ Collector.prototype._scanHeader = function (scan) {
             var previousChecksum = parseInt($[3], 16)
             if (chunk.number == 0) {
                 if (previousChecksum == 0xaaaaaaaa) {
-                    if (this.chunkNumber[chunk.identifier] == null) {
-                        this.chunkNumber[chunk.identifier] = chunk.value
-                        this._previousChecksum[chunk.identifier] = chunk.checksum
+                    if (this.chunkNumber[chunk.id] == null) {
+                        this.chunkNumber[chunk.id] = chunk.value
+                        this._previousChecksum[chunk.id] = chunk.checksum
                         this._state = this._async ? 'header' : 'seek'
                     } else {
                         assert(!this._async, 'already initialized')
@@ -194,20 +194,20 @@ Collector.prototype._scanHeader = function (scan) {
                     assert(!this._async, 'initial entry malformed checksum')
                     this.stderr.push(header)
                 }
-            } else if (previousChecksum == this._previousChecksum[chunk.identifier]) {
-                if (chunk.number == this.chunkNumber[chunk.identifier]) {
+            } else if (previousChecksum == this._previousChecksum[chunk.id]) {
+                if (chunk.number == this.chunkNumber[chunk.id]) {
                     if (chunk.checksum == 0xaaaaaaaa && chunk.value == 0) {
                         chunk.eos = true
                         chunk.buffer = Buffer.from('')
                         this.chunks.push(chunk)
-                        delete this._previousChecksum[chunk.identifier]
-                        delete this.chunkNumber[chunk.identifier]
+                        delete this._previousChecksum[chunk.id]
+                        delete this.chunkNumber[chunk.id]
                         this._state = this._async ? 'eos' : 'seek'
                     } else {
                         chunk.length = chunk.remaining = chunk.value
                         this._state = 'chunk'
                         this._chunk = chunk
-                        this._previousChecksum[chunk.identifier] = chunk.checksum
+                        this._previousChecksum[chunk.id] = chunk.checksum
                     }
                 } else {
                     assert(!this._async, 'chunk numbers incorrect')
