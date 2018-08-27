@@ -19,17 +19,23 @@ Synchronous.prototype.listen = cadence(function (async, input, forward) {
             }
             collector.scan(buffer)
             forward.write(collector.stderr.splice(0, collector.stderr.length).join(''))
-            while (collector.chunks.length) {
-                var chunk = collector.chunks.shift()
-                var consumer = this._consumers[chunk.id]
-                if (consumer == null) {
-                    this._controller.selectConsumer(chunk)
-                    consumer = this._consumers[chunk.id]
-                }
-                chunk.buffer = chunk.buffer.toString('utf8')
-                consumer.consume(chunk)
-            }
-            this._controller.scanned(buffer.length)
+            async(function () {
+                var chunks = async(function () {
+                    if (collector.chunks.length == 0) {
+                        return [ chunks.break ]
+                    }
+                    var chunk = collector.chunks.shift()
+                    var consumer = this._consumers[chunk.id]
+                    if (consumer == null) {
+                        this._controller.selectConsumer(chunk)
+                        consumer = this._consumers[chunk.id]
+                    }
+                    chunk.buffer = chunk.buffer.toString('utf8')
+                    consumer.consume(chunk, async())
+                })()
+            }, function () {
+                this._controller.scanned(buffer.length)
+            })
         })
     })()
 })

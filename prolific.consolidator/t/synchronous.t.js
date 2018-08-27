@@ -17,7 +17,10 @@ function prove (async, okay) {
     var synchronous = new Synchronous({
         selectConsumer: function (chunk) {
             synchronous.setConsumer(chunk.id, {
-                consume: function (chunk) { chunks[+chunk.id].push(chunk) }
+                consume: function (chunk, callback) {
+                    chunks[+chunk.id].push(chunk)
+                    callback()
+                }
             })
         },
         scanned: function (bytes) {
