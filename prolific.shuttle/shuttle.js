@@ -30,6 +30,7 @@ Shuttle.prototype._listen = function (descendent, options) {
     var monitorProcessId = +descendent.process.env.PROLIFIC_SUPERVISOR_PROCESS_ID
     var headerId = 'H/' + descendent.process.pid + '/' +  now
     var streamId = 'S/' + descendent.process.pid + '/' +  now
+    var trailerId = 'T/' + descendent.process.pid + '/' +  now
 
     descendent.increment()
 
@@ -59,7 +60,12 @@ Shuttle.prototype._listen = function (descendent, options) {
 
     var chunks = []
     chunks.push(new Chunk(headerId, 0, Buffer.from(''), 1))
-    var buffer = Buffer.from(JSON.stringify({ pid: descendent.process.pid }) + '\n')
+    var buffer = Buffer.from(JSON.stringify({
+        pid: descendent.process.pid,
+        headerId: headerId,
+        streamId: streamId,
+        trailerId: trailerId
+    }) + '\n')
     chunks.push(new Chunk(headerId, 1, buffer, buffer.length))
 
     descendent.process.stderr.write(Buffer.concat([
