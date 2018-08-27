@@ -12,9 +12,10 @@ function prove (async, okay) {
 
     var through = new stream.PassThrough
     var forward = new stream.PassThrough
-    var synchronous = new Synchronous(function (pid) {
-        synchronous.setConsumer(pid, {
-            consume: function (chunk) { chunks[+pid].push(chunk) }
+    var synchronous = new Synchronous(function (id) {
+            console.log(id)
+        synchronous.setConsumer(id, {
+            consume: function (chunk) { chunks[+id].push(chunk) }
         })
     })
 

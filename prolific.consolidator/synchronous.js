@@ -10,9 +10,9 @@ function Synchronous (selectConsumer) {
         consume: function (chunk) {
             this._chunks.push(chunk)
         },
-        empty: function (pid, consumer) {
+        empty: function (id, consumer) {
             this._chunks = this._chunks.filter(function (chunk) {
-                if (chunk.pid == pid) {
+                if (chunk.id == id) {
                     consumer.consume(chunk)
                     return false
                 }
@@ -37,27 +37,27 @@ Synchronous.prototype.listen = cadence(function (async, input, forward) {
             forward.write(collector.stderr.splice(0, collector.stderr.length).join(''))
             while (collector.chunks.length) {
                 var chunk = collector.chunks.shift()
-                var consumer = this._consumers[chunk.pid]
+                var consumer = this._consumers[chunk.id]
                 if (consumer == null) {
-                    this._selectConsumer.call(null, chunk.pid)
-                    consumer = this._consumers[chunk.pid]
+                    this._selectConsumer.call(null, chunk.id)
+                    consumer = this._consumers[chunk.id]
                 }
                 chunk.buffer = chunk.buffer.toString('utf8')
                 consumer.consume(chunk)
                 if (chunk.eos) {
-                    delete this._consumers[chunk.pid]
+                    delete this._consumers[chunk.id]
                 }
             }
         })
     })()
 })
 
-Synchronous.prototype.setConsumer = function (pid, consumer) {
-    this._consumers[pid] = consumer
+Synchronous.prototype.setConsumer = function (id, consumer) {
+    this._consumers[id] = consumer
 }
 
-Synchronous.prototype.clearConsumer = function (pid) {
-    delete this._consumers[pid]
+Synchronous.prototype.clearConsumer = function (id) {
+    delete this._consumers[id]
 }
 
 module.exports = Synchronous
