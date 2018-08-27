@@ -69,7 +69,9 @@ function prove (async, okay) {
         okay(chunks[1].shift().buffer.toString(), 'b\n', 'consumer consume')
         through.end()
     }, function () {
-        okay(scanned, [ 121, 28 ], 'scanned')
+        okay(scanned.reduce(function (sum, value) {
+            return sum + value
+        }), 149, 'scanned')
         synchronous.clearConsumer(0)
         synchronous.clearConsumer(1)
         okay(Object.keys(synchronous._consumers), [], 'deleted consumers')
