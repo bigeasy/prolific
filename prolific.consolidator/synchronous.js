@@ -4,23 +4,7 @@ var Staccato = require('staccato')
 
 function Synchronous (selectConsumer) {
     this._selectConsumer = selectConsumer
-    var consumers = this._consumers = {}
-    var backlog = this._backlog = {
-        _chunks: [],
-        consume: function (chunk) {
-            this._chunks.push(chunk)
-        },
-        empty: function (id, consumer) {
-            this._chunks = this._chunks.filter(function (chunk) {
-                if (chunk.id == id) {
-                    consumer.consume(chunk)
-                    return false
-                }
-                return true
-            })
-            var index = 0
-        }
-    }
+    this._consumers = {}
 }
 
 Synchronous.prototype.listen = cadence(function (async, input, forward) {
