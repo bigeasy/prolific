@@ -33,6 +33,8 @@ Shuttle.prototype._listen = function (descendent, options) {
 
     descendent.increment()
 
+    var path = descendent.path.splice(descendent.path.indexOf(monitorProcessId))
+
     if (options.uncaughtException != null) {
         var uncaughtException = this.uncaughtException(options.uncaughtException)
         descendent.process.on('uncaughtException', uncaughtException)
@@ -62,7 +64,8 @@ Shuttle.prototype._listen = function (descendent, options) {
     var buffer = Buffer.from(JSON.stringify({
         pid: descendent.process.pid,
         headerId: headerId,
-        streamId: streamId
+        streamId: streamId,
+        path: path
     }) + '\n')
     chunks.push(new Chunk(headerId, 1, buffer, buffer.length))
 
