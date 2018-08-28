@@ -62,7 +62,6 @@ Shuttle.prototype._listen = function (descendent, options) {
     var chunks = []
     chunks.push(new Chunk(headerId, 0, Buffer.from(''), 1))
     var buffer = Buffer.from(JSON.stringify({
-        pid: descendent.process.pid,
         headerId: headerId,
         streamId: streamId,
         path: path

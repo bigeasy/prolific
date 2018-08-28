@@ -42,8 +42,8 @@ function prove (okay) {
 
     okay(descendent.process.stderr.read().toString(),
         '% H/2/0 0 aaaaaaaa 811c9dc5 1\n' +
-        '% H/2/0 1 811c9dc5 b7bc1b96 61\n' +
-        '{"pid":2,"headerId":"H/2/0","streamId":"S/2/0","path":[1,2]}\n'
+        '% H/2/0 1 811c9dc5 8b6ddbbf 53\n' +
+        '{"headerId":"H/2/0","streamId":"S/2/0","path":[1,2]}\n'
     , 'stderr start')
 
     var pipe = new stream.PassThrough
@@ -78,8 +78,8 @@ function prove (okay) {
 
     okay(descendent.process.stderr.read().toString(),
         '% H/2/0 0 aaaaaaaa 811c9dc5 1\n' +
-        '% H/2/0 1 811c9dc5 b7bc1b96 61\n' +
-        '{"pid":2,"headerId":"H/2/0","streamId":"S/2/0","path":[1,2]}\n'
+        '% H/2/0 1 811c9dc5 8b6ddbbf 53\n' +
+        '{"headerId":"H/2/0","streamId":"S/2/0","path":[1,2]}\n'
     , 'stderr start again')
 
     shuttle.close()
