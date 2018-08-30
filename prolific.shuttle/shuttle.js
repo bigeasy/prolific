@@ -100,8 +100,6 @@ Shuttle.prototype.close = function () {
     }
 }
 
-Shuttle.filename = module.filename
-
 Shuttle.sink = require('prolific.sink')
 
 module.exports = Shuttle
