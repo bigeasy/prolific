@@ -52,13 +52,6 @@ function prove (async, okay) {
     }, function () {
         okay(forward.read().toString(), 'hello, world\n', 'through')
 
-        consumer = {
-            chunks: [],
-            consume: function (chunk) {
-                this.chunks.push(chunk)
-            }
-        }
-
         okay(chunks[1].shift().buffer.toString(), 'a\n', 'consumer join')
 
         previousChecksum = chunk.checksum
