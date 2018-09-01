@@ -18,8 +18,9 @@ Synchronous.prototype.listen = cadence(function (async, input, forward) {
                 return [ loop.break ]
             }
             collector.scan(buffer)
-            forward.write(collector.stderr.splice(0, collector.stderr.length).join(''))
             async(function () {
+                forward.write(collector.stderr.splice(0).join(''), async())
+            }, function () {
                 var chunks = async(function () {
                     if (collector.chunks.length == 0) {
                         return [ chunks.break ]

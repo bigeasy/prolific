@@ -33,22 +33,24 @@ function prove (async, okay) {
     through.write('hello, world\n')
 
     chunk = new Chunk(0, 0, Buffer.from(''), 1)
-    write(through, chunk, 'aaaaaaaa')
-
-    previousChecksum = chunk.checksum
-    buffer = Buffer.from('a\n')
-    chunk = new Chunk(0, 1, buffer, buffer.length)
-    write(through, chunk, previousChecksum)
-
-    chunk = new Chunk(1, 0, Buffer.from(''), 1)
-    write(through, chunk, 'aaaaaaaa')
-
-    previousChecksum = chunk.checksum
-    buffer = Buffer.from('a\n')
-    chunk = new Chunk(1, 1, buffer, buffer.length)
-    var consumer
     async(function () {
+        write(through, chunk, 'aaaaaaaa', async())
+    }, function () {
+        previousChecksum = chunk.checksum
+        buffer = Buffer.from('a\n')
+        chunk = new Chunk(0, 1, buffer, buffer.length)
         write(through, chunk, previousChecksum, async())
+    }, function () {
+        chunk = new Chunk(1, 0, Buffer.from(''), 1)
+        write(through, chunk, 'aaaaaaaa', async())
+    }, function () {
+        previousChecksum = chunk.checksum
+        buffer = Buffer.from('a\n')
+        chunk = new Chunk(1, 1, buffer, buffer.length)
+    }, function () {
+        write(through, chunk, previousChecksum, async())
+    }, function () {
+        setImmediate(async())
     }, function () {
         okay(forward.read().toString(), 'hello, world\n', 'through')
 
@@ -58,6 +60,8 @@ function prove (async, okay) {
         buffer = Buffer.from('b\n')
         chunk = new Chunk(1, 2, buffer, buffer.length)
         write(through, chunk, previousChecksum, async())
+    }, function () {
+        setImmediate(async())
     }, function () {
         okay(chunks[1].shift().buffer.toString(), 'b\n', 'consumer consume')
         through.end()
@@ -70,8 +74,7 @@ function prove (async, okay) {
         okay(Object.keys(synchronous._consumers), [], 'deleted consumers')
     })
 
-    function write (writable, chunk, previousChecksum, callback) {
-        writable.write(chunk.header(previousChecksum))
+    function write (writable, chunk, previousChecksum, callback) { writable.write(chunk.header(previousChecksum))
         writable.write(chunk.buffer, callback)
     }
 }
