@@ -19,9 +19,5 @@ module.exports = function (program) {
         }
     }
 
-    if (program.ultimate.ipc) {
-        stdio.push('ipc')
-    }
-
     return stdio
 }
