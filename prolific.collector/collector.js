@@ -160,7 +160,6 @@ Collector.prototype._scanHeader = function (scan) {
         var $ = /^% ([^ ]+) (\d+) ([0-9a-f]{8}) ([0-9a-f]{8}) (\d+)\n$/i.exec(header.toString())
         if ($) {
             var chunk = {
-                eos: false,
                 id: $[1],
                 number: +$[2],
                 checksum: parseInt($[4], 16),
