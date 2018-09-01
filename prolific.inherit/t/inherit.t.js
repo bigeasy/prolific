@@ -4,7 +4,6 @@ function prove (assert) {
     var inherit = require('../inherit'), inheritance
 
     inheritance = inherit({
-        ultimate: {},
         env: { INHERIT_FD: 5 },
         arrayed: { inherit: [ 0, 1, 2, 4, 4, 'INHERIT_FD', 8 ] }
     })
