@@ -23,7 +23,5 @@ module.exports = function (program) {
         stdio.push('ipc')
     }
 
-    stdio[2] = 'pipe'
-
     return stdio
 }
