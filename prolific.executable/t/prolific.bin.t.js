@@ -7,9 +7,18 @@ function prove (async, okay) {
     var child = path.join(__dirname, 'program.js')
     var configuration = path.join(__dirname, 'configuration.json')
 
+    var stream = require('stream')
     var program
     async(function () {
-        program = prolific([ '--configuration', configuration, 'node', child ], async())
+        program = prolific([ '--inherit', '99', '--configuration', configuration, 'node', child ], {
+            stderr: new stream.PassThrough({ highWaterMark: 1 })
+        }, async())
+        setTimeout(function () {
+            var chunks = []
+            program.stderr.on('data', function (chunk) {
+                console.log(chunk.toString())
+            })
+        }, 250)
     }, function (code) {
         okay(code, 0, 'ran')
     })

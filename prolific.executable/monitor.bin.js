@@ -29,10 +29,13 @@ require('arguable')(module, require('cadence')(function (async, program) {
     var Signal = require('signal')
     var cadence = require('cadence')
 
+    var descendent = require('foremost')('descendent')
+
     var destructible = new Destructible(15000, 'prolific.monitor')
     program.on('shutdown', destructible.destroy.bind(destructible))
 
-    var descendent = new Descendent(program)
+    descendent.process = program
+    descendent.increment()
     destructible.destruct.wait(descendent, 'decrement')
 
     var Processor = require('./processor')

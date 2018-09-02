@@ -48,27 +48,136 @@ var Pipeline = require('prolific.pipeline')
 var Synchronous = require('prolific.consolidator/synchronous')
 var Asynchronous = require('prolific.consolidator/asynchronous')
 
-// TODO Now we require that anyone standing between a root Prolific monitor and
-// a leaf child process use the Descendent library.
-var parallel = cadence(function (async, program, inheritance, configuration, argv) {
+// Pass messages and sockets all around the process tree.
+var descendent = require('foremost')('descendent')
+
+var Keyify = require('keyify')
+
+var Tree = require('./processes')
+
+var coalesce = require('extant')
+
+// TODO Note that; we now require that anyone standing between a root Prolific
+// monitor and a leaf child process use the Descendent library.
+require('arguable')(module, require('cadence')(function (async, program) {
+    program.ultimate.ipc = true
+
+    program.helpIf(program.ultimate.help)
+
+    var configuration = program.ultimate.configuration
+
+    process.env.PROLIFIC_SUPERVISOR_PROCESS_ID = program.pid
+
     var destructible = new Destructible('prolific')
     program.on('shutdown', destructible.destroy.bind(destructible))
 
-    var descendent = new Descendent(program)
-    destructible.destruct.wait(descendent, 'decrement')
+    descendent.increment()
 
-    var child = children.spawn(argv.shift(), argv, { stdio: inheritance.stdio })
+    var tree = new Tree
+    var monitors = {}
+    var pipes = {} // See race condition below.
+    function setConsumers (chunk) {
+        descendent.increment()
+
+        var json = JSON.parse(chunk.buffer.toString())
+
+        var monitor = children.spawn('node', [
+            path.join(__dirname, 'monitor.bin.js'),
+            '--configuration', configuration,
+            '--supervisor', process.pid
+        ], {
+            stdio: [ 'pipe', 1, 2, 'pipe', 'ipc' ]
+        })
+
+        tree.put(json.path)
+
+        var pid = json.path[json.path.length - 1]
+
+        monitors[pid] = monitor
+        pipes[pid] = monitor.stdio[3]
+
+        synchronous.setConsumer(json.headerId, {
+            consume: function (chunk, callback) { callback() }
+        })
+
+        synchronous.setConsumer(json.streamId, {
+            consume: function (chunk, callback) {
+                monitor.stdin.write(JSON.stringify(chunk) + '\n', callback)
+            }
+        })
+
+        descendent.addChild(monitor, { path: json.path, pid: pid })
+
+        cadence(function (async) {
+            async(function () {
+                delta(async()).ee(monitor).on('exit')
+            }, function (exitCode, signal) {
+                Interrupt.assert(exitCode == 0, 'monitor.exit', {
+                    exitCode: exitCode,
+                    signal: signal,
+                    argv: program.argv
+                })
+                return []
+            })
+        })(destructible.monitor([ 'monitor', monitor.pid ]))
+    }
+
+    var closing = []
+
+    var synchronous = new Synchronous({
+        selectConsumer: setConsumers,
+        scanned: function () {}
+    })
+
+    synchronous.setConsumer('closer', {
+        consume: function (chunk, callback) {
+            var json = JSON.parse(chunk.buffer.toString())
+            var path = [ process.pid ].concat(json.path)
+            tree.processes(path).forEach(function (pid) {
+                var monitor = monitors[pid]
+                monitor.stdin.end()
+                delete monitors[pid]
+            })
+            if (path.length == 3) {
+                child.kill()
+            }
+            tree.prune(path)
+            callback()
+        }
+    })
+
+    var stdio = inherit(program)
+    stdio[2] = 'pipe'
+    stdio.push('ipc')
+    var argv = stdio.slice(3).filter(function (handle) {
+        return typeof handle == 'number'
+    }).map(function (handle) {
+        return '--inherit=' + handle
+    }).concat(program.argv)
+
+    argv.unshift(path.join(__dirname, 'closer.bin.js'))
+
+    // TODO Restore inheritance.
+    var child = children.spawn('node', argv, { stdio: stdio })
     // TODO Maybe have something to call to notify of failure to finish.
     destructible.destruct.wait(child, 'kill')
 
     descendent.addChild(child, null)
 
-    var synchronous = new Synchronous(child.stderr, program.stderr)
-
     async(function () {
         destructible.completed.wait(async())
     }, function (exitCode) {
         return [ exitCode ]
+    })
+
+    descendent.on('prolific:pipe', function (message) {
+        var pid = message.cookie.path[message.cookie.path.length - 1]
+        descendent.down(message.cookie.path, 'prolific:pipe', true, coalesce(pipes[pid]))
+    })
+
+    descendent.on('prolific:accept', function (message) {
+        var pid = message.from[message.from.length - 1]
+        descendent.down(message.cookie.path, 'prolific:accept', message.body)
     })
 
     async([function () {
@@ -78,7 +187,6 @@ var parallel = cadence(function (async, program, inheritance, configuration, arg
             async(function () {
                 delta(async()).ee(child).on('close')
             }, function (exitCode, signal) {
-                console.log(exitCode, signal)
                 // Will only ever equal zero. We do not have the `null, "SIGTERM"`
                 // combo because we always register a `SIGTERM` handler. The
                 // `"SIGTERM"` response is only when the default hander fires.
@@ -89,75 +197,21 @@ var parallel = cadence(function (async, program, inheritance, configuration, arg
                 Interrupt.assert(exitCode == 0, 'child.exit', {
                     exitCode: exitCode,
                     signal: signal,
-                    argv: argv
+                    argv: program.argv
                 })
+            // TODO Shut down everything as if it was Descendent notified close.
             })
         })(destructible.monitor('child'))
 
-        synchronous.listen(child.stderr, program.stderr, destructible.monitor('synchronous'))
+        cadence(function (async) {
+            async([function () {
+                descendent.decrement()
+            }], function () {
+                synchronous.listen(child.stderr, program.stderr, async())
+            })
+        })(destructible.monitor('synchronous'))
     }, function () {
         program.ready.unlatch()
         destructible.completed.wait(async())
-    })
-
-    descendent.on('prolific:pipe', function (message) {
-        descendent.down(message.cookie.from, 'prolific:pipe', true, monitors[message.cookie.monitor].stdio[3])
-    })
-
-    descendent.on('prolific:accept', function (message) {
-        descendent.down(message.cookie.from, 'prolific:accept', message.body)
-    })
-
-    var monitors = {}
-    descendent.on('prolific:monitor', function (message) {
-        var monitor = children.spawn('node', [
-            path.join(__dirname, 'monitor.bin.js'),
-            '--configuration', configuration,
-            '--supervisor', process.pid
-        ], {
-            stdio: [ 'pipe', 1, 2, 'pipe', 'ipc' ]
-        })
-
-        monitors[monitor.pid] = monitor
-
-        synchronous.addConsumer(message.body, {
-            consume: function (chunk) {
-                monitor.stdin.write(JSON.stringify(chunk) + '\n')
-                if (chunk.eos) {
-                    monitor.stdin.end()
-                    descendent.decrement()
-                }
-            }
-        })
-
-        descendent.addChild(monitor, { monitor: monitor.pid, from: message.from, pid: message.body })
-        descendent.increment()
-
-        cadence(function (async) {
-            async(function () {
-                delta(async()).ee(monitor).on('exit')
-            }, function (exitCode, signal) {
-                Interrupt.assert(exitCode == 0, 'monitor.exit', {
-                    exitCode: exitCode,
-                    signal: signal,
-                    argv: argv
-                })
-                return []
-            })
-        })(destructible.monitor([ 'monitor', Object.keys(monitors).length ]))
-    })
-})
-
-require('arguable')(module, require('cadence')(function (async, program) {
-    program.ultimate.ipc = true
-
-    program.helpIf(program.ultimate.help)
-
-    var configuration = program.ultimate.configuration
-
-    async(function () {
-        var inheritance = inherit(program)
-        process.env.PROLIFIC_SUPERVISOR_PROCESS_ID = process.pid
-        parallel(program, inheritance, configuration, program.argv, async())
     })
 }))
