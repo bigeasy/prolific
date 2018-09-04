@@ -138,9 +138,6 @@ require('arguable')(module, require('cadence')(function (async, program) {
                 monitor.stdin.end()
                 delete monitors[pid]
             })
-            if (path.length == 3) {
-                child.kill()
-            }
             tree.prune(path)
             callback()
         }
