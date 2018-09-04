@@ -34,8 +34,6 @@ Synchronous.prototype.listen = cadence(function (async, input, forward) {
                     chunk.buffer = chunk.buffer.toString('utf8')
                     consumer.consume(chunk, async())
                 })()
-            }, function () {
-                this._controller.scanned(buffer.length)
             })
         })
     })()
