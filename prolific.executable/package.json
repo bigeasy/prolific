@@ -31,7 +31,7 @@
                             "foremost":                     "0.0.x",
                             "interrupt":                    "6.3.x",
                             "prolific.acceptor":            "0.3.x",
-                            "prolific.consolidator":        "6.6.x",
+                            "prolific.consolidator":        "6.7.x",
                             "prolific.pipeline":            "0.5.x",
                             "prolific.inherit":             "6.2.x",
                             "prolific.ipc":                 "1.0.x",
