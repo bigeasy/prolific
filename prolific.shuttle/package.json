@@ -33,7 +33,6 @@
     {
                             "proof":                        "3.0.x"
     },
-    "main":                 "shuttle",
     "scripts":
     {
                             "test": "proof test t/*.t.js"
