@@ -2,7 +2,7 @@ require('proof')(6, prove)
 
 function prove (okay) {
     var descendent = require('descendent')
-    var Shuttle = require('..')
+    var Shuttle = require('../shuttle')
     var shuttle = new Shuttle
     var events = require('events')
 
