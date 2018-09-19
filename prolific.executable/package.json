@@ -42,7 +42,7 @@
                             "fs-extra":                     "7.0.0",
                             "prolific.chunk":               "4.0.x",
                             "prolific.logger":              "8.1.x",
-                            "prolific.shuttle":             "20.7.x",
+                            "prolific.shuttle":             "20.8.x",
                             "proof":                        "3.0.x"
     },
     "main":                 "prolific.bin",
