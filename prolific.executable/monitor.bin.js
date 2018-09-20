@@ -31,7 +31,7 @@ require('arguable')(module, require('cadence')(function (async, program) {
 
     var descendent = require('foremost')('descendent')
 
-    var destructible = new Destructible(15000, 'prolific.monitor')
+    var destructible = new Destructible(4000, 'prolific.monitor')
     program.on('shutdown', destructible.destroy.bind(destructible))
 
     descendent.process = program

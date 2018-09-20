@@ -68,7 +68,7 @@ require('arguable')(module, require('cadence')(function (async, program) {
 
     process.env.PROLIFIC_SUPERVISOR_PROCESS_ID = program.pid
 
-    var destructible = new Destructible('prolific')
+    var destructible = new Destructible(7000, 'prolific')
     program.on('shutdown', destructible.destroy.bind(destructible))
 
     descendent.increment()
