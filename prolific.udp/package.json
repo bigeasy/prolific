@@ -33,10 +33,6 @@
                             "proof":                        "3.0.x"
     },
     "main":                 "udp.argv",
-    "bin":
-    {
-                            "prolific.udp":                 "udp.bin.js"
-    },
     "scripts":
     {
                             "test": "proof test t/*.t.js"
