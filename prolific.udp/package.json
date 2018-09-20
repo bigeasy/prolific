@@ -20,7 +20,7 @@
     },
     "dependencies":
     {
-                            "arguable":                     "6.7.x",
+                            "arguable":                     "6.8.x",
                             "cadence":                      "1.0.x",
                             "delta":                        "1.4.x",
                             "prolific.evaluator":           "0.2.x",
