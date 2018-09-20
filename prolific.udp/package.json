@@ -32,7 +32,7 @@
                             "destructible":                 "0.33.x",
                             "proof":                        "3.0.x"
     },
-    "main":                 "udp.argv",
+    "main":                 "udp.processor",
     "scripts":
     {
                             "test": "proof test t/*.t.js"
