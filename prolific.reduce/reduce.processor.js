@@ -56,21 +56,9 @@ Processor.prototype.process = function (entry) {
             offset: entry.json.when - got.when
         })
         merge(got.entry.json, entry.json, got.skip)
+            var arrayed = this._arrayed
         got.skip = SKIP
         if (this._end.call(null, got.entry)) {
-            got.entry.json.when = got.when
-            var arrivals = got.arrivals
-            if (this._arrivals.arrayed != null) {
-                got.entry.json[this._arrivals.arrayed] = arrivals
-            }
-            if (this._arrivals.mapped != null) {
-                var map = {}
-                arrivals.forEach(function (arrival) {
-                    map[arrival.qualified] = arrival
-                })
-                got.entry.json[this._arrivals.mapped] = map
-            }
-            var arrayed = this._arrayed
             this._sending.put(pivot, got)
             this._building.remove(pivot)
         }
@@ -80,8 +68,20 @@ Processor.prototype.process = function (entry) {
 Processor.prototype._maybeSend = function (magazine, before) {
     var iterator = magazine.iterator()
     while (!iterator.end && iterator.when < before) {
-        var entry = magazine.get(iterator.key)
-        this._nextProcessor.process(entry.entry)
+        var got = magazine.get(iterator.key)
+        got.entry.json.when = got.when
+        var arrivals = got.arrivals
+        if (this._arrivals.arrayed != null) {
+            got.entry.json[this._arrivals.arrayed] = arrivals
+        }
+        if (this._arrivals.mapped != null) {
+            var map = {}
+            arrivals.forEach(function (arrival) {
+                map[arrival.qualified] = arrival
+            })
+            got.entry.json[this._arrivals.mapped] = map
+        }
+        this._nextProcessor.process(got.entry)
         magazine.remove(iterator.key)
         iterator.previous()
     }
