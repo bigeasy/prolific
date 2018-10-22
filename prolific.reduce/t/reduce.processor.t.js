@@ -130,11 +130,7 @@ function prove (async, okay) {
                         ended: true,
                         qualified: 'prolific.example#end',
                         array: [ 'b' ],
-                        $mapped: {
-                            'prolific.example#end': {
-                                qualified: 'prolific.example#end', when: 0, offset: 0
-                            }
-                        },
+                        $mapped: { 'prolific.example#end': 0 },
                         $arrayed: [{
                             qualified: 'prolific.example#end', when: 0, offset: 0
                         }]

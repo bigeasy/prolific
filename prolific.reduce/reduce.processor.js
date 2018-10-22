@@ -77,7 +77,7 @@ Processor.prototype._maybeSend = function (magazine, before) {
         if (this._arrivals.mapped != null) {
             var map = {}
             arrivals.forEach(function (arrival) {
-                map[arrival.qualified] = arrival
+                map[arrival.qualified] = arrival.offset
             })
             got.entry.json[this._arrivals.mapped] = map
         }
