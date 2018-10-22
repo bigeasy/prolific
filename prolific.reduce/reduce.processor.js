@@ -45,7 +45,6 @@ Processor.prototype.process = function (entry) {
                 entry: {
                     path: entry.path,
                     level: entry.level,
-                    qualifier: entry.qualifier,
                     formatted: entry.formatted,
                     json: {}
                 }

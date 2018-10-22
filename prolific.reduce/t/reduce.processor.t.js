@@ -12,7 +12,6 @@ function prove (async, okay) {
                     json: {}
                 }, {
                     path: [ '', 'prolific', 'example' ],
-                    qualifier: [ null, 'prolific', 'prolific.example' ],
                     formatted: [],
                     level: 0,
                     json: {
@@ -57,7 +56,6 @@ function prove (async, okay) {
             processor.process({
                 when: 0,
                 path: [ '', 'prolific', 'example' ],
-                qualifier: [ null, 'prolific', 'prolific.example' ],
                 formatted: [],
                 level: 0,
                 json: {
@@ -105,7 +103,6 @@ function prove (async, okay) {
                 processor.process({
                     when: 0,
                     path: [ '', 'prolific', 'example' ],
-                    qualifier: [ null, 'prolific', 'prolific.example' ],
                     formatted: [],
                     level: 0,
                     json: {
@@ -123,7 +120,6 @@ function prove (async, okay) {
                 processor.process({ json: {} })
                 okay(sink.gathered.shift(), {
                     path: [ '', 'prolific', 'example' ],
-                    qualifier: [ null, 'prolific', 'prolific.example' ],
                     formatted: [],
                     level: 0,
                     json: {
