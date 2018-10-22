@@ -21,7 +21,15 @@ function Processor (destructible, configuration, nextProcessor, options) {
     this._sending = new Cache().createMagazine()
     this._nextProcessor = nextProcessor
     this._arrivals = coalesce(configuration.arrivals, {})
-
+    if (this._arrivals.named) {
+        this._arrivals.named = Evaluator.create(this._arrivals.named)
+    }
+    if (typeof this._arrivals.mapped == 'string') {
+        this._arrivals.mapped = { map: this._arrivals.mapped }
+    }
+    if (this._arrivals.mapped != null) {
+        this._arrivals.mapped.name = Evaluator.create(coalesce(this._arrivals.mapped.name, '$.qualified'))
+    }
     destructible.destruct.wait(this, function () {
         this._maybeSend(this._sending, Infinity)
         this._maybeSend(this._building, Infinity)
@@ -53,6 +61,7 @@ Processor.prototype.process = function (entry) {
         got.arrivals.push({
             qualified: entry.json.qualified,
             when: entry.json.when,
+            entry: entry,
             offset: entry.json.when - got.when
         })
         merge(got.entry.json, entry.json, got.skip)
@@ -71,15 +80,25 @@ Processor.prototype._maybeSend = function (magazine, before) {
         var got = magazine.get(iterator.key)
         got.entry.json.when = got.when
         var arrivals = got.arrivals
-        if (this._arrivals.arrayed != null) {
-            got.entry.json[this._arrivals.arrayed] = arrivals
-        }
         if (this._arrivals.mapped != null) {
             var map = {}
             arrivals.forEach(function (arrival) {
-                map[arrival.qualified] = arrival.offset
+                var name = this._arrivals.mapped.name.call(null, arrival.entry)
+                map[name] = arrival.offset
+            }, this)
+            got.entry.json[this._arrivals.mapped.map] = map
+        }
+        if (this._arrivals.named != null) {
+            arrivals.forEach(function (arrival) {
+                var name = this._arrivals.named.call(null, arrival.entry)
+                got.entry.json[name] = arrival.offset
+            }, this)
+        }
+        if (this._arrivals.arrayed != null) {
+            arrivals.forEach(function (arrival) {
+                delete arrival.entry
             })
-            got.entry.json[this._arrivals.mapped] = map
+            got.entry.json[this._arrivals.arrayed] = arrivals
         }
         this._nextProcessor.process(got.entry)
         magazine.remove(iterator.key)

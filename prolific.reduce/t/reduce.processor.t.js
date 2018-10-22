@@ -11,6 +11,7 @@ function prove (async, okay) {
                 okay(this.gathered, [{
                     json: {}
                 }, {
+                    // TODO No longer an array, but okay for our tests.
                     path: [ '', 'prolific', 'example' ],
                     formatted: [],
                     level: 0,
@@ -95,7 +96,7 @@ function prove (async, okay) {
                 pivot: '$.instance',
                 end: '$.ended',
                 delay: 50,
-                arrivals: { arrayed: '$arrayed', mapped: '$mapped' }
+                arrivals: {  arrayed: '$arrayed', mapped: '$mapped', named: '$.qualifier + "_x"' }
             }, sink, async())
         }, function (processor) {
             async(function () {
@@ -112,6 +113,7 @@ function prove (async, okay) {
                         end: 1,
                         ended: true,
                         qualified: 'prolific.example#end',
+                        qualifier: 'end',
                         array: [ 'b' ]
                     }
                 })
@@ -129,11 +131,13 @@ function prove (async, okay) {
                         end: 1,
                         ended: true,
                         qualified: 'prolific.example#end',
+                        qualifier: 'end',
                         array: [ 'b' ],
                         $mapped: { 'prolific.example#end': 0 },
                         $arrayed: [{
                             qualified: 'prolific.example#end', when: 0, offset: 0
-                        }]
+                        }],
+                        end_x: 0
                     }
                 }, 'logged')
             })
