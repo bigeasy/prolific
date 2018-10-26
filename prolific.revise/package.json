@@ -1,0 +1,38 @@
+{
+    "name":                 "prolific.revise",
+    "version":              "9.9.9",
+    "description":
+
+      "Extract properties from a logging message to create a new one.",
+
+    "keywords":
+    [
+                            "logging", "log", "syslog", "filter", "prolific"
+    ],
+    "author":               "Alan Gutierrez <alan@prettyrobots.com>",
+    "homepage":             "https://github.com/bigeasy/prolific",
+    "bugs":                 "https://github.com/bigeasy/prolific/issues",
+    "license":              "MIT",
+    "repository":
+    {
+                            "type": "git",
+                            "url": "bigeasy/prolific"
+    },
+    "dependencies":
+    {
+                            "extant":                       "1.0.x",
+                            "prolific.evaluator":           "0.2.x",
+                            "prolific.level":               "0.0.x"
+    },
+    "devDependencies":
+    {
+                            "cadence":                      "1.0.x",
+                            "destructible":                 "0.33.x",
+                            "proof":                        "3.0.x"
+    },
+    "main":                 "revise.processor",
+    "scripts":
+    {
+                            "test": "proof test t/*.t.js"
+    }
+}
