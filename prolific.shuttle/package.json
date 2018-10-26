@@ -27,7 +27,7 @@
                             "prolific.chunk":               "4.0.x",
                             "prolific.queue":               "14.1.x",
                             "prolific.resolver":            "8.1.x",
-                            "prolific.sink":                "6.1.x"
+                            "prolific.sink":                "6.2.x"
     },
     "devDependencies":
     {
