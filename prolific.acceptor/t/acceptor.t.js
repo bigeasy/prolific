@@ -51,7 +51,6 @@ function prove (okay) {
     }, {
         key: 'value'
     }]), {
-        path: 'example.equals',
         level: 4,
         formatted: [],
         json: {
@@ -68,7 +67,7 @@ function prove (okay) {
     okay(acceptor.acceptByProperties([{ qualifier: 'example.regex', level: 'debug', value: 'baz' }]), 'regex match')
     okay(acceptor.acceptByProperties([{ qualifier: 'example.regex', level: 'debug', value: 'baz' }]), 'regex match array')
     okay(acceptor.acceptByProperties([{ qualifier: 'example.and', level: 'debug', id: 'a', tag: [ 'user', 'send' ] }]), 'and')
-    okay(acceptor.acceptByContext({ path: 'example.equals', level: 7, json: { tag: [ 'send' ] } }), 'by context')
+    okay(acceptor.acceptByContext({ level: 7, json: { qualifier: 'example.equals', tag: [ 'send' ] } }), 'by context')
     // The following test the branches of the initial test against a user
     // function.
     okay(!acceptor.acceptByProperties([{ qualifier: 'example.and', level: 'debug', nope: 1 }]), 'match first test and drop')

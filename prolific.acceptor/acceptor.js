@@ -17,7 +17,6 @@ Acceptor.prototype._createContext = function (path, level, properties) {
         }
     }
     return {
-        path: path,
         level: level,
         formatted: [],
         json: properties[0]
@@ -25,16 +24,17 @@ Acceptor.prototype._createContext = function (path, level, properties) {
 }
 
 Acceptor.prototype._test = function (i, context) {
+    var level = context.level, path = context.json.qualifier
     for (var I = this._chain.length; i < I; i++) {
         var link = this._chain[i]
         if (
             context.level <= link.level &&
             (
                 link.path === '' ||
-                link.path === context.path ||
+                link.path === path ||
                 (
-                    context.path.startsWith(link.path) &&
-                    context.path[link.path.length] == '.'
+                    path.startsWith(link.path) &&
+                    path[link.path.length] == '.'
                 )
             ) &&
             (link.test == null || link.test(context))
