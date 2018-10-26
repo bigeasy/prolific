@@ -10,7 +10,6 @@ function prove (okay) {
     prolific.acceptor = new Acceptor(true, [])
     prolific.json([ '', 'hello' ], 'error', 'hello', 'greeting', { a: 1, when: 0 })
     okay(prolific.queue, [{
-        path: 'hello',
         level: 3,
         formatted: [],
         json: {
