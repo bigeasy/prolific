@@ -1,6 +1,6 @@
 {
     "name":                 "prolific.revise",
-    "version":              "9.9.9",
+    "version":              "0.0.0",
     "description":
 
       "Extract properties from a logging message to create a new one.",
