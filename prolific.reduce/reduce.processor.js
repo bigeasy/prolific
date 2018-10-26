@@ -51,7 +51,6 @@ Processor.prototype.process = function (entry) {
                 arrivals: [],
                 skip: {},
                 entry: {
-                    path: entry.path,
                     level: entry.level,
                     formatted: entry.formatted,
                     json: {}

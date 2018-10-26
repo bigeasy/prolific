@@ -11,8 +11,6 @@ function prove (async, okay) {
                 okay(this.gathered, [{
                     json: {}
                 }, {
-                    // TODO No longer an array, but okay for our tests.
-                    path: [ '', 'prolific', 'example' ],
                     formatted: [],
                     level: 0,
                     json: {
@@ -55,8 +53,6 @@ function prove (async, okay) {
         async(function () {
             processor.process({ json: { } })
             processor.process({
-                when: 0,
-                path: [ '', 'prolific', 'example' ],
                 formatted: [],
                 level: 0,
                 json: {
@@ -102,8 +98,6 @@ function prove (async, okay) {
             async(function () {
                 sink.gathered = []
                 processor.process({
-                    when: 0,
-                    path: [ '', 'prolific', 'example' ],
                     formatted: [],
                     level: 0,
                     json: {
@@ -121,7 +115,6 @@ function prove (async, okay) {
             }, function () {
                 processor.process({ json: {} })
                 okay(sink.gathered.shift(), {
-                    path: [ '', 'prolific', 'example' ],
                     formatted: [],
                     level: 0,
                     json: {
