@@ -124,10 +124,7 @@ require('arguable')(module, require('cadence')(function (async, program) {
 
     var closing = []
 
-    var synchronous = new Synchronous({
-        selectConsumer: setConsumers,
-        scanned: function () {}
-    })
+    var synchronous = new Synchronous({ selectConsumer: setConsumers })
 
     synchronous.setConsumer('closer', {
         consume: function (chunk, callback) {
