@@ -20,7 +20,6 @@ require('arguable')(module, function (program, callback) {
     var destructible = new Destructible('prolific/closer.bin')
 
     program.on('shutdown', destructible.destroy.bind(destructible))
-    program.on('SIGTERM', function () { console.log('FELT A SIGTERM') })
 
     destructible.completed.wait(callback)
 
