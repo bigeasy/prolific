@@ -20,15 +20,27 @@ function Processor (destructible, configuration, nextProcessor, options) {
     this._building = new Cache().createMagazine()
     this._sending = new Cache().createMagazine()
     this._nextProcessor = nextProcessor
-    this._arrivals = coalesce(configuration.arrivals, {})
-    if (this._arrivals.named) {
-        this._arrivals.named = Evaluator.create(this._arrivals.named)
+
+    // TODO You keep building constructors where you cook the configuration but
+    // that means that the configuration is always different from the
+    // configuration on disk and we get into a tight reconfiguration loop.
+    var arrivals = coalesce(configuration.arrivals, {})
+    this._arrivals = {
+        named: null,
+        mapped: null,
+        arrayed: coalesce(arrivals.arrayed)
     }
-    if (typeof this._arrivals.mapped == 'string') {
-        this._arrivals.mapped = { map: this._arrivals.mapped }
+    if (arrivals.named) {
+        this._arrivals.named = Evaluator.create(arrivals.named)
     }
-    if (this._arrivals.mapped != null) {
-        this._arrivals.mapped.name = Evaluator.create(coalesce(this._arrivals.mapped.name, '$.qualified'))
+    var mapped = typeof arrivals.mapped == 'string'
+               ? { map: arrivals.mapped }
+               : arrivals.mapped
+    if (mapped != null) {
+        this._arrivals.mapped = {
+            map: mapped.map,
+            name: Evaluator.create(coalesce(mapped.name, '$.qualified'))
+        }
     }
     destructible.destruct.wait(this, function () {
         this._maybeSend(this._sending, Infinity)

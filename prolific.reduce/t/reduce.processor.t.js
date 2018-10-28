@@ -1,4 +1,4 @@
-require('proof')(2, require('cadence')(prove))
+require('proof')(3, require('cadence')(prove))
 
 function prove (async, okay) {
     var Processor = require('../reduce.processor')
@@ -87,14 +87,17 @@ function prove (async, okay) {
             processor.process({ json: { callback: true } })
         })
     }, function () {
+        var configuration = {
+            pivot: '$.instance',
+            end: '$.ended',
+            delay: 50,
+            arrivals: {  arrayed: '$arrayed', mapped: '$mapped', named: '$.qualifier + "_x"' }
+        }
+        var expected = JSON.parse(JSON.stringify(configuration))
         async(function () {
-            destructible.monitor('processor', Processor, {
-                pivot: '$.instance',
-                end: '$.ended',
-                delay: 50,
-                arrivals: {  arrayed: '$arrayed', mapped: '$mapped', named: '$.qualifier + "_x"' }
-            }, sink, async())
+            destructible.monitor('processor', Processor, configuration, sink, async())
         }, function (processor) {
+            okay(configuration, expected, 'unchanged configuration')
             async(function () {
                 sink.gathered = []
                 processor.process({
