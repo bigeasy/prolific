@@ -32,7 +32,7 @@
                             "interrupt":                    "6.3.x",
                             "prolific.acceptor":            "0.4.x",
                             "prolific.consolidator":        "6.7.x",
-                            "prolific.pipeline":            "0.5.x",
+                            "prolific.pipeline":            "0.6.x",
                             "prolific.inherit":             "6.2.x",
                             "prolific.ipc":                 "1.0.x",
                             "signal":                       "4.0.x"
