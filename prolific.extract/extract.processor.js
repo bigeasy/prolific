@@ -38,6 +38,7 @@ Processor.prototype.process = function (entry) {
         this._nextProcessor.process({
             level: LEVEL[this._level],
             formatted: [],
+            env: entry.env,
             json: common
         })
     }

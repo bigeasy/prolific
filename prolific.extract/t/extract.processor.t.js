@@ -24,9 +24,9 @@ function prove (okay, callback) {
             }, sink, async())
         }, function (processor) {
             processor.process({
-                when: 0,
                 formatted: [],
                 level: 0,
+                env: {},
                 json: {
                     when: 0,
                     pid: 0,
@@ -36,6 +36,7 @@ function prove (okay, callback) {
             okay(processed.splice(0), [{
                 level: 5,
                 formatted: [],
+                env: {},
                 json: {
                     key: 1,
                     qualified: 'specific#message',
@@ -55,9 +56,9 @@ function prove (okay, callback) {
             }, sink, async())
         }, function (processor) {
             processor.process({
-                when: 0,
                 formatted: [],
                 level: 0,
+                env: {},
                 json: {
                     when: 0,
                     pid: 0,
@@ -67,6 +68,7 @@ function prove (okay, callback) {
             okay(processed.splice(0), [{
                 level: 5,
                 formatted: [],
+                env: {},
                 json: {
                     key: 1,
                     qualified: 'example#message',
@@ -77,9 +79,9 @@ function prove (okay, callback) {
                     pid: 0
                 }
             }, {
-                when: 0,
                 formatted: [],
                 level: 0,
+                env: {},
                 json: {
                     when: 0,
                     pid: 0,
