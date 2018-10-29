@@ -1,6 +1,6 @@
 {
     "name":                 "prolific.environment",
-    "version":              "0.0.1",
+    "version":              "0.0.0",
     "description":
 
       "Track additional properties for use in a Prolific pipeline.",
