@@ -76,7 +76,6 @@ Processor.prototype.process = function (entry) {
             offset: entry.json.when - got.when
         })
         merge(got.entry.json, entry.json, got.skip)
-            var arrayed = this._arrayed
         got.skip = SKIP
         if (this._end.call(null, got.entry)) {
             this._sending.put(pivot, got)
