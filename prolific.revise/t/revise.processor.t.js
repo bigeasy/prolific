@@ -21,9 +21,9 @@ function prove (okay, callback) {
             }, sink, async())
         }, function (processor) {
             processor.process({
-                when: 0,
                 formatted: [],
                 level: 0,
+                env: {},
                 json: {
                     qualified: 'example#message',
                     level: 'info',
@@ -35,6 +35,7 @@ function prove (okay, callback) {
             okay(processed.splice(0), [{
                 level: 6,
                 formatted: [],
+                env: {},
                 json: {
                     qualified: 'example#message',
                     qualifier: 'example',
