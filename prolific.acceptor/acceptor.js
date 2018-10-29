@@ -19,6 +19,7 @@ Acceptor.prototype._createContext = function (path, level, properties) {
     return {
         level: level,
         formatted: [],
+        env: {},
         json: properties[0]
     }
 }

@@ -53,6 +53,7 @@ function prove (okay) {
     }]), {
         level: 4,
         formatted: [],
+        env: {},
         json: {
             qualifier: 'example.equals',
             tag: [ 'send' ],
