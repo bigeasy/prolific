@@ -1,6 +1,6 @@
 {
     "name":                 "prolific.extract",
-    "version":              "0.0.0",
+    "version":              "0.0.1",
     "description":
 
       "Extract properties from a logging message to create a new one.",
