@@ -18,8 +18,9 @@ function prove (okay, callback) {
         async(function () {
             destructible.monitor('processor', Processor, {
                 consume: true,
-                qualified: 'example#message',
-                extract: '{ key: $.value }'
+                extract: {
+                    'specific#message': '{ key: $.value }'
+                }
             }, sink, async())
         }, function (processor) {
             processor.process({
@@ -37,8 +38,8 @@ function prove (okay, callback) {
                 formatted: [],
                 json: {
                     key: 1,
-                    qualified: 'example#message',
-                    qualifier: 'example',
+                    qualified: 'specific#message',
+                    qualifier: 'specific',
                     label: 'message',
                     level: 'notice',
                     when: 0,
@@ -47,8 +48,10 @@ function prove (okay, callback) {
             }], 'consume')
         }, function () {
             destructible.monitor('processor', Processor, {
-                qualified: 'example#message',
-                extract: '{ key: $.value }'
+                qualifier: 'example',
+                extract: {
+                    message: '{ key: $.value }'
+                }
             }, sink, async())
         }, function (processor) {
             processor.process({
