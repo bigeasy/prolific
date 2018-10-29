@@ -1,12 +1,12 @@
 exports.create = function (source) {
     var f = Function.apply(Function, [].concat(
-        '$', '$qualifier', '$level',
+        '$', '$qualifier', '$level', '$_',
         'PANIC', 'EMERG', 'ALERT', 'CRIT', 'ERR', 'ERROR', 'WARN', 'WARNING',
         'NOTICE', 'INFO', 'DEBUG', 'TRACE',
         'require', Object.keys(global),
         'return ' + source
     ))
     return function (entry) {
-        return f(entry.json, entry.qualifier, entry.level, 0, 0, 1, 2, 3, 3, 4, 4, 5, 6, 7, 7)
+        return f(entry.json, entry.qualifier, entry.level, entry.environment, 0, 0, 1, 2, 3, 3, 4, 4, 5, 6, 7, 7)
     }
 }
