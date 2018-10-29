@@ -10,7 +10,7 @@ function Watcher (configuration, processor) {
     this._configuration = configuration
     this._processor = processor
     this._change = null
-    this._demur = new Demur({ maximum: 60000 })
+    this._demur = new Demur({ maximum: 60000, immediate: true })
     this.destroyed = false
 }
 
