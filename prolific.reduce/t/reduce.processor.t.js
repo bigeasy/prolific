@@ -13,6 +13,7 @@ function prove (async, okay) {
                 }, {
                     formatted: [],
                     level: 0,
+                    env: {},
                     json: {
                         when: 0,
                         instance: 1,
@@ -55,6 +56,7 @@ function prove (async, okay) {
             processor.process({
                 formatted: [],
                 level: 0,
+                env: {},
                 json: {
                     when: 0,
                     instance: 1,
@@ -103,6 +105,7 @@ function prove (async, okay) {
                 processor.process({
                     formatted: [],
                     level: 0,
+                    env: {},
                     json: {
                         when: 0,
                         instance: 1,
@@ -120,6 +123,7 @@ function prove (async, okay) {
                 okay(sink.gathered.shift(), {
                     formatted: [],
                     level: 0,
+                    env: {},
                     json: {
                         when: 0,
                         instance: 1,

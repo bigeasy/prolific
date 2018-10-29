@@ -65,6 +65,7 @@ Processor.prototype.process = function (entry) {
                 entry: {
                     level: entry.level,
                     formatted: entry.formatted,
+                    env: entry.env,
                     json: {}
                 }
             })
