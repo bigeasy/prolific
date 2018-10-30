@@ -12,6 +12,7 @@ function prove (okay) {
     okay(prolific.queue, [{
         level: 3,
         formatted: [],
+        env: {},
         json: {
             when: 0,
             pid: process.pid,

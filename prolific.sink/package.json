@@ -20,7 +20,7 @@
     },
     "dependencies":
     {
-                            "prolific.acceptor":            "0.4.x"
+                            "prolific.acceptor":            "0.5.x"
     },
     "devDependencies":
     {
