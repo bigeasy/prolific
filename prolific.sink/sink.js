@@ -4,7 +4,7 @@ module.exports = {
     // Replace with a dummy date for testing.
     Date: Date,
     // Test a log entry for acceptance.
-    json: function (path, level, qualifier, label, properties) {
+    json: function (level, qualifier, label, body) {
         var joined = [{
             when: this.Date.now(),
             pid: process.pid,
@@ -12,7 +12,7 @@ module.exports = {
             qualifier: qualifier,
             label: label,
             qualified: qualifier + '#' + label
-        }, this.properties, properties]
+        }, this.properties, body]
         var entry = this.acceptor.acceptByProperties(joined)
         if (entry != null) {
             this.queue.push(entry)
