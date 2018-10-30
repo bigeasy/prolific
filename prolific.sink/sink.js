@@ -8,7 +8,7 @@ module.exports = {
     // configure the sink to actually do something.
     queue: null,
     // Additional properties added to every message.
-    properties: {}
+    properties: { pid: process.pid }
 }
 
 /*
