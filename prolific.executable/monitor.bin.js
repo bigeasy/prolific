@@ -51,6 +51,8 @@ require('arguable')(module, function (program, callback) {
 
     var cadence = require('cadence')
 
+    destructible.destruct.wait(destructible.monitor('exit').bind(null, null, 0))
+
     cadence(function (async) {
         async([function () {
             program.ready.unlatch()
