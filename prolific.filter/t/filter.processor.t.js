@@ -31,8 +31,7 @@ function prove (okay, callback) {
             }, sink, async())
         }, function (processor) {
             processor.process({
-                json: { name: "foo" },
-                path: 'bigeasy.prolific.filter',
+                json: { name: "foo", qualifier: 'bigeasy.prolific.filter' },
                 level: 7,
                 qualifier: [
                     null,
@@ -42,19 +41,11 @@ function prove (okay, callback) {
                 ]
             })
             processor.process({
-                json: { name: "bar" },
-                path: 'bigeasy.prolific.filter',
-                level: 7,
-                qualifier: [
-                    null,
-                    "bigeasy",
-                    "bigeasy.prolific",
-                    "bigeasy.prolific.filter"
-                ]
+                json: { name: "bar", qualifier: 'bigeasy.prolific.filter' },
+                level: 7
             })
             okay(sink.gathered, [{
-                json: { name: "foo" },
-                path: 'bigeasy.prolific.filter',
+                json: { name: "foo", qualifier: 'bigeasy.prolific.filter' },
                 level: 7,
                 qualifier: [
                     null,
