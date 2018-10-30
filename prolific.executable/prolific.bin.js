@@ -59,7 +59,7 @@ var coalesce = require('extant')
 
 // TODO Note that; we now require that anyone standing between a root Prolific
 // monitor and a leaf child process use the Descendent library.
-require('arguable')(module, require('cadence')(function (async, program) {
+require('arguable')(module, function (program, callback) {
     program.ultimate.ipc = true
 
     program.helpIf(program.ultimate.help)
@@ -158,11 +158,7 @@ require('arguable')(module, require('cadence')(function (async, program) {
 
     descendent.addChild(child, null)
 
-    async(function () {
-        destructible.completed.wait(async())
-    }, function (exitCode) {
-        return [ exitCode ]
-    })
+    destructible.completed.wait(callback)
 
     descendent.on('prolific:pipe', function (message) {
         var pid = message.cookie.path[message.cookie.path.length - 1]
@@ -174,38 +170,40 @@ require('arguable')(module, require('cadence')(function (async, program) {
         descendent.down(message.cookie.path, 'prolific:accept', message.body)
     })
 
-    async([function () {
-        destructible.destroy()
-    }], function () {
-        cadence(function (async) {
-            async(function () {
-                delta(async()).ee(child).on('close')
-            }, function (exitCode, signal) {
-                // Will only ever equal zero. We do not have the `null, "SIGTERM"`
-                // combo because we always register a `SIGTERM` handler. The
-                // `"SIGTERM"` response is only when the default hander fires.
-                // The `"SIGTERM"` is determined by whether or not the child has
-                // a `"SIGTERM"` handler, not by any action by the parent. (i.e.
-                // whether or not the parent calles `child.kill()`. The behavior
-                // is still the same if we send a kill signal from the shell.
-                Interrupt.assert(exitCode == 0, 'child.exit', {
-                    exitCode: exitCode,
-                    signal: signal,
-                    argv: program.argv
-                })
-            // TODO Shut down everything as if it was Descendent notified close.
-            })
-        })(destructible.monitor('child'))
+    var cadence = require('cadence')
 
-        cadence(function (async) {
-            async([function () {
-                descendent.decrement()
-            }], function () {
-                synchronous.listen(child.stderr, program.stderr, async())
-            })
-        })(destructible.monitor('synchronous'))
-    }, function () {
-        program.ready.unlatch()
-        destructible.completed.wait(async())
-    })
-}))
+    cadence(function (async) {
+        async(function () {
+            cadence(function (async) {
+                async(function () {
+                    delta(async()).ee(child).on('close')
+                }, function (exitCode, signal) {
+                    // Will only ever equal zero. We do not have the `null, "SIGTERM"`
+                    // combo because we always register a `SIGTERM` handler. The
+                    // `"SIGTERM"` response is only when the default hander fires.
+                    // The `"SIGTERM"` is determined by whether or not the child has
+                    // a `"SIGTERM"` handler, not by any action by the parent. (i.e.
+                    // whether or not the parent calles `child.kill()`. The behavior
+                    // is still the same if we send a kill signal from the shell.
+                    Interrupt.assert(exitCode == 0, 'child.exit', {
+                        exitCode: exitCode,
+                        signal: signal,
+                        argv: program.argv
+                    })
+                    return 0
+                // TODO Shut down everything as if it was Descendent notified close.
+                })
+            })(destructible.monitor('child'))
+
+            cadence(function (async) {
+                async([function () {
+                    descendent.decrement()
+                }], function () {
+                    synchronous.listen(child.stderr, program.stderr, async())
+                })
+            })(destructible.monitor('synchronous'))
+        }, function () {
+            program.ready.unlatch()
+        })
+    })(destructible.monitor('initialize', true))
+})

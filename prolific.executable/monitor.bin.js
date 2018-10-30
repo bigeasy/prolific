@@ -8,7 +8,7 @@
 
     ___ . ___
 */
-require('arguable')(module, require('cadence')(function (async, program) {
+require('arguable')(module, function (program, callback) {
     program.required('configuration', 'supervisor')
 
     // Node.js API.
@@ -45,15 +45,13 @@ require('arguable')(module, require('cadence')(function (async, program) {
 
     var Watcher = require('./watcher')
 
-    async(function () {
-        destructible.completed.wait(async())
-    }, function () {
-        return 0
-    })
+    destructible.completed.wait(callback)
 
     var reader = require('./stdin')(destructible.destroy.bind(destructible))
 
-    destructible.monitor('main', cadence(function (async) {
+    var cadence = require('cadence')
+
+    cadence(function (async) {
         async([function () {
             program.ready.unlatch()
         }], function () {
@@ -93,5 +91,5 @@ require('arguable')(module, require('cadence')(function (async, program) {
             destructible.destruct.wait(watcher, 'destroy')
             watcher.monitor(destructible.monitor('watch'))
         })
-    }), null)
-}), { net: require('net') })
+    })(destructible.monitor('initialize', true))
+}, { net: require('net') })

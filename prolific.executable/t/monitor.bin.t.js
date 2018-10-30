@@ -66,6 +66,6 @@ function prove (async, okay) {
             attributes: { net: { Socket: Socket } }
         }, async())
     }, function (code) {
-        okay(code, 0, 'ran')
+        okay(true, 'ran')
     })
 }
