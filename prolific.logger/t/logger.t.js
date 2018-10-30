@@ -9,7 +9,6 @@ function prove (okay) {
     prolific.sink.json = function () {
         var vargs = slice.call(arguments)
         okay(vargs, [
-            [ '', 'hello' ],
             'error',
             'hello',
             'greeting',
