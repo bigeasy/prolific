@@ -1,8 +1,9 @@
-require('proof')(1, prove)
+require('proof')(2, prove)
 
 function prove (okay) {
-    var evaluator = require('..')
-    var f = evaluator.create('$.value + ALERT')
-    var entry = { json: { value: 1 } }
-    okay(f(entry), 2, 'eval')
+    var Evaluator = require('..')
+    var modularized = require('./modularized')
+    var triage = Evaluator.create(modularized.triage, require)
+    okay(triage(0, { label: 'acceptable' }), true, 'created')
+    okay(Evaluator.create(modularized.broken, require), null, 'failed')
 }
