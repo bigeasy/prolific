@@ -22,7 +22,7 @@
     {
                             "cadence":                      "1.0.x",
                             "extant":                       "1.0.x",
-                            "prolific.acceptor":            "0.4.x",
+                            "prolific.acceptor":            "0.5.x",
                             "prolific.pipeline":            "0.6.x"
     },
     "devDependencies":
