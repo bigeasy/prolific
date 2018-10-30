@@ -2,11 +2,15 @@ var coalesce = require('extant')
 
 var descendent = require('foremost')('descendent')
 
+var Evaluator = require('prolific.evaluator')
 var Chunk = require('prolific.chunk')
-var Acceptor = require('prolific.acceptor')
 var Queue = require('prolific.queue')
 
+var LEVEL = require('prolific.level')
+
 var createUncaughtExceptionHandler = require('./uncaught')
+
+var assert = require('assert')
 
 function Shuttle () {
     this._state = 'created'
@@ -47,7 +51,16 @@ Shuttle.prototype._listen = function (descendent, options) {
     // we get a configuration we send everything.
     var sink = require('prolific.resolver').sink
     sink.queue = queue
-    sink.acceptor = new Acceptor(true, [])
+    sink.json = function (level, qualifier, label, body) {
+        this.queue.push({
+            when: this.Date.now(),
+            level: level,
+            qualifier: qualifier,
+            label: label,
+            body: body,
+            system: this.properties
+        })
+    }
 
     this._handlers = { pipe: null, accept: null }
 
@@ -55,7 +68,27 @@ Shuttle.prototype._listen = function (descendent, options) {
         queue.setPipe(handle)
     })
     descendent.on('prolific:accept', this._handlers.accept = function (message) {
-        sink.acceptor = new Acceptor(message.body.accept, message.body.chain)
+        assert(message.body.triage)
+        var triage = Evaluator.create(message.body.triage)
+        assert(triage)
+        sink.json = function (level, qualifier, label, body) {
+            var header = {
+                when: this.Date.now(),
+                level: level,
+                qualifier: qualifier,
+                label: label,
+                qualified: qualifier + '#' + label
+            }
+            if (triage(LEVEL[level], header, body, this.properties)) {
+                for (var key in this.properties) {
+                    header[key] = this.properties[key]
+                }
+                for (var key in body) {
+                    header[key] = body[key]
+                }
+                this.queue.push(header)
+            }
+        }
         sink.queue.push([{ version: message.body.version }])
     })
 

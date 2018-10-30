@@ -31,12 +31,17 @@ function prove (okay) {
         }, sent.shift())
     }
 
+    require('prolific.sink').properties.pid = 0
+    require('prolific.sink').Date = { now: function () { return 0 } }
+
     shuttle.start({
         uncaughtException: function (error) {
             okay(error.message, 'error', 'uncaught')
         },
         Date: { now: function () { return 0 } }
     })
+
+    require('prolific.sink').json('error', 'example', 'message', { key: 'value' })
 
     shuttle.start()
 
@@ -50,11 +55,13 @@ function prove (okay) {
     descendent.emit('prolific:pipe', {}, pipe)
     descendent.emit('prolific:accept', {
         body: {
-            accept: true,
-            chain: [],
+            triage: require('./modularized').triage.toString(),
             version: 1
         }
     })
+
+    require('prolific.sink').json('error', 'example', 'droppable', { key: 'value' })
+    require('prolific.sink').json('error', 'example', 'acceptible', { key: 'value' })
 
     try {
         descendent.process.emit('uncaughtException', new Error('error'))
@@ -66,11 +73,14 @@ function prove (okay) {
     // Already closed.
     shuttle.close()
 
-    okay(descendent.process.stderr.read().toString(),
-        '% S/2/0 0 aaaaaaaa 811c9dc5 1\n' +
-        '% S/2/0 1 811c9dc5 c0c3ae50 16\n' +
-        '[{"version":1}]\n'
-    , 'stderr after close')
+    okay(descendent.process.stderr.read().toString().split('\n'), [
+        '% S/2/0 0 aaaaaaaa 811c9dc5 1',
+        '% S/2/0 1 811c9dc5 e660c285 250',
+        '{"when":0,"level":"error","qualifier":"example","label":"message","body":{"key":"value"},"system":{"pid":0}}',
+        '[{"version":1}]',
+        '{"when":0,"level":"error","qualifier":"example","label":"acceptible","qualified":"example#acceptible","pid":0,"key":"value"}',
+        ''
+    ], 'stderr after close')
 
     shuttle = new Shuttle
 
