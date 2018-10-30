@@ -1,6 +1,6 @@
 {
     "name":                 "prolific.sink",
-    "version":              "6.2.1",
+    "version":              "6.3.0",
     "description":
 
       "Discoverable common output sink for the Prolific logging framework.",
