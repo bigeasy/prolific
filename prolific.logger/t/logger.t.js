@@ -1,6 +1,6 @@
 require('proof')(3, prove)
 
-function prove (assert) {
+function prove (okay) {
     var Logger = require('..')
     var slice = [].slice
 
@@ -8,7 +8,7 @@ function prove (assert) {
     var prolific = require('prolific.resolver')
     prolific.sink.json = function () {
         var vargs = slice.call(arguments)
-        assert(vargs, [
+        okay(vargs, [
             [ '', 'hello' ],
             'error',
             'hello',
