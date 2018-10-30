@@ -1,7 +1,7 @@
-var Shuttle = require('prolific.shuttle')
 var logger = require('prolific.logger').createLogger('prolific.example')
 
-var shuttle = Shuttle.shuttle(process, logger)
+var shuttle = require('foremost')('prolific.shuttle')
+shuttle.start({ uncaughtException: logger })
 
 process.on('SIGTERM', function () {
     shuttle.close()

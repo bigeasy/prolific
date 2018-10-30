@@ -23,8 +23,7 @@
     {
                             "prolific.shuttle":             "20.0.x",
                             "prolific.logger":              "8.0.x",
-                            "prolific":                     "18.0.x",
-                            "prolific.stdio":               "6.0.x"
+                            "prolific":                     "18.0.x"
     },
     "devDependencies":
     {
