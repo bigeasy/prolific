@@ -1,10 +1,11 @@
 // Triage is a properties object with getters and setters and is always
 // synchronous and is only a yes or no. We have an entry object as well.
 exports.triage = function () {
-    return function (properties, LEVEL) {
-        if (properties.get('level') >= LEVEL.notice) {
-            if (properties.get('error') instanceof Error) {
-                properties.set('error', { stack: error.stack })
+    var LEVEL = require('prolific.level')
+    return function (level, header, body, system, append) {
+        if (level >= LEVEL.notice) {
+            if (body.error instanceof Error) {
+                body.error = { stack: error.stack }
             }
             return true
         }

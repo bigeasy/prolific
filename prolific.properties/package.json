@@ -1,0 +1,36 @@
+{
+    "name":                 "prolific.properties",
+    "version":              "0.5.0",
+    "description":
+
+      "Properties object to select key value pairs out of an array.",
+
+    "keywords":
+    [
+                            "prolific", "logging", "log", "syslog"
+    ],
+    "author":               "Alan Gutierrez <alan@prettyrobots.com>",
+    "homepage":             "https://github.com/bigeasy/prolific",
+    "bugs":                 "https://github.com/bigeasy/prolific/issues",
+    "license":              "MIT",
+    "repository":
+    {
+                            "type": "git",
+                            "url": "bigeasy/prolific"
+    },
+    "dependencies":
+    {
+                            "extant":                       "1.0.x",
+                            "prolific.evaluator":           "0.3.x",
+                            "prolific.level":               "0.0.x"
+    },
+    "devDependencies":
+    {
+                            "proof":                        "3.0.x"
+    },
+    "main":                 "acceptor",
+    "scripts":
+    {
+                            "test": "proof test t/*.t.js"
+    }
+}
