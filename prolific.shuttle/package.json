@@ -23,7 +23,7 @@
                             "abend":                        "1.0.x",
                             "descendent":                   "0.10.x",
                             "foremost":                     "0.0.x",
-                            "prolific.acceptor":            "0.4.x",
+                            "prolific.acceptor":            "0.5.x",
                             "prolific.chunk":               "4.0.x",
                             "prolific.queue":               "14.1.x",
                             "prolific.resolver":            "8.2.x",
