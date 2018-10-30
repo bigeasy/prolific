@@ -7,21 +7,21 @@ function prove (okay) {
     prolific.properties = { z: 26, when: 0 }
     prolific.json('error', 'hello', 'greeting', { a: 1, when: 0 })
     prolific.queue = []
-    prolific.acceptor = new Acceptor(true, [])
+    prolific.json = function (level, qualifier, label, body) {
+        this.queue.push({
+            level: level,
+            qualifier: qualifier,
+            label: label,
+            body: body,
+            system: this.properties
+        })
+    }
     prolific.json('error', 'hello', 'greeting', { a: 1, when: 0 })
     okay(prolific.queue, [{
-        level: 3,
-        formatted: [],
-        env: {},
-        json: {
-            when: 0,
-            pid: process.pid,
-            level: 'error',
-            label: 'greeting',
-            qualifier: 'hello',
-            qualified: 'hello#greeting',
-            z: 26,
-            a: 1
-        }
+        level: 'error',
+        qualifier: 'hello',
+        label: 'greeting',
+        body: { a: 1, when: 0 },
+        system: { z: 26, when: 0 }
     }], 'json')
 }
