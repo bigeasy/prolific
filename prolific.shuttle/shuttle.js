@@ -69,7 +69,7 @@ Shuttle.prototype._listen = function (descendent, options) {
     })
     descendent.on('prolific:accept', this._handlers.accept = function (message) {
         assert(message.body.triage)
-        var triage = Evaluator.create(message.body.triage, require)
+        var triage = Evaluator.create(message.body.triage, require('prolific.require').require)
         assert(triage)
         sink.json = function (level, qualifier, label, body) {
             var header = {

@@ -27,6 +27,7 @@
                             "prolific.evaluator":           "0.6.x",
                             "prolific.level":               "0.0.0",
                             "prolific.queue":               "14.1.x",
+                            "prolific.require":             "0.0.0",
                             "prolific.resolver":            "8.4.x",
                             "prolific.sink":                "6.5.x"
     },
