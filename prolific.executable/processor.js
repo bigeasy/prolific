@@ -13,6 +13,8 @@ var logger = require('prolific.logger').createLogger('prolific.supervisor')
 var Reconfigurator = require('reconfigure')
 var byBuffer = require('reconfigure/buffer')
 
+var Evaluator = require('prolific.evaluator')
+
 var Signal = require('signal')
 
 var LEVEL = require('prolific.level')
@@ -60,8 +62,20 @@ Processor.prototype._createProcessor = cadence(function (async, destructible, Pr
 })
 
 Processor.prototype._loadModule = function () {
-    delete require.cache[this._path]
-    return require(this._path)
+    require = require('prolific.require').require
+    var path = require.resolve(this._path)
+    delete require.cache[path]
+    var module = require(path)
+    return {
+        Process: {
+            f: Evaluator.create(module.process.toString(), require),
+            source: module.process.toString()
+        },
+        Triage: {
+            f: Evaluator.create(module.triage.toString(), require),
+            source: module.triage.toString()
+        }
+    }
 }
 
 Processor.prototype.watch = cadence(function (async, ready) {
@@ -81,11 +95,10 @@ Processor.prototype.watch = cadence(function (async, ready) {
                 return [ block.break ]
             }
             var module = this._loadModule()
-            var Processor = module.process()
             async(function () {
-                this._destructible.monitor([ 'processor', 'bootstrap' ], true, this, '_createProcessor', Processor, async())
+                this._destructible.monitor([ 'processor', 'bootstrap' ], true, this, '_createProcessor', module.Process.f, async())
             }, function (processor, destructible) {
-                var triage = module.triage()
+                var triage = module.Triage.f
                 this._processor = {
                     push: function (entry) {
                         var header = {
@@ -119,10 +132,9 @@ Processor.prototype.watch = cadence(function (async, ready) {
             source = changed
             async([function () {
                 var module = this._loadModule()
-                var Processor = module.process()
                 var version = this._version++
                 async(function () {
-                    this._destructible.monitor([ 'processor', version ], true, this, '_createProcessor', Processor, async())
+                    this._destructible.monitor([ 'processor', version ], true, this, '_createProcessor', module.Process.f, async())
                 }, function (processor, destructible) {
                     this._versions.push({
                         destructible: this._previousDestructible,
@@ -130,7 +142,7 @@ Processor.prototype.watch = cadence(function (async, ready) {
                         processor: processor
                     })
                     this._previousDestructible = destructible
-                    this._reloaded({ version: version, triage: module.triage.toString() })
+                    this._reloaded({ version: version, triage: module.Triage.source })
                 })
             }, function (error) {
                 return [ loop.continue ]
