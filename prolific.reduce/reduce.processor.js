@@ -12,40 +12,51 @@ var SKIP = {}
     SKIP[skip] = true
 })
 
-function Processor (destructible, configuration, nextProcessor, options) {
-    this._timeout = coalesce(configuration.timeout, 30000)
-    this._delay = coalesce(configuration.delay, 5000)
-    this._pivot = Evaluator.create(configuration.pivot)
-    this._end = Evaluator.create(configuration.end)
+function Processor (options) {
+    this._timeout = coalesce(options.timeout, 30000)
+    this._delay = coalesce(options.delay, 5000)
     this._building = new Cache().createMagazine()
     this._sending = new Cache().createMagazine()
-    this._nextProcessor = nextProcessor
+}
 
-    // TODO You keep building constructors where you cook the configuration but
-    // that means that the configuration is always different from the
-    // configuration on disk and we get into a tight reconfiguration loop.
-    var arrivals = coalesce(configuration.arrivals, {})
-    this._arrivals = {
-        named: null,
-        mapped: null,
-        arrayed: coalesce(arrivals.arrayed)
+Processor.prototype.merge = function (pivot, entry) {
+    var got = this._sending.get(pivot)
+    if (got == null) {
+        got = this._building.get(pivot, {
+            when: entry.when,
+            skip: {},
+            entry: JSON.parse(JSON.stringify(entry))
+        })
+        merge(got, entry, got.skip)
+        got.skip = SKIP
     }
-    if (arrivals.named) {
-        this._arrivals.named = Evaluator.create(arrivals.named)
+    return got
+}
+
+Processor.prototype.send = function (pivot) {
+    var got = this._building.get(pivot)
+    if (got != null) {
+        this._sending.put(pivot, got)
+        this._building.remove(pivot)
     }
-    var mapped = typeof arrivals.mapped == 'string'
-               ? { map: arrivals.mapped }
-               : arrivals.mapped
-    if (mapped != null) {
-        this._arrivals.mapped = {
-            map: mapped.map,
-            name: Evaluator.create(coalesce(mapped.name, '$.qualified'))
-        }
+}
+
+Processor.prototype.ready = function (before) {
+    return this._shift(this._sending, Date.now() - this._delay) ||
+           this._shift(this._building, Date.now() - this._timeout)
+}
+
+Processor.prototype.shift = function () {
+    return this._shift(this._sending, Infinity) ||
+           this._shift(this._building, Infinity)
+}
+
+Processor.prototype._shift = function (magazine, before) {
+    var iterator = magazine.iterator()
+    if (iterator.when < before) {
+        return magazine.remove(iterator.key)
     }
-    destructible.destruct.wait(this, function () {
-        this._maybeSend(this._sending, Infinity)
-        this._maybeSend(this._building, Infinity)
-    })
+    return null
 }
 
 Processor.prototype.process = function (entry) {
@@ -77,7 +88,6 @@ Processor.prototype.process = function (entry) {
             offset: entry.json.when - got.when
         })
         merge(got.entry.json, entry.json, got.skip)
-        got.skip = SKIP
         if (this._end.call(null, got.entry)) {
             this._sending.put(pivot, got)
             this._building.remove(pivot)
@@ -117,8 +127,4 @@ Processor.prototype._maybeSend = function (magazine, before) {
     }
 }
 
-module.exports = function (destructible, configuration, nextProcessor, callback) {
-    callback(null, new Processor(destructible, configuration, nextProcessor))
-}
-
-module.exports.isProlificProcessor = true
+module.exports = Processor

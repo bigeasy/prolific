@@ -20,13 +20,9 @@
     },
     "dependencies":
     {
-                            "extant":                       "1.0.x",
-                            "prolific.evaluator":           "0.3.x",
-                            "prolific.level":               "0.0.x"
     },
     "devDependencies":
     {
-                            "proof":                        "3.0.x"
     },
     "main":                 "acceptor",
     "scripts":
