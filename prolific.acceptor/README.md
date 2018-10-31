@@ -1,4 +1,5 @@
 Prolific Acceptor
 
-Build a chain of conditionals for use in filtering logging messages for the
-Prolific logging framework.
+Depreciated. No longer using quite so many bits of middleware.
+
+See [Prolific](http://github.com/bigeasy/prolific).
