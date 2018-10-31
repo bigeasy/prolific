@@ -1,59 +1,9 @@
 require('proof')(1, prove)
 
-function prove (okay, callback) {
-    var Processor = require('../filter.processor')
-
-    var Destructible = require('destructible')
-    var destructible = new Destructible('t/acceptor.processor.t')
-
-    var cadence = require('cadence')
-
-    var sink = {
-        gathered: [],
-        process: function (entry) {
-            this.gathered.push(entry)
-        }
+function prove (okay) {
+    try {
+        require('..')
+    } catch (error) {
+        okay(error.message, 'deprecated', 'deprecated')
     }
-
-    destructible.completed.wait(callback)
-
-    destructible.monitor('test', cadence(function (async, destructible) {
-        async([function () {
-            destructible.destroy()
-        }], function() {
-            destructible.monitor('Processor', Processor, {
-                accept: false,
-                chain: [{
-                    path: '.bigeasy.prolific',
-                    test: '$.name == "foo" && $qualifier[2] == "bigeasy.prolific" && $level == TRACE',
-                    accept: true
-                }]
-            }, sink, async())
-        }, function (processor) {
-            processor.process({
-                json: { name: "foo", qualifier: 'bigeasy.prolific.filter' },
-                level: 7,
-                qualifier: [
-                    null,
-                    "bigeasy",
-                    "bigeasy.prolific",
-                    "bigeasy.prolific.filter"
-                ]
-            })
-            processor.process({
-                json: { name: "bar", qualifier: 'bigeasy.prolific.filter' },
-                level: 7
-            })
-            okay(sink.gathered, [{
-                json: { name: "foo", qualifier: 'bigeasy.prolific.filter' },
-                level: 7,
-                qualifier: [
-                    null,
-                    "bigeasy",
-                    "bigeasy.prolific",
-                    "bigeasy.prolific.filter"
-                ]
-            }], 'gathered')
-        })
-    }), null)
 }
