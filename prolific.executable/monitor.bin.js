@@ -17,9 +17,6 @@ require('arguable')(module, function (program, callback) {
     // Route messages through a process hierarchy using Node.js IPC.
     var Descendent = require('descendent')
 
-    // Construct a prolific pipeline from a configuration.
-    var Pipeline = require('prolific.pipeline')
-
     // Controlled demolition of objects.
     var Destructible = require('destructible')
 
@@ -42,8 +39,6 @@ require('arguable')(module, function (program, callback) {
 
     var Turnstile = require('turnstile')
     Turnstile.Queue = require('turnstile/queue')
-
-    var Watcher = require('./watcher')
 
     destructible.completed.wait(callback)
 
@@ -86,12 +81,6 @@ require('arguable')(module, function (program, callback) {
             // Let the supervisor know that we're ready. It will send our
             // asynchronous pipe down to the monitored process.
             descendent.up(+program.ultimate.supervisor, 'prolific:pipe', true)
-
-            // Reload immediately because the reload will cause the first
-            // round of filtering to get pushed into the monitored process.
-            var watcher = new Watcher(program.ultimate.configuration, processor)
-            destructible.destruct.wait(watcher, 'destroy')
-            watcher.monitor(destructible.monitor('watch'))
         })
     })(destructible.monitor('initialize', true))
 }, { net: require('net') })

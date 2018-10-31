@@ -7,12 +7,17 @@ var cadence = require('cadence')
 var Turnstile = require('turnstile')
 Turnstile.Check = require('turnstile/check')
 
-// Pipeline processing and filtering.
-var Pipeline = require('prolific.pipeline')
-var Acceptor = require('prolific.acceptor')
-
 var Interrupt = require('interrupt').createInterrupter('prolific')
 var logger = require('prolific.logger').createLogger('prolific.supervisor')
+
+var Reconfigurator = require('reconfigure')
+var byBuffer = require('reconfigure/buffer')
+
+var Signal = require('signal')
+
+var LEVEL = require('prolific.level')
+
+var path = require('path')
 
 // Construct a processor that will reload it's configuration from the given
 // configuration and call the given function with the new in-process Acceptor
@@ -24,64 +29,114 @@ var logger = require('prolific.logger').createLogger('prolific.supervisor')
 // its processors.
 
 //
-function Processor (destructible, configuration, reloaded) {
+function Processor (destructible, module, reloaded) {
+    this.destroyed = false
+    this._destructible = destructible
+    this._destructible.markDestroyed(this)
+
     var turnstile = new Turnstile
     turnstile.listen(destructible.monitor('reopen'))
     destructible.destruct.wait(turnstile, 'close')
-    this.destroyed = false
-    this._configuration = configuration
-    this._reloaded = reloaded
     this._check = new Turnstile.Check(this, '_reload', turnstile)
-    this._destructible = destructible
-    this._destructible.markDestroyed(this)
+
+    this._reloaded = reloaded
+    this._reloads = 0
+
+    this._path = path.resolve(module)
+
     this._version = 0
     this._versions = []
+
+    this._reconfigurator = new Reconfigurator(this._path, byBuffer)
+    destructible.destruct.wait(this._reconfigurator, 'destroy')
 }
 
-// This is like the problem of the Chaperon in Compassion that gets an event to
-// peform a meta-consensus action, but while it performing service discovery the
-// participant it is trying to place shuts down. Not the easiest race to test.
-//
-// We encountered this already here in testing. We shutdown the monitor in the
-// middle of it's first reload and it hung because `Destructible.monitor` is
-// called and it has some convoluted logic where if it is destroyed, it wants to
-// wait for the destruction to complete, but it won't because our Turnstile is
-// waiting for this function to complete, and our Destructible is waiting on the
-// Turnstile.
-//
-// What is the nature of this problem? In the case of Compassion is is
-// Happenstance and Destructible interacting, in this case it is Turnstile and
-// Destructible interacting. Events that generate new stacks?
-
-//
-Processor.prototype._pipeline = cadence(function (async) {
+Processor.prototype._createProcessor = cadence(function (async, destructible, Processor) {
     async(function () {
-        fs.readFile(this._configuration, 'utf8', async())
-    }, function (configuration) {
-        Interrupt.assert(!this.destroyed, 'destroyed')
-        configuration = JSON.parse(configuration)
-        async(function () {
-            this._destructible.monitor([ 'pipeline', this._version ], true, Pipeline, configuration.pipeline, async())
-        }, function (pipeline, destructible) {
-            return [ configuration, pipeline, destructible ]
-        })
+        destructible.monitor('processor', Processor, async())
+    }, function (processor) {
+        return [ { push: function (entry) { processor(entry) } }, destructible ]
     })
 })
 
-Processor.prototype.load = cadence(function (async) {
-    async(function () {
-        this._pipeline(async())
-    }, function (configuration, pipeline, destructible) {
-        this._pipelineDestructible = destructible
-        var acceptor = new Acceptor(configuration.accept, configuration.chain)
-        this._processor = {
-            process: function (entry) {
-                if (acceptor.acceptByContext(entry)) {
-                    pipeline.process(entry)
-                }
+Processor.prototype._loadModule = function () {
+    delete require.cache[this._path]
+    return require(this._path)
+}
+
+Processor.prototype.watch = cadence(function (async, ready) {
+    var source = Buffer.from('?')
+    // Note that we actually load twice every time we start, once to get our no
+    // triage version to catch messages from the application process before it
+    // gets it's triage function, then we generate an update to update the child
+    // process with the triage function. We could work to eliminate the reload,
+    // but I'm happy to exercise it.
+    var block = async(function () {
+        async([function () {
+            ready.unlatch()
+        }], function () {
+            this._reconfigurator.monitor(source, async())
+        }, function (changed) {
+            if (changed == null) {
+                return [ block.break ]
             }
-        }
-    })
+            var module = this._loadModule()
+            var Processor = module.process()
+            async(function () {
+                this._destructible.monitor([ 'processor', 'bootstrap' ], true, this, '_createProcessor', Processor, async())
+            }, function (processor, destructible) {
+                var triage = module.triage()
+                this._processor = {
+                    push: function (entry) {
+                        var header = {
+                            when: entry.when,
+                            level: entry.level,
+                            qualified: entry.qualifier + '#' + entry.label,
+                            qualifier: entry.qualifier,
+                            label: entry.label
+                        }
+                        if (triage(LEVEL[entry.level], header, entry.body, entry.system)) {
+                            for (var key in entry.system) {
+                                header[key] = entry.system[key]
+                            }
+                            for (var key in entry.body) {
+                                header[key] = entry.body[key]
+                            }
+                            processor.push(header)
+                        }
+                    }
+                }
+                this._previousDestructible = destructible
+            })
+        })
+    }, function () {
+        var loop = async(function () {
+            this._reconfigurator.monitor(source, async())
+        }, function (changed) {
+            if (changed == null) {
+                return [ block.break ]
+            }
+            source = changed
+            async([function () {
+                var module = this._loadModule()
+                var Processor = module.process()
+                var version = this._version++
+                async(function () {
+                    this._destructible.monitor([ 'processor', version ], true, this, '_createProcessor', Processor, async())
+                }, function (processor, destructible) {
+                    this._versions.push({
+                        destructible: this._previousDestructible,
+                        version: version,
+                        processor: processor
+                    })
+                    this._previousDestructible = destructible
+                    this._reloaded({ version: version, triage: module.triage.toString() })
+                })
+            }, function (error) {
+                return [ loop.continue ]
+            }])
+        })()
+    })()
 })
 
 Processor.prototype.updated = cadence(function (async, version) {
@@ -92,6 +147,10 @@ Processor.prototype.updated = cadence(function (async, version) {
     configuration.destructible.destroy()
 })
 
+// Async because if we have a version bump we have to wait for the previous
+// processor to drain to start the new one, however we are not processing per
+// message, we are getting chunks of messages and those are processed
+// synchronously.
 Processor.prototype.process = cadence(function (async, envelope) {
     var lines = envelope.body.buffer.toString().split('\n')
     if (lines[lines.length - 1].length == 0) {
@@ -100,7 +159,7 @@ Processor.prototype.process = cadence(function (async, envelope) {
     var entries = lines.map(JSON.parse)
     var loop = async(function () {
         while (entries.length && !Array.isArray(entries[0])) {
-            this._processor.process(entries.shift())
+            this._processor.push(entries.shift())
         }
         if (entries.length == 0) {
             return [ loop.break ]
@@ -110,34 +169,10 @@ Processor.prototype.process = cadence(function (async, envelope) {
     })()
 })
 
-Processor.prototype._reload = cadence(function (async, configuration) {
-    async([function () {
-        this._pipeline(async())
-    }, function (error) {
-        // TODO Logging with the notion of a separate log for the monitor.
-        logger.error('pipeline', { configuration: configuration, error: error.stack })
-        return [ async.break, null ]
-    }], function (configuration, pipeline, destructible) {
-        var version = this._version++
-        this._versions.push({
-            destructible: this._pipelineDestructible,
-            version: version,
-            processor: pipeline
-        })
-        this._pipelineDestructible = destructible
-        this._reloaded({ version: version, accept: configuration.accept, chain: configuration.chain })
-        return [ configuration ]
-    })
-})
-
-Processor.prototype.reload = function (callback) {
-    this._check.check(callback)
-}
-
 module.exports = cadence(function (async, destructible, configuration, reloaded) {
     var processor = new Processor(destructible, configuration, reloaded)
     async(function () {
-        processor.load(async())
+        processor.watch(new Signal(async()), destructible.monitor('watch'))
     }, function () {
         return [ processor ]
     })

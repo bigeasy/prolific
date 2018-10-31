@@ -2,7 +2,9 @@
 
 /*
     ___ usage ___ en_US ___
-    usage: prolific <pipeline> <program>
+    usage: prolific <options> <program>
+
+    options:
 
         -i, --inherit   <number>        file handles to inherit
         -c, --configuration <path>      path to configuration
@@ -40,9 +42,6 @@ var Interrupt = require('interrupt').createInterrupter('prolific')
 
 // Command line and environment interpretation utilities.
 var inherit = require('prolific.inherit')
-
-// Construct a prolific pipeline from a configuration.
-var Pipeline = require('prolific.pipeline')
 
 // Monitoring of streams that contain logging messages.
 var Synchronous = require('prolific.consolidator/synchronous')

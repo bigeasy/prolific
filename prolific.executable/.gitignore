@@ -3,4 +3,4 @@
 !/node_modules/prolific.test
 /.proof.out
 /coverage
-/t/configuration.copy.json
+/t/configuration.copy.js

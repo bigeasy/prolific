@@ -23,6 +23,8 @@ function prove (async, okay) {
         this.end()
     }
 
+    var moudularized = require('./configuration')
+
     var senders = [function (message) {
         var pid = message.path[0]
         message.path[0] = 2
@@ -43,7 +45,7 @@ function prove (async, okay) {
             name: 'prolific:accept',
             to: [ 1 ],
             path: [ 2 ],
-            body: { version: 0, accept: false, chain: [{ path: '.', level: 'warn', accept: true }] }
+            body: { version: 0, triage: moudularized.triage.toString() }
         }, 'accept message')
         // TODO Move the close to the part above to see that we hang on exit
         // with the current destructible. Need to decide what to do when monitor
@@ -57,7 +59,7 @@ function prove (async, okay) {
     var program
     async(function () {
         program = monitor({
-            configuration: path.join(__dirname, 'configuration.json'),
+            configuration: path.join(__dirname, 'configuration.js'),
             supervisor: '1'
         }, {
             send: function (message) {

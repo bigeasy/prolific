@@ -5,7 +5,7 @@ function prove (async, okay) {
     var path = require('path')
 
     var child = path.join(__dirname, 'program.js')
-    var configuration = path.join(__dirname, 'configuration.json')
+    var configuration = path.join(__dirname, 'prolific.bin.prolific.js')
 
     var stream = require('stream')
     var program

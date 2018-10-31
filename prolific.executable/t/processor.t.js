@@ -1,6 +1,6 @@
-require('proof')(1, require('cadence')(prove))
+require('proof')(3, prove)
 
-function prove (async, okay) {
+function prove (okay, callback) {
     var Processor = require('../processor')
     var path = require('path')
 
@@ -10,8 +10,10 @@ function prove (async, okay) {
     var destructible = new Destructible('t/processor.t')
 
     var configuration = {
-        template: path.join(__dirname, 'configuration.json'),
-        copy: path.join(__dirname, 'configuration.copy.json')
+        template: path.join(__dirname, 'configuration.js'),
+        copy: path.join(__dirname, 'configuration.copy.js'),
+        bad: path.join(__dirname, 'configuration.bad.js'),
+        missing: path.join(__dirname, 'configuration.missing.js')
     }
 
     var fs = require('fs')
@@ -21,67 +23,80 @@ function prove (async, okay) {
 
     var wait = null
 
-    function reloaded (configuration) {
+    var reloads = [function (configuration) {
+        okay({
+            version: configuration.version,
+            triage: configuration.triage.substring(0, 8)
+        }, {
+            version: 0,
+            triage:  'function'
+        }, 'reloaded')
         wait()
+    }, function () {
+        wait()
+    }]
+
+    function reloaded (configuration) {
+        reloads.shift()(configuration)
     }
 
     var entries = require('prolific.test').entries
 
-    destructible.completed.wait(async())
+    destructible.completed.wait(callback)
 
-    async([function () {
-        destructible.destroy()
-    }], function () {
-        destructible.monitor('test', cadence(function (async, destructible) {
+    var test = require('prolific.test')
+
+    cadence(function (async) {
+        async(function () {
+            // Exercise a cancel of the very first read.
+            destructible.monitor('missing', true, cadence(function (async, destructible) {
+                destructible.monitor('processor', Processor, configuration.missing, reloaded, async())
+                setTimeout(function () { destructible.destroy() })
+            }), async())
+        }, function (processor) {
+            destructible.monitor('processor', Processor, configuration.copy, reloaded, async())
+        }, function (processor) {
             async(function () {
-                destructible.monitor('proessor', Processor, configuration.copy, reloaded, async())
-            }, function (processor) {
-                async(function () {
-                    processor.process({
-                        body: {
-                            buffer: ([{
-                                path: [ '', 'prolific' ],
-                                level: 7,
-                                json: { qualifier: 'prolific', level: 'debug', key: 'value' }
-                            }, {
-                                path: [ '', 'prolific' ],
-                                level: 4,
-                                json: { qualifier: 'prolific', level: 'warn', key: 'value' }
-                            }]).map(JSON.stringify).join('\n')
-                        }
-                    }, async())
-                }, function () {
-                    okay(entries.shift(), {
-                        path: [ '', 'prolific' ],
-                        level: 4,
-                        json: { qualifier: 'prolific', level: 'warn', key: 'value' }
-                    }, 'process')
-                    wait = async()
-                    processor.reload()
-                }, function () {
-                    processor.process({
-                        body: {
-                            buffer: ([{
-                                path: [ '', 'prolific' ],
-                                level: 7,
-                                json: { qualifier: 'prolific', level: 'debug', key: 'value' }
-                            },
-                            [{ version: 0 }],
-                            {
-                                path: [ '', 'prolific' ],
-                                level: 4,
-                                json: { qualifier: 'prolific', level: 'warn', key: 'value' }
-                            }]).map(JSON.stringify).join('\n') + '\n'
-                        }
-                    }, async())
-                }, function () {
-                    processor.reload()
-                    fs.unlinkSync(configuration.copy)
-                    setTimeout(async(), 250)
-                })
+                processor.process({
+                    body: {
+                        buffer: JSON.stringify({
+                            when: 0,
+                            qualifier: 'qualifier',
+                            label: 'label',
+                            level: 'error',
+                            body: { url: '/' },
+                            system: { pid: 0 }
+                        }) + '\n'
+                    }
+                }, async())
+                okay(test.sink.splice(0), [{
+                    when: 0,
+                    level: 'error',
+                    qualified: 'qualifier#label',
+                    qualifier: 'qualifier',
+                    label: 'label',
+                    pid: 0,
+                    url: '/'
+                }], 'triage in monitor')
+                wait = async()
             }, function () {
-                return []
+                processor.process({
+                    body: {
+                        buffer:
+                            JSON.stringify([{ version: 0 }]) + '\n' +
+                            JSON.stringify({ level: 'error', when: 0, url: '/', pid: 0 })
+                    }
+                }, async())
+                okay(test.sink.splice(0), [{
+                    level: 'error', when: 0, pid: 0, url: '/'
+                }], 'triage in processor')
+            }, function () {
+                wait = async()
+                fse.copySync(configuration.bad, configuration.copy)
+                setTimeout(function () {
+                    fse.copySync(configuration.template, configuration.copy)
+                }, 250)
             })
-        }), async())
-    })
+        })
+    })(destructible.monitor('test'))
 }
