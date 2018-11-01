@@ -30,7 +30,7 @@
                             "destructible":                 "0.34.x",
                             "proof":                        "3.0.x"
     },
-    "main":                 "reduce.processor",
+    "main":                 "reducer",
     "scripts":
     {
                             "test": "proof test t/*.t.js"

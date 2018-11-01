@@ -1,7 +1,7 @@
 require('proof')(1, require('cadence')(prove))
 
 function prove (async, okay) {
-    var Reducer = require('../reduce.processor')
+    var Reducer = require('..')
     var reducer = new Reducer({})
     var got = reducer.merge('x', { when: 0, id: 'x' })
     okay(got, {
