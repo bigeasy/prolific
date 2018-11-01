@@ -1,6 +1,6 @@
 {
     "name":                 "prolific.udp",
-    "version":              "6.1.2",
+    "version":              "6.2.0",
     "description":
 
       "A UDP logger for the Prolific logging framework.",
