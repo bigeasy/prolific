@@ -1,3 +1,5 @@
 ## Prolific Environment
 
-Track additional properties for use in a Prolific pipeline.
+Depreciated. No longer using quite so many bits of middleware.
+
+See [Prolific](http://github.com/bigeasy/prolific).
