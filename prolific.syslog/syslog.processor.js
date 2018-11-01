@@ -1,40 +1,33 @@
-var url = require('url')
 var coalesce = require('extant')
 
 var FACILITY = require('prolific.facility')
-
 var LEVEL = require('prolific.level')
 
-function Processor (configuration, nextProcessor) {
-    this._application = configuration.application || process.title
-    this._hostname = configuration.hostname || 'localhost'
-    this._facility = FACILITY[configuration.facility || 'local0']
-    this._serializer = configuration.serializer ? require(configuration.serializer) : JSON
-    this._nextProcessor = nextProcessor
+function Processor (configuration) {
+    this._application = coalesce(configuration.application, process.title)
+    this._hostname = coalesce(configuration.hostname, 'localhost')
+    this._facility = FACILITY[coalesce(configuration.facility, 'local0')]
+    this._serializer = coalesce(configuration.serializer, JSON)
 }
 
 Processor.prototype.process = function (entry) {
-    var json = entry.json, pid = json.pid, when = json.when
-    delete json.when
-    delete json.pid
+    var pid = entry.pid, when = entry.when
+    // TODO Probably faster if I set `undefined`.
+    delete entry.when
+    delete entry.pid
     var line = [
-        '<' + (this._facility * 8 + LEVEL[entry.json.level]) + '>1',
+        '<' + (this._facility * 8 + LEVEL[entry.level]) + '>1',
         new Date(when).toISOString(),
         this._hostname,
         this._application,
         coalesce(pid, '-'),
         '-',
         '-',
-        this._serializer.stringify(json)
+        this._serializer.stringify(entry)
     ]
-    json.when = when
-    json.pid = pid
-    entry.formatted.push(line.join(' ') + '\n')
-    this._nextProcessor.process(entry)
+    entry.when = when
+    entry.pid = pid
+    return line.join(' ') + '\n'
 }
 
-module.exports = function (destructible, configuration, nextProcessor, callback) {
-    callback(null, new Processor(configuration, nextProcessor))
-}
-
-module.exports.isProlificProcessor = true
+module.exports = Processor
