@@ -1,4 +1,4 @@
-require('proof')(3, require('cadence')(prove))
+require('proof')(1, require('cadence')(prove))
 
 function prove (async, assert) {
     var Processor = require('../udp.processor')
@@ -32,26 +32,7 @@ function prove (async, assert) {
                 assert(message.toString(), '{"a":1}\n', 'sent')
                 wait()
             })
-            processor.process({ formatted: [], json: { a: 1 } })
-        }, function () {
-            var wait = async()
-            server.once('message', function (message, remote) {
-                assert(message.toString(), 'foo\n', 'sent formatted')
-                wait()
-            })
-            processor.process({ formatted: [ 'foo\n' ] })
-        })
-    }, function () {
-        destructible.monitor('UDP', Processor, { select: '$.host' }, sink, async())
-    }, function (processor) {
-        async(function () {
-            var wait = async()
-            server.once('message', function (message, remote) {
-                assert(message.toString(), '{"host":"127.0.0.1:9898"}\n', 'sent selected')
-                wait()
-            })
-            processor.process({ formatted: [], json: { a: 1 } })
-            processor.process({ formatted: [], json: { host: '127.0.0.1:9898' } })
+            processor.send({ hostname: '127.0.0.1', port: 9898 }, JSON.stringify({ a: 1 }) + '\n')
         }, function () {
             delta(async()).ee(server).on('close')
             server.close()
