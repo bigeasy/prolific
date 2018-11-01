@@ -1,6 +1,6 @@
-require('proof')(1, require('cadence')(prove))
+require('proof')(1, prove)
 
-function prove (async, okay) {
+function prove (okay, callback) {
     var Processor = require('..')
 
     var dgram = require('dgram')
@@ -15,27 +15,29 @@ function prove (async, okay) {
     var Destructible = require('destructible')
     var destructible = new Destructible('t/udp.processor.t')
 
-    destructible.completed.wait(async())
+    destructible.completed.wait(callback)
 
-    async([function () {
-        destructible.destroy()
-    }], function () {
-        server.bind(9898, '127.0.0.1', async())
-    }, function () {
-        destructible.monitor('UDP', Processor, {
-            url: 'udp://127.0.0.1:9898'
-        }, sink, async())
-    }, function (processor) {
+    var cadence = require('cadence')
+
+    cadence(function (async) {
         async(function () {
-            var wait = async()
-            server.once('message', function (message, remote) {
-                okay(message.toString(), '{"a":1}\n', 'sent')
-                wait()
-            })
-            processor.send({ hostname: '127.0.0.1', port: 9898 }, JSON.stringify({ a: 1 }) + '\n')
+            server.bind(9898, '127.0.0.1', async())
         }, function () {
-            delta(async()).ee(server).on('close')
-            server.close()
+            destructible.monitor('UDP', Processor, {
+                url: 'udp://127.0.0.1:9898'
+            }, sink, async())
+        }, function (processor) {
+            async(function () {
+                var wait = async()
+                server.once('message', function (message, remote) {
+                    okay(message.toString(), '{"a":1}\n', 'sent')
+                    wait()
+                })
+                processor.send({ hostname: '127.0.0.1', port: 9898 }, JSON.stringify({ a: 1 }) + '\n')
+            }, function () {
+                delta(async()).ee(server).on('close')
+                server.close()
+            })
         })
-    })
+    })(destructible.monitor('test'))
 }
