@@ -1,20 +1,9 @@
-var Processor = require('../stdio.processor')
+require('proof')(1, prove)
 
-process.stdout.write('1..2\n')
-process.stderr.write = function (buffer) {
-    process.stdout.write(buffer)
+function prove (okay) {
+    try {
+        require('..')
+    } catch (error) {
+        okay(error.message, 'deprecated', 'deprecated')
+    }
 }
-
-Processor(null, {
-    stderr: true
-}, {
-    process: function () {}
-}, function (error, processor) {
-    processor.process({ formatted: [ Buffer.from('ok 1 stderr\n') ] })
-})
-
-Processor(null, {}, {
-    process: function () {}
-}, function (error, processor) {
-    processor.process({ formatted: [ Buffer.from('ok 2 stdout\n') ] })
-})

@@ -1,3 +1,5 @@
 ## Prolific STDIO
 
-A standard I/O logger for the Prolific logging framework.
+Depreciated. No longer using quite so many bits of middleware.
+
+See [Prolific](http://github.com/bigeasy/prolific).
