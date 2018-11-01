@@ -12,6 +12,9 @@ function prove (okay, callback) {
 
     var server = dgram.createSocket('udp4')
 
+    var Server = require('../server')
+    var server = new Server
+
     var Destructible = require('destructible')
     var destructible = new Destructible('t/udp.processor.t')
 
@@ -28,15 +31,11 @@ function prove (okay, callback) {
             }, sink, async())
         }, function (processor) {
             async(function () {
-                var wait = async()
-                server.once('message', function (message, remote) {
-                    okay(message.toString(), '{"a":1}\n', 'sent')
-                    wait()
-                })
+                server.received.wait(async())
                 processor.send({ hostname: '127.0.0.1', port: 9898 }, JSON.stringify({ a: 1 }) + '\n')
             }, function () {
-                delta(async()).ee(server).on('close')
-                server.close()
+                okay(server.lines, [ '{"a":1}' ], 'sent')
+                server.close(async())
             })
         })
     })(destructible.monitor('test'))
