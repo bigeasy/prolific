@@ -1,3 +1,5 @@
 ## Prolific Sequence
 
-Add a sequence number to a stream of logging message.
+Depreciated. No longer using quite so many bits of middleware.
+
+See [Prolific](http://github.com/bigeasy/prolific).
