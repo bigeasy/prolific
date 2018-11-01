@@ -1,7 +1,7 @@
 require('proof')(1, require('cadence')(prove))
 
 function prove (async, assert) {
-    var Processor = require('../udp.processor')
+    var Processor = require('..')
 
     var dgram = require('dgram')
 
