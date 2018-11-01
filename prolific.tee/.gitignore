@@ -1,4 +1,0 @@
-/node_modules/*
-!/node_modules/prolific.test
-/.proof.out
-/coverage
