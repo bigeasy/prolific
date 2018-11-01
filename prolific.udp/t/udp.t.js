@@ -1,6 +1,6 @@
 require('proof')(1, require('cadence')(prove))
 
-function prove (async, assert) {
+function prove (async, okay) {
     var Processor = require('..')
 
     var dgram = require('dgram')
@@ -29,7 +29,7 @@ function prove (async, assert) {
         async(function () {
             var wait = async()
             server.once('message', function (message, remote) {
-                assert(message.toString(), '{"a":1}\n', 'sent')
+                okay(message.toString(), '{"a":1}\n', 'sent')
                 wait()
             })
             processor.send({ hostname: '127.0.0.1', port: 9898 }, JSON.stringify({ a: 1 }) + '\n')
