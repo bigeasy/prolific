@@ -30,7 +30,7 @@
                             "descendent":                   "0.10.x",
                             "foremost":                     "0.0.x",
                             "interrupt":                    "6.3.x",
-                            "prolific.consolidator":        "6.7.x",
+                            "prolific.consolidator":        "6.8.x",
                             "prolific.evaluator":           "0.6.x",
                             "prolific.inherit":             "6.2.x",
                             "prolific.ipc":                 "1.0.x",
