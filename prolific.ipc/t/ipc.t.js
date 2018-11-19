@@ -1,6 +1,6 @@
 require('proof')(4, require('cadence')(prove))
 
-function prove (async, assert) {
+function prove (async, okay) {
     var events = require('events')
     var ipc = require('..')
 
@@ -9,13 +9,13 @@ function prove (async, assert) {
     async(function () {
         var process = new events.EventEmitter
         process.send = function (message) {
-            assert(message, { from: 'child' }, 'process send')
+            okay(message, { from: 'child' }, 'process send')
             wait()
         }
         process.versions = { node: '0.10.43' }
         var child = new events.EventEmitter
         child.send = function (message) {
-            assert(message, { from: 'parent' }, 'child send')
+            okay(message, { from: 'parent' }, 'child send')
             child.emit('message', { from: 'child' })
         }
         var wait = async()
@@ -26,7 +26,7 @@ function prove (async, assert) {
     }, function () {
         var process = new events.EventEmitter
         process.send = function (message, callback) {
-            assert(message, { from: 'child' }, 'process send')
+            okay(message, { from: 'child' }, 'process send')
             callback()
             wait()
         }
@@ -35,7 +35,7 @@ function prove (async, assert) {
         process.disconnect = function () { this.connected = false }
         var child = new events.EventEmitter
         child.send = function (message, callback) {
-            assert(message, { from: 'parent' }, 'child send')
+            okay(message, { from: 'parent' }, 'child send')
             child.emit('message', { from: 'child' })
             callback()
         }
