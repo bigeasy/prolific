@@ -85,7 +85,7 @@ Processor.prototype.watch = cadence(function (async, ready) {
     // gets it's triage function, then we generate an update to update the child
     // process with the triage function. We could work to eliminate the reload,
     // but I'm happy to exercise it.
-    var block = async(function () {
+    var block = async.loop([], function () {
         async([function () {
             ready.unlatch()
         }], function () {
@@ -123,7 +123,7 @@ Processor.prototype.watch = cadence(function (async, ready) {
             })
         })
     }, function () {
-        var loop = async(function () {
+        async.loop([], function () {
             this._reconfigurator.monitor(source, async())
         }, function (changed) {
             if (changed == null) {
@@ -145,10 +145,10 @@ Processor.prototype.watch = cadence(function (async, ready) {
                     this._reloaded({ version: version, triage: module.Triage.source })
                 })
             }, function (error) {
-                return [ loop.continue ]
+                return [ async.continue ]
             }])
-        })()
-    })()
+        })
+    })
 })
 
 Processor.prototype.updated = cadence(function (async, version) {
@@ -169,16 +169,16 @@ Processor.prototype.process = cadence(function (async, envelope) {
         lines.pop()
     }
     var entries = lines.map(JSON.parse)
-    var loop = async(function () {
+    async.loop([], function () {
         while (entries.length && !Array.isArray(entries[0])) {
             this._processor.push(entries.shift())
         }
         if (entries.length == 0) {
-            return [ loop.break ]
+            return [ async.break ]
         } else {
             this.updated(entries.shift()[0].version, async())
         }
-    })()
+    })
 })
 
 module.exports = cadence(function (async, destructible, configuration, reloaded) {
