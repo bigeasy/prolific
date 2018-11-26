@@ -1,6 +1,6 @@
 {
     "name":                 "prolific.test.udp",
-    "version":              "0.0.0",
+    "version":              "0.0.1",
     "description":
 
       "A UDP test server to test the Prolific logging framework.",
