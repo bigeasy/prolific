@@ -1,6 +1,6 @@
 require('proof')(1, prove)
 
-function prove (assert) {
+function prove (okay) {
     var coalesce = require('../coalesce')
-    assert(coalesce(function () { throw Error }, 'x'), 'x', 'coalesce')
+    okay(coalesce(function () { throw Error }, 'x'), 'x', 'coalesce')
 }
