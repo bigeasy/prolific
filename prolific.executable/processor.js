@@ -4,8 +4,6 @@ var assert = require('assert')
 
 // Control-flow utilities.
 var cadence = require('cadence')
-var Turnstile = require('turnstile/redux')
-Turnstile.Check = require('turnstile/check')
 
 var Interrupt = require('interrupt').createInterrupter('prolific')
 var logger = require('prolific.logger').createLogger('prolific.supervisor')
@@ -35,11 +33,6 @@ function Processor (destructible, module, reloaded) {
     this.destroyed = false
     this._destructible = destructible
     this._destructible.markDestroyed(this)
-
-    var turnstile = new Turnstile
-    turnstile.listen(destructible.monitor('reopen'))
-    destructible.destruct.wait(turnstile, 'destroy')
-    this._check = new Turnstile.Check(this, '_reload', turnstile)
 
     this._reloaded = reloaded
     this._reloads = 0
