@@ -4,7 +4,7 @@ var assert = require('assert')
 
 // Control-flow utilities.
 var cadence = require('cadence')
-var Turnstile = require('turnstile')
+var Turnstile = require('turnstile/redux')
 Turnstile.Check = require('turnstile/check')
 
 var Interrupt = require('interrupt').createInterrupter('prolific')
@@ -38,7 +38,7 @@ function Processor (destructible, module, reloaded) {
 
     var turnstile = new Turnstile
     turnstile.listen(destructible.monitor('reopen'))
-    destructible.destruct.wait(turnstile, 'close')
+    destructible.destruct.wait(turnstile, 'destroy')
     this._check = new Turnstile.Check(this, '_reload', turnstile)
 
     this._reloaded = reloaded

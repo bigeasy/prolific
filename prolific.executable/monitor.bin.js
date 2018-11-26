@@ -37,7 +37,7 @@ require('arguable')(module, function (program, callback) {
 
     var Processor = require('./processor')
 
-    var Turnstile = require('turnstile')
+    var Turnstile = require('turnstile/redux')
     Turnstile.Queue = require('turnstile/queue')
 
     destructible.completed.wait(callback)
@@ -61,7 +61,7 @@ require('arguable')(module, function (program, callback) {
             var turnstile = new Turnstile
             var queue = new Turnstile.Queue(processor, 'process', turnstile)
             turnstile.listen(destructible.monitor('turnstile'))
-            destructible.destruct.wait(turnstile, 'close')
+            destructible.destruct.wait(turnstile, 'destroy')
 
             // Create our asynchronous listener that reads directly from the
             // monitored process.
