@@ -36,6 +36,9 @@ function prove (okay, callback) {
             }, function () {
                 okay(server.lines, [ '{"a":1}' ], 'sent')
                 server.close(async())
+            }, function () {
+                destructible.destroy()
+                processor.send({ hostname: '127.0.0.1', port: 9898 }, JSON.stringify({ a: 1 }) + '\n')
             })
         })
     })(destructible.monitor('test'))
