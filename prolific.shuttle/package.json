@@ -25,7 +25,7 @@
                             "foremost":                     "0.0.x",
                             "prolific.chunk":               "4.0.x",
                             "prolific.evaluator":           "0.6.x",
-                            "prolific.level":               "0.0.0",
+                            "prolific.level":               "0.0.1",
                             "prolific.queue":               "14.1.x",
                             "prolific.require":             "0.0.0",
                             "prolific.resolver":            "8.4.x",
