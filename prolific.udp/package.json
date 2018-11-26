@@ -24,7 +24,6 @@
                             "cadence":                      "1.0.x",
                             "delta":                        "1.4.x",
                             "prolific.evaluator":           "0.2.x",
-                            "prolific.stringify":           "3.0.x",
                             "turnstile":                    "4.6.x"
     },
     "devDependencies":
