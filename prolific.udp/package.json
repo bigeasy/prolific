@@ -21,7 +21,6 @@
     "dependencies":
     {
                             "cadence":                      "2.0.x",
-                            "delta":                        "1.4.x",
                             "turnstile":                    "4.9.x"
     },
     "devDependencies":

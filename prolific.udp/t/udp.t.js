@@ -5,8 +5,6 @@ function prove (okay, callback) {
 
     var dgram = require('dgram')
 
-    var delta = require('delta')
-
     var sink = { process: function () {} }
     // var processor = new Processor({ url: 'udp://127.0.0.1:9898' }, sink)
 
