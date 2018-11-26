@@ -1,6 +1,6 @@
 {
     "name":                 "prolific.ipc",
-    "version":              "1.0.18",
+    "version":              "1.0.19",
     "description":
 
       "Utility to pass Node.js IPC through the Prolific supervisor process.",
