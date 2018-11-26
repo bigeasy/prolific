@@ -26,7 +26,7 @@
     },
     "devDependencies":
     {
-                            "destructible":                 "0.33.x",
+                            "destructible":                 "0.37.x",
                             "proof":                        "3.0.x"
     },
     "main":                 "udp",
