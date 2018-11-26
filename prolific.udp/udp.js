@@ -5,8 +5,6 @@ var cadence = require('cadence')
 var Turnstile = require('turnstile')
 Turnstile.Queue = require('turnstile/queue')
 
-var Evaluator = require('prolific.evaluator')
-
 var youHaveGotToBeKiddingMe = require('./error')
 
 function Processor (turnstile) {
