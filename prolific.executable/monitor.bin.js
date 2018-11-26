@@ -37,7 +37,7 @@ require('arguable')(module, function (program, callback) {
 
     var Processor = require('./processor')
 
-    var Turnstile = require('turnstile/redux')
+    var Turnstile = require('turnstile')
     Turnstile.Queue = require('turnstile/queue')
 
     destructible.completed.wait(callback)

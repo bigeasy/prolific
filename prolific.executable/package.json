@@ -37,7 +37,7 @@
                             "prolific.require":             "0.0.0",
                             "reconfigure":                  "0.1.0",
                             "signal":                       "4.0.x",
-                            "turnstile":                    "4.8.x"
+                            "turnstile":                    "4.9.x"
     },
     "devDependencies":
     {
