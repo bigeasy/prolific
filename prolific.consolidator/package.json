@@ -22,7 +22,7 @@
     {
                             "cadence":                      "1.0.x",
                             "hash.fnv":                     "1.0.x",
-                            "prolific.collector":           "6.0.x",
+                            "prolific.collector":           "6.1.x",
                             "staccato":                     "6.4.x"
     },
     "devDependencies":
