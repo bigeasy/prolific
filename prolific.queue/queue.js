@@ -55,12 +55,12 @@ Queue.prototype._chunkEntries = function () {
 
 //
 Queue.prototype._sendAsync = cadence(function (async) {
-    var loop = async(function () {
+    async.loop([], function () {
         if (this._chunks.length == 0) {
             this._chunkEntries()
             if (this._chunks.length == 0) {
                 this._writing = false
-                return [ loop.break ]
+                return [ async.break ]
             }
         }
         var chunk = this._chunks[0]
@@ -70,12 +70,12 @@ Queue.prototype._sendAsync = cadence(function (async) {
             ]), async())
         }, function () {
             if (this._closed) {
-                return [ loop.break ]
+                return [ async.break ]
             }
             this._previousChecksum = chunk.checksum
             this._chunks.shift()
         })
-    })()
+    })
 })
 
 // Necessary for uncaught exception when the default shutdown hooks in Node.js
