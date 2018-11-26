@@ -157,21 +157,23 @@ Processor.prototype.updated = cadence(function (async, version) {
 // message, we are getting chunks of messages and those are processed
 // synchronously.
 Processor.prototype.process = cadence(function (async, envelope) {
-    var lines = envelope.body.buffer.toString().split('\n')
-    if (lines[lines.length - 1].length == 0) {
-        lines.pop()
+    if (!envelope.canceled) {
+        var lines = envelope.body.buffer.toString().split('\n')
+        if (lines[lines.length - 1].length == 0) {
+            lines.pop()
+        }
+        var entries = lines.map(JSON.parse)
+        async.loop([], function () {
+            while (entries.length && !Array.isArray(entries[0])) {
+                this._processor.push(entries.shift())
+            }
+            if (entries.length == 0) {
+                return [ async.break ]
+            } else {
+                this.updated(entries.shift()[0].version, async())
+            }
+        })
     }
-    var entries = lines.map(JSON.parse)
-    async.loop([], function () {
-        while (entries.length && !Array.isArray(entries[0])) {
-            this._processor.push(entries.shift())
-        }
-        if (entries.length == 0) {
-            return [ async.break ]
-        } else {
-            this.updated(entries.shift()[0].version, async())
-        }
-    })
 })
 
 module.exports = cadence(function (async, destructible, configuration, reloaded) {

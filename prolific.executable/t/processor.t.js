@@ -96,6 +96,8 @@ function prove (okay, callback) {
                 setTimeout(function () {
                     fse.copySync(configuration.template, configuration.copy)
                 }, 250)
+            }, function () {
+                processor.process({ canceled: true }, async())
             })
         })
     })(destructible.monitor('test'))
