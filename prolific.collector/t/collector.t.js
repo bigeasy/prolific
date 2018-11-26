@@ -1,14 +1,14 @@
 require('proof')(15, prove)
 
-function prove (assert) {
+function prove (okay) {
     var Chunk = require('prolific.chunk')
     var Collector = require('../collector')
 
     var collector = new Collector(false)
     collector.scan(Buffer.from('x\n'))
-    assert(collector.stderr.shift().toString(), 'x\n', 'stdout not header')
+    okay(collector.stderr.shift().toString(), 'x\n', 'stdout not header')
     collector.scan(Buffer.from('0 00000000 00000000 0\n'))
-    assert(collector.stderr.shift().toString(), '0 00000000 00000000 0\n', 'stdout not valid')
+    okay(collector.stderr.shift().toString(), '0 00000000 00000000 0\n', 'stdout not valid')
 
     var chunk
 
@@ -18,11 +18,11 @@ function prove (assert) {
     collector.scan(header.slice(4))
     collector.scan(chunk.buffer)
 
-    assert(collector.chunks.length, 0, 'no chunks after header chunk')
+    okay(collector.chunks.length, 0, 'no chunks after header chunk')
 
     var previousChecksum = chunk.checksum
 
-    assert(collector.chunkNumber[1], 1, 'next chunk number stderr initialization')
+    okay(collector.chunkNumber[1], 1, 'next chunk number stderr initialization')
 
     chunk = new Chunk(1, 1, Buffer.from('a\n'), 2)
     collector.scan(chunk.header(previousChecksum))
@@ -30,13 +30,13 @@ function prove (assert) {
 
     previousChecksum = chunk.checksum
 
-    assert(collector.chunkNumber[1], 2, 'next chunk number')
+    okay(collector.chunkNumber[1], 2, 'next chunk number')
 
     chunk = new Chunk(1, 0, Buffer.from(''), 2)
     collector.scan(chunk.header('aaaaaaaa'))
     collector.scan(chunk.buffer)
 
-    assert({
+    okay({
         number: collector.chunkNumber[1],
         stderr: collector.stderr.shift().toString(),
     }, {
@@ -48,7 +48,7 @@ function prove (assert) {
     collector.scan(chunk.header('00000000'))
     collector.scan(chunk.buffer)
 
-    assert({
+    okay({
         number: collector.chunkNumber[1],
         stderr: collector.stderr.shift().toString(),
     }, {
@@ -61,7 +61,7 @@ function prove (assert) {
     collector.scan(chunk.header(previousChecksum))
     collector.scan(chunk.buffer)
 
-    assert({
+    okay({
         number: collector.chunkNumber[1],
         stderr: [
             collector.stderr.shift().toString(),
@@ -78,12 +78,12 @@ function prove (assert) {
 
     previousChecksum = chunk.checksum
 
-    assert(collector.chunks.shift().buffer.toString(), 'a\n', 'chunk a')
-    assert(collector.chunks.shift().buffer.toString(), 'b\n', 'chunk b')
+    okay(collector.chunks.shift().buffer.toString(), 'a\n', 'chunk a')
+    okay(collector.chunks.shift().buffer.toString(), 'b\n', 'chunk b')
 
     collector.scan(chunk.header('00000000'))
 
-    assert({
+    okay({
         number: collector.chunkNumber[1],
         stderr: collector.stderr.shift().toString(),
     }, {
@@ -97,11 +97,11 @@ function prove (assert) {
         chunk.header(previousChecksum), Buffer.from('hello, world')
     ]))
 
-    assert(collector.chunks.shift().eos, 'end of stream')
+    okay(collector.chunks.shift().eos, 'end of stream')
 
     collector.exit()
 
-    assert({
+    okay({
         stderr: collector.stderr.shift().toString(),
     }, {
         stderr: 'hello, world'
@@ -115,11 +115,11 @@ function prove (assert) {
 
     previousChecksum = chunk.checksum
 
-    assert(collector.chunks.length, 0, 'async header chunk')
+    okay(collector.chunks.length, 0, 'async header chunk')
 
     chunk = new Chunk(1, 1, Buffer.from(''), 0)
     chunk.checksum = 'aaaaaaaa'
     collector.scan(chunk.header(previousChecksum))
 
-    assert(collector.chunks.shift().eos, 'async end of stream')
+    okay(collector.chunks.shift().eos, 'async end of stream')
 }
