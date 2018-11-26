@@ -26,7 +26,7 @@
     {
                             "cadence":                      "2.0.x",
                             "prolific.chunk":               "4.0.x",
-                            "proof":                        "3.0.x"
+                            "proof":                        "5.0.x"
     },
     "main":                 "collector",
     "scripts":
