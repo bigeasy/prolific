@@ -3,7 +3,7 @@ exports.triage = function () {
     var count = 0
     var LEVEL = require('prolific.level')
     return function (level) {
-        assert(count++ == 0)
+        assert(count++ < 2)
         return level <= LEVEL.warn
     }
 }

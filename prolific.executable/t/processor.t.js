@@ -69,6 +69,7 @@ function prove (okay, callback) {
                         }) + '\n'
                     }
                 }, async())
+            }, function () {
                 okay(test.sink.splice(0), [{
                     when: 0,
                     level: 'error',
@@ -78,6 +79,19 @@ function prove (okay, callback) {
                     pid: 0,
                     url: '/'
                 }], 'triage in monitor')
+                processor.process({
+                    body: {
+                        buffer: JSON.stringify({
+                            when: 0,
+                            qualifier: 'qualifier',
+                            label: 'label',
+                            level: 'info',
+                            body: { url: '/' },
+                            system: { pid: 0 }
+                        }) + '\n'
+                    }
+                }, async())
+            }, function () {
                 wait = async()
             }, function () {
                 processor.process({
