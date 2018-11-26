@@ -10,7 +10,7 @@ function prove (okay, callback) {
 
     var server = dgram.createSocket('udp4')
 
-    var Server = require('../server')
+    var Server = require('prolific.test.udp/server')
     var server = new Server
 
     var Destructible = require('destructible')

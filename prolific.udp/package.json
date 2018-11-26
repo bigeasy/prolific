@@ -26,6 +26,7 @@
     "devDependencies":
     {
                             "destructible":                 "0.37.x",
+                            "prolific.test.udp":            "0.0.x",
                             "proof":                        "5.0.x"
     },
     "main":                 "udp",
