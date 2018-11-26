@@ -12,19 +12,19 @@ function Asynchronous (consumer) {
 Asynchronous.prototype.listen = cadence(function (async, input) {
     var collector = new Collector(true)
     this._readable = new Staccato.Readable(input)
-    var loop = async(function () {
+    async.loop([], function () {
         async(function () {
             this._readable.read(async())
         }, function (buffer) {
             if (buffer == null) {
-                return [ loop.break ]
+                return [ async.break ]
             }
             collector.scan(buffer)
             while (collector.chunks.length) {
                 this._chunk(collector.chunks.shift())
             }
         })
-    })()
+    })
 })
 
 Asynchronous.prototype.push = function (chunk) {
