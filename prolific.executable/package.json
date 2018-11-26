@@ -45,7 +45,7 @@
                             "prolific.chunk":               "4.0.x",
                             "prolific.logger":              "8.4.x",
                             "prolific.shuttle":             "20.12.x",
-                            "proof":                        "3.0.x"
+                            "proof":                        "5.0.x"
     },
     "main":                 "prolific.bin",
     "bin":

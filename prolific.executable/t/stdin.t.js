@@ -3,7 +3,7 @@ require('proof')(2, require('cadence')(prove))
 function prove (async, okay) {
     var stream = require('stream')
     var reader = require('../stdin')(function () {
-        okay(true, 'done')
+        okay('done')
     })
 
     var stdin = new stream.PassThrough
