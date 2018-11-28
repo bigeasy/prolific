@@ -118,7 +118,7 @@ require('arguable')(module, function (program, callback) {
                 })
                 return []
             })
-        })(destructible.monitor([ 'monitor', monitor.pid ]))
+        })(destructible.durable([ 'monitor', monitor.pid ]))
     }
 
     var closing = []
@@ -192,7 +192,7 @@ require('arguable')(module, function (program, callback) {
                     return 0
                 // TODO Shut down everything as if it was Descendent notified close.
                 })
-            })(destructible.monitor('child'))
+            })(destructible.durable('child'))
 
             cadence(function (async) {
                 async([function () {
@@ -200,9 +200,9 @@ require('arguable')(module, function (program, callback) {
                 }], function () {
                     synchronous.listen(child.stderr, program.stderr, async())
                 })
-            })(destructible.monitor('synchronous'))
+            })(destructible.durable('synchronous'))
         }, function () {
             program.ready.unlatch()
         })
-    })(destructible.monitor('initialize', true))
+    })(destructible.ephemeral('initialize'))
 })

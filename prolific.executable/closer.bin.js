@@ -54,5 +54,5 @@ require('arguable')(module, function (program, callback) {
         }, function () {
             descendent.decrement()
         })
-    })(destructible.monitor('main'))
+    })(destructible.durable('main'))
 })

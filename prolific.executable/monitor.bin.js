@@ -46,7 +46,7 @@ require('arguable')(module, function (program, callback) {
 
     var cadence = require('cadence')
 
-    destructible.destruct.wait(destructible.monitor('exit').bind(null, null, 0))
+    destructible.destruct.wait(destructible.durable('exit').bind(null, null, 0))
 
     cadence(function (async) {
         async([function () {
@@ -55,12 +55,12 @@ require('arguable')(module, function (program, callback) {
             setImmediate(async()) // allows test to get handle
         }, function () {
             var reloaded = descendent.up.bind(descendent, +program.ultimate.supervisor, 'prolific:accept')
-            destructible.monitor('processor', Processor, program.ultimate.configuration, reloaded, async())
+            destructible.durable('processor', Processor, program.ultimate.configuration, reloaded, async())
         }, function (processor) {
             // Drain all chunks immediately into a turnstile.
             var turnstile = new Turnstile
             var queue = new Turnstile.Queue(processor, 'process', turnstile)
-            turnstile.listen(destructible.monitor('turnstile'))
+            turnstile.listen(destructible.durable('turnstile'))
             destructible.destruct.wait(turnstile, 'destroy')
 
             // Create our asynchronous listener that reads directly from the
@@ -70,17 +70,17 @@ require('arguable')(module, function (program, callback) {
             // Copy any final messages written to standard error into the
             // asynchronous listener so it can eliminate any duplicates that
             // where already written to our primary asynchronous pipe.
-            reader(program.stdin, asynchronous, destructible.monitor('stdin'))
+            reader(program.stdin, asynchronous, destructible.durable('stdin'))
             program.stdin.resume()
 
             // Listen to our asynchronous pipe.
             var socket = new program.attributes.net.Socket({ fd: 3 })
             destructible.destruct.wait(socket, 'destroy')
-            asynchronous.listen(socket, destructible.monitor('asynchronous'))
+            asynchronous.listen(socket, destructible.durable('asynchronous'))
 
             // Let the supervisor know that we're ready. It will send our
             // asynchronous pipe down to the monitored process.
             descendent.up(+program.ultimate.supervisor, 'prolific:pipe', true)
         })
-    })(destructible.monitor('initialize', true))
+    })(destructible.ephemeral('initialize'))
 }, { net: require('net') })

@@ -48,7 +48,7 @@ function Processor (destructible, module, reloaded) {
 
 Processor.prototype._createProcessor = cadence(function (async, destructible, Processor) {
     async(function () {
-        destructible.monitor('processor', Processor, async())
+        destructible.durable('processor', Processor, async())
     }, function (processor) {
         return [ { push: function (entry) { processor(entry) } }, destructible ]
     })
@@ -89,7 +89,7 @@ Processor.prototype.watch = cadence(function (async, ready) {
             }
             var module = this._loadModule()
             async(function () {
-                this._destructible.monitor([ 'processor', 'bootstrap' ], true, this, '_createProcessor', module.Process.f, async())
+                this._destructible.ephemeral([ 'processor', 'bootstrap' ], this, '_createProcessor', module.Process.f, async())
             }, function (processor, destructible) {
                 var triage = module.Triage.f
                 this._processor = {
@@ -127,7 +127,7 @@ Processor.prototype.watch = cadence(function (async, ready) {
                 var module = this._loadModule()
                 var version = this._version++
                 async(function () {
-                    this._destructible.monitor([ 'processor', version ], true, this, '_createProcessor', module.Process.f, async())
+                    this._destructible.ephemeral([ 'processor', version ], this, '_createProcessor', module.Process.f, async())
                 }, function (processor, destructible) {
                     this._versions.push({
                         destructible: this._previousDestructible,
@@ -179,7 +179,7 @@ Processor.prototype.process = cadence(function (async, envelope) {
 module.exports = cadence(function (async, destructible, configuration, reloaded) {
     var processor = new Processor(destructible, configuration, reloaded)
     async(function () {
-        processor.watch(new Signal(async()), destructible.monitor('watch'))
+        processor.watch(new Signal(async()), destructible.durable('watch'))
     }, function () {
         return [ processor ]
     })

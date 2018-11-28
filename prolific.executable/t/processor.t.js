@@ -49,12 +49,12 @@ function prove (okay, callback) {
     cadence(function (async) {
         async(function () {
             // Exercise a cancel of the very first read.
-            destructible.monitor('missing', true, cadence(function (async, destructible) {
-                destructible.monitor('processor', Processor, configuration.missing, reloaded, async())
+            destructible.ephemeral('missing', cadence(function (async, destructible) {
+                destructible.durable('processor', Processor, configuration.missing, reloaded, async())
                 setTimeout(function () { destructible.destroy() })
             }), async())
         }, function (processor) {
-            destructible.monitor('processor', Processor, configuration.copy, reloaded, async())
+            destructible.durable('processor', Processor, configuration.copy, reloaded, async())
         }, function (processor) {
             async(function () {
                 processor.process({
@@ -114,5 +114,5 @@ function prove (okay, callback) {
                 processor.process({ canceled: true }, async())
             })
         })
-    })(destructible.monitor('test'))
+    })(destructible.durable('test'))
 }
