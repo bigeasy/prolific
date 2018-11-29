@@ -50,8 +50,6 @@ var Asynchronous = require('prolific.consolidator/asynchronous')
 // Pass messages and sockets all around the process tree.
 var descendent = require('foremost')('descendent')
 
-var Keyify = require('keyify')
-
 var Tree = require('./processes')
 
 var coalesce = require('extant')
