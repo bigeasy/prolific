@@ -1,6 +1,6 @@
-require('proof')(1, require('cadence')(prove))
+require('proof')(1, prove)
 
-function prove (async, okay) {
+function prove (okay) {
     var Reducer = require('..')
     var reducer = new Reducer({})
     var got = reducer.merge('x', { when: 0, id: 'x' })
