@@ -27,7 +27,6 @@
     "devDependencies":
     {
                             "cadence":                      "1.0.x",
-                            "destructible":                 "0.34.x",
                             "proof":                        "3.0.x"
     },
     "main":                 "reducer",
