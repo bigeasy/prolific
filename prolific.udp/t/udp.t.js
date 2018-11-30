@@ -24,7 +24,7 @@ function prove (okay, callback) {
         async(function () {
             server.bind(9898, '127.0.0.1', async())
         }, function () {
-            destructible.monitor('UDP', Processor, {
+            destructible.durable('UDP', Processor, {
                 url: 'udp://127.0.0.1:9898'
             }, sink, async())
         }, function (processor) {
@@ -39,5 +39,5 @@ function prove (okay, callback) {
                 processor.send({ hostname: '127.0.0.1', port: 9898 }, JSON.stringify({ a: 1 }) + '\n')
             })
         })
-    })(destructible.monitor('test'))
+    })(destructible.durable('test'))
 }

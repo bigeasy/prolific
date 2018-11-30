@@ -30,6 +30,6 @@ Processor.prototype._process = cadence(function (async, envelope) {
 module.exports = cadence(function (async, destructible, configuration) {
     var turnstile = new Turnstile
     destructible.destruct.wait(turnstile, 'destroy')
-    turnstile.listen(destructible.monitor('turnstile'))
+    turnstile.listen(destructible.durable('turnstile'))
     return [ new Processor(turnstile) ]
 })
