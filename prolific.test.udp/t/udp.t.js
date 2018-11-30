@@ -39,5 +39,5 @@ function prove (okay, callback) {
                 server.close(async())
             })
         })
-    })(destructible.monitor('test'))
+    })(destructible.durable('test'))
 }
