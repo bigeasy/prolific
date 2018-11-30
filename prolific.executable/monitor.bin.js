@@ -46,6 +46,8 @@ require('arguable')(module, function (program, callback) {
 
     var cadence = require('cadence')
 
+    // TODO Goodness this is silly. Just add a signal to arugable. Or maybe just
+    // use `process` now that it has settled.
     destructible.destruct.wait(destructible.durable('exit').bind(null, null, 0))
 
     cadence(function (async) {
@@ -77,6 +79,7 @@ require('arguable')(module, function (program, callback) {
             var socket = new program.attributes.net.Socket({ fd: 3 })
             destructible.destruct.wait(socket, 'destroy')
             asynchronous.listen(socket, destructible.durable('asynchronous'))
+            destructible.destruct.wait(asynchronous, 'exit')
 
             // Let the supervisor know that we're ready. It will send our
             // asynchronous pipe down to the monitored process.
