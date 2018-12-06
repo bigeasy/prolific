@@ -10,7 +10,7 @@ function Processor (configuration) {
     this._serializer = coalesce(configuration.serializer, JSON)
 }
 
-Processor.prototype.process = function (entry) {
+Processor.prototype.format = function (entry) {
     var pid = entry.pid, when = entry.when
     // TODO Probably faster if I set `undefined`.
     delete entry.when

@@ -1,10 +1,10 @@
 require('proof')(1, prove)
 
 function prove (okay) {
-    var Processor = require('..')
+    var Syslog = require('..')
 
-    var processor = new Processor({ application: 'a', hostname: 'h' })
-    var formatted = processor.process({
+    var syslog = new Syslog({ application: 'a', hostname: 'h' })
+    var formatted = syslog.format({
         when: 0,
         pid: 0,
         sequence: 0,
