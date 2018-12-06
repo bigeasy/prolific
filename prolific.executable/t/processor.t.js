@@ -1,4 +1,4 @@
-require('proof')(3, prove)
+require('proof')(5, prove)
 
 function prove (okay, callback) {
     var Processor = require('../processor')
@@ -41,6 +41,9 @@ function prove (okay, callback) {
     }
 
     destructible.completed.wait(callback)
+
+    require('prolific.sink').Date = { now: function () { return 1 } }
+    require('prolific.sink').properties.pid = 1
 
     var gather = require('prolific.gather')
 
@@ -89,6 +92,26 @@ function prove (okay, callback) {
                         }) + '\n'
                     }
                 }, async())
+            }, function () {
+                require('prolific.sink').json('error', 'qualifier', 'label', { when: 0, a: 1 })
+                okay(gather.queue.shift(), {
+                    when: 0,
+                    level: 'error',
+                    qualifier: 'qualifier',
+                    label: 'label',
+                    qualified: 'qualifier#label',
+                    pid: 1,
+                    a: 1
+                }, 'local logging with set time')
+                require('prolific.sink').json('error', 'qualifier', 'label', { when: 0 })
+                okay(gather.queue.shift(), {
+                    when: 0,
+                    level: 'error',
+                    qualifier: 'qualifier',
+                    label: 'label',
+                    qualified: 'qualifier#label',
+                    pid: 1
+                }, 'local logging')
             }, function () {
                 wait = async()
             }, function () {

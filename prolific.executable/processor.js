@@ -19,6 +19,8 @@ var LEVEL = require('prolific.level')
 
 var path = require('path')
 
+var sink = require('prolific.sink')
+
 // Construct a processor that will reload it's configuration from the given
 // configuration and call the given function with the new in-process Acceptor
 // configuration. The in-process Acceptor configuration will be routed to the
@@ -41,6 +43,9 @@ function Processor (destructible, module, reloaded) {
 
     this._version = 0
     this._versions = []
+
+    sink.json = function (level, qualifier, label, body) {
+    }
 
     this._reconfigurator = new Reconfigurator(this._path, byBuffer)
     destructible.destruct.wait(this._reconfigurator, 'destroy')
@@ -71,6 +76,25 @@ Processor.prototype._loadModule = function () {
     }
 }
 
+function setMonitorSink (processor) {
+    sink.json = function (level, qualifier, label, body) {
+        var header = {
+            when: body.when || this.Date.now(),
+            level: level,
+            qualifier: qualifier,
+            label: label,
+            qualified: qualifier + '#' + label
+        }
+        for (var key in this.properties) {
+            header[key] = this.properties[key]
+        }
+        for (var key in body) {
+            header[key] = body[key]
+        }
+        processor.push(header)
+    }
+}
+
 Processor.prototype.watch = cadence(function (async, ready) {
     var source = Buffer.from('?')
     // Note that we actually load twice every time we start, once to get our no
@@ -91,6 +115,7 @@ Processor.prototype.watch = cadence(function (async, ready) {
             async(function () {
                 this._destructible.ephemeral([ 'processor', 'bootstrap' ], this, '_createProcessor', module.Process.f, async())
             }, function (processor, destructible) {
+                setMonitorSink(processor)
                 var triage = module.Triage.f
                 this._processor = {
                     push: function (entry) {
@@ -148,6 +173,7 @@ Processor.prototype.updated = cadence(function (async, version) {
     var configuration = this._versions.shift()
     assert(version == configuration.version)
     this._processor = configuration.processor
+    setMonitorSink(configuration.processor)
     configuration.destructible.completed.wait(async())
     configuration.destructible.destroy()
 })
