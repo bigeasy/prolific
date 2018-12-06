@@ -5,7 +5,7 @@ function Logger (qualifier) {
 }
 
 Logger.prototype.log = function (level, label, properties) {
-    sink.json(level, this.qualifier, label, properties)
+    sink.json(level, this.qualifier, label, properties, sink.properties)
 }
 
 Logger.prototype.concat = function (level, label) {
@@ -16,12 +16,12 @@ Logger.prototype.concat = function (level, label) {
             object[key] = properties[key]
         }
     }
-    sink.json(level, this.qualifier, label, properties)
+    sink.json(level, this.qualifier, label, properties, sink.properties)
 }
 
 Object.keys(require('prolific.level')).forEach(function (level) {
     Logger.prototype[level] = function (label, properties) {
-        sink.json(level, this.qualifier, label, properties)
+        sink.json(level, this.qualifier, label, properties, sink.properties)
     }
 })
 

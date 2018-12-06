@@ -12,7 +12,8 @@ function prove (okay) {
             'error',
             'hello',
             'greeting',
-            { a: 1 }
+            { a: 1 },
+            { pid: process.pid }
         ], tests.shift())
     }
     var logger = Logger.createLogger('hello')
