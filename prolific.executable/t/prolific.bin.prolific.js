@@ -6,12 +6,12 @@ exports.triage = function () {
 }
 
 exports.process = function () {
-    var test = require('prolific.test')
-    test.sink || (test.sink = [])
+    var gather = require('prolific.gather')
+    gather.sink || (gather.sink = [])
     var cadence = require('cadence')
     return cadence(function () {
         return function (entry) {
-            test.sink.push(entry)
+            gather.sink.push(entry)
         }
     })
 }

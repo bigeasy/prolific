@@ -1,6 +1,0 @@
-/node_modules/*
-!/node_modules/prolific.configure.js
-!/node_modules/prolific.test
-/.proof.out
-/coverage
-/t/configuration.copy.js

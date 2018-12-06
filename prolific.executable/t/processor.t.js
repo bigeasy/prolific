@@ -40,11 +40,9 @@ function prove (okay, callback) {
         reloads.shift()(configuration)
     }
 
-    var entries = require('prolific.test').entries
-
     destructible.completed.wait(callback)
 
-    var test = require('prolific.test')
+    var gather = require('prolific.gather')
 
     cadence(function (async) {
         async(function () {
@@ -70,7 +68,7 @@ function prove (okay, callback) {
                     }
                 }, async())
             }, function () {
-                okay(test.sink.splice(0), [{
+                okay(gather.queue.splice(0), [{
                     when: 0,
                     level: 'error',
                     qualified: 'qualifier#label',
@@ -101,7 +99,7 @@ function prove (okay, callback) {
                             JSON.stringify({ level: 'error', when: 0, url: '/', pid: 0 })
                     }
                 }, async())
-                okay(test.sink.splice(0), [{
+                okay(gather.queue.splice(0), [{
                     level: 'error', when: 0, pid: 0, url: '/'
                 }], 'triage in processor')
             }, function () {
