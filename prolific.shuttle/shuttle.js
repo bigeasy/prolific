@@ -72,14 +72,14 @@ Shuttle.prototype._listen = function (descendent, options) {
         var triage = Evaluator.create(message.body.triage, require('prolific.require').require)
         assert(triage)
         sink.json = function (level, qualifier, label, body) {
-            var header = {
-                when: this.Date.now(),
-                level: level,
-                qualifier: qualifier,
-                label: label,
-                qualified: qualifier + '#' + label
-            }
-            if (triage(LEVEL[level], header, body, this.properties)) {
+            if (triage(LEVEL[level], qualifier, label, body, this.properties)) {
+                var header = {
+                    when: body.when || this.Date.now(),
+                    level: level,
+                    qualifier: qualifier,
+                    label: label,
+                    qualified: qualifier + '#' + label
+                }
                 for (var key in this.properties) {
                     header[key] = this.properties[key]
                 }

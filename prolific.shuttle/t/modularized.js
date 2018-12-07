@@ -1,5 +1,5 @@
 exports.triage = function () {
-    return function (level, header) {
-        return header.label == 'acceptible'
+    return function (level, qualifier, label) {
+        return label == 'acceptible'
     }
 }
