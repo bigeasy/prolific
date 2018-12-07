@@ -51,14 +51,14 @@ Shuttle.prototype._listen = function (descendent, options) {
     // we get a configuration we send everything.
     var sink = require('prolific.resolver').sink
     sink.queue = queue
-    sink.json = function (level, qualifier, label, body) {
+    sink.json = function (level, qualifier, label, body, system) {
         this.queue.push({
             when: this.Date.now(),
             level: level,
             qualifier: qualifier,
             label: label,
             body: body,
-            system: this.properties
+            system: system
         })
     }
 
