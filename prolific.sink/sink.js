@@ -3,10 +3,6 @@ module.exports = {
     Date: Date,
     // Test a log entry for acceptance.
     json: function () {},
-    // We start with a noop acceptor, so we have a `null` queue to assert that
-    // nothing is going to happen unless you reconfigure the acceptor.
-    // configure the sink to actually do something.
-    queue: null,
     // Additional properties added to every message.
     properties: { pid: process.pid }
 }
