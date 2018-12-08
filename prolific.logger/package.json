@@ -21,7 +21,7 @@
     "dependencies":
     {
                             "prolific.level":               "0.0.x",
-                            "prolific.resolver":            "8.4.x"
+                            "prolific.resolver":            "8.5.x"
     },
     "devDependencies":
     {
