@@ -29,7 +29,7 @@
                             "prolific.queue":               "14.2.x",
                             "prolific.require":             "0.0.1",
                             "prolific.resolver":            "8.4.x",
-                            "prolific.sink":                "6.5.x"
+                            "prolific.sink":                "6.6.x"
     },
     "devDependencies":
     {
