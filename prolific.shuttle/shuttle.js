@@ -50,9 +50,8 @@ Shuttle.prototype._listen = function (descendent, options) {
     // All filtering will be performed by the monitor initially. Until
     // we get a configuration we send everything.
     var sink = require('prolific.resolver').sink
-    sink.queue = queue
     sink.json = function (level, qualifier, label, body, system) {
-        this.queue.push({
+        queue.push({
             when: this.Date.now(),
             level: level,
             qualifier: qualifier,
@@ -86,10 +85,10 @@ Shuttle.prototype._listen = function (descendent, options) {
                 for (var key in body) {
                     header[key] = body[key]
                 }
-                this.queue.push(header)
+                queue.push(header)
             }
         }
-        sink.queue.push([{ version: message.body.version }])
+        queue.push([{ version: message.body.version }])
     })
 
     var chunks = []
