@@ -70,8 +70,8 @@ Shuttle.prototype._listen = function (descendent, options) {
         assert(message.body.triage)
         var triage = Evaluator.create(message.body.triage, require('prolific.require').require)
         assert(triage)
-        sink.json = function (level, qualifier, label, body) {
-            if (triage(LEVEL[level], qualifier, label, body, this.properties)) {
+        sink.json = function (level, qualifier, label, body, system) {
+            if (triage(LEVEL[level], qualifier, label, body, system)) {
                 var header = {
                     when: body.when || this.Date.now(),
                     level: level,
@@ -79,8 +79,8 @@ Shuttle.prototype._listen = function (descendent, options) {
                     label: label,
                     qualified: qualifier + '#' + label
                 }
-                for (var key in this.properties) {
-                    header[key] = this.properties[key]
+                for (var key in system) {
+                    header[key] = system[key]
                 }
                 for (var key in body) {
                     header[key] = body[key]

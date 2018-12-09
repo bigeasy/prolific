@@ -60,8 +60,8 @@ function prove (okay) {
         }
     })
 
-    require('prolific.sink').json('error', 'example', 'droppable', { key: 'value' }, { pid: 2 })
-    require('prolific.sink').json('error', 'example', 'acceptible', { key: 'value' }, { pid: 2 })
+    require('prolific.sink').json('error', 'example', 'droppable', { key: 'value' }, { pid: 0 })
+    require('prolific.sink').json('error', 'example', 'acceptible', { key: 'value' }, { pid: 0 })
 
     try {
         descendent.process.emit('uncaughtException', new Error('error'))
