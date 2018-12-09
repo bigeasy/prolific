@@ -43,7 +43,7 @@ function prove (okay, callback) {
     destructible.completed.wait(callback)
 
     require('prolific.sink').Date = { now: function () { return 1 } }
-    require('prolific.sink').properties.pid = 1
+    require('prolific.sink').properties.pid = 2
 
     var gather = require('prolific.gather')
 
@@ -93,7 +93,7 @@ function prove (okay, callback) {
                     }
                 }, async())
             }, function () {
-                require('prolific.sink').json('error', 'qualifier', 'label', { when: 0, a: 1 })
+                require('prolific.sink').json('error', 'qualifier', 'label', { when: 0, a: 1 }, { pid: 1 })
                 okay(gather.queue.shift(), {
                     when: 0,
                     level: 'error',
@@ -103,7 +103,7 @@ function prove (okay, callback) {
                     pid: 1,
                     a: 1
                 }, 'local logging with set time')
-                require('prolific.sink').json('error', 'qualifier', 'label', { when: 0 })
+                require('prolific.sink').json('error', 'qualifier', 'label', { when: 0 }, { pid: 1 })
                 okay(gather.queue.shift(), {
                     when: 0,
                     level: 'error',

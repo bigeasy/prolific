@@ -77,7 +77,7 @@ Processor.prototype._loadModule = function () {
 }
 
 function setMonitorSink (processor) {
-    sink.json = function (level, qualifier, label, body) {
+    sink.json = function (level, qualifier, label, body, system) {
         var header = {
             when: body.when || this.Date.now(),
             level: level,
@@ -85,8 +85,8 @@ function setMonitorSink (processor) {
             label: label,
             qualified: qualifier + '#' + label
         }
-        for (var key in this.properties) {
-            header[key] = this.properties[key]
+        for (var key in system) {
+            header[key] = system[key]
         }
         for (var key in body) {
             header[key] = body[key]
