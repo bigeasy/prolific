@@ -35,7 +35,7 @@
                             "prolific.inherit":             "6.2.x",
                             "prolific.ipc":                 "1.0.x",
                             "prolific.require":             "0.0.1",
-                            "reconfigure":                  "0.2.x",
+                            "reconfigure":                  "0.4.x",
                             "signal":                       "6.0.x",
                             "turnstile":                    "4.9.x"
     },
