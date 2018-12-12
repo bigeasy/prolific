@@ -60,17 +60,26 @@ Processor.prototype._createProcessor = cadence(function (async, destructible, Pr
 })
 
 Processor.prototype._loadModule = function () {
-    require = require('prolific.require').require
-    var path = require.resolve(this._path)
-    delete require.cache[path]
-    var module = require(path)
+    var require_ = require('prolific.require').require
+    if (this._previousPath != null) {
+        delete require_.cache[this._previousPath]
+    }
+    // Use `fs.realpathSync` because `require` is sync and would use it itself
+    // if we let it do resolution. We pay this price for this feature so ante
+    // up.
+    //
+    // We do the path resolution ourselves because if we let `require` do it it
+    // will cache a symlink lookup and we'll break with a Kubernetes mounted
+    // configuration map. Not sure why Node.js caches the lookups, surprised
+    // that it does, but it sure does. Doesn't it?
+    var module = require_(this._previousPath = fs.realpathSync(this._path))
     return {
         Process: {
-            f: Evaluator.create(module.process.toString(), require),
+            f: Evaluator.create(module.process.toString(), require_),
             source: module.process.toString()
         },
         Triage: {
-            f: Evaluator.create(module.triage.toString(), require),
+            f: Evaluator.create(module.triage.toString(), require_),
             source: module.triage.toString()
         }
     }
