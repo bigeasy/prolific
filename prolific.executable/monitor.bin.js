@@ -35,6 +35,11 @@ require('arguable')(module, function (program, callback) {
     descendent.increment()
     destructible.destruct.wait(descendent, 'decrement')
 
+    var logger = require('prolific.logger').createLogger('prolific')
+    function memoryUsage () { logger.notice('memory', process.memoryUsage()) }
+    memoryUsage()
+    setInterval(memoryUsage, 1000).unref()
+
     var Processor = require('./processor')
 
     var Turnstile = require('turnstile')
