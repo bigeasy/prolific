@@ -1,63 +1,54 @@
-require('proof')(4, require('cadence')(prove))
+require('proof')(2, prove)
 
-function prove (async, assert) {
-    var Processor = require('../tcp.processor')
-    var stream = require('stream')
-    var sink = { process: function () {} }
-    var processor = new Processor({
-        params: { url: 'tcp://127.0.0.1:8086' }
-    }, sink)
-    var processor = new Processor({
-        params: { url: 'tcp://127.0.0.1:8086', rotate: 5 }
-    }, sink)
+function prove (okay, callback) {
+    var Destructible = require('destructible')
+    var destructible = new Destructible('t/tcp.t')
+
+    destructible.completed.wait(callback)
+
+    var cadence = require('cadence')
+
+    var TCP = require('../tcp.processor')
+
+    var Server = require('prolific.test.tcp')
+    var server = new Server
     var delta = require('delta')
-    var net = require('net')
-    var wait
-    var server = net.createServer()
 
-    async(function () {
-        wait = async()
-    }, function () {
-        processor.open(async())
-    }, function () {
-        processor.process({ formatted: [ 'abc\n' ] })
-    })
-
-    async(function () {
-        server.listen(8086, '127.0.0.1', async())
-    }, function () {
-        delta(async()).ee(server).on('connection')
-        wait()
-    }, function (socket) {
+    cadence(function (async) {
         async(function () {
-            delta(async()).ee(socket).on('data')
-        }, function (data) {
-            assert(data.toString(), 'abc\n', 'tcp send')
-            delta(async()).ee(socket).on('data')
-            processor.process({ formatted: [ 'xyz\n' ] })
-        }, function (data) {
-            assert(data.toString(), 'xyz\n', 'tcp send rotate')
-            delta(async()).ee(socket).on('end')
-            processor.close(async())
+            server.server.listen(8086)
+            delta(async()).ee(server.server).on('listening')
         }, function () {
-            server.close(async())
+            destructible.durable('tcp', TCP, {
+                url: 'tcp://127.0.0.1:8086',
+                rotate: 5
+            }, async())
+        }, function (tcp) {
+            async(function () {
+                server.received.wait(async())
+                tcp.send('x\n')
+            }, function () {
+                okay(server.lines.splice(0), [ 'x' ], 'sent')
+                server.received.wait(async())
+                tcp.send('abcdefg\n')
+            }, function () {
+                setImmediate(async())
+            }, function () {
+                okay({
+                    lines: server.lines.splice(0),
+                    written: tcp.written
+                }, {
+                    lines: [ 'abcdefg' ],
+                    written: 0
+                }, 'rotated')
+                delta(async()).ee(server.server).on('close')
+                server.server.close()
+            }, function () {
+                tcp.send('abcdefg\n')
+            }, function () {
+                tcp.destroy()
+                tcp.send('abcdefg\n')
+            })
         })
-    }, function () {
-        processor._socket = {
-            write: function (buffer, callback) {
-                callback(new Error)
-            }
-        }
-        processor._write(new Buffer(0), async())
-    }, function () {
-        assert(processor._socket, null, 'socket closed')
-        processor._socket = {
-            end: function (callback) {
-                callback(new Error)
-            }
-        }
-        processor._end(async())
-    }, function () {
-        assert(processor._socket, null, 'socket closed')
-    })
+    })(destructible.durable('test'))
 }

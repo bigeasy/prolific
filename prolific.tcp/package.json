@@ -21,18 +21,17 @@
     "dependencies":
     {
                             "abend":                        "1.0.x",
-                            "arguable":                     "6.0.x",
                             "byline":                       "5.0.0",
-                            "cadence":                      "1.0.x",
-                            "delta":                        "1.2.x",
-                            "prolific.stringify":           "3.0.x",
-                            "server-destroy":               "1.0.1",
-                            "staccato":                     "5.0.x",
-                            "turnstile":                    "3.2.x"
+                            "cadence":                      "2.0.x",
+                            "staccato":                     "6.6.x",
+                            "turnstile":                    "4.9.x"
     },
     "devDependencies":
     {
-                            "proof":                        "3.0.x"
+                            "delta":                        "3.0.x",
+                            "destructible":                 "0.41.x",
+                            "prolific.test.tcp":            "0.0.x",
+                            "proof":                        "5.0.x"
     },
     "main":                 "tcp.argv",
     "bin":
