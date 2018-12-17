@@ -23,7 +23,6 @@ function Server (options) {
                 if (line == null) {
                     return [ async.break ]
                 }
-                console.log('foo')
                 lines.push(line.toString())
                 received.notify()
             })
