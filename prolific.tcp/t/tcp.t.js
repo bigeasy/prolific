@@ -8,7 +8,7 @@ function prove (okay, callback) {
 
     var cadence = require('cadence')
 
-    var TCP = require('../tcp.processor')
+    var TCP = require('../tcp')
 
     var Server = require('prolific.test.tcp')
     var server = new Server

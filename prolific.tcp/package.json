@@ -33,7 +33,7 @@
                             "prolific.test.tcp":            "0.0.x",
                             "proof":                        "5.0.x"
     },
-    "main":                 "tcp.argv",
+    "main":                 "tcp",
     "bin":
     {
                             "prolific.tcp":                 "tcp.bin.js"
