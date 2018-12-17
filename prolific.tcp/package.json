@@ -34,10 +34,6 @@
                             "proof":                        "5.0.x"
     },
     "main":                 "tcp",
-    "bin":
-    {
-                            "prolific.tcp":                 "tcp.bin.js"
-    },
     "scripts":
     {
                             "test": "proof test t/*.t.js"
