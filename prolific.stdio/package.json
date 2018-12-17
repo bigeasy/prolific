@@ -1,0 +1,64 @@
+{
+  "_from": "prolific.stdio",
+  "_id": "prolific.stdio@7.0.0",
+  "_inBundle": false,
+  "_integrity": "sha512-q9qBpcmmB/Ld7xF3EycuiUzEGSHkyUy/9n5Uspc21WTNiMynrGhtcQbjoLnh1w18C7DjXiHiVbva4DFNdWkxxA==",
+  "_location": "/prolific.stdio",
+  "_phantomChildren": {},
+  "_requested": {
+    "type": "tag",
+    "registry": true,
+    "raw": "prolific.stdio",
+    "name": "prolific.stdio",
+    "escapedName": "prolific.stdio",
+    "rawSpec": "",
+    "saveSpec": null,
+    "fetchSpec": "latest"
+  },
+  "_requiredBy": [
+    "#USER",
+    "/"
+  ],
+  "_resolved": "https://registry.npmjs.org/prolific.stdio/-/prolific.stdio-7.0.0.tgz",
+  "_shasum": "ecf76fb45a6aa725b513ed12e1f314a95aea8cfd",
+  "_spec": "prolific.stdio",
+  "_where": "/Users/alan/junk",
+  "author": {
+    "name": "Alan Gutierrez",
+    "email": "alan@prettyrobots.com"
+  },
+  "bugs": {
+    "url": "https://github.com/bigeasy/prolific/issues"
+  },
+  "bundleDependencies": false,
+  "dependencies": {
+    "prolific.stringify": "3.0.x"
+  },
+  "deprecated": false,
+  "description": "A standard I/O logger for the Prolific logging framework.",
+  "devDependencies": {
+    "proof": "3.0.x"
+  },
+  "homepage": "https://github.com/bigeasy/prolific",
+  "keywords": [
+    "logging",
+    "log",
+    "syslog",
+    "prolific",
+    "stdout",
+    "stderr",
+    "stdio",
+    "console"
+  ],
+  "license": "MIT",
+  "main": "stdio.processor",
+  "name": "prolific.stdio",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/bigeasy/prolific.git"
+  },
+  "scripts": {
+    "test": "proof test t/*.t.js"
+  },
+  "version": "7.0.0"
+}
