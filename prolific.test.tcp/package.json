@@ -4,7 +4,7 @@
     "version":              "9.9.9",
     "description":
 
-      "A UDP test server to test the Prolific logging framework.",
+      "A testing TCP logger for use unit testing the Prolific logging framework.",
 
     "keywords":
     [

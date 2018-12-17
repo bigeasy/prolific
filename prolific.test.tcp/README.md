@@ -1,3 +1,3 @@
-## Prolific UDP
+## Prolific Test TCP
 
-A UDP logger for the Prolific logging framework.
+A testing TCP logger for use unit testing the Prolific logging framework.
