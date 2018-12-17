@@ -1,0 +1,39 @@
+{
+    "private":              false,
+    "name":                 "prolific.test.tcp",
+    "version":              "9.9.9",
+    "description":
+
+      "A UDP test server to test the Prolific logging framework.",
+
+    "keywords":
+    [
+                            "logging", "log", "syslog", "tcp", "prolific"
+    ],
+    "author":               "Alan Gutierrez <alan@prettyrobots.com>",
+    "homepage":             "https://github.com/bigeasy/prolific",
+    "bugs":                 "https://github.com/bigeasy/prolific/issues",
+    "license":              "MIT",
+    "repository":
+    {
+                            "type": "git",
+                            "url": "bigeasy/prolific"
+    },
+    "dependencies":
+    {
+                            "byline":                       "5.0.x",
+                            "cadence":                      "2.0.x",
+                            "delta":                        "3.0.x",
+                            "server-destroy":               "1.0.x",
+                            "staccato":                     "6.6.x"
+    },
+    "devDependencies":
+    {
+                            "proof":                        "5.0.x"
+    },
+    "main":                 "tcp.bin",
+    "scripts":
+    {
+                            "test": "proof test t/*.t.js"
+    }
+}
