@@ -1,5 +1,6 @@
 ## Prolific Pipeline
 
-Deprecated. No longer using quite so many bits of middleware.
+Deprecated. This was a pipeline builder but we are no longer constructing
+pipelines of middleware.
 
 See [Prolific](http://github.com/bigeasy/prolific).
