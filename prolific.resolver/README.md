@@ -1,3 +1,3 @@
-# Prolific Resolver
+## Prolific Resolver
 
 A logging framework.
