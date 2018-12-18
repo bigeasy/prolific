@@ -1,0 +1,61 @@
+{
+  "_from": "prolific.pipeline",
+  "_id": "prolific.pipeline@0.7.0",
+  "_inBundle": false,
+  "_integrity": "sha512-k/V3slb72P98ypOlW8mc5030k67jZ2I9JTpgkL5Sn2IKcIyIUV2XWTR/h22zuiI3eDRwpqyaE5RxjNHsr14GqQ==",
+  "_location": "/prolific.pipeline",
+  "_phantomChildren": {},
+  "_requested": {
+    "type": "tag",
+    "registry": true,
+    "raw": "prolific.pipeline",
+    "name": "prolific.pipeline",
+    "escapedName": "prolific.pipeline",
+    "rawSpec": "",
+    "saveSpec": null,
+    "fetchSpec": "latest"
+  },
+  "_requiredBy": [
+    "#USER",
+    "/"
+  ],
+  "_resolved": "https://registry.npmjs.org/prolific.pipeline/-/prolific.pipeline-0.7.0.tgz",
+  "_shasum": "3532bd646ceb1b289c0eda9ec2dee0cf33d8dc57",
+  "_spec": "prolific.pipeline",
+  "_where": "/Users/alan/junk",
+  "author": {
+    "name": "Alan Gutierrez",
+    "email": "alan@prettyrobots.com"
+  },
+  "bugs": {
+    "url": "https://github.com/bigeasy/prolific/issues"
+  },
+  "bundleDependencies": false,
+  "dependencies": {
+    "cadence": "1.0.x"
+  },
+  "deprecated": false,
+  "description": "Command line to pipeline defintion parser and pipeline constructor.",
+  "devDependencies": {
+    "destructible": "0.34.x",
+    "proof": "3.0.x"
+  },
+  "homepage": "https://github.com/bigeasy/prolific",
+  "keywords": [
+    "logging",
+    "log",
+    "syslog",
+    "proflific"
+  ],
+  "license": "MIT",
+  "main": "pipeline",
+  "name": "prolific.pipeline",
+  "repository": {
+    "type": "git",
+    "url": "bigeasy/prolific"
+  },
+  "scripts": {
+    "test": "proof test t/*.t.js"
+  },
+  "version": "0.7.0"
+}
