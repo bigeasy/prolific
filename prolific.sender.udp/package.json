@@ -1,0 +1,62 @@
+{
+  "_from": "prolific.sender.udp",
+  "_id": "prolific.sender.udp@1.0.3",
+  "_inBundle": false,
+  "_integrity": "sha1-0xMBTK8FVbA9brHbV5yqabcBiyc=",
+  "_location": "/prolific.sender.udp",
+  "_phantomChildren": {},
+  "_requested": {
+    "type": "tag",
+    "registry": true,
+    "raw": "prolific.sender.udp",
+    "name": "prolific.sender.udp",
+    "escapedName": "prolific.sender.udp",
+    "rawSpec": "",
+    "saveSpec": null,
+    "fetchSpec": "latest"
+  },
+  "_requiredBy": [
+    "#USER",
+    "/"
+  ],
+  "_resolved": "https://registry.npmjs.org/prolific.sender.udp/-/prolific.sender.udp-1.0.3.tgz",
+  "_shasum": "d313014caf0555b03d6eb1db579caa69b7018b27",
+  "_spec": "prolific.sender.udp",
+  "_where": "/Users/alan/junk",
+  "author": {
+    "name": "Alan Gutierrez",
+    "email": "alan@prettyrobots.com"
+  },
+  "bin": {},
+  "bugs": {
+    "url": "https://github.com/bigeasy/prolific/issues"
+  },
+  "bundleDependencies": false,
+  "contributors": [],
+  "dependencies": {
+    "cadence": "1.x",
+    "prolific": "1.x",
+    "reactor": "2.x"
+  },
+  "deprecated": false,
+  "description": "A TCP sender implementation for the Prolific logging framework.",
+  "devDependencies": {
+    "proof": "1.x"
+  },
+  "homepage": "https://github.com/bigeasy/prolific",
+  "keywords": [
+    "logging",
+    "syslog"
+  ],
+  "license": "MIT",
+  "main": "sender.udp",
+  "name": "prolific.sender.udp",
+  "repository": {
+    "type": "git",
+    "url": "bigeasy/prolific"
+  },
+  "scripts": {
+    "test": "proof test t/*.t.js"
+  },
+  "version": "1.0.3"
+}
