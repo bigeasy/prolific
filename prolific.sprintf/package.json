@@ -1,0 +1,65 @@
+{
+  "_from": "prolific.sprintf",
+  "_id": "prolific.sprintf@0.2.0",
+  "_inBundle": false,
+  "_integrity": "sha512-tUjjRY2lyGPTt8dH+3lLVPgpGJ9cL+8kpyhlixGQjZtTJpjgyaf3TODbroSbA6UbZIpJN6+vO8g57AKOzPiYdA==",
+  "_location": "/prolific.sprintf",
+  "_phantomChildren": {
+    "cadence": "1.0.12",
+    "synonymous": "1.0.10"
+  },
+  "_requested": {
+    "type": "tag",
+    "registry": true,
+    "raw": "prolific.sprintf",
+    "name": "prolific.sprintf",
+    "escapedName": "prolific.sprintf",
+    "rawSpec": "",
+    "saveSpec": null,
+    "fetchSpec": "latest"
+  },
+  "_requiredBy": [
+    "#USER",
+    "/"
+  ],
+  "_resolved": "https://registry.npmjs.org/prolific.sprintf/-/prolific.sprintf-0.2.0.tgz",
+  "_shasum": "658f301009f27bc48650564689d6e92b8f71be28",
+  "_spec": "prolific.sprintf",
+  "_where": "/Users/alan/junk",
+  "author": {
+    "name": "Alan Gutierrez",
+    "email": "alan@prettyrobots.com"
+  },
+  "bugs": {
+    "url": "https://github.com/bigeasy/prolific/issues"
+  },
+  "bundleDependencies": false,
+  "dependencies": {
+    "arguable": "6.0.x",
+    "cadence": "1.0.x",
+    "sprintf-js": "1.1.x"
+  },
+  "deprecated": false,
+  "description": "A filter that formats Prolific using a `sprintf` format.",
+  "devDependencies": {
+    "proof": "3.0.x"
+  },
+  "homepage": "https://github.com/bigeasy/prolific",
+  "keywords": [
+    "logging",
+    "log",
+    "syslog",
+    "prolific"
+  ],
+  "license": "MIT",
+  "main": "sprintf.argv",
+  "name": "prolific.sprintf",
+  "repository": {
+    "type": "git",
+    "url": "bigeasy/prolific"
+  },
+  "scripts": {
+    "test": "proof test t/*.t.js"
+  },
+  "version": "0.2.0"
+}
