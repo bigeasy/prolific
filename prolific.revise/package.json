@@ -1,0 +1,65 @@
+{
+  "_from": "prolific.revise",
+  "_id": "prolific.revise@0.2.0",
+  "_inBundle": false,
+  "_integrity": "sha512-QpTLAEkkpfw7pDfAzomgBIo3DEP6VpjvHW2v5p/2CaRJkzCZ8ENASqnnCtj2VwH8W4N4X2LUZnTO+JpFvCL5rw==",
+  "_location": "/prolific.revise",
+  "_phantomChildren": {},
+  "_requested": {
+    "type": "tag",
+    "registry": true,
+    "raw": "prolific.revise",
+    "name": "prolific.revise",
+    "escapedName": "prolific.revise",
+    "rawSpec": "",
+    "saveSpec": null,
+    "fetchSpec": "latest"
+  },
+  "_requiredBy": [
+    "#USER",
+    "/"
+  ],
+  "_resolved": "https://registry.npmjs.org/prolific.revise/-/prolific.revise-0.2.0.tgz",
+  "_shasum": "c0976cecb1e1db64e7e5de79b6863ded7570babd",
+  "_spec": "prolific.revise",
+  "_where": "/Users/alan/junk",
+  "author": {
+    "name": "Alan Gutierrez",
+    "email": "alan@prettyrobots.com"
+  },
+  "bugs": {
+    "url": "https://github.com/bigeasy/prolific/issues"
+  },
+  "bundleDependencies": false,
+  "dependencies": {
+    "extant": "1.0.x",
+    "prolific.evaluator": "0.3.x",
+    "prolific.level": "0.0.x"
+  },
+  "deprecated": false,
+  "description": "Extract properties from a logging message to create a new one.",
+  "devDependencies": {
+    "cadence": "1.0.x",
+    "destructible": "0.34.x",
+    "proof": "3.0.x"
+  },
+  "homepage": "https://github.com/bigeasy/prolific",
+  "keywords": [
+    "logging",
+    "log",
+    "syslog",
+    "filter",
+    "prolific"
+  ],
+  "license": "MIT",
+  "main": "revise.processor",
+  "name": "prolific.revise",
+  "repository": {
+    "type": "git",
+    "url": "bigeasy/prolific"
+  },
+  "scripts": {
+    "test": "proof test t/*.t.js"
+  },
+  "version": "0.2.0"
+}
