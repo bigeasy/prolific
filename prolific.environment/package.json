@@ -61,5 +61,5 @@
   "scripts": {
     "test": "proof test t/*.t.js"
   },
-  "version": "0.0.1"
+  "version": "0.0.2"
 }
