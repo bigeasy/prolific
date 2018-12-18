@@ -2,3 +2,5 @@
 
 Deprecated UDP test utility that would start a server that listens on UDP and
 dumps incoming messages to STDOUT.
+
+See [Prolific](https://github.com/bigeasy/prolific).
