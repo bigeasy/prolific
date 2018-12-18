@@ -1,0 +1,65 @@
+{
+  "_from": "prolific.tee",
+  "_id": "prolific.tee@3.0.0",
+  "_inBundle": false,
+  "_integrity": "sha512-YPjJVjXAcni3KYQu3RSWj2JQHCQwL/c5WMLo2cthU3sp2eqhLd2wyj7sePaK0j46Z7qqP1bGQWQFnBFVohyNNQ==",
+  "_location": "/prolific.tee",
+  "_phantomChildren": {
+    "cadence": "1.0.12"
+  },
+  "_requested": {
+    "type": "tag",
+    "registry": true,
+    "raw": "prolific.tee",
+    "name": "prolific.tee",
+    "escapedName": "prolific.tee",
+    "rawSpec": "",
+    "saveSpec": null,
+    "fetchSpec": "latest"
+  },
+  "_requiredBy": [
+    "#USER",
+    "/"
+  ],
+  "_resolved": "https://registry.npmjs.org/prolific.tee/-/prolific.tee-3.0.0.tgz",
+  "_shasum": "f32d8474aab7be1bc8f3c837247b7fb5e06bab20",
+  "_spec": "prolific.tee",
+  "_where": "/Users/alan/junk",
+  "author": {
+    "name": "Alan Gutierrez",
+    "email": "alan@prettyrobots.com"
+  },
+  "bugs": {
+    "url": "https://github.com/bigeasy/prolific/issues"
+  },
+  "bundleDependencies": false,
+  "dependencies": {
+    "cadence": "1.0.x",
+    "extant": "1.0.x",
+    "prolific.acceptor": "0.5.x",
+    "prolific.pipeline": "0.6.x"
+  },
+  "deprecated": false,
+  "description": "Tap into the stream of logging messages and send them in a different direction.",
+  "devDependencies": {
+    "destructible": "0.34.x",
+    "proof": "3.0.x"
+  },
+  "homepage": "https://github.com/bigeasy/prolific",
+  "keywords": [
+    "logging",
+    "log",
+    "syslog"
+  ],
+  "license": "MIT",
+  "main": "tee.processor",
+  "name": "prolific.tee",
+  "repository": {
+    "type": "git",
+    "url": "bigeasy/prolific"
+  },
+  "scripts": {
+    "test": "proof test t/*.t.js"
+  },
+  "version": "3.0.0"
+}
