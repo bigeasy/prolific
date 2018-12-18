@@ -1,5 +1,6 @@
-## Prolific Environment
+## Prolific Sequence
 
-Depreciated. No longer using quite so many bits of middleware.
+Deprecated. No longer constructing pipelines from middleware modules such as
+this one.
 
 See [Prolific](http://github.com/bigeasy/prolific).
