@@ -49,7 +49,7 @@
   "name": "prolific.accept",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/bigeasy/prolific.git"
+    "url": "bigeasy/prolific"
   },
   "scripts": {
     "test": "proof test t/*.t.js"
