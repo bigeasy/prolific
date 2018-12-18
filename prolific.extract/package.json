@@ -1,0 +1,65 @@
+{
+  "_from": "prolific.extract",
+  "_id": "prolific.extract@0.3.0",
+  "_inBundle": false,
+  "_integrity": "sha512-OhLTy5bOdarFCgunBvqEfQXBgJfUnYCr6BQKwTtGOXCKuApPwwFiWiDu/Yho++zihiizTOA1uanpXk4q8wSyQA==",
+  "_location": "/prolific.extract",
+  "_phantomChildren": {},
+  "_requested": {
+    "type": "tag",
+    "registry": true,
+    "raw": "prolific.extract",
+    "name": "prolific.extract",
+    "escapedName": "prolific.extract",
+    "rawSpec": "",
+    "saveSpec": null,
+    "fetchSpec": "latest"
+  },
+  "_requiredBy": [
+    "#USER",
+    "/"
+  ],
+  "_resolved": "https://registry.npmjs.org/prolific.extract/-/prolific.extract-0.3.0.tgz",
+  "_shasum": "e800efd9c580e9a189d9788075069cbf5c05b7bb",
+  "_spec": "prolific.extract",
+  "_where": "/Users/alan/junk",
+  "author": {
+    "name": "Alan Gutierrez",
+    "email": "alan@prettyrobots.com"
+  },
+  "bugs": {
+    "url": "https://github.com/bigeasy/prolific/issues"
+  },
+  "bundleDependencies": false,
+  "dependencies": {
+    "extant": "1.0.x",
+    "prolific.evaluator": "0.3.x",
+    "prolific.level": "0.0.x"
+  },
+  "deprecated": false,
+  "description": "Extract properties from a logging message to create a new one.",
+  "devDependencies": {
+    "cadence": "1.0.x",
+    "destructible": "0.34.x",
+    "proof": "3.0.x"
+  },
+  "homepage": "https://github.com/bigeasy/prolific",
+  "keywords": [
+    "logging",
+    "log",
+    "syslog",
+    "filter",
+    "prolific"
+  ],
+  "license": "MIT",
+  "main": "extract.processor",
+  "name": "prolific.extract",
+  "repository": {
+    "type": "git",
+    "url": "bigeasy/prolific"
+  },
+  "scripts": {
+    "test": "proof test t/*.t.js"
+  },
+  "version": "0.3.0"
+}
