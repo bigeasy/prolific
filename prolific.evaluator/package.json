@@ -1,6 +1,6 @@
 {
     "name":                 "prolific.evaluator",
-    "version":              "0.6.1",
+    "version":              "0.6.2",
     "description":
 
       "Utilities for creating JavaScript functions evaluated against a Prolific entry.",
