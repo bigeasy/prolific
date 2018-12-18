@@ -1,0 +1,67 @@
+{
+  "_from": "prolific.stdout.udp",
+  "_id": "prolific.stdout.udp@0.0.2",
+  "_inBundle": false,
+  "_integrity": "sha1-eYIOGDVBbmBMS6v79FPvkkTa1bk=",
+  "_location": "/prolific.stdout.udp",
+  "_phantomChildren": {
+    "cadence": "1.0.12",
+    "supersede": "1.0.6",
+    "synonymous": "1.0.10"
+  },
+  "_requested": {
+    "type": "tag",
+    "registry": true,
+    "raw": "prolific.stdout.udp",
+    "name": "prolific.stdout.udp",
+    "escapedName": "prolific.stdout.udp",
+    "rawSpec": "",
+    "saveSpec": null,
+    "fetchSpec": "latest"
+  },
+  "_requiredBy": [
+    "#USER",
+    "/"
+  ],
+  "_resolved": "https://registry.npmjs.org/prolific.stdout.udp/-/prolific.stdout.udp-0.0.2.tgz",
+  "_shasum": "79820e1835416e604c4babfbf453ef9244dad5b9",
+  "_spec": "prolific.stdout.udp",
+  "_where": "/Users/alan/junk",
+  "author": {
+    "name": "Alan Gutierrez",
+    "email": "alan@prettyrobots.com"
+  },
+  "bin": {
+    "stdout.udp": "stdout.udp.bin.js"
+  },
+  "bugs": {
+    "url": "https://github.com/bigeasy/prolific/issues"
+  },
+  "bundleDependencies": false,
+  "dependencies": {
+    "arguable": "1.x",
+    "cadence": "1.x"
+  },
+  "deprecated": false,
+  "description": "Write UDP syslog messages to stdout.",
+  "devDependencies": {
+    "proof": "1.x"
+  },
+  "homepage": "https://github.com/bigeasy/prolific",
+  "keywords": [
+    "json",
+    "syslog",
+    "logging"
+  ],
+  "license": "MIT",
+  "main": "queue",
+  "name": "prolific.stdout.udp",
+  "repository": {
+    "type": "git",
+    "url": "bigeasy/prolific"
+  },
+  "scripts": {
+    "test": "proof test t/*.t.js"
+  },
+  "version": "0.0.2"
+}

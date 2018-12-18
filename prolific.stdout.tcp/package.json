@@ -1,0 +1,66 @@
+{
+  "_from": "prolific.stdout.tcp",
+  "_id": "prolific.stdout.tcp@0.0.0",
+  "_inBundle": false,
+  "_integrity": "sha1-2Z6q9KYv9TyQqCIXSGB/HBIM888=",
+  "_location": "/prolific.stdout.tcp",
+  "_phantomChildren": {
+    "cadence": "1.0.12",
+    "supersede": "1.0.6",
+    "synonymous": "1.0.10"
+  },
+  "_requested": {
+    "type": "tag",
+    "registry": true,
+    "raw": "prolific.stdout.tcp",
+    "name": "prolific.stdout.tcp",
+    "escapedName": "prolific.stdout.tcp",
+    "rawSpec": "",
+    "saveSpec": null,
+    "fetchSpec": "latest"
+  },
+  "_requiredBy": [
+    "#USER",
+    "/"
+  ],
+  "_resolved": "https://registry.npmjs.org/prolific.stdout.tcp/-/prolific.stdout.tcp-0.0.0.tgz",
+  "_shasum": "d99eaaf4a62ff53c90a8221748607f1c120cf3cf",
+  "_spec": "prolific.stdout.tcp",
+  "_where": "/Users/alan/junk",
+  "author": {
+    "name": "Alan Gutierrez",
+    "email": "alan@prettyrobots.com"
+  },
+  "bin": {},
+  "bugs": {
+    "url": "https://github.com/bigeasy/prolific/issues"
+  },
+  "bundleDependencies": false,
+  "contributors": [],
+  "dependencies": {
+    "arguable": "1.x",
+    "cadence": "1.x"
+  },
+  "deprecated": false,
+  "description": "Write TCP syslog messages to stdout.",
+  "devDependencies": {
+    "proof": "1.x"
+  },
+  "homepage": "https://github.com/bigeasy/prolific",
+  "keywords": [
+    "json",
+    "syslog",
+    "logging"
+  ],
+  "license": "MIT",
+  "main": "queue",
+  "name": "prolific.stdout.tcp",
+  "repository": {
+    "type": "git",
+    "url": "bigeasy/prolific"
+  },
+  "scripts": {
+    "test": "proof test t/*.t.js"
+  },
+  "version": "0.0.0"
+}
