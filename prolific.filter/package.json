@@ -1,0 +1,63 @@
+{
+  "_from": "prolific.filter",
+  "_id": "prolific.filter@9.0.0",
+  "_inBundle": false,
+  "_integrity": "sha512-MngUiG6JmmITUvZSfm23qrIAWWLQ6ceDJtFLIUtMqKbDKY5JoWCev28fMnlm5krWYIE/R5r527T+xIvcI7XiJw==",
+  "_location": "/prolific.filter",
+  "_phantomChildren": {},
+  "_requested": {
+    "type": "tag",
+    "registry": true,
+    "raw": "prolific.filter",
+    "name": "prolific.filter",
+    "escapedName": "prolific.filter",
+    "rawSpec": "",
+    "saveSpec": null,
+    "fetchSpec": "latest"
+  },
+  "_requiredBy": [
+    "#USER",
+    "/"
+  ],
+  "_resolved": "https://registry.npmjs.org/prolific.filter/-/prolific.filter-9.0.0.tgz",
+  "_shasum": "7dc3b1f06174c1f8de82a0dde8fd5ec32b2caec9",
+  "_spec": "prolific.filter",
+  "_where": "/Users/alan/junk",
+  "author": {
+    "name": "Alan Gutierrez",
+    "email": "alan@prettyrobots.com"
+  },
+  "bugs": {
+    "url": "https://github.com/bigeasy/prolific/issues"
+  },
+  "bundleDependencies": false,
+  "dependencies": {
+    "prolific.acceptor": "0.5.x"
+  },
+  "deprecated": false,
+  "description": "Filter Prolific logging messages.",
+  "devDependencies": {
+    "cadence": "1.0.x",
+    "destructible": "0.34.x",
+    "proof": "3.0.x"
+  },
+  "homepage": "https://github.com/bigeasy/prolific",
+  "keywords": [
+    "logging",
+    "log",
+    "syslog",
+    "filter",
+    "prolific"
+  ],
+  "license": "MIT",
+  "main": "filter.processor",
+  "name": "prolific.filter",
+  "repository": {
+    "type": "git",
+    "url": "bigeasy/prolific"
+  },
+  "scripts": {
+    "test": "proof test t/*.t.js"
+  },
+  "version": "9.0.0"
+}
