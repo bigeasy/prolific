@@ -1,3 +1,3 @@
-# Prolific
+## Prolific Logger
 
-A logging framework.
+Application logging facilities for Prolific logging framework.

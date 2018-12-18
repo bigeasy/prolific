@@ -3,7 +3,7 @@
     "version":              "8.6.0",
     "description":
 
-      "Logger implementation for Prolific logging framework.",
+      "Application logging facilities for Prolific logging framework.",
 
     "keywords":
     [
