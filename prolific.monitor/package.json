@@ -55,7 +55,7 @@
   "name": "prolific.monitor",
   "repository": {
     "type": "git",
-    "url": "git+ssh://git@github.com/bigeasy/prolific.git"
+    "url": "bigeasy/prolific"
   },
   "scripts": {
     "test": "proof test t/*.t.js"
