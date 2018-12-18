@@ -1,0 +1,59 @@
+{
+  "_from": "prolific.sequence",
+  "_id": "prolific.sequence@0.1.0",
+  "_inBundle": false,
+  "_integrity": "sha512-xkXHsg6QJazr1t+HBrUn+9oE7MFMCGc7HCsjCMilIyUv1UYTqc+/cb57ZulM4RddsOCZkeCWeyACAZDKkvWVZw==",
+  "_location": "/prolific.sequence",
+  "_phantomChildren": {},
+  "_requested": {
+    "type": "tag",
+    "registry": true,
+    "raw": "prolific.sequence",
+    "name": "prolific.sequence",
+    "escapedName": "prolific.sequence",
+    "rawSpec": "",
+    "saveSpec": null,
+    "fetchSpec": "latest"
+  },
+  "_requiredBy": [
+    "#USER",
+    "/"
+  ],
+  "_resolved": "https://registry.npmjs.org/prolific.sequence/-/prolific.sequence-0.1.0.tgz",
+  "_shasum": "b7286d3058956c069dc99b4efbe2723f70b94e52",
+  "_spec": "prolific.sequence",
+  "_where": "/Users/alan/junk",
+  "author": {
+    "name": "Alan Gutierrez",
+    "email": "alan@prettyrobots.com"
+  },
+  "bugs": {
+    "url": "https://github.com/bigeasy/prolific/issues"
+  },
+  "bundleDependencies": false,
+  "dependencies": {},
+  "deprecated": false,
+  "description": "Add a sequence number to a stream of logging message.",
+  "devDependencies": {
+    "cadence": "1.0.x",
+    "destructible": "0.30.x",
+    "proof": "3.0.x"
+  },
+  "homepage": "https://github.com/bigeasy/prolific",
+  "keywords": [
+    "logging",
+    "log",
+    "syslog"
+  ],
+  "license": "MIT",
+  "main": "sequence.processor",
+  "name": "prolific.sequence",
+  "repository": {
+    "type": "git",
+    "url": "bigeasy/prolific"
+  },
+  "scripts": {
+    "test": "proof test t/*.t.js"
+  },
+  "version": "0.1.0"
+}
