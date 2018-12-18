@@ -1,4 +1,5 @@
 ## Prolific Monitor
 
-Monitor a Prolific-enabled child process gathering and verifying chunked log
-messages and feeding them to log processors.
+Deprecated. Monitor is now part of root Prolific module.
+
+See [Prolific](http://github.com/bigeasy/prolific).
