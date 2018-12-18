@@ -1,3 +1,3 @@
-## Prolific Filter
+## Prolific Reduce
 
-Filter Prolific logging messages.
+Reduce multiple Prolific logging messages into one.
