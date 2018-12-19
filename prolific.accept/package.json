@@ -1,0 +1,58 @@
+{
+  "_from": "prolific.accept",
+  "_id": "prolific.accept@0.0.2",
+  "_inBundle": false,
+  "_integrity": "sha512-OhgilynkbASIuseP1jgSWOpehudUNJ4vVYOPGqRPG6Mb+vsvaIdYE3NARzPSSsjDa+pT2pDki8rJPRJt8OvgZw==",
+  "_location": "/prolific.accept",
+  "_phantomChildren": {},
+  "_requested": {
+    "type": "tag",
+    "registry": true,
+    "raw": "prolific.accept",
+    "name": "prolific.accept",
+    "escapedName": "prolific.accept",
+    "rawSpec": "",
+    "saveSpec": null,
+    "fetchSpec": "latest"
+  },
+  "_requiredBy": [
+    "#USER",
+    "/"
+  ],
+  "_resolved": "https://registry.npmjs.org/prolific.accept/-/prolific.accept-0.0.2.tgz",
+  "_shasum": "33e2f343c980694cbf4cddfd747e9d5f807c9f97",
+  "_spec": "prolific.accept",
+  "_where": "/Users/alan/junk",
+  "author": {
+    "name": "Alan Gutierrez",
+    "email": "alan@prettyrobots.com"
+  },
+  "bugs": {
+    "url": "https://github.com/bigeasy/prolific/issues"
+  },
+  "bundleDependencies": false,
+  "dependencies": {},
+  "deprecated": false,
+  "description": "Discoverable common output sink for the Prolific logging framework.",
+  "devDependencies": {
+    "proof": "3.0.x"
+  },
+  "homepage": "https://github.com/bigeasy/prolific",
+  "keywords": [
+    "prolific",
+    "logging",
+    "log",
+    "syslog"
+  ],
+  "license": "MIT",
+  "main": "accept",
+  "name": "prolific.accept",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/bigeasy/prolific.git"
+  },
+  "scripts": {
+    "test": "proof test t/*.t.js"
+  },
+  "version": "0.0.2"
+}

@@ -1,0 +1,56 @@
+{
+  "_from": "prolific.acceptor",
+  "_id": "prolific.acceptor@0.7.1",
+  "_inBundle": false,
+  "_integrity": "sha512-qBkonnh2PufUW3M2IRV1BNMHP0Iuk/LZb8oQRDVJbFwBm/BTQVIBfy6AnSgMC+zF16s+V0iJwX9yxkJ2GuZR1g==",
+  "_location": "/prolific.acceptor",
+  "_phantomChildren": {},
+  "_requested": {
+    "type": "tag",
+    "registry": true,
+    "raw": "prolific.acceptor",
+    "name": "prolific.acceptor",
+    "escapedName": "prolific.acceptor",
+    "rawSpec": "",
+    "saveSpec": null,
+    "fetchSpec": "latest"
+  },
+  "_requiredBy": [
+    "#USER",
+    "/"
+  ],
+  "_resolved": "https://registry.npmjs.org/prolific.acceptor/-/prolific.acceptor-0.7.1.tgz",
+  "_shasum": "d3f57a18d077d811b9f14d74036efaea1a36814b",
+  "_spec": "prolific.acceptor",
+  "_where": "/Users/alan/junk",
+  "author": {
+    "name": "Alan Gutierrez",
+    "email": "alan@prettyrobots.com"
+  },
+  "bugs": {
+    "url": "https://github.com/bigeasy/prolific/issues"
+  },
+  "bundleDependencies": false,
+  "dependencies": {},
+  "deprecated": false,
+  "description": "Logging message filter chain for the Prolific logging framework.",
+  "devDependencies": {},
+  "homepage": "https://github.com/bigeasy/prolific",
+  "keywords": [
+    "prolific",
+    "logging",
+    "log",
+    "syslog"
+  ],
+  "license": "MIT",
+  "main": "acceptor",
+  "name": "prolific.acceptor",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/bigeasy/prolific.git"
+  },
+  "scripts": {
+    "test": "proof test t/*.t.js"
+  },
+  "version": "0.7.1"
+}
