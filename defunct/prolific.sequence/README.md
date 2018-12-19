@@ -1,4 +1,4 @@
-## Prolific Environment
+## Prolific Sequence
 
 Deprecated. No longer constructing pipelines from middleware modules such as
 this one.
