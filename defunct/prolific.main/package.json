@@ -16,6 +16,6 @@
     "repository":
     {
                             "type": "git",
-                            "url": "http://github.com/bigeasy/prolific.git"
+                            "url": "bigeasy/prolific"
     }
 }
