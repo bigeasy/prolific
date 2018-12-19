@@ -7,32 +7,15 @@
 
     "keywords":
     [
-                            "logging", "log", "syslog"
+                            "logging", "log", "syslog", "prolific"
     ],
-    "author":
-    {
-                            "name": "Alan Gutierrez",
-                            "email": "alan@prettyrobots.com"
-    },
+    "author":               "Alan Gutierrez <alan@prettyrobots.com>",
     "homepage":             "https://github.com/bigeasy/prolific",
-    "bugs":
-    {
-                            "url": "https://github.com/bigeasy/prolific/issues"
-    },
+    "bugs":                 "https://github.com/bigeasy/prolific/issues",
     "license":              "MIT",
     "repository":
     {
                             "type": "git",
                             "url": "bigeasy/prolific"
-    },
-    "dependencies":
-    {
-    },
-    "devDependencies":
-    {
-    },
-    "scripts":
-    {
-                            "test": "proof test t/*.t.js"
     }
 }
