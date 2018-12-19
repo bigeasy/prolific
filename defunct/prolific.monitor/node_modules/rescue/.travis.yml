@@ -1,0 +1,19 @@
+sudo: false
+
+language: node_js
+
+node_js:
+  - '0.10'
+  - '0.12'
+  - '4'
+  - '5'
+  - '6'
+
+branches:
+  only:
+    - master
+    - travis-ci
+
+before_install:
+  - npm install
+  - npm install istanbul coveralls
