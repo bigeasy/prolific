@@ -31,7 +31,6 @@
     "devDependencies":
     {
     },
-    "main":                 "sequence.processor",
     "scripts":
     {
                             "test": "proof test t/*.t.js"
