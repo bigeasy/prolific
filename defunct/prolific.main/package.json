@@ -1,6 +1,6 @@
 {
     "name":                 "prolific.main",
-    "version":              "1.0.0",
+    "version":              "1.0.1",
     "description":
 
       "This Proflific module has been replaced by the root `prolific.resolver` module.",
