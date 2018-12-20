@@ -24,7 +24,6 @@ https://www.npmjs.com/package/prolific.pumper
 https://www.npmjs.com/package/prolific.queue
 https://www.npmjs.com/package/prolific.reduce
 https://www.npmjs.com/package/prolific.require
-https://www.npmjs.com/package/prolific.require
 https://www.npmjs.com/package/prolific.resolver
 https://www.npmjs.com/package/prolific.revise
 https://www.npmjs.com/package/prolific.sender.stdio
