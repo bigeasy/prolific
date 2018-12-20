@@ -28,7 +28,7 @@
                             "prolific.level":               "0.0.x",
                             "prolific.queue":               "14.2.x",
                             "prolific.require":             "0.0.x",
-                            "prolific.resolver":            "8.5.x",
+                            "prolific.resolver":            "9.0.x",
                             "prolific.sink":                "6.6.x"
     },
     "devDependencies":
