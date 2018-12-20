@@ -26,7 +26,7 @@
                             "prolific.chunk":               "4.0.x",
                             "prolific.evaluator":           "0.6.x",
                             "prolific.level":               "0.0.x",
-                            "prolific.queue":               "14.2.x",
+                            "prolific.queue":               "15.0.x",
                             "prolific.require":             "0.0.x",
                             "prolific.resolver":            "9.0.x",
                             "prolific.sink":                "7.0.x"
