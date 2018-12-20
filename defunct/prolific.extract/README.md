@@ -1,4 +1,4 @@
-## Prolific Sequence
+## Prolific Extract
 
 Deprecated. No longer constructing pipelines from middleware modules such as
 this one.
