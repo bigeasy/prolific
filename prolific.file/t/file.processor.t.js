@@ -1,6 +1,6 @@
 require('proof')(1, require('cadence')(prove))
 
-function prove (async, assert) {
+function prove (async, okay) {
     var path = require('path')
     var fs = require('fs')
     var file = path.join(__dirname, 'log')
@@ -30,7 +30,7 @@ function prove (async, assert) {
         processor.process({ json: { a: 1 } })
         processor.close(async())
     }, function () {
-        assert(fs.readFileSync(file + '-1970-01-01-00-00-0', 'utf8'),
+        okay(fs.readFileSync(file + '-1970-01-01-00-00-0', 'utf8'),
             '{"a":1}\n{"a":1}\n{"a":1}\n', 'file')
     })
 }
