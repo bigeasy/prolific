@@ -32,7 +32,7 @@
                             "interrupt":                    "6.4.x",
                             "prolific.consolidator":        "6.9.x",
                             "prolific.evaluator":           "0.6.x",
-                            "prolific.inherit":             "6.2.x",
+                            "prolific.inherit":             "7.0.x",
                             "prolific.ipc":                 "1.0.x",
                             "prolific.require":             "0.0.2",
                             "reconfigure":                  "0.4.x",
