@@ -1,6 +1,6 @@
 {
     "name":                 "prolific.chunk",
-    "version":              "4.0.1",
+    "version":              "5.0.0",
     "description":
 
       "Chunk log lines for transmission to the Prolific supervisor.",
