@@ -20,7 +20,7 @@
     },
     "dependencies":
     {
-                            "cadence":                      "2.0.x",
+                            "cadence":                      "3.0.x",
                             "hash.fnv":                     "1.0.x",
                             "prolific.collector":           "7.0.x",
                             "staccato":                     "7.0.x"
