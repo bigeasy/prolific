@@ -36,7 +36,7 @@
                             "prolific.ipc":                 "1.0.x",
                             "prolific.require":             "0.0.2",
                             "reconfigure":                  "0.5.x",
-                            "signal":                       "6.0.x",
+                            "signal":                       "7.0.x",
                             "turnstile":                    "5.0.x"
     },
     "devDependencies":
