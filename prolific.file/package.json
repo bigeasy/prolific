@@ -1,6 +1,6 @@
 {
     "name":                 "prolific.file",
-    "version":              "1.1.1",
+    "version":              "2.0.0",
     "description":
 
       "Write Prolific logs to a rotating file.",
