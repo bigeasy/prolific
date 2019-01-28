@@ -31,7 +31,7 @@
                             "destructible":                 "0.43.x",
                             "proof":                        "5.0.x"
     },
-    "main":                 "file.processor",
+    "main":                 "file",
     "scripts":
     {
                             "test": "proof test t/*.t.js"
