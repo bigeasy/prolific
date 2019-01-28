@@ -1,80 +1,95 @@
 var fs = require('fs')
 var stream = require('stream')
 
+var Staccato = require('staccato')
+
+var coalesce = require('extant')
+
 var abend = require('abend')
 var cadence = require('cadence')
 var Signal = require('signal')
 var delta = require('delta')
 
-var stringify = require('prolific.stringify')
-var Sender = require('prolific.sender.stream')
+var Turnstile = require('turnstile')
+Turnstile.Check = require('turnstile/check')
 
-function Processor (parameters, next) {
-    this._nullSender = {
-        sent: Infinity,
-        process: function (entry) { this.lines.push(stringify(entry)) },
-        flush: function (callback) { callback() },
-        stream: new stream.PassThrough,
-        lines: [],
-        rotating: true
-    }
-    this._next = next
-    this._filename = parameters.file
-    this._rotateSize = parameters.rotate || 1024 * 1024 * 1024
-    this._pid = parameters.pid || process.pid
+function Processor (options) {
+    this._rotation = coalesce(options.rotate, Infinity)
+    this.turnstile = new Turnstile
+    this._processing = new Turnstile.Check(this, '_process', this.turnstile)
+    this._writable = new Staccato.Writable(new stream.PassThrough)
+    this._filename = options.file
+    this._rotateSize = coalesce(options.rotate, 1024 * 1024 * 1024)
+    this._pid = coalesce(options.pid, process.pid)
     this._sender = this._nullSender
-    this._Date = parameters.Date || Date
+    this._Date = coalesce(options.Date, Date)
     this._rotating = new Signal
+    this._buffers = []
 }
 
-Processor.prototype.open = function (callback) { callback() }
+Processor.prototype._process = cadence(function (async, line) {
+    async.loop([], function () {
+        if (this._buffers.length == 0) {
+            return [ async.break ]
+        }
+        this._written += this._buffers[0].length
+        this._writable.write(this._buffers.shift(), async())
+    }, function () {
+        if (this._written >= this._rotation) {
+            this._rotate(async())
+        }
+    })
+})
 
+// Note that we're only going to rotate every minute even if your rotation limit
+// is hit within the minute. We're going to generate a file name where the stamp
+// is based on the current minute, so if we get a rotation in the same minute we
+// just reopen the existing minute file and continue appending. Not going to
+// over-think this. If you're filling up files for real that quickly you've got
+// a problem to solve and I'm not here to solve that particular problem for you.
+//
 Processor.prototype._rotate = cadence(function (async) {
-    this._sender = this._nullSender
-    this._sender.sent = 0
-    this._rotating.open = null
     var stream
     async(function () {
-        this._flush(async())
+        this._writable.end(async())
     }, function () {
+        this._written = 0
         var stamp = new Date(this._Date.now())
             .toISOString()
             .replace(/[T.:]/g, '-')
             .replace(/-\d{2}-\d{3}Z$/, '')
-        var filename = [ this._filename, stamp, this._pid ].join('-')
-        stream = fs.createWriteStream(filename, { flags: 'a' })
+        var filename = [ this._filename, this._pid, stamp ].join('-')
+        var stream = fs.createWriteStream(filename, { flags: 'a' })
+        this._writable = new Staccato.Writable(stream)
         delta(async()).ee(stream).on('open')
-    }, function () {
-        this._sender = new Sender(stream)
-        this._sender.splice(this._nullSender.lines)
-        this._rotating.open = []
-        this._rotating.notify()
     })
 })
 
-Processor.prototype._flush = cadence(function (async) {
-    async(function () {
-        this._sender.flush(async())
-    }, function () {
-// TODO Expose `stream` instead of `_stream`.
-        this._sender.stream.end()
-    })
-})
-
-Processor.prototype.process = function (entry) {
-    this._sender.process(entry)
-    if (this._sender.sent >= this._rotateSize) {
-        this._rotate(abend)
+Processor.prototype.process = function (buffer) {
+    if (!this.destroyed) {
+        if (!Buffer.isBuffer(buffer)) {
+            buffer = Buffer.from(buffer)
+        }
+        this._buffers.push(buffer)
+        this._processing.check()
     }
-    this._next.process(entry)
 }
 
-Processor.prototype.close = cadence(function (async) {
+Processor.prototype._end = cadence(function (async) {
     async(function () {
-        this._rotating.wait(async())
+        this.turnstile.listen(async())
     }, function () {
-        this._flush(async())
+        this._writable.end(async())
     })
 })
 
-module.exports = Processor
+module.exports = cadence(function (async, destructible, options) {
+    var processor = new Processor(options)
+    destructible.destruct.wait(processor.turnstile, 'destroy')
+    processor._end(destructible.durable('turnstile'))
+    async(function () {
+        processor._rotate(async())
+    }, function () {
+        return [ processor ]
+    })
+})

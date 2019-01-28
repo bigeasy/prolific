@@ -1,36 +1,66 @@
-require('proof')(1, require('cadence')(prove))
+require('proof')(1, prove)
 
-function prove (async, okay) {
+function prove (okay, callback) {
+    var Destructible = require('destructible')
+    var destructible = new Destructible('t/file.t')
+
+    destructible.completed.wait(callback)
+
+    var cadence = require('cadence')
+
     var path = require('path')
-    var fs = require('fs')
+
+    var File = require('..')
+
     var file = path.join(__dirname, 'log')
-    var Processor = require('../file.processor')
-    new Processor({ file: file })
-    var processor = new Processor({
-        file: file, rotate: 8, pid: '0',
-        Date: { now: function () { return 0 } }
-    }, {
-        process: function () {}
-    })
-    var resolved = path.join(__dirname, 'log-1970-01-01-00-00-0')
-    async([function () {
-        async.forEach(function (file) {
-            async([function () {
-                fs.unlink(file, async())
-            }, /^ENOENT$/, function () {
-            }])
-        })([ resolved ])
-    }], function () {
-        processor.open(async())
-    }, function () {
-        processor.process({ json: { a: 1 } })
-        processor.process({ json: { a: 1 } })
-        setTimeout(async(), 250)
-    }, function () {
-        processor.process({ json: { a: 1 } })
-        processor.close(async())
-    }, function () {
-        okay(fs.readFileSync(file + '-1970-01-01-00-00-0', 'utf8'),
-            '{"a":1}\n{"a":1}\n{"a":1}\n', 'file')
-    })
+
+    var now = 0
+
+    var fs = require('fs')
+
+    try {
+        fs.unlinkSync(path.join(__dirname, 'log-1-1970-01-01-00-00'))
+    } catch (e) {
+        if (e.code != 'ENOENT') {
+            throw e
+        }
+    }
+
+    try {
+        fs.unlinkSync(path.join(__dirname, 'log-1-1970-01-01-00-01'))
+    } catch (e) {
+        if (e.code != 'ENOENT') {
+            throw e
+        }
+    }
+
+    cadence(function (async) {
+        async(function () {
+            destructible.durable('file', File, {
+                file: file,
+                rotate: 20,
+                pid: '1',
+                Date: {
+                    now: function () {
+                        var result = now
+                        now += 1000 * 60
+                        return result
+                    }
+                }
+            }, async())
+        }, function (processor) {
+            processor.process(JSON.stringify({ json: { a: 1 } }) + '\n')
+            processor.process(JSON.stringify({ json: { a: 2 } }) + '\n')
+            setTimeout(async(), 50)
+        }, function () {
+            var lines = fs.readFileSync(path.join(__dirname, 'log-1-1970-01-01-00-00'), 'utf8')
+            lines = lines.split('\n')
+            lines.pop()
+            okay(lines.map(JSON.parse), [{
+                json: { a: 1 }
+            }, {
+                json: { a: 2 }
+            }], 'map')
+        })
+    })(destructible.durable('test'))
 }

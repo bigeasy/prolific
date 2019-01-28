@@ -21,17 +21,17 @@
     "dependencies":
     {
                             "abend":                        "1.0.x",
-                            "cadence":                      "1.0.x",
-                            "delta":                        "1.2.x",
-                            "prolific.sender.stream":       "3.0.x",
-                            "prolific.stringify":           "1.0.x",
-                            "signal":                       "1.8.x"
+                            "cadence":                      "3.0.x",
+                            "delta":                        "3.0.x",
+                            "restrictor":                   "3.0.x",
+                            "staccato":                     "7.0.x"
     },
     "devDependencies":
     {
-                            "proof":                        "3.0.x"
+                            "destructible":                 "0.43.x",
+                            "proof":                        "5.0.x"
     },
-    "main":                 "file.argv",
+    "main":                 "file.processor",
     "scripts":
     {
                             "test": "proof test t/*.t.js"
