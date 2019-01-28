@@ -1,3 +1,3 @@
 ## Prolific File
 
-A file logger for the Prolific logging framework.
+A rotating file logger for the Prolific logging framework.
