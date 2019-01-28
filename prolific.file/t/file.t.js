@@ -50,8 +50,10 @@ function prove (okay, callback) {
             }, async())
         }, function (processor) {
             processor.process(JSON.stringify({ json: { a: 1 } }) + '\n')
-            processor.process(JSON.stringify({ json: { a: 2 } }) + '\n')
+            processor.process(Buffer.from(JSON.stringify({ json: { a: 2 } }) + '\n'))
             setTimeout(async(), 50)
+            destructible.destroy()
+            processor.process(JSON.stringify({ json: { a: 1 } }) + '\n')
         }, function () {
             var lines = fs.readFileSync(path.join(__dirname, 'log-1-1970-01-01-00-00'), 'utf8')
             lines = lines.split('\n')

@@ -16,6 +16,7 @@ Turnstile.Check = require('turnstile/check')
 function Processor (options) {
     this._rotation = coalesce(options.rotate, Infinity)
     this.turnstile = new Turnstile
+    this.destroyed = false
     this._processing = new Turnstile.Check(this, '_process', this.turnstile)
     this._writable = new Staccato.Writable(new stream.PassThrough)
     this._filename = options.file
@@ -86,6 +87,7 @@ Processor.prototype._end = cadence(function (async) {
 module.exports = cadence(function (async, destructible, options) {
     var processor = new Processor(options)
     destructible.destruct.wait(processor.turnstile, 'destroy')
+    destructible.destruct.wait(function () { processor.destroyed = true })
     processor._end(destructible.durable('turnstile'))
     async(function () {
         processor._rotate(async())
