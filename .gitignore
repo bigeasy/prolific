@@ -2,7 +2,7 @@
 /docs
 /node_modules
 /*/node_modules/*
-/prolific.executable/t/configuration.copy.js
+/prolific.executable/test/configuration.copy.js
 !/prolific.tee/node_modules/prolific.test
 !/prolific.pipeline/node_modules/prolific.test
 !/prolific.pipeline/node_modules/prolific.configure.js

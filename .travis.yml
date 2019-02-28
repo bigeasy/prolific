@@ -15,5 +15,8 @@ branches:
 install:
   - for dir in prolific.*; do (cd $dir && npm install --no-save --no-package-lock); done
   - npm install --no-save --no-package-lock
-  - npm install -g istanbul coveralls
+  - npm install -g nyc
   - git checkout .
+
+script:
+  - nyc npm test

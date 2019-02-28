@@ -31,11 +31,11 @@
                             "delta":                        "3.0.x",
                             "destructible":                 "0.42.x",
                             "prolific.test.tcp":            "0.0.x",
-                            "proof":                        "5.0.x"
+                            "proof":                        "7.0.x"
     },
     "main":                 "tcp",
     "scripts":
     {
-                            "test": "proof test t/*.t.js"
+                            "test": "proof test test/*.t.js"
     }
 }

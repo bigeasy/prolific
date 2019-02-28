@@ -33,10 +33,10 @@
     },
     "devDependencies":
     {
-                            "proof":                        "5.0.x"
+                            "proof":                        "7.0.x"
     },
     "scripts":
     {
-                            "test": "proof test t/*.t.js"
+                            "test": "proof test test/*.t.js"
     }
 }

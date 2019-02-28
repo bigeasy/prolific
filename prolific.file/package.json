@@ -29,11 +29,11 @@
     "devDependencies":
     {
                             "destructible":                 "0.43.x",
-                            "proof":                        "5.0.x"
+                            "proof":                        "7.0.x"
     },
     "main":                 "file",
     "scripts":
     {
-                            "test": "proof test t/*.t.js"
+                            "test": "proof test test/*.t.js"
     }
 }

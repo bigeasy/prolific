@@ -45,7 +45,7 @@
                             "prolific.chunk":               "5.0.x",
                             "prolific.logger":              "9.0.x",
                             "prolific.shuttle":             "21.0.x",
-                            "proof":                        "5.0.x"
+                            "proof":                        "7.0.x"
     },
     "main":                 "prolific.bin",
     "bin":
@@ -54,6 +54,6 @@
     },
     "scripts":
     {
-                            "test": "proof test t/*.t.js"
+                            "test": "proof test test/*.t.js"
     }
 }
