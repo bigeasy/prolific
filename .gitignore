@@ -13,3 +13,5 @@
 /coverage
 /*/coverage
 /prolific.example/configuration.json
+/*.*/.nyc_output
+/.nyc_output
