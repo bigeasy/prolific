@@ -21,7 +21,7 @@
     "dependencies":
     {
                             "extant":                       "1.0.x",
-                            "prolific.facility":            "0.0.x",
+                            "prolific.facility":            "1.0.x",
                             "prolific.level":               "1.0.x"
     },
     "devDependencies":
