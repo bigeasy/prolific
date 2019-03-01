@@ -21,7 +21,7 @@
     "dependencies":
     {
                             "extant":                       "1.0.x",
-                            "magazine":                     "3.2.x",
+                            "magazine":                     "5.0.x",
                             "prolific.evaluator":           "1.0.x"
     },
     "devDependencies":
