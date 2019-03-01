@@ -25,7 +25,7 @@
                             "cadence":                      "2.0.x",
                             "delta":                        "3.0.x",
                             "server-destroy":               "1.0.x",
-                            "staccato":                     "6.6.x"
+                            "staccato":                     "7.0.x"
     },
     "devDependencies":
     {
