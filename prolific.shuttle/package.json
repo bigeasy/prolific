@@ -23,7 +23,7 @@
                             "abend":                        "1.0.x",
                             "descendent":                   "0.10.x",
                             "prolific.chunk":               "5.0.x",
-                            "prolific.evaluator":           "0.6.x",
+                            "prolific.evaluator":           "1.0.x",
                             "prolific.level":               "1.0.0",
                             "prolific.queue":               "15.0.x",
                             "prolific.require":             "1.0.0",
