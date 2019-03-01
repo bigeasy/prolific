@@ -22,7 +22,7 @@
     "dependencies":
     {
                             "byline":                       "5.0.x",
-                            "cadence":                      "2.0.x",
+                            "cadence":                      "3.0.x",
                             "delta":                        "3.0.x",
                             "server-destroy":               "1.0.x",
                             "staccato":                     "7.0.x"
