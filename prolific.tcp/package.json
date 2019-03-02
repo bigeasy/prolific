@@ -24,7 +24,7 @@
                             "byline":                       "5.0.0",
                             "cadence":                      "3.0.x",
                             "staccato":                     "6.6.x",
-                            "turnstile":                    "4.9.x"
+                            "turnstile":                    "5.0.x"
     },
     "devDependencies":
     {
