@@ -30,7 +30,7 @@
     {
                             "delta":                        "3.0.x",
                             "destructible":                 "1.0.x",
-                            "prolific.test.tcp":            "0.0.x",
+                            "prolific.test.tcp":            "1.0.x",
                             "proof":                        "7.0.x"
     },
     "main":                 "tcp",
