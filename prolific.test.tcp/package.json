@@ -1,7 +1,7 @@
 {
     "private":              false,
     "name":                 "prolific.test.tcp",
-    "version":              "0.0.1",
+    "version":              "1.0.0",
     "description":
 
       "A testing TCP logger for use unit testing the Prolific logging framework.",
