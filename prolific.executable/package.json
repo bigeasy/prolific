@@ -27,7 +27,7 @@
                             "delta":                        "3.0.x",
                             "demur":                        "1.0.x",
                             "destructible":                 "1.0.x",
-                            "descendent":                   "0.10.x",
+                            "descendent":                   "1.0.x",
                             "interrupt":                    "7.0.x",
                             "prolific.consolidator":        "7.0.x",
                             "prolific.evaluator":           "0.6.x",
