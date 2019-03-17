@@ -22,6 +22,7 @@
     {
                             "abend":                        "1.0.x",
                             "descendent":                   "1.0.x",
+                            "foremost":                     "1.0.x",
                             "prolific.chunk":               "5.0.x",
                             "prolific.evaluator":           "1.0.x",
                             "prolific.level":               "1.0.0",
