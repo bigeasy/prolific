@@ -10,7 +10,7 @@ function Chunk (id, number, buffer, value) {
 }
 
 Chunk.prototype.header = function (previousChecksum, length) {
-    return new Buffer([
+    return Buffer.from([
         '% ',
         this.id, ' ',
         this.number, ' ',
