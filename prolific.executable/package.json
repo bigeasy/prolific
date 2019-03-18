@@ -28,6 +28,7 @@
                             "demur":                        "1.0.x",
                             "destructible":                 "1.0.x",
                             "descendent":                   "1.0.x",
+                            "foremost":                     "1.0.x",
                             "interrupt":                    "7.0.x",
                             "prolific.consolidator":        "7.0.x",
                             "prolific.evaluator":           "1.0.x",
