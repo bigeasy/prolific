@@ -20,15 +20,13 @@
     },
     "dependencies":
     {
+                            "byline":                       "5.0.0",
                             "cadence":                      "3.0.x",
-                            "hash.fnv":                     "1.0.x",
-                            "prolific.collector":           "7.0.x",
                             "staccato":                     "7.0.x"
     },
     "devDependencies":
     {
-                            "abend":                        "1.0.x",
-                            "prolific.chunk":               "5.0.x",
+                            "destructible":                 "1.0.x",
                             "proof":                        "7.0.x"
     },
     "main":                 "consolidator",
