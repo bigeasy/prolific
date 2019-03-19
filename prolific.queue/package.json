@@ -20,8 +20,8 @@
     },
     "dependencies":
     {
-                            "abend":                        "1.0.x",
                             "cadence":                      "3.0.x",
+                            "hash.fnv":                     "1.0.x",
                             "prolific.chunk":               "6.0.x"
     },
     "devDependencies":
