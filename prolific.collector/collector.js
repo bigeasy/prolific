@@ -100,13 +100,6 @@ Collector.prototype.scan = function (buffer) {
     }
 }
 
-Collector.prototype.end = function () {
-    if (this._remainder != null) {
-        this._readLine(this._remainder, false)
-        this._remainder = null
-    }
-}
-
 Collector.prototype._writeStandardError = function (line, newline) {
     this._stderr.write(line)
     if (newline) {
@@ -150,6 +143,13 @@ Collector.prototype._readLine = function (line, newline) {
             this._writeStandardError(line, newline)
         }
         this.matched = null
+    }
+}
+
+Collector.prototype.end = function () {
+    if (this._remainder != null) {
+        this._readLine(this._remainder, false)
+        this._remainder = null
     }
 }
 
