@@ -23,7 +23,7 @@ Collector.prototype._chunk = function (matched, buffer) {
                 body: json.body
             })
             break
-        case 'chunk':
+        case 'entries':
             assert(this._channels[matched.id] != null)
             this._channels[matched.id].chunk = {
                 checksum: json.checksum,
@@ -51,9 +51,9 @@ Collector.prototype._chunk = function (matched, buffer) {
             var checksum = fnv(0, buffer, 0, buffer.length)
             assert(checksum == chunk.checksum)
             this.outbox.push({
-                method: 'chunk',
+                method: 'entries',
                 id: matched.id,
-                series: matched.series,
+                series: chunk.series,
                 entries: JSON.parse(buffer.toString())
             })
         }
@@ -116,8 +116,8 @@ Collector.prototype._readLine = function (line, newline) {
                 line: line,
                 preceding: $[1],
                 id: $[2],
-                checksum: $[4],
-                previous: $[3],
+                checksum: $[3],
+                previous: $[4],
                 header: $[5] == '1'
             }
             if (

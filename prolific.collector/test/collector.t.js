@@ -7,15 +7,15 @@ function prove (okay) {
     }
 
     var chunks = [
-        '% 1/2 aaaaaaaa 224e8640 1 %',
+        '% 1/2 224e8640 aaaaaaaa 1 %',
         '{"method":"announce","body":1}',
-         '% 1/2 224e8640 bb000670 1 %',
-        '{"method":"chunk","checksum":1917791070,"chunks":2}',
-        '% 1/2 bb000670 c2440b22 0 %',
-        '[["abcdefghijklmnopqrstuvwxyz","abcdefghijklmnopqrstuvwxyz","abcdefghij',
-        '% 1/2 c2440b22 32c7649f 0 %',
-        'klmnopqrstuvwxyz"]]',
-        '% 1/2 32c7649f b798da34 1 %',
+         '% 1/2 a8d518e8 224e8640 1 %',
+        '{"method":"entries","series":1,"checksum":3417670023,"chunks":2}',
+        '% 1/2 a6a72ac5 a8d518e8 0 %',
+        '[{"alphabet":["abcdefghijklmnopqrstuvwxyz","abcdefghijklmnopqrstuvwxyz"',
+        '% 1/2 c1e07487 a6a72ac5 0 %',
+        ',"abcdefghijklmnopqrstuvwxyz"]}]',
+        '% 1/2 b798da34 c1e07487 1 %',
         '{"method":"exit"}',
         ''
     ]
@@ -62,17 +62,16 @@ function prove (okay) {
     scan(Buffer.from(chunks.join('\n')))
 
     okay(collector.outbox.shift(), {
-        // TODO Rename to `entries`.
-        method: 'chunk',
-        // TODO Go get a series from Prolific Queue tests.
-        series: (function () {})(),
+        method: 'entries',
+        series: 1,
         id: '1/2',
-        // TODO Why are they nested like this? See Prolific Queue tests.
-        entries: [ [
-            'abcdefghijklmnopqrstuvwxyz',
-            'abcdefghijklmnopqrstuvwxyz',
-            'abcdefghijklmnopqrstuvwxyz',
-        ] ]
+        entries: [{
+            alphabet: [
+                'abcdefghijklmnopqrstuvwxyz',
+                'abcdefghijklmnopqrstuvwxyz',
+                'abcdefghijklmnopqrstuvwxyz'
+            ]
+        }]
     }, 'entries')
 
     okay(collector.outbox.shift(), {
