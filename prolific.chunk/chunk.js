@@ -11,9 +11,9 @@ var hex = require('./hex')
 // not include the newline.
 
 //
-function Chunk (header, id, buffer) {
+function Chunk (control, id, buffer) {
     assert(Array.isArray(id))
-    this.header = header
+    this.control = control
     this.id = id.join('/')
     this.checksum = fnv(0, buffer, 0, buffer.length)
     this.buffer = buffer
@@ -38,20 +38,21 @@ function Chunk (header, id, buffer) {
 // so we can forward the header-looking error output to the supervising process'
 // standard error.
 //
-// An id is an array of integers joined by slashes. Used to be anythign but a
+// An id is an array of integers joined by slashes. Used to be anything but a
 // space but with this restriction we can be discerning in our pattern matching.
 //
-// The header contains a header flag that indicates whether the chunk contains
+// The header contains a control flag that indicates whether the chunk contains
 // control information or body content. The flag is one for true, zero for
 // false. This keeps the header a fixed with.
 //
-// Headers chunks can contain stream control information or indicate the start
+// Control chunks can contain stream control information or indicate the start
 // of collection of entries which may be broken up into multiple chunks. Chunks
-// containing body content are not headers and have zero value for header.
+// containing body content are not control chunks and have zero value for
+// control in the header.
 //
 // When we write the chunk we require the checksum of the previous checksum.
 // This is printed with the current checksum to form a linked list of chunks.
-// The checksums are 32-bit and represented in zero padded hexidecmal so that
+// The checksums are 32-bit and represented in zero padded hexadecimal so that
 // they too are fixed with.
 //
 // Notes on `PIPE_BUF`. https://serverfault.com/a/733611
@@ -59,7 +60,7 @@ function Chunk (header, id, buffer) {
 //
 Chunk.prototype.concat = function (previous) {
     var header = Buffer.from('% ' + this.id + ' ' + hex(previous) + ' ' +
-        hex(this.checksum) + ' ' + (this.header ? '1' : '0') + ' %\n')
+        hex(this.checksum) + ' ' + (this.control ? '1' : '0') + ' %\n')
     return Buffer.concat([ header, this.buffer, Buffer.from('\n') ])
 }
 
