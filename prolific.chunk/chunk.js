@@ -64,5 +64,20 @@ Chunk.prototype.concat = function (previous) {
     return Buffer.concat([ header, this.buffer, Buffer.from('\n') ])
 }
 
+// Calculate the space available in a chunk for the chunk body for a given
+// `PIPE_BUF` size.
+
+//
+Chunk.getBodySize = function (pipeBuf, id) {
+    assert(Array.isArray(id))
+    var headerSize = id.join('/').length +  // length of id
+                    (8 * 2) +               // two checksums
+                    2 +                     // two % borders
+                    1 +                     // control flag
+                    2 +                     // two newlines
+                    5                       // five spaces in header
+    return pipeBuf - headerSize
+}
+
 // Export the object.
 module.exports = Chunk
