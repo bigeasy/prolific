@@ -28,10 +28,13 @@ function prove (async, okay) {
         queue.exit()
         queue.exit()
         queue.setPipe(writable)
-        okay(pipe.read().toString(),
-            '% 1/2 aaaaaaaa 224e8640 1 %\n{"method":"announce","body":1}\n' +
-            '% 1/2 224e8640 b798da34 1 %\n{"method":"exit"}\n'
-        , 'exit early')
+        okay(pipe.read().toString().split('\n'), [
+            '% 1/2 224e8640 aaaaaaaa 1 %',
+            '{"method":"announce","body":1}',
+            '% 1/2 b798da34 224e8640 1 %',
+            '{"method":"exit"}',
+            ''
+        ], 'exit early')
     }, function () {
         queue = new Queue(512, [ 1, 2 ], new stream.PassThrough, 1)
         queue.send(async())
@@ -61,15 +64,15 @@ function prove (async, okay) {
         queue.push(2)
         var chunk = stderr.read().toString()
         okay(chunk.split('\n'), [
-            '% 1/2 aaaaaaaa 224e8640 1 %',
+            '% 1/2 224e8640 aaaaaaaa 1 %',
             '{"method":"announce","body":1}',
-             '% 1/2 224e8640 bb000670 1 %',
+             '% 1/2 bb000670 224e8640 1 %',
             '{"method":"chunk","checksum":1917791070,"chunks":2}',
-            '% 1/2 bb000670 c2440b22 0 %',
+            '% 1/2 c2440b22 bb000670 0 %',
             '[["abcdefghijklmnopqrstuvwxyz","abcdefghijklmnopqrstuvwxyz","abcdefghij',
-            '% 1/2 c2440b22 32c7649f 0 %',
+            '% 1/2 32c7649f c2440b22 0 %',
             'klmnopqrstuvwxyz"]]',
-            '% 1/2 32c7649f b798da34 1 %',
+            '% 1/2 b798da34 32c7649f 1 %',
             '{"method":"exit"}',
             ''
         ], 'exit')
