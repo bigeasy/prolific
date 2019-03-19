@@ -20,7 +20,6 @@ function prove (okay) {
         ''
     ]
 
-    var Chunk = require('prolific.chunk')
     var Collector = require('../collector')
 
     var stream = require('stream')
