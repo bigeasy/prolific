@@ -27,7 +27,7 @@ function prove (okay) {
     collector.scan(Buffer.from('or\n'))
     okay(output.read().toString(), 'error\n', 'pass through')
 
-    collector.scan(Buffer.from('% 1/2 00000000 00000000 1 %\n'), 0)
+    collector.scan(Buffer.from('% 1/2 00000000 00000000 1 %\n'))
     okay(output.read().toString().split('\n'), [
         '% 1/2 00000000 00000000 1 %',
         ''
@@ -83,7 +83,7 @@ function prove (okay) {
     var output = new stream.PassThrough
 
     var collector = new Collector(output)
-    collector.scan(Buffer.from('error\n'), 0)
+    collector.scan(Buffer.from('error\n'))
     okay(output.read().toString(), 'error\n', 'last line')
     collector.end()
     okay(output.read(), null, 'end of line at end of stream')
