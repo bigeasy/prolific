@@ -1,9 +1,10 @@
 var coalesce = require('extant')
 
+var abend = require('abend')
+
 var descendent = require('foremost')('descendent')
 
 var Evaluator = require('prolific.evaluator')
-var Chunk = require('prolific.chunk')
 var Queue = require('prolific.queue')
 
 var LEVEL = require('prolific.level')
@@ -14,16 +15,17 @@ var assert = require('assert')
 
 function Shuttle () {
     this._state = 'created'
+    this._queue = null
 }
 
-Shuttle.prototype.start = function (options) {
+Shuttle.prototype.start = function (options, callback) {
     if (this._state !== 'created') {
         return
     }
     options || (options = {})
     if (descendent.process.env.PROLIFIC_SUPERVISOR_PROCESS_ID != null) {
         this._state = 'started'
-        this._listen(descendent, options)
+        this._listen(descendent, options, coalesce(callback, abend))
     } else {
         this._state = 'closed'
     }
@@ -32,20 +34,23 @@ Shuttle.prototype.start = function (options) {
 Shuttle.prototype._listen = function (descendent, options) {
     var now = coalesce(options.Date, Date).now()
     var monitorProcessId = +descendent.process.env.PROLIFIC_SUPERVISOR_PROCESS_ID
-    var headerId = 'H/' + descendent.process.pid + '/' +  now
-    var streamId = 'S/' + descendent.process.pid + '/' +  now
 
     descendent.increment()
 
+    var id = [ descendent.process.pid, now ]
     var path = descendent.path.splice(descendent.path.indexOf(monitorProcessId))
+
+    var queue = new Queue(512, id, descendent.process.stderr, { path: path })
+    this._queue = queue
 
     if (options.uncaughtException != null) {
         var uncaughtException = this.uncaughtException(options.uncaughtException)
         descendent.process.on('uncaughtException', uncaughtException)
     }
 
-    var queue = new Queue(streamId, descendent.process.stderr)
-    this._queue = queue
+    if (options.exit != null) {
+        descendent.process.on('exit', queue.exit.bind(queue))
+    }
 
     // All filtering will be performed by the monitor initially. Until
     // we get a configuration we send everything.
@@ -88,24 +93,10 @@ Shuttle.prototype._listen = function (descendent, options) {
                 queue.push(header)
             }
         }
-        queue.push([{ version: message.body.version }])
+        queue.push([{ method: 'version', version: message.body.version }])
     })
 
-    var chunks = []
-    chunks.push(new Chunk(headerId, 0, Buffer.from(''), 1))
-    var buffer = Buffer.from(JSON.stringify({
-        headerId: headerId,
-        streamId: streamId,
-        path: path
-    }) + '\n')
-    chunks.push(new Chunk(headerId, 1, buffer, buffer.length))
-
-    descendent.process.stderr.write(Buffer.concat([
-        chunks[0].header('aaaaaaaa'), chunks[0].buffer,
-        chunks[1].header(chunks[0].checksum), chunks[1].buffer
-    ]))
-
-    descendent.up(monitorProcessId, 'prolific:shuttle', headerId)
+    descendent.up(monitorProcessId, 'prolific:shuttle', id.join('/'))
 }
 
 function uncaughtException (shuttle, logger) {

@@ -27,7 +27,7 @@ function prove (okay) {
             name: 'prolific:shuttle',
             to: [ 1 ],
             path: [ 2 ],
-            body: 'H/2/0'
+            body: '2/0'
         }, sent.shift())
     }
 
@@ -38,6 +38,7 @@ function prove (okay) {
         uncaughtException: function (error) {
             okay(error.message, 'error', 'uncaught')
         },
+        exit: true,
         Date: { now: function () { return 0 } }
     })
 
@@ -45,11 +46,11 @@ function prove (okay) {
 
     shuttle.start()
 
-    okay(descendent.process.stderr.read().toString(),
-        '% H/2/0 0 aaaaaaaa 811c9dc5 1\n' +
-        '% H/2/0 1 811c9dc5 8b6ddbbf 53\n' +
-        '{"headerId":"H/2/0","streamId":"S/2/0","path":[1,2]}\n'
-    , 'stderr start')
+    okay(descendent.process.stderr.read().toString().split('\n'), [
+        '% 2/0 71c17733 aaaaaaaa 1 %',
+        '{"method":"announce","body":{"path":[1,2]}}',
+        ''
+    ], 'stderr start')
 
     var pipe = new stream.PassThrough
     descendent.emit('prolific:pipe', {}, pipe)
@@ -74,11 +75,14 @@ function prove (okay) {
     shuttle.close()
 
     okay(descendent.process.stderr.read().toString().split('\n'), [
-        '% S/2/0 0 aaaaaaaa 811c9dc5 1',
-        '% S/2/0 1 811c9dc5 e660c285 250',
-        '{"when":0,"level":"error","qualifier":"example","label":"message","body":{"key":"value"},"system":{"pid":0}}',
-        '[{"version":1}]',
-        '{"when":0,"level":"error","qualifier":"example","label":"acceptible","qualified":"example#acceptible","pid":0,"key":"value"}',
+        '% 2/0 914abd6e 71c17733 1 %',
+        '{"method":"entries","series":1,"checksum":2976566980,"chunks":1}',
+        '% 2/0 b16acec4 914abd6e 0 %',
+        '[{"when":0,"level":"error","qualifier":"example","label":"message","body":{"key":"value"},"system":{"pid":0}}]',
+        '% 2/0 0dd5db35 b16acec4 1 %',
+        '{"method":"entries","series":2,"checksum":180504813,"chunks":1}',
+        '% 2/0 0ac248ed 0dd5db35 0 %',
+        '[[{"method":"version","version":1}],{"when":0,"level":"error","qualifier":"example","label":"acceptible","qualified":"example#acceptible","pid":0,"key":"value"}]',
         ''
     ], 'stderr after close')
 
@@ -86,11 +90,11 @@ function prove (okay) {
 
     shuttle.start({ Date: { now: function () { return 0 } } })
 
-    okay(descendent.process.stderr.read().toString(),
-        '% H/2/0 0 aaaaaaaa 811c9dc5 1\n' +
-        '% H/2/0 1 811c9dc5 8b6ddbbf 53\n' +
-        '{"headerId":"H/2/0","streamId":"S/2/0","path":[1,2]}\n'
-    , 'stderr start again')
+    okay(descendent.process.stderr.read().toString().split('\n'), [
+        '% 2/0 71c17733 aaaaaaaa 1 %',
+        '{"method":"announce","body":{"path":[1,2]}}',
+        ''
+    ], 'stderr start again')
 
     shuttle.close()
 

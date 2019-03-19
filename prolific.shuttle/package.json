@@ -22,11 +22,12 @@
     {
                             "abend":                        "1.0.x",
                             "descendent":                   "1.0.x",
+                            "extant":                       "1.0.x",
                             "foremost":                     "1.0.x",
-                            "prolific.chunk":               "5.0.x",
+                            "prolific.chunk":               "6.0.x",
                             "prolific.evaluator":           "1.0.x",
                             "prolific.level":               "1.0.0",
-                            "prolific.queue":               "15.0.x",
+                            "prolific.queue":               "16.0.x",
                             "prolific.require":             "1.0.0",
                             "prolific.resolver":            "9.0.x",
                             "prolific.sink":                "7.0.x"
