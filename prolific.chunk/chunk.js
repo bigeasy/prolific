@@ -1,3 +1,6 @@
+// Node.js API.
+var assert = require('assert')
+
 // A fast hash.
 var fnv = require('hash.fnv')
 
@@ -8,10 +11,11 @@ var hex = require('./hex')
 // not include the newline.
 
 //
-function Chunk (id, count, buffer) {
-    this.id = id
-    this.count = count
-    this.checksum = hex(fnv(0, buffer, 0, buffer.length - 1), 8)
+function Chunk (header, id, buffer) {
+    assert(Array.isArray(id))
+    this.header = header
+    this.id = id.join('/')
+    this.checksum = fnv(0, buffer, 0, buffer.length)
     this.buffer = buffer
 }
 
@@ -20,29 +24,43 @@ function Chunk (id, count, buffer) {
 // for each segment. We no longer length encode the buffer, it must always end
 // with a newline. We require that the payload is always JSON, so we know that
 // they body will never have newlines itself. We no longer keep track of a
-// series number in the header since its character width is variable, we rely on
-// the linked list of the checksums.
+// series number in the header because the character width of the series number
+// is variable, we rely on the linked list of the checksums and the fact that
+// things are not going to get out of order since writing to standard error is
+// synchronous.
 //
-// There was a value in the header that was used to encode length for ordinary
-// bodies and for headers it might indicate the previous series number when
-// continuing a closed monitor socket from standard error. We'd detect a new
-// stream with a zero series number and assert that the previous checksum was a
-// constant value. We can indicate a header by detecting an id that has not yet
-// been used instead.
+// The header is of a particular format that ought to not occur naturally in
+// standard error output of a production application. We search for this
+// particular output at the end of every line in standard error. If we find it
+// we look to the next line for the content of the chunk. The checksums mean
+// that if we happen to accidentally match something that looks like a header
+// but is not a header we're probably not also going to have correct checksums
+// so we can forward the header-looking error output to the supervising process'
+// standard error.
 //
-// We do have one variable entry which is a chunk count. For our happy path
-// socket it will always be `1`. When it comes time to split things up for
-// writing on standard error, the first entry of a split entry will be the count
-// of chunks including the first chunk. For subsequent chunks the value is
-// always a single digit, `1` for for all chunks except the final chunk which
-// will be `0`.
+// An id is an array of integers joined by slashes. Used to be anythign but a
+// space but with this restriction we can be discerning in our pattern matching.
+//
+// The header contains a header flag that indicates whether the chunk contains
+// control information or body content. The flag is one for true, zero for
+// false. This keeps the header a fixed with.
+//
+// Headers chunks can contain stream control information or indicate the start
+// of collection of entries which may be broken up into multiple chunks. Chunks
+// containing body content are not headers and have zero value for header.
+//
+// When we write the chunk we require the checksum of the previous checksum.
+// This is printed with the current checksum to form a linked list of chunks.
+// The checksums are 32-bit and represented in zero padded hexidecmal so that
+// they too are fixed with.
 //
 // Notes on `PIPE_BUF`. https://serverfault.com/a/733611
 
 //
-Chunk.prototype.header = function (previousChecksum, length) {
-    return Buffer.from('\n% ' + this.id + ' ' + previousChecksum +
-        ' ' + this.checksum + ' ' + this.count + '\n')
+Chunk.prototype.concat = function (previous) {
+    var header = Buffer.from('% ' + this.id + ' ' + hex(previous) + ' ' +
+        hex(this.checksum) + ' ' + (this.header ? '1' : '0') + ' %\n')
+    return Buffer.concat([ header, this.buffer, Buffer.from('\n') ])
 }
 
 // Export the object.
