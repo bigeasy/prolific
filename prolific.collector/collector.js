@@ -146,9 +146,16 @@ Collector.prototype._readLine = function (line, newline) {
     }
 }
 
+// Absence of a newline means that any match is not a valid chunk.
+
+//
 Collector.prototype.end = function () {
+    if (this.matched != null) {
+        this._writeStandardError(this.matched.line, true)
+        this.matched = null
+    }
     if (this._remainder != null) {
-        this._readLine(this._remainder, false)
+        this._writeStandardError(this._remainder, false)
         this._remainder = null
     }
 }

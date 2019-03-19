@@ -1,4 +1,4 @@
-require('proof')(11, prove)
+require('proof')(10, prove)
 
 function prove (okay) {
     var chunks = [
@@ -18,6 +18,16 @@ function prove (okay) {
     var Collector = require('../collector')
 
     var stream = require('stream')
+
+    var output = new stream.PassThrough
+    var collector = new Collector(output)
+    collector.scan(Buffer.from(chunks[0] + '\n'))
+    collector.scan(Buffer.from('error'))
+    collector.end()
+    okay(output.read().toString().split('\n'), [
+        chunks[0],
+        'error'
+    ], 'end during match with no newline at end of file')
 
     var output = new stream.PassThrough
 
@@ -74,17 +84,6 @@ function prove (okay) {
         id: '1/2',
     }, 'exit')
 
-    collector.scan(Buffer.from('error'))
-    collector.end()
-
-    okay(output.read().toString(), 'error', 'end of stream no new line')
-
-    var input = new stream.PassThrough
-    var output = new stream.PassThrough
-
-    var collector = new Collector(output)
-    collector.scan(Buffer.from('error\n'))
-    okay(output.read().toString(), 'error\n', 'last line')
     collector.end()
     okay(output.read(), null, 'end of line at end of stream')
 }
