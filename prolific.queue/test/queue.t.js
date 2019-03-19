@@ -66,9 +66,9 @@ function prove (async, okay) {
         okay(chunk.split('\n'), [
             '% 1/2 224e8640 aaaaaaaa 1 %',
             '{"method":"announce","body":1}',
-             '% 1/2 6bebc07b 224e8640 1 %',
-            '{"method":"chunk","checksum":3417670023,"chunks":2}',
-            '% 1/2 a6a72ac5 6bebc07b 0 %',
+             '% 1/2 634af164 224e8640 1 %',
+            '{"method":"entries","checksum":3417670023,"chunks":2}',
+            '% 1/2 a6a72ac5 634af164 0 %',
             '[{"alphabet":["abcdefghijklmnopqrstuvwxyz","abcdefghijklmnopqrstuvwxyz"',
             '% 1/2 c1e07487 a6a72ac5 0 %',
             ',"abcdefghijklmnopqrstuvwxyz"]}]',
