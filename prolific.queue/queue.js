@@ -233,6 +233,7 @@ Queue.prototype._sendSync = function () {
         }
         this._writeSync(new Chunk(true, this._id, Buffer.from(JSON.stringify({
             method: 'entries',
+            series: batch.series,
             checksum: fnv(0, buffer, 0, buffer.length),
             chunks: chunks.length
         }))))
