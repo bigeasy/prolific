@@ -1,11 +1,6 @@
-require('proof')(13, prove)
+require('proof')(11, prove)
 
 function prove (okay) {
-    function scan (buffer) {
-        for (var i = 0; i != buffer.length; i = collector.scan(buffer, i)) {
-        }
-    }
-
     var chunks = [
         '% 1/2 224e8640 aaaaaaaa 1 %',
         '{"method":"announce","body":1}',
@@ -28,8 +23,8 @@ function prove (okay) {
 
     var collector = new Collector(output, [])
 
-    okay(collector.scan(Buffer.from('err'), 0), 3, 'scanned all')
-    okay(collector.scan(Buffer.from('or\n'), 0), 3, 'scanned to newline at end')
+    collector.scan(Buffer.from('err'))
+    collector.scan(Buffer.from('or\n'))
     okay(output.read().toString(), 'error\n', 'pass through')
 
     collector.scan(Buffer.from('% 1/2 00000000 00000000 1 %\n'), 0)
@@ -38,7 +33,7 @@ function prove (okay) {
         ''
     ], 'header with bad start')
 
-    scan(Buffer.from('abc' + chunks.shift() + '\n' + chunks.shift() + '\ndef\n'))
+    collector.scan(Buffer.from('abc' + chunks.shift() + '\n' + chunks.shift() + '\ndef\n'))
     okay(output.read().toString(), 'abcdef\n', 'pass through interpolated')
     okay(collector.outbox.shift(), {
         method: 'announce',
@@ -46,20 +41,20 @@ function prove (okay) {
         body: 1
     }, 'announce')
 
-    scan(Buffer.from('% 1/2 00000000 00000000 1 %\n'))
+    collector.scan(Buffer.from('% 1/2 00000000 00000000 1 %\n'))
     okay(output.read().toString().split('\n'), [
         '% 1/2 00000000 00000000 1 %',
         ''
     ], 'header with bad previous checksum')
 
-    scan(Buffer.from(chunks[0] + '\nabcdef\n'))
+    collector.scan(Buffer.from(chunks[0] + '\nabcdef\n'))
     okay(output.read().toString().split('\n'), [
         chunks[0],
         'abcdef',
         ''
     ], 'bad body checksum')
 
-    scan(Buffer.from(chunks.join('\n')))
+    collector.scan(Buffer.from(chunks.join('\n')))
 
     okay(collector.outbox.shift(), {
         method: 'entries',
@@ -79,7 +74,7 @@ function prove (okay) {
         id: '1/2',
     }, 'exit')
 
-    collector.scan(Buffer.from('error'), 0)
+    collector.scan(Buffer.from('error'))
     collector.end()
 
     okay(output.read().toString(), 'error', 'end of stream no new line')

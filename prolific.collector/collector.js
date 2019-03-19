@@ -77,7 +77,7 @@ Collector.prototype._chunk = function (matched, buffer) {
 
 //
 
-Collector.prototype.scan = function (buffer, offset) {
+Collector.prototype._scan = function (buffer, offset) {
     for (var i = offset, I = buffer.length; i < I; i++) {
         if (buffer[i] == 0xa) {
             if (this._remainder != null) {
@@ -91,6 +91,13 @@ Collector.prototype.scan = function (buffer, offset) {
     }
     this._remainder = Buffer.from(buffer.slice(offset, buffer.length))
     return i
+}
+
+Collector.prototype.scan = function (buffer) {
+    var offset = 0
+    while (offset != buffer.length) {
+        offset = this._scan(buffer, offset)
+    }
 }
 
 Collector.prototype.end = function () {
