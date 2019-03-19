@@ -1,125 +1,97 @@
-require('proof')(15, prove)
+require('proof')(13, prove)
 
 function prove (okay) {
+    function scan (buffer) {
+        for (var i = 0; i != buffer.length; i = collector.scan(buffer, i)) {
+        }
+    }
+
+    var chunks = [
+        '% 1/2 aaaaaaaa 224e8640 1 %',
+        '{"method":"announce","body":1}',
+         '% 1/2 224e8640 bb000670 1 %',
+        '{"method":"chunk","checksum":1917791070,"chunks":2}',
+        '% 1/2 bb000670 c2440b22 0 %',
+        '[["abcdefghijklmnopqrstuvwxyz","abcdefghijklmnopqrstuvwxyz","abcdefghij',
+        '% 1/2 c2440b22 32c7649f 0 %',
+        'klmnopqrstuvwxyz"]]',
+        '% 1/2 32c7649f b798da34 1 %',
+        '{"method":"exit"}',
+        ''
+    ]
+
     var Chunk = require('prolific.chunk')
     var Collector = require('../collector')
 
-    var collector = new Collector(false)
-    collector.scan(Buffer.from('x\n'))
-    okay(collector.stderr.shift().toString(), 'x\n', 'stdout not header')
-    collector.scan(Buffer.from('0 00000000 00000000 0\n'))
-    okay(collector.stderr.shift().toString(), '0 00000000 00000000 0\n', 'stdout not valid')
+    var stream = require('stream')
 
-    var chunk
+    var output = new stream.PassThrough
 
-    chunk = new Chunk(1, 0, Buffer.from(''), 1)
-    var header = chunk.header('aaaaaaaa')
-    collector.scan(header.slice(0, 4))
-    collector.scan(header.slice(4))
-    collector.scan(chunk.buffer)
+    var collector = new Collector(output, [])
 
-    okay(collector.chunks.length, 0, 'no chunks after header chunk')
+    okay(collector.scan(Buffer.from('err'), 0), 3, 'scanned all')
+    okay(collector.scan(Buffer.from('or\n'), 0), 3, 'scanned to newline at end')
+    okay(output.read().toString(), 'error\n', 'pass through')
 
-    var previousChecksum = chunk.checksum
+    collector.scan(Buffer.from('% 1/2 00000000 00000000 1 %\n'), 0)
+    okay(output.read().toString().split('\n'), [
+        '% 1/2 00000000 00000000 1 %',
+        ''
+    ], 'header with bad start')
 
-    okay(collector.chunkNumber[1], 1, 'next chunk number stderr initialization')
+    scan(Buffer.from('abc' + chunks.shift() + '\n' + chunks.shift() + '\ndef\n'))
+    okay(output.read().toString(), 'abcdef\n', 'pass through interpolated')
+    okay(collector.outbox.shift(), {
+        method: 'announce',
+        id: '1/2',
+        body: 1
+    }, 'announce')
 
-    chunk = new Chunk(1, 1, Buffer.from('a\n'), 2)
-    collector.scan(chunk.header(previousChecksum))
-    collector.scan(chunk.buffer)
+    scan(Buffer.from('% 1/2 00000000 00000000 1 %\n'))
+    okay(output.read().toString().split('\n'), [
+        '% 1/2 00000000 00000000 1 %',
+        ''
+    ], 'header with bad previous checksum')
 
-    previousChecksum = chunk.checksum
+    scan(Buffer.from(chunks[0] + '\nabcdef\n'))
+    okay(output.read().toString().split('\n'), [
+        chunks[0],
+        'abcdef',
+        ''
+    ], 'bad body checksum')
 
-    okay(collector.chunkNumber[1], 2, 'next chunk number')
+    scan(Buffer.from(chunks.join('\n')))
 
-    chunk = new Chunk(1, 0, Buffer.from(''), 2)
-    collector.scan(chunk.header('aaaaaaaa'))
-    collector.scan(chunk.buffer)
+    okay(collector.outbox.shift(), {
+        // TODO Rename to `entries`.
+        method: 'chunk',
+        // TODO Go get a series from Prolific Queue tests.
+        series: (function () {})(),
+        id: '1/2',
+        // TODO Why are they nested like this? See Prolific Queue tests.
+        entries: [ [
+            'abcdefghijklmnopqrstuvwxyz',
+            'abcdefghijklmnopqrstuvwxyz',
+            'abcdefghijklmnopqrstuvwxyz',
+        ] ]
+    }, 'entries')
 
-    okay({
-        number: collector.chunkNumber[1],
-        stderr: collector.stderr.shift().toString(),
-    }, {
-        number: 2,
-        stderr: '% 1 0 aaaaaaaa 811c9dc5 2\n'
-    }, 'already initialized')
-
-    chunk = new Chunk(1, 0, Buffer.from(''), 2)
-    collector.scan(chunk.header('00000000'))
-    collector.scan(chunk.buffer)
-
-    okay({
-        number: collector.chunkNumber[1],
-        stderr: collector.stderr.shift().toString(),
-    }, {
-        number: 2,
-        stderr: '% 1 0 00000000 811c9dc5 2\n'
-    }, 'initial entry wrong checksum')
-
-    var buffer = Buffer.from('b\n')
-    chunk = new Chunk(1, 1, buffer, buffer.length)
-    collector.scan(chunk.header(previousChecksum))
-    collector.scan(chunk.buffer)
-
-    okay({
-        number: collector.chunkNumber[1],
-        stderr: [
-            collector.stderr.shift().toString(),
-            collector.stderr.shift().toString()
-        ]
-    }, {
-        number: 2,
-        stderr: [ '% 1 1 2524c6d2 a72c4f3d 2\n', 'b\n' ]
-    }, 'wrong chunk number')
-
-    chunk = new Chunk(1, 2, buffer, buffer.length)
-    collector.scan(chunk.header(previousChecksum))
-    collector.scan(chunk.buffer)
-
-    previousChecksum = chunk.checksum
-
-    okay(collector.chunks.shift().buffer.toString(), 'a\n', 'chunk a')
-    okay(collector.chunks.shift().buffer.toString(), 'b\n', 'chunk b')
-
-    collector.scan(chunk.header('00000000'))
-
-    okay({
-        number: collector.chunkNumber[1],
-        stderr: collector.stderr.shift().toString(),
-    }, {
-        number: 3,
-        stderr: '% 1 2 00000000 a72c4f3d 2\n'
-    }, 'wrong previous checksum')
-
-    chunk = new Chunk(1, 3, Buffer.from(''), 0)
-    chunk.checksum = 'aaaaaaaa'
-    collector.scan(Buffer.concat([
-        chunk.header(previousChecksum), Buffer.from('hello, world')
-    ]))
-
-    okay(collector.chunks.shift().eos, 'end of stream')
-
-    collector.exit()
-
-    okay({
-        stderr: collector.stderr.shift().toString(),
-    }, {
-        stderr: 'hello, world'
+    okay(collector.outbox.shift(), {
+        method: 'exit',
+        id: '1/2',
     }, 'exit')
 
-    var collector = new Collector(true)
+    collector.scan(Buffer.from('error'), 0)
+    collector.end()
 
-    chunk = new Chunk(1, 0, Buffer.from(''), 1)
-    collector.scan(chunk.header('aaaaaaaa'))
-    collector.scan(chunk.buffer)
+    okay(output.read().toString(), 'error', 'end of stream no new line')
 
-    previousChecksum = chunk.checksum
+    var input = new stream.PassThrough
+    var output = new stream.PassThrough
 
-    okay(collector.chunks.length, 0, 'async header chunk')
-
-    chunk = new Chunk(1, 1, Buffer.from(''), 0)
-    chunk.checksum = 'aaaaaaaa'
-    collector.scan(chunk.header(previousChecksum))
-
-    okay(collector.chunks.shift().eos, 'async end of stream')
+    var collector = new Collector(output)
+    collector.scan(Buffer.from('error\n'), 0)
+    okay(output.read().toString(), 'error\n', 'last line')
+    collector.end()
+    okay(output.read(), null, 'end of line at end of stream')
 }

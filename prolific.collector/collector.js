@@ -1,233 +1,149 @@
 var fnv = require('hash.fnv')
 var assert = require('assert')
 
-function Collector (async) {
-    this._async = async
-    this._buffers = []
-    this.chunkNumber = {}
-    this._previousChecksum = {}
-    this._initializations = 0
-    this.chunks = []
-    this.stderr = []
-    this._state = 'seek'
+function Collector (stderr, outbox) {
+    this._channels = {}
+    this._stderr = stderr
+    this.outbox = outbox
 }
 
-// TODO We control the asynchronous stream, so we know that the messages on that
-// stream are for us, but we do not control the synchronous stream, it is going
-// to be standard error. We do not want to assert that standard error is used
-// for nothing but Prolific logging. That is going to frustrate our dear user
-// when our dear user is using a 3rd party library that is beyond our dear
-// user's control. Our dear user will be most disappointed in us for this
-// stricture. Thus, we need to scan past the noise of ordinary standard error.
-// Our messages will be at the very end, the last messages out as we flush the
-// logging buffer on exit.
-//
-// Our header is simple, four integers on a line expressed in UTF-8. It is not
-// unlikely for us to find four integers on a line in ordinary standard I/O
-// spew. How do we verify that four integers on a line on standard out
-// constitute a Prolific logging header and not some arbitrary spew?
-//
-// We could gather the numbers and then use the sequence. If it is less than the
-// current sequence, we ignore it. If it is greater, we wait for the sequence to
-// arrive on the async logging output, then check the checksums before
-// proceeding. The problem is that the header might be arbitrary spew and the
-// spewed sequence number might be impossibly high, which means that we're going
-// to block standard error for a long, long time.
-//
-// We could put a distance limit, but that is an arbitrary limit, so we're
-// hoping for the best. What if there are logging messages on the async log are
-// coming slow while spew on standard error is coming fast? This is highly
-// likely in some degenerate states. We really want to be a deterministic as
-// possible, which is probalby a misuse of the word deterministic, given how
-// vital we are to diagnosing unreproducable errors.
-//
-// We could gather up the buffer, then let the bits flow again. Problem there is
-// that an arbitrary spew header would have an aribtrary length that might
-// swallow the actual header, so we're going to need to back track, and now
-// we're consuming memory, not for buffering, but for retention, which we do not
-// want to do.
-//
-// What I've come up with is this; the stream state is one where it goes from an
-// aribitrary stream to a Prolific stream. The asynchronous stream begins as a
-// Prolific stream. While the program is running it is the source of logging
-// messages, the synchronous is emitting arbitrary blather. When the program
-// ends the  synchronous stream will switch and when it does it takes over as
-// the source of logging messages. It could still have abitrary blather in it
-// that we must skip, but the Prolific messages will come in contiguous headers
-// and chunks.
-//
-// To keep from swallowing, the initial message on the synchronous stream is a
-// zero length message. The previous checksum references the initial checksum.
-// The current checksum is the , ah! The first message in a stream is a previous
-// checksum.
-//
-Collector.prototype.scan = function (buffer) {
-    var scan = { buffer: buffer, index: 0 }, scanned = true
-    while (scanned) {
-        switch (this._state) {
-        case 'seek':
-            scanned = this._seek(scan)
-            break
-        case 'header':
-            scanned = this._scanHeader(scan)
+Collector.prototype._chunk = function (matched, buffer) {
+    if (matched.header) {
+        var json = JSON.parse(buffer.toString())
+        switch (json.method) {
+        case 'announce':
+            assert(this._channels[json.id] == null)
+            this._channels[matched.id] = {
+                chunk: null,
+                checksum: matched.checksum
+            }
+            this.outbox.push({
+                method: 'announce',
+                id: matched.id,
+                body: json.body
+            })
             break
         case 'chunk':
-            scanned = this._scanChunk(scan)
+            assert(this._channels[matched.id] != null)
+            this._channels[matched.id].chunk = {
+                checksum: json.checksum,
+                series: json.series,
+                chunks: json.chunks,
+                index: 0,
+                buffers: []
+            }
+            this._channels[matched.id].checksum = matched.checksum
             break
-        case 'eos':
-            assert(buffer.length - scan.index == 0, 'data after end of stream')
-            scanned = false
+        case 'exit':
+            assert(this._channels[matched.id] != null)
+            assert(this._channels[matched.id].chunk == null)
+            delete this._channels[matched.id]
+            this.outbox.push({ method: 'exit', id: matched.id })
             break
         }
-    }
-    if (scan.index < scan.buffer.length) {
-        this._buffers.push(Buffer.from(buffer.slice(scan.index)))
-    }
-}
-
-Collector.prototype._scanChunk = function (scan) {
-    var remaining = Math.min(this._chunk.remaining, scan.buffer.length - scan.index)
-    this._buffers.push(Buffer.from(scan.buffer.slice(scan.index, scan.index + remaining)))
-    scan.index += remaining
-    if ((this._chunk.remaining -= remaining) == 0) {
-        var buffer = this._chunk.buffer = Buffer.concat(this._buffers)
-        this._buffers.length = 0
-        var checksum = fnv(0, buffer, 0, buffer.length)
-        assert(checksum == this._chunk.checksum, 'invalid checksum')
-        this.chunkNumber[this._chunk.id]++
-        this.chunks.push(this._chunk)
-        this._chunk = null
-        this._state = 'seek'
-        return true
-    }
-    return false
-}
-
-Collector.prototype._push = function (scan, i) {
-    this._buffers.push(Buffer.from(scan.buffer.slice(scan.index, i)))
-    scan.index = i
-}
-
-Collector.prototype._flush = function () {
-    return Buffer.concat(this._buffers.splice(0, this._buffers.length))
-}
-
-Collector.prototype._scanned = function (scan, i) {
-    this._push(scan, i)
-    var scanned = this._flush()
-    if (scanned.length != 0) {
-        assert(!this._async, 'garbage before header')
-        this.stderr.push(scanned)
-    }
-}
-
-Collector.prototype._seek = function (scan) {
-    for (var buffer = scan.buffer, i = scan.index, I = buffer.length; i < I; i++) {
-        if (buffer[i] == 0x25) {
-            this._state = 'header'
-            this._scanned(scan, i)
-            return true
-        } else if (buffer[i] == 0xa) {
-            this._scanned(scan, i + 1)
-            return true
+    } else {
+        var chunk = this._channels[matched.id].chunk
+        chunk.buffers.push(buffer)
+        chunk.index++
+        if (chunk.index == chunk.chunks) {
+            this._channels[matched.id].chunk = null
+            var buffer = Buffer.concat(chunk.buffers)
+            var checksum = fnv(0, buffer, 0, buffer.length)
+            assert(checksum == chunk.checksum)
+            this.outbox.push({
+                method: 'chunk',
+                id: matched.id,
+                series: matched.series,
+                entries: JSON.parse(buffer.toString())
+            })
         }
+        this._channels[matched.id].checksum = matched.checksum
     }
-    return false
 }
 
-// TODO How do you really debug a problem with a stream? You need more than a
-// stack trace, you need a sample of the stream.
+// Because we only write chunks that are `PIPE_BUF` or smaller, we know that
+// they will always be complete in the standard output stream. We cannot rely on
+// them being on their own line however. They maybe be interpolated into then
+// non-chunk standard output spew of another child process so that the headers
+// do not start on a new line, rather they start in the middle of someone else's
+// line. When this happens, we do know that they will be at the end of the line
+// because they will be written entirely and thier newline character will break
+// the line they've been dropped into. Thus, we can search for our headers at
+// the end of each line in standard output where, for the most part,  the end of
+// the line starts at the very beginning of the line.
 //
-// TODO Some more theory. The checksums here only exist to detect the switch
-// between the logging stream and the final message from standard out. The
-// likelihood of corruption on a unix pipe between parent and child is slim, our
-// ability to anything reasonable in the face of such corruption is
-// non-existant.
+// We write the stuff before the header to standard error. Again, this is going
+// be an empty string more often than not.
+
 //
-// TODO Here we are revisiting a balance between correctness and complexity,
-// essentally answering an admonishment, when I believe that the answer I've
-// come to is that adding code doesn't add stability. Stability comes from
-// deployment first, and then the passage of time.
-Collector.prototype._scanHeader = function (scan) {
-    for (var buffer = scan.buffer, i = scan.index, I = buffer.length; i < I; i++) {
+
+Collector.prototype.scan = function (buffer, offset) {
+    for (var i = offset, I = buffer.length; i < I; i++) {
         if (buffer[i] == 0xa) {
-            break
-        }
-    }
-    if (i != I) {
-        this._push(scan, i + 1)
-        var header = this._flush()
-        var $ = /^% ([^ ]+) (\d+) ([0-9a-f]{8}) ([0-9a-f]{8}) (\d+)\n$/i.exec(header.toString())
-        if ($) {
-            var chunk = {
-                id: $[1],
-                number: +$[2],
-                checksum: parseInt($[4], 16),
-                value: +$[5],
-                buffer: null,
-                length: null,
-                remaining: null
-            }
-            // TODO For now we leak, not removing from the `_previousChecksum`
-            // since our applications at the moment will have a fixed number of
-            // child processes. To collect entries after a processes has ended
-            // we can send a final chunk that has an incorrect checksum, say
-            // 0x00000000 and meaning ful buffer message, either a control
-            // character or maybe the previous checksum repeated. Something
-            // besides an empty string. Something deliberate so some sort of
-            // jitter in the future can be caught.
-            //
-            // Actually, easy enough to implemnet now.
-            var previousChecksum = parseInt($[3], 16)
-            if (chunk.number == 0) {
-                if (previousChecksum == 0xaaaaaaaa) {
-                    if (this.chunkNumber[chunk.id] == null) {
-                        this.chunkNumber[chunk.id] = chunk.value
-                        this._previousChecksum[chunk.id] = chunk.checksum
-                        this._state = this._async ? 'header' : 'seek'
-                    } else {
-                        assert(!this._async, 'already initialized')
-                        this.stderr.push(header)
-                    }
-                } else {
-                    assert(!this._async, 'initial entry malformed checksum')
-                    this.stderr.push(header)
-                }
-            } else if (previousChecksum == this._previousChecksum[chunk.id]) {
-                if (chunk.number == this.chunkNumber[chunk.id]) {
-                    if (chunk.checksum == 0xaaaaaaaa && chunk.value == 0) {
-                        chunk.eos = true
-                        chunk.buffer = Buffer.from('')
-                        this.chunks.push(chunk)
-                        delete this._previousChecksum[chunk.id]
-                        delete this.chunkNumber[chunk.id]
-                        this._state = this._async ? 'eos' : 'seek'
-                    } else {
-                        chunk.length = chunk.remaining = chunk.value
-                        this._state = 'chunk'
-                        this._chunk = chunk
-                        this._previousChecksum[chunk.id] = chunk.checksum
-                    }
-                } else {
-                    assert(!this._async, 'chunk numbers incorrect')
-                    this.stderr.push(header)
-                }
+            if (this._remainder != null) {
+                this._readLine(Buffer.concat([ this._remainder, buffer.slice(offset, i) ]), true)
+                this._remainder = null
             } else {
-                assert(!this._async, 'async stream sequence break')
-                this.stderr.push(header)
+                this._readLine(buffer.slice(offset, i), true)
             }
-        } else {
-            assert(!this._async, 'async stream garbled header')
-            this.stderr.push(header)
+            return i + 1
         }
-        return true
     }
-    return false
+    this._remainder = Buffer.from(buffer.slice(offset, buffer.length))
+    return i
 }
 
-Collector.prototype.exit = function () {
-    assert(!this._async, 'exit called on async stream')
-    this._scanned({ buffer: Buffer.from(''), index: 0 }, 0)
+Collector.prototype.end = function () {
+    if (this._remainder != null) {
+        this._readLine(this._remainder, false)
+        this._remainder = null
+    }
+}
+
+Collector.prototype._writeStandardError = function (line, newline) {
+    this._stderr.write(line)
+    if (newline) {
+        this._stderr.write('\n')
+    }
+}
+
+Collector.prototype._readLine = function (line, newline) {
+    if (this.matched == null) {
+        line = line.toString()
+        var $ = /^(.*)% (\d+\/\d+) ([0-9a-f]{8}) ([0-9a-f]{8}) ([10]) %$/i.exec(line)
+        if ($) {
+            this.matched = {
+                line: line,
+                preceding: $[1],
+                id: $[2],
+                checksum: $[4],
+                previous: $[3],
+                header: $[5] == '1'
+            }
+            if (
+                (
+                    this._channels[this.matched.id] != null &&
+                    this._channels[this.matched.id].checksum == this.matched.previous
+                )
+                ||
+                this.matched.previous == 'aaaaaaaa'
+            ) {
+                return
+            }
+        }
+        this.matched = null
+        this._writeStandardError(line, newline)
+    } else {
+        var checksum = fnv(0, line, 0, line.length)
+        if (checksum == parseInt(this.matched.checksum, 16)) {
+            this._writeStandardError(this.matched.preceding, false)
+            this._chunk(this.matched, line)
+        } else {
+            this._writeStandardError(this.matched.line, true)
+            this._writeStandardError(line, newline)
+        }
+        this.matched = null
+    }
 }
 
 module.exports = Collector
