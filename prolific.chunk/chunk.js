@@ -59,8 +59,8 @@ function Chunk (control, id, buffer) {
 
 //
 Chunk.prototype.concat = function (previous) {
-    var header = Buffer.from('% ' + this.id + ' ' + hex(previous) + ' ' +
-        hex(this.checksum) + ' ' + (this.control ? '1' : '0') + ' %\n')
+    var header = Buffer.from('% ' + this.id + ' ' + hex(this.checksum) +
+        ' ' + hex(previous) + ' ' + (this.control ? '1' : '0') + ' %\n')
     return Buffer.concat([ header, this.buffer, Buffer.from('\n') ])
 }
 
