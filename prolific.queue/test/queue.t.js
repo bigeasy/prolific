@@ -59,20 +59,20 @@ function prove (async, okay) {
         queue.setPipe(new stream.PassThrough)
         queue.send(async())
         queue.close()
-        queue.push(new Array(3).fill('abcdefghijklmnopqrstuvwxyz'))
+        queue.push({ alphabet: new Array(3).fill('abcdefghijklmnopqrstuvwxyz') })
         queue.exit()
         queue.push(2)
         var chunk = stderr.read().toString()
         okay(chunk.split('\n'), [
             '% 1/2 224e8640 aaaaaaaa 1 %',
             '{"method":"announce","body":1}',
-             '% 1/2 bb000670 224e8640 1 %',
-            '{"method":"chunk","checksum":1917791070,"chunks":2}',
-            '% 1/2 c2440b22 bb000670 0 %',
-            '[["abcdefghijklmnopqrstuvwxyz","abcdefghijklmnopqrstuvwxyz","abcdefghij',
-            '% 1/2 32c7649f c2440b22 0 %',
-            'klmnopqrstuvwxyz"]]',
-            '% 1/2 b798da34 32c7649f 1 %',
+             '% 1/2 6bebc07b 224e8640 1 %',
+            '{"method":"chunk","checksum":3417670023,"chunks":2}',
+            '% 1/2 a6a72ac5 6bebc07b 0 %',
+            '[{"alphabet":["abcdefghijklmnopqrstuvwxyz","abcdefghijklmnopqrstuvwxyz"',
+            '% 1/2 c1e07487 a6a72ac5 0 %',
+            ',"abcdefghijklmnopqrstuvwxyz"]}]',
+            '% 1/2 b798da34 c1e07487 1 %',
             '{"method":"exit"}',
             ''
         ], 'exit')
