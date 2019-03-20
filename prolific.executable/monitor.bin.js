@@ -47,6 +47,9 @@ require('arguable')(module, function (program, callback) {
 
     var cadence = require('cadence')
 
+    process.on('SIGINT', function () {})
+    process.on('SIGTERM', function () {})
+
     // TODO Goodness this is silly. Just add a signal to arugable. Or maybe just
     // use `process` now that it has settled.
     destructible.destruct.wait(destructible.durable('exit').bind(null, null, 0))
