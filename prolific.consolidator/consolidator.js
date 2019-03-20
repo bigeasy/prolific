@@ -20,7 +20,7 @@ Consolidator.prototype.asynchronous = cadence(function (async) {
             if (line == null) {
                 return [ async.break ]
             }
-            this._queue.push(JSON.parse(line))
+            this._queue.push(JSON.parse(line.toString()))
             this._series++
         })
     })
@@ -35,7 +35,7 @@ Consolidator.prototype.synchronous = cadence(function (async) {
                 this.exit()
                 return [ async.break ]
             }
-            this._synchronous(JSON.parse(line))
+            this._synchronous(JSON.parse(line.toString()))
         })
     })
 })
