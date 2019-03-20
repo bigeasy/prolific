@@ -8,8 +8,6 @@ function prove (async, okay) {
 
     var child = path.join(__dirname, 'program.js')
 
-    var Chunk = require('prolific.chunk')
-
     var stream = require('stream')
     var util = require('util')
 
@@ -50,10 +48,7 @@ function prove (async, okay) {
         // TODO Move the close to the part above to see that we hang on exit
         // with the current destructible. Need to decide what to do when monitor
         // is called
-        program.stdin.end(JSON.stringify({
-            eos: true,
-            buffer: ''
-        }) + '\n')
+        program.stdin.end()
     }]
 
     var program

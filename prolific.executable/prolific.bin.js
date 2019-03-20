@@ -44,13 +44,12 @@ var Interrupt = require('interrupt').createInterrupter('prolific')
 var inherit = require('prolific.inherit')
 
 // Monitoring of streams that contain logging messages.
-var Synchronous = require('prolific.consolidator/synchronous')
-var Asynchronous = require('prolific.consolidator/asynchronous')
+var Collector = require('prolific.collector')
 
 // Pass messages and sockets all around the process tree.
 var descendent = require('foremost')('descendent')
 
-var Tree = require('./processes')
+var collect = require('./collect')
 
 var coalesce = require('extant')
 
@@ -70,86 +69,61 @@ require('arguable')(module, function (program, callback) {
 
     descendent.increment()
 
-    var tree = new Tree
     var monitors = {}
+    var pids = {}
     var pipes = {} // See race condition below.
-    function setConsumers (chunk) {
-        descendent.increment()
 
-        var json = JSON.parse(chunk.buffer.toString())
-
-        var monitor = children.spawn('node', [
-            path.join(__dirname, 'monitor.bin.js'),
-            '--configuration', configuration,
-            '--supervisor', process.pid
-        ], {
-            stdio: [ 'pipe', 1, 2, 'pipe', 'ipc' ]
-        })
-
-        tree.put(json.path)
-
-        var pid = json.path[json.path.length - 1]
-
-        monitors[pid] = monitor
-        pipes[pid] = monitor.stdio[3]
-
-        synchronous.setConsumer(json.headerId, {
-            consume: function (chunk, callback) { callback() }
-        })
-
-        synchronous.setConsumer(json.streamId, {
-            consume: function (chunk, callback) {
-                monitor.stdin.write(JSON.stringify(chunk) + '\n', callback)
-            }
-        })
-
-        descendent.addChild(monitor, { path: json.path, pid: pid })
-
-        cadence(function (async) {
-            async(function () {
-                delta(async()).ee(monitor).on('exit')
-            }, function (exitCode, signal) {
-                Interrupt.assert(exitCode == 0, 'monitor.exit', {
-                    exitCode: exitCode,
-                    signal: signal,
-                    argv: program.argv
+    var queue = {
+        push: function (envelope) {
+            switch (envelope.method) {
+            case 'announce':
+                descendent.increment()
+                var monitor = children.spawn('node', [
+                    path.join(__dirname, 'monitor.bin.js'),
+                    '--configuration', configuration,
+                    '--supervisor', process.pid
+                ], {
+                    stdio: [ 'pipe', 1, 2, 'pipe', 'ipc' ]
                 })
-                return []
-            })
-        })(destructible.durable([ 'monitor', monitor.pid ]))
-    }
+                var json = envelope.body
+                var pid = json.path[json.path.length - 1]
+                monitors[pid] = monitor
+                pipes[pid] = monitor.stdio[3]
+                pids[envelope.id] = pid
+                descendent.addChild(monitor, { path: json.path, pid: pid })
 
-    var closing = []
-
-    var synchronous = new Synchronous({ selectConsumer: setConsumers })
-
-    synchronous.setConsumer('closer', {
-        consume: function (chunk, callback) {
-            var json = JSON.parse(chunk.buffer.toString())
-            var path = [ process.pid ].concat(json.path)
-            tree.processes(path).forEach(function (pid) {
-                var monitor = monitors[pid]
-                monitor.stdin.end()
-                delete monitors[pid]
-            })
-            tree.prune(path)
-            callback()
+                cadence(function (async) {
+                    async(function () {
+                        delta(async()).ee(monitor).on('exit')
+                    }, function (exitCode, signal) {
+                        Interrupt.assert(exitCode == 0, 'monitor.exit', {
+                            exitCode: exitCode,
+                            signal: signal,
+                            argv: program.argv
+                        })
+                        return []
+                    })
+                })(destructible.durable([ 'monitor', monitor.pid ]))
+                break
+            case 'entries':
+                var monitor = monitors[pids[envelope.id]]
+                monitor.stdin.write(JSON.stringify(envelope) + '\n')
+                break
+            case 'exit':
+                var monitor = monitors[pids[envelope.id]]
+                monitor.stdin.end(JSON.stringify(envelope) + '\n')
+                break
+            }
         }
-    })
+    }
 
     var stdio = inherit(program)
     stdio[2] = 'pipe'
     stdio.push('ipc')
-    var argv = stdio.slice(3).filter(function (handle) {
-        return typeof handle == 'number'
-    }).map(function (handle) {
-        return '--inherit=' + handle
-    }).concat(program.argv)
 
-    argv.unshift(path.join(__dirname, 'closer.bin.js'))
-
+    var argv = program.argv.slice()
     // TODO Restore inheritance.
-    var child = children.spawn('node', argv, { stdio: stdio })
+    var child = children.spawn(argv.shift(), argv, { stdio: stdio })
     // TODO Maybe have something to call to notify of failure to finish.
     destructible.destruct.wait(child, 'kill')
 
@@ -187,8 +161,10 @@ require('arguable')(module, function (program, callback) {
                         signal: signal,
                         argv: program.argv
                     })
+                    for (var id in monitors) {
+                        monitors[id].stdin.end()
+                    }
                     return 0
-                // TODO Shut down everything as if it was Descendent notified close.
                 })
             })(destructible.durable('child'))
 
@@ -196,7 +172,7 @@ require('arguable')(module, function (program, callback) {
                 async([function () {
                     descendent.decrement()
                 }], function () {
-                    synchronous.listen(child.stderr, program.stderr, async())
+                    collect(new Collector(program.stderr, queue), child.stderr, async())
                 })
             })(destructible.durable('synchronous'))
         }, function () {

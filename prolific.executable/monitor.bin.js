@@ -20,16 +20,14 @@ require('arguable')(module, function (program, callback) {
     // Controlled demolition of objects.
     var Destructible = require('destructible')
 
-    // Consolidate chunks from async and sync streams.
-    var Asynchronous = require('prolific.consolidator/asynchronous')
-
     var Signal = require('signal')
     var cadence = require('cadence')
+
+    var Consolidator = require('prolific.consolidator')
 
     var descendent = require('foremost')('descendent')
 
     var destructible = new Destructible(4000, 'prolific.monitor')
-    program.on('shutdown', destructible.destroy.bind(destructible))
 
     descendent.process = program
     descendent.increment()
@@ -46,8 +44,6 @@ require('arguable')(module, function (program, callback) {
     Turnstile.Queue = require('turnstile/queue')
 
     destructible.completed.wait(callback)
-
-    var reader = require('./stdin')(destructible.destroy.bind(destructible))
 
     var cadence = require('cadence')
 
@@ -70,21 +66,18 @@ require('arguable')(module, function (program, callback) {
             turnstile.listen(destructible.durable('turnstile'))
             destructible.destruct.wait(turnstile, 'destroy')
 
-            // Create our asynchronous listener that reads directly from the
-            // monitored process.
-            var asynchronous = new Asynchronous(queue)
-
-            // Copy any final messages written to standard error into the
-            // asynchronous listener so it can eliminate any duplicates that
-            // where already written to our primary asynchronous pipe.
-            reader(program.stdin, asynchronous, destructible.durable('stdin'))
             program.stdin.resume()
 
             // Listen to our asynchronous pipe.
-            var socket = new program.attributes.net.Socket({ fd: 3 })
+            var socket = new program.attributes.net.Socket({ fd: 3, readable: true })
+            var consolidator = new Consolidator(socket, program.stdin, queue)
+
+            consolidator.asynchronous(destructible.ephemeral('asynchronous'))
+            consolidator.synchronous(destructible.ephemeral('synchronous'))
+
+            destructible.destruct.wait(consolidator, 'exit')
+
             destructible.destruct.wait(socket, 'destroy')
-            asynchronous.listen(socket, destructible.durable('asynchronous'))
-            destructible.destruct.wait(asynchronous, 'exit')
 
             // Let the supervisor know that we're ready. It will send our
             // asynchronous pipe down to the monitored process.

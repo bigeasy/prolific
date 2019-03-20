@@ -59,16 +59,14 @@ function prove (okay, callback) {
         }, function (processor) {
             async(function () {
                 processor.process({
-                    body: {
-                        buffer: JSON.stringify({
-                            when: 0,
-                            qualifier: 'qualifier',
-                            label: 'label',
-                            level: 'error',
-                            body: { url: '/' },
-                            system: { pid: 0 }
-                        }) + '\n'
-                    }
+                    body: [{
+                        when: 0,
+                        qualifier: 'qualifier',
+                        label: 'label',
+                        level: 'error',
+                        body: { url: '/' },
+                        system: { pid: 0 }
+                    }]
                 }, async())
             }, function () {
                 okay(gather.queue.splice(0), [{
@@ -81,16 +79,14 @@ function prove (okay, callback) {
                     url: '/'
                 }], 'triage in monitor')
                 processor.process({
-                    body: {
-                        buffer: JSON.stringify({
-                            when: 0,
-                            qualifier: 'qualifier',
-                            label: 'label',
-                            level: 'info',
-                            body: { url: '/' },
-                            system: { pid: 0 }
-                        }) + '\n'
-                    }
+                    body: [{
+                        when: 0,
+                        qualifier: 'qualifier',
+                        label: 'label',
+                        level: 'info',
+                        body: { url: '/' },
+                        system: { pid: 0 }
+                    }]
                 }, async())
             }, function () {
                 require('prolific.sink').json('error', 'qualifier', 'label', { when: 0, a: 1 }, { pid: 1 })
@@ -116,11 +112,10 @@ function prove (okay, callback) {
                 wait = async()
             }, function () {
                 processor.process({
-                    body: {
-                        buffer:
-                            JSON.stringify([{ version: 0 }]) + '\n' +
-                            JSON.stringify({ level: 'error', when: 0, url: '/', pid: 0 })
-                    }
+                    body: [
+                        [{ method: 'version', version: 0 }],
+                        { level: 'error', when: 0, url: '/', pid: 0 }
+                    ]
                 }, async())
                 okay(gather.queue.splice(0), [{
                     level: 'error', when: 0, pid: 0, url: '/'

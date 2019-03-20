@@ -193,11 +193,7 @@ Processor.prototype.updated = cadence(function (async, version) {
 // synchronously.
 Processor.prototype.process = cadence(function (async, envelope) {
     if (!envelope.canceled) {
-        var lines = envelope.body.buffer.toString().split('\n')
-        if (lines[lines.length - 1].length == 0) {
-            lines.pop()
-        }
-        var entries = lines.map(JSON.parse)
+        var entries = envelope.body
         async.loop([], function () {
             while (entries.length && !Array.isArray(entries[0])) {
                 this._processor.push(entries.shift())
@@ -205,7 +201,15 @@ Processor.prototype.process = cadence(function (async, envelope) {
             if (entries.length == 0) {
                 return [ async.break ]
             } else {
-                this.updated(entries.shift()[0].version, async())
+                var control = entries.shift()[0]
+                switch (control.method) {
+                case 'version':
+                    this.updated(control.version, async())
+                    break
+                case 'exit':
+                    this._destructible.destroy()
+                    break
+                }
             }
         })
     }
