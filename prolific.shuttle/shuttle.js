@@ -45,7 +45,10 @@ Shuttle.prototype._listen = function (descendent, options) {
 
     if (options.uncaughtException != null) {
         var uncaughtException = this.uncaughtException(options.uncaughtException)
-        descendent.process.on('uncaughtException', uncaughtException)
+        descendent.process.on('uncaughtException', function (error) {
+            uncaughtException(error)
+            queue.exit()
+        })
     }
 
     if (options.exit != null) {
