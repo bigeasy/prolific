@@ -31,7 +31,7 @@ Shuttle.prototype.start = function (options, callback) {
     }
 }
 
-Shuttle.prototype._listen = function (descendent, options) {
+Shuttle.prototype._listen = function (descendent, options, callback) {
     var now = coalesce(options.Date, Date).now()
     var monitorProcessId = +descendent.process.env.PROLIFIC_SUPERVISOR_PROCESS_ID
 
@@ -41,6 +41,7 @@ Shuttle.prototype._listen = function (descendent, options) {
     var path = descendent.path.splice(descendent.path.indexOf(monitorProcessId))
 
     var queue = new Queue(512, id, descendent.process.stderr, { path: path })
+    queue.send(callback)
     this._queue = queue
 
     if (options.uncaughtException != null) {
