@@ -161,9 +161,6 @@ require('arguable')(module, function (program, callback) {
                         signal: signal,
                         argv: program.argv
                     })
-                    for (var id in monitors) {
-                        monitors[id].stdin.end()
-                    }
                     return 0
                 })
             })(destructible.durable('child'))
@@ -173,6 +170,10 @@ require('arguable')(module, function (program, callback) {
                     descendent.decrement()
                 }], function () {
                     collect(new Collector(program.stderr, queue), child.stderr, async())
+                }, function () {
+                    for (var id in monitors) {
+                        monitors[id].stdin.end()
+                    }
                 })
             })(destructible.durable('synchronous'))
         }, function () {
