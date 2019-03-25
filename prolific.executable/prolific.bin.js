@@ -31,9 +31,6 @@ var children = require('child_process')
 var cadence = require('cadence')
 var delta = require('delta')
 
-// Controlled demolition of objects.
-var Destructible = require('destructible')
-
 // Route messages through a process hierarchy using Node.js IPC.
 var Descendent = require('descendent')
 
@@ -55,17 +52,14 @@ var coalesce = require('extant')
 
 // TODO Note that; we now require that anyone standing between a root Prolific
 // monitor and a leaf child process use the Descendent library.
-require('arguable')(module, function (program, callback) {
-    program.ultimate.ipc = true
+require('arguable')(module, require('cadence')(function (async, destructible, arguable) {
+    arguable.ultimate.ipc = true
 
-    program.helpIf(program.ultimate.help)
+    arguable.helpIf(arguable.ultimate.help)
 
-    var configuration = program.ultimate.configuration
+    var configuration = arguable.ultimate.configuration
 
-    process.env.PROLIFIC_SUPERVISOR_PROCESS_ID = program.pid
-
-    var destructible = new Destructible(7000, 'prolific')
-    program.on('shutdown', destructible.destroy.bind(destructible))
+    process.env.PROLIFIC_SUPERVISOR_PROCESS_ID = process.pid
 
     descendent.increment()
 
@@ -99,7 +93,7 @@ require('arguable')(module, function (program, callback) {
                         Interrupt.assert(exitCode == 0, 'monitor.exit', {
                             exitCode: exitCode,
                             signal: signal,
-                            argv: program.argv
+                            argv: arguable.argv
                         })
                         return []
                     })
@@ -117,19 +111,17 @@ require('arguable')(module, function (program, callback) {
         }
     }
 
-    var stdio = inherit(program)
+    var stdio = inherit(arguable)
     stdio[2] = 'pipe'
     stdio.push('ipc')
 
-    var argv = program.argv.slice()
+    var argv = arguable.argv.slice()
     // TODO Restore inheritance.
     var child = children.spawn(argv.shift(), argv, { stdio: stdio })
     // TODO Maybe have something to call to notify of failure to finish.
     destructible.destruct.wait(child, 'kill')
 
     descendent.addChild(child, null)
-
-    destructible.completed.wait(callback)
 
     descendent.on('prolific:pipe', function (message) {
         var pid = message.cookie.path[message.cookie.path.length - 1]
@@ -143,41 +135,37 @@ require('arguable')(module, function (program, callback) {
 
     var cadence = require('cadence')
 
-    cadence(function (async) {
-        async(function () {
-            cadence(function (async) {
-                async(function () {
-                    delta(async()).ee(child).on('close')
-                }, function (exitCode, signal) {
-                    // Will only ever equal zero. We do not have the `null, "SIGTERM"`
-                    // combo because we always register a `SIGTERM` handler. The
-                    // `"SIGTERM"` response is only when the default hander fires.
-                    // The `"SIGTERM"` is determined by whether or not the child has
-                    // a `"SIGTERM"` handler, not by any action by the parent. (i.e.
-                    // whether or not the parent calles `child.kill()`. The behavior
-                    // is still the same if we send a kill signal from the shell.
-                    Interrupt.assert(exitCode == 0, 'child.exit', {
-                        exitCode: exitCode,
-                        signal: signal,
-                        argv: program.argv
-                    })
-                    return 0
+    async(function () {
+        cadence(function (async) {
+            async(function () {
+                delta(async()).ee(child).on('close')
+            }, function (exitCode, signal) {
+                // Will only ever equal zero. We do not have the `null, "SIGTERM"`
+                // combo because we always register a `SIGTERM` handler. The
+                // `"SIGTERM"` response is only when the default hander fires.
+                // The `"SIGTERM"` is determined by whether or not the child has
+                // a `"SIGTERM"` handler, not by any action by the parent. (i.e.
+                // whether or not the parent calles `child.kill()`. The behavior
+                // is still the same if we send a kill signal from the shell.
+                Interrupt.assert(exitCode == 0, 'child.exit', {
+                    exitCode: exitCode,
+                    signal: signal,
+                    argv: arguable.argv
                 })
-            })(destructible.durable('child'))
+                return 0
+            })
+        })(destructible.durable('child'))
 
-            cadence(function (async) {
-                async([function () {
-                    descendent.decrement()
-                }], function () {
-                    collect(new Collector(program.stderr, queue), child.stderr, async())
-                }, function () {
-                    for (var id in monitors) {
-                        monitors[id].stdin.end()
-                    }
-                })
-            })(destructible.durable('synchronous'))
-        }, function () {
-            program.ready.unlatch()
-        })
-    })(destructible.ephemeral('initialize'))
-})
+        cadence(function (async) {
+            async([function () {
+                descendent.decrement()
+            }], function () {
+                collect(new Collector(arguable.stderr, queue), child.stderr, async())
+            }, function () {
+                for (var id in monitors) {
+                    monitors[id].stdin.end()
+                }
+            })
+        })(destructible.durable('synchronous'))
+    })
+}))

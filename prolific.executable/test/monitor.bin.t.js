@@ -11,17 +11,9 @@ function prove (async, okay) {
     var stream = require('stream')
     var util = require('util')
 
-    function Socket () {
-        stream.PassThrough.call(this)
-    }
-    util.inherits(Socket, stream.PassThrough)
-
-
-    Socket.prototype.destroy = function () {
-        this.end()
-    }
-
     var moudularized = require('./configuration')
+
+    var stdin = new stream.PassThrough
 
     var senders = [function (message) {
         var pid = message.path[0]
@@ -48,21 +40,31 @@ function prove (async, okay) {
         // TODO Move the close to the part above to see that we hang on exit
         // with the current destructible. Need to decide what to do when monitor
         // is called
-        program.stdin.end()
+        stdin.end()
     }]
 
-    var program
+    var Messenger = require('arguable/messenger')
+    var messenger = new Messenger
+
+    messenger.parent.on('message', function (message) {
+        senders.shift()(message)
+    })
+
+    messenger.env = {}
+    messenger.pid = 2
+
     async(function () {
-        program = monitor({
+        monitor({
             configuration: path.join(__dirname, 'configuration.js'),
             supervisor: '1'
         }, {
-            send: function (message) {
-                senders.shift().call(null, message)
-            },
-            attributes: { net: { Socket: Socket } }
+            $pipes: { 3: new stream.PassThrough },
+            $stdin: stdin,
+            process: messenger
         }, async())
-    }, function (code) {
-        okay(code, 0, 'ran')
+    }, function (child) {
+        child.exit(async())
+    }, function (exitCode) {
+        okay(exitCode, 0, 'ran')
     })
 }

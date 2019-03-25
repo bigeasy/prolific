@@ -11,15 +11,16 @@ function prove (async, okay) {
     var program
     async(function () {
         program = prolific([ '--inherit', '99', '--configuration', configuration, 'node', child ], {
-            stderr: new stream.PassThrough({ highWaterMark: 1 })
+            $stderr: new stream.PassThrough({ highWaterMark: 1 })
         }, async())
-        setTimeout(function () {
-            var chunks = []
-            program.stderr.on('data', function (chunk) {
-                console.log(chunk.toString())
-            })
-        }, 250)
-    }, function (code) {
-        okay(code, 0, 'ran')
+    }, function (child) {
+        child.options.$stderr.on('data', function (chunk) {
+            console.log(chunk.toString())
+        })
+        async(function () {
+            child.exit(async())
+        }, function (code) {
+            okay(code, 0, 'ran')
+        })
     })
 }
