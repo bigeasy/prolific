@@ -45,10 +45,9 @@ Shuttle.prototype._listen = function (descendent, options, callback) {
     this._queue = queue
 
     if (options.uncaughtException != null) {
-        var uncaughtException = this.uncaughtException(options.uncaughtException)
+        var uncaughtException = this.uncaughtException(options.uncaughtException, queue)
         descendent.process.on('uncaughtException', function (error) {
             uncaughtException(error)
-            queue.exit()
         })
     }
 
@@ -103,17 +102,18 @@ Shuttle.prototype._listen = function (descendent, options, callback) {
     descendent.up(monitorProcessId, 'prolific:shuttle', id.join('/'))
 }
 
-function uncaughtException (shuttle, logger) {
+function uncaughtException (shuttle, logger, queue) {
     var handler = createUncaughtExceptionHandler(logger)
     return function (error) {
         shuttle.close()
         handler(error)
+        queue.exit()
         throw error
     }
 }
 
 Shuttle.prototype.uncaughtException = function (logger) {
-    return uncaughtException(this, logger)
+    return uncaughtException(this, logger, this._queue)
 }
 
 

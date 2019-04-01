@@ -83,6 +83,8 @@ function prove (okay) {
         '{"method":"entries","series":2,"checksum":180504813,"chunks":1}',
         '% 2/0 0ac248ed 0dd5db35 0 %',
         '[[{"method":"version","version":1}],{"when":0,"level":"error","qualifier":"example","label":"acceptible","qualified":"example#acceptible","pid":0,"key":"value"}]',
+        '% 2/0 b798da34 0ac248ed 1 %',
+        '{"method":"exit"}',
         ''
     ], 'stderr after close')
 
