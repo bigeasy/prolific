@@ -6,9 +6,17 @@
 
     options:
 
-        -i, --inherit   <number>        file handles to inherit
-        -c, --configuration <path>      path to configuration
-            --help                      display this message
+        -i, --inherit   <number>
+            file handles to inherit
+
+        -s, --scram     <number>
+            number of seconds to wait for children to exit
+
+        -c, --configuration <path>
+            path to configuration
+
+        --help
+            display this message
 
     ___ $ ___ en_US ___
 
@@ -52,7 +60,9 @@ var coalesce = require('extant')
 
 // TODO Note that; we now require that anyone standing between a root Prolific
 // monitor and a leaf child process use the Descendent library.
-require('arguable')(module, require('cadence')(function (async, destructible, arguable) {
+require('arguable')(module, {
+    $scram: { scram: 10000 }
+}, require('cadence')(function (async, destructible, arguable) {
     arguable.ultimate.ipc = true
 
     arguable.helpIf(arguable.ultimate.help)
