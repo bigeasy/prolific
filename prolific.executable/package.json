@@ -25,7 +25,6 @@
                             "cadence":                      "3.0.x",
                             "delta":                        "3.0.x",
                             "demur":                        "1.0.x",
-                            "destructible":                 "2.0.x",
                             "descendent":                   "1.0.x",
                             "foremost":                     "1.0.x",
                             "interrupt":                    "7.0.x",
@@ -41,6 +40,7 @@
     },
     "devDependencies":
     {
+                            "destructible":                 "2.0.x",
                             "fs-extra":                     "7.0.1",
                             "prolific.chunk":               "6.0.x",
                             "prolific.logger":              "9.0.x",
