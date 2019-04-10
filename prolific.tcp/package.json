@@ -23,7 +23,6 @@
                             "abend":                        "1.0.x",
                             "byline":                       "5.0.0",
                             "cadence":                      "3.0.x",
-                            "staccato":                     "7.0.x",
                             "turnstile":                    "5.0.x"
     },
     "devDependencies":
