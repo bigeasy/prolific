@@ -1,0 +1,34 @@
+{
+    "private":              false,
+    "name":                 "prolific.influxdb.format",
+    "version":              "9.9.9",
+    "description":
+
+      "Format an InfluxDB line protocol message.",
+
+    "keywords":
+    [
+                            "logging", "log", "influxdb", "prolific"
+    ],
+    "author":               "Alan Gutierrez <alan@prettyrobots.com>",
+    "homepage":             "https://github.com/bigeasy/prolific",
+    "bugs":                 "https://github.com/bigeasy/prolific/issues",
+    "license":              "MIT",
+    "repository":
+    {
+                            "type": "git",
+                            "url": "bigeasy/prolific"
+    },
+    "dependencies":
+    {
+    },
+    "devDependencies":
+    {
+                            "proof":                        "7.0.x"
+    },
+    "main":                 "format",
+    "scripts":
+    {
+                            "test": "proof test test/*.t.js"
+    }
+}
