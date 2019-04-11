@@ -1,6 +1,6 @@
 {
     "name":                 "prolific.logger",
-    "version":              "9.0.4",
+    "version":              "10.0.0",
     "description":
 
       "Application logging facilities for Prolific logging framework.",
