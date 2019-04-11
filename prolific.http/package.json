@@ -1,0 +1,42 @@
+{
+    "name":                 "prolific.http",
+    "version":              "9.9.9",
+    "description":
+
+      "Forward to an HTTP logging service.",
+
+    "keywords":
+    [
+                            "logging", "log", "syslog", "http"
+    ],
+    "author":               "Alan Gutierrez <alan@prettyrobots.com>",
+    "homepage":             "https://github.com/bigeasy/prolific",
+    "bugs":                 "https://github.com/bigeasy/prolific/issues",
+    "license":              "MIT",
+    "repository":
+    {
+                            "type": "git",
+                            "url": "bigeasy/prolific"
+    },
+    "dependencies":
+    {
+                            "cadence":                      "3.0.x",
+                            "procession":                   "4.0.x"
+    },
+    "devDependencies":
+    {
+                            "connect":                      "3.6.6",
+                            "delta":                        "3.0.x",
+                            "destructible":                 "2.0.x",
+                            "interlocutor":                 "1.0.x",
+                            "vizsla":                       "14.0.x",
+                            "proof":                        "7.0.x",
+                            "reactor":                      "13.0.x",
+                            "signal":                       "7.0.x"
+    },
+    "main":                 "http",
+    "scripts":
+    {
+                            "test": "proof test test/*.t.js"
+    }
+}
