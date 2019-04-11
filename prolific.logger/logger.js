@@ -19,6 +19,27 @@ Logger.prototype.concat = function (level, label) {
     sink.json(level, this.qualifier, label, properties, sink.properties)
 }
 
+Logger.prototype.stackTrace = function () {
+    var vargs = []
+    vargs.push.apply(vargs, arguments)
+    return function (error) {
+        var properties = Array.isArray(vargs[vargs.length - 1]) ? vargs.pop() : [ 'stack', 'code' ]
+        var context = typeof vargs[vargs.length - 1] == 'object' ? vargs.pop() : {}
+        var label = vargs.pop()
+        var level = vargs.pop() || 'error'
+        var merged = {}
+        properties.forEach(function (name) {
+            if (name in error) {
+                merged[name] = error[name]
+            }
+        })
+        for (var name in context) {
+            merged[name] = context[name]
+        }
+        this.log(level, label, merged)
+    }.bind(this)
+}
+
 Object.keys(require('prolific.level')).forEach(function (level) {
     Logger.prototype[level] = function (label, properties) {
         sink.json(level, this.qualifier, label, properties, sink.properties)
