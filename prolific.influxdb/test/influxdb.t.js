@@ -32,13 +32,13 @@ function prove (okay) {
     }), 'a,tag=value field=1\n', 'with tags')
     console.log(influxdb({
         measurement: 'a',
-        fields: { field: '\'must quote\'' },
+        fields: { field: '"must quote"' },
         tags: { tag: 'comma,space equals=' },
         newline: false
     }))
     okay(influxdb({
         measurement: 'a',
-        fields: { field: '\'must quote\'' },
+        fields: { field: '"must quote"' },
         tags: { tag: 'comma,space equals=' }
-    }), 'a,tag=comma\\,space\\ equals\\= field=\'\\\'must quote\\\'\'\n', 'with tags')
+    }), 'a,tag=comma\\,space\\ equals\\= field="\\"must quote\\""\n', 'with tags')
 }
