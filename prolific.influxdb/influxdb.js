@@ -1,6 +1,6 @@
 function quote (value) {
-    if (typeof value == 'string' && /['"]/.test(value)) {
-        return '\'' + value.replace(/(')/g, "\\$1") + '\''
+    if (typeof value == 'string') {
+        return '"' + value.replace(/(")/g, '\\$1') + '"'
     }
     return value
 }
