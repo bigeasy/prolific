@@ -51,9 +51,7 @@ Processor.prototype._process = cadence(function (async) {
                 payload = Buffer.concat(lines)
             }
             // TODO Retry.
-            this._ua.fetch({
-                post: payload
-            }, async())
+            this._ua.fetch({ post: payload, parse: 'dump' }, async())
         })
     })
 })
