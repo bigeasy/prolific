@@ -1,6 +1,6 @@
 {
     "private":              false,
-    "name":                 "prolific.influxdb.format",
+    "name":                 "prolific.influxdb",
     "version":              "0.0.0",
     "description":
 
@@ -26,7 +26,7 @@
     {
                             "proof":                        "7.0.x"
     },
-    "main":                 "format",
+    "main":                 "influxdb",
     "scripts":
     {
                             "test": "proof test test/*.t.js"
