@@ -43,7 +43,7 @@
                             "destructible":                 "2.0.x",
                             "fs-extra":                     "7.0.1",
                             "prolific.chunk":               "6.0.x",
-                            "prolific.logger":              "9.0.x",
+                            "prolific.logger":              "10.0.x",
                             "prolific.shuttle":             "22.0.x",
                             "proof":                        "7.0.x"
     },
