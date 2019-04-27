@@ -13,15 +13,15 @@ module.exports = function (message) {
         var value = message.fields[key]
         var trimmed = key.replace(/\$i$/, '')
         if (key != trimmed) {
-            fields.push(trimmed.replace(special, '\$1') + '=' +  String(value) + 'i')
+            fields.push(trimmed.replace(special, '\$1') + '=' + String(value) + 'i')
         } else {
-            fields.push(trimmed.replace(special, '\$1') + '=' +  quote(value))
+            fields.push(trimmed.replace(special, '\$1') + '=' + quote(value))
         }
     }
     var tags = [ message.measurement ]
     for (var key in message.tags || {}) {
         var value = message.tags[key]
-        tags.push(key.replace(special, '\$1') + '=' +  value.replace(special, '\\$1'))
+        tags.push(key.replace(special, '\$1') + '=' + String(value).replace(special, '\\$1'))
     }
     var vargs = []
     var parts = [ tags.join(','), fields.join(',') ]
