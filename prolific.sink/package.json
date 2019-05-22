@@ -27,6 +27,6 @@
     "main":                 "sink",
     "scripts":
     {
-                            "test": "proof test test/*.t.js"
+                            "test": "mocha"
     }
 }
