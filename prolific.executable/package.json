@@ -32,7 +32,6 @@
                             "prolific.consolidator":        "8.0.x",
                             "prolific.evaluator":           "1.0.x",
                             "prolific.inherit":             "7.0.x",
-                            "prolific.ipc":                 "1.0.x",
                             "prolific.require":             "1.0.0",
                             "reconfigure":                  "1.0.x",
                             "signal":                       "7.0.x",
