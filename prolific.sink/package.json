@@ -23,7 +23,6 @@
     },
     "devDependencies":
     {
-                            "proof":                        "7.0.x"
     },
     "main":                 "sink",
     "scripts":
