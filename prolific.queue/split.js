@@ -1,4 +1,4 @@
-var assert = require('assert')
+const assert = require('assert')
 
 module.exports = function (buffer, offset) {
     while ((buffer[offset] & 0xc0) == 0x80) {
