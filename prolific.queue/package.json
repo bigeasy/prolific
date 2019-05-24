@@ -23,6 +23,7 @@
                             "delay":                        "4.2.0",
                             "hash.fnv":                     "1.0.x",
                             "prolific.chunk":               "8.0.x",
+                            "prospective":                  "0.0.x",
                             "staccato":                     "10.0.x"
     },
     "devDependencies":
