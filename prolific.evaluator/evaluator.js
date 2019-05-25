@@ -1,8 +1,6 @@
 const assert = require('assert')
-const fs = require('fs').promises
 
-exports.create = async function (file) {
-    const source = await fs.readFile(file, 'utf8')
+exports.create = function (source) {
     const loader = new Function('processor', source)
     const processor = {}
     loader(processor)
