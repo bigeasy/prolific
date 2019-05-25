@@ -20,24 +20,23 @@
     },
     "dependencies":
     {
-                            "abend":                        "1.0.x",
-                            "descendent":                   "1.0.x",
+                            "descendent":                   "2.0.x",
                             "extant":                       "1.0.x",
                             "foremost":                     "1.0.x",
-                            "prolific.chunk":               "6.0.x",
-                            "prolific.evaluator":           "1.0.x",
-                            "prolific.level":               "1.0.0",
-                            "prolific.queue":               "16.0.x",
-                            "prolific.require":             "1.0.0",
+                            "prolific.chunk":               "8.0.x",
+                            "prolific.evaluator":           "3.0.x",
+                            "prolific.level":               "1.0.x",
+                            "prolific.queue":               "18.0.x",
+                            "prolific.require":             "1.0.x",
                             "prolific.resolver":            "9.0.x",
                             "prolific.sink":                "7.0.x"
     },
     "devDependencies":
     {
-                            "proof":                        "7.0.x"
+        "mocha": "6.1.4"
     },
     "scripts":
     {
-                            "test": "proof test test/*.t.js"
+                            "test": "mocha test/*.test.js"
     }
 }
