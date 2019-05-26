@@ -1,43 +1,34 @@
-var sink = require('prolific.resolver').sink
+const sink = require('prolific.resolver').sink
 
-function Logger (qualifier) {
-    this.qualifier = qualifier
-}
-
-Logger.prototype.log = function (level, label, properties) {
-    sink.json(level, this.qualifier, label, properties, sink.properties)
-}
-
-Logger.prototype.concat = function (level, label) {
-    var object = {}
-    for (var i = 2, I = arguments.length; i < I; i++) {
-        var properties = arguments[i]
-        for (var key in properties) {
-            object[key] = properties[key]
-        }
+class Logger {
+    constructor (qualifier) {
+        this.qualifier = qualifier
     }
-    sink.json(level, this.qualifier, label, properties, sink.properties)
-}
 
-Logger.prototype.stackTrace = function () {
-    var vargs = []
-    vargs.push.apply(vargs, arguments)
-    return function (error) {
-        var properties = Array.isArray(vargs[vargs.length - 1]) ? vargs.pop() : [ 'stack', 'code' ]
-        var context = typeof vargs[vargs.length - 1] == 'object' ? vargs.pop() : {}
-        var label = vargs.pop()
-        var level = vargs.pop() || 'error'
-        var merged = {}
-        properties.forEach(function (name) {
-            if (name in error) {
-                merged[name] = error[name]
-            }
-        })
-        for (var name in context) {
-            merged[name] = context[name]
-        }
-        this.log(level, label, merged)
-    }.bind(this)
+    log (level, label, properties) {
+        sink.json(level, this.qualifier, label, properties, sink.properties)
+    }
+
+    concat (level, label, ...vargs) {
+        const properties = Object.assign.apply(Object, vargs)
+        sink.json(level, this.qualifier, label, properties, sink.properties)
+    }
+
+    stackTrace (...vargs) {
+        return function (error) {
+            const properties = Array.isArray(vargs[vargs.length - 1]) ? vargs.pop() : [ 'stack', 'code' ]
+            const context = typeof vargs[vargs.length - 1] == 'object' ? vargs.pop() : {}
+            const label = vargs.pop()
+            const level = vargs.pop() || 'error'
+            const merged = {}
+            properties.forEach(function (name) {
+                if (name in error) {
+                    merged[name] = error[name]
+                }
+            })
+            this.log(level, label, Object.assign(merged, context))
+        }.bind(this)
+    }
 }
 
 Object.keys(require('prolific.level')).forEach(function (level) {
