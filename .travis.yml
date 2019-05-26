@@ -17,4 +17,8 @@ install:
   - git checkout .
 
 script:
-  - nyc npm test
+  - for dir in prolific.*; do
+      if [[ -n "$(find $dir/test -maxdepth 1 -name \*.test.js -print -quit)" ]]; then
+        (cd $dir && nyc npm test) || exit 1
+      fi
+    done
