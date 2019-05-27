@@ -1,6 +1,6 @@
 {
     "name":                 "prolific.error",
-    "version":              "1.0.1",
+    "version":              "0.0.0",
     "description":
 
       "Common `Error` class used by Prolific framework.",
