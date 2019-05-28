@@ -21,17 +21,15 @@
     "dependencies":
     {
                             "byline":                       "5.0.0",
-                            "cadence":                      "3.0.x",
-                            "staccato":                     "8.0.x"
+                            "prolific.error":               "0.0.x",
+                            "staccato":                     "10.0.x"
     },
     "devDependencies":
     {
-                            "destructible":                 "2.0.x",
-                            "proof":                        "7.0.x"
     },
     "main":                 "consolidator",
     "scripts":
     {
-                            "test": "proof test test/*.t.js"
+                            "test": "mocha"
     }
 }
