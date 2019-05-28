@@ -30,7 +30,7 @@ describe('collector', () => {
             ''
         ], 'header with bad start')
 
-        collector.scan(Buffer.from('abc' + chunks.shift() + '\n' + chunks.shift() + '\ndef\n'))
+        collector.scan(Buffer.from(`abc${chunks[0]}\n${chunks[1]}\ndef\n`))
         assert.equal(output.read().toString(), 'abcdef\n', 'pass through interpolated')
         assert.deepStrictEqual(collector.outbox.shift(), {
             method: 'announce',
@@ -44,14 +44,14 @@ describe('collector', () => {
             ''
         ], 'header with bad previous checksum')
 
-        collector.scan(Buffer.from(chunks[0] + '\nabcdef\n'))
+        collector.scan(Buffer.from(chunks[2] + '\nabcdef\n'))
         assert.deepStrictEqual(output.read().toString().split('\n'), [
-            chunks[0],
+            chunks[2],
             'abcdef',
             ''
         ], 'bad body checksum')
 
-        collector.scan(Buffer.from(chunks.join('\n')))
+        collector.scan(Buffer.from(chunks.slice(2).join('\n')))
 
         assert.deepStrictEqual(collector.outbox.shift(), {
             method: 'entries',
@@ -78,11 +78,11 @@ describe('collector', () => {
         const output = new stream.PassThrough
         const collector = new Collector(output)
         collector.scan(Buffer.from(chunks[0] + '\n'))
-        collector.scan(Buffer.from('error'))
+        collector.scan(Buffer.from(chunks[1].substring(0, 3)))
         collector.end()
         assert.deepStrictEqual(output.read().toString().split('\n'), [
             chunks[0],
-            'error'
+            '{"m'
         ], 'end during match with no newline at end of file')
     })
 })
