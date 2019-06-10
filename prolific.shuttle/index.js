@@ -1,3 +1,2 @@
-var Shuttle = require('./shuttle')
-
+const Shuttle = require('./shuttle')
 module.exports = new Shuttle
