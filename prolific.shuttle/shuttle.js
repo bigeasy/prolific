@@ -85,7 +85,7 @@ class Shuttle {
             assert(message.body.source)
             const processor = Evaluator.create(message.body.source)
             assert(processor.triage)
-            const triage = processor.triage(require('prolific.require'))
+            const triage = processor.triage(require('prolific.require').require)
             sink.json = function (level, qualifier, label, body, system) {
                 if (triage(LEVEL[level], qualifier, label, body, system)) {
                     var header = {
