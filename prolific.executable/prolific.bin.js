@@ -30,91 +30,82 @@
 */
 
 // Node.js API.
-var assert = require('assert')
-var path = require('path')
-var url = require('url')
-var children = require('child_process')
-
-// Control-flow utilities.
-var cadence = require('cadence')
-var delta = require('delta')
+const assert = require('assert')
+const path = require('path')
+const url = require('url')
+const children = require('child_process')
 
 // Route messages through a process hierarchy using Node.js IPC.
-var Descendent = require('descendent')
+const Descendent = require('descendent')
 
 // Exceptions that you can catch by type.
-var Interrupt = require('interrupt').createInterrupter('prolific')
+const Interrupt = require('interrupt').create('prolific')
 
 // Command line and environment interpretation utilities.
-var inherit = require('prolific.inherit')
+const inherit = require('prolific.inherit')
 
 // Monitoring of streams that contain logging messages.
-var Collector = require('prolific.collector')
+const Collector = require('prolific.collector')
 
 // Pass messages and sockets all around the process tree.
-var descendent = require('foremost')('descendent')
+const descendent = require('foremost')('descendent')
 
-var collect = require('./collect')
+const coalesce = require('extant')
 
-var coalesce = require('extant')
+const collect = require('./collect')
 
 // TODO Note that; we now require that anyone standing between a root Prolific
 // monitor and a leaf child process use the Descendent library.
-require('arguable')(module, {
-    $scram: { scram: 10000 }
-}, require('cadence')(function (async, destructible, arguable) {
+require('arguable')(module, {}, async arguable => {
     arguable.ultimate.ipc = true
 
     arguable.helpIf(arguable.ultimate.help)
 
-    var configuration = arguable.ultimate.configuration
+    const configuration = arguable.ultimate.configuration
 
     process.env.PROLIFIC_SUPERVISOR_PROCESS_ID = process.pid
 
     descendent.increment()
 
-    var monitors = {}
-    var pids = {}
-    var pipes = {} // See race condition below.
+    const monitors = {}
+    const pids = {}
+    const pipes = {} // See race condition below.
 
-    var queue = {
+    const queue = {
         push: function (envelope) {
             switch (envelope.method) {
             case 'announce':
                 descendent.increment()
-                var monitor = children.spawn('node', [
+                const monitor = children.spawn('node', [
                     path.join(__dirname, 'monitor.bin.js'),
                     '--configuration', configuration,
                     '--supervisor', process.pid
                 ], {
                     stdio: [ 'pipe', 1, 2, 'pipe', 'ipc' ]
                 })
-                var json = envelope.body
-                var pid = json.path[json.path.length - 1]
+                const json = envelope.body
+                const pid = json.path[json.path.length - 1]
                 monitors[pid] = monitor
                 pipes[pid] = monitor.stdio[3]
                 pids[envelope.id] = pid
                 descendent.addChild(monitor, { path: json.path, pid: pid })
 
-                cadence(function (async) {
-                    async(function () {
-                        delta(async()).ee(monitor).on('exit')
-                    }, function (exitCode, signal) {
-                        Interrupt.assert(exitCode == 0, 'monitor.exit', {
-                            exitCode: exitCode,
-                            signal: signal,
-                            argv: arguable.argv
-                        })
-                        return []
+                destructible.durable([ 'monitor', monitor.pid ], (async () => {
+                    const [ exitCode, signal ] = once(monitor, 'exit')
+                    Interrupt.assert(exitCode == 0, 'monitor.exit', {
+                        exitCode: exitCode,
+                        signal: signal,
+                        argv: arguable.argv
                     })
-                })(destructible.durable([ 'monitor', monitor.pid ]))
+                    return []
+                })())
                 break
             case 'entries':
-                var monitor = monitors[pids[envelope.id]]
+                const monitor = monitors[pids[envelope.id]]
                 monitor.stdin.write(JSON.stringify(envelope) + '\n')
                 break
             case 'exit':
-                var monitor = monitors[pids[envelope.id]]
+                const monitor = monitors[pids[envelope.id]]
                 monitor.stdin.end(JSON.stringify(envelope) + '\n')
                 break
             }

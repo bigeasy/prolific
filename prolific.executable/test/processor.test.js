@@ -1,3 +1,43 @@
+describe('processor', () => {
+    const assert = require('assert')
+    const path = require('path')
+    const fs = require('fs').promises
+
+    const sink = require('prolific.sink')
+
+    const Destructible = require('destructible')
+
+    const Processor = require('../processor')
+
+    sink.Date = { now: () => 1 }
+    sink.properties.pid = 2
+
+    const configuration = {
+        template: path.join(__dirname, 'configuration.js'),
+        copy: path.join(__dirname, 'configuration.copy.js'),
+        bad: path.join(__dirname, 'configuration.bad.js'),
+        missing: path.join(__dirname, 'configuration.missing.js')
+    }
+
+    it('can configure', async () => {
+        const destructible = new Destructible('configure')
+
+        await fs.copyFile(configuration.template, configuration.copy)
+
+        const processor = new Processor(configuration.copy)
+        const test = []
+        processor.on('configuration', configuration => {
+            console.log(configuration)
+            test.push(configuration)
+        })
+        destructible.durable('configure', processor.configure(), () => processor.destroy())
+        console.log('here', Date.now())
+        await new Promise(resolve => setTimeout(resolve, 50))
+        console.log('there', Date.now())
+        processor.destroy()
+    })
+})
+return
 require('proof')(5, prove)
 
 function prove (okay, callback) {

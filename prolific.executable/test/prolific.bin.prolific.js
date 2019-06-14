@@ -5,13 +5,10 @@ exports.triage = function () {
     }
 }
 
-exports.process = function () {
-    var gather = require('prolific.gather')
+exports.process = async function () {
+    const gather = require('prolific.gather')
     gather.sink || (gather.sink = [])
-    var cadence = require('cadence')
-    return cadence(function () {
-        return function (entry) {
-            gather.sink.push(entry)
-        }
-    })
+    return function (entry) {
+        gather.sink.push(entry)
+    }
 }

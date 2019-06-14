@@ -20,31 +20,23 @@
     },
     "dependencies":
     {
-                            "arguable":                     "8.0.x",
+                            "arguable":                     "10.0.x",
                             "byline":                       "5.0.0",
-                            "cadence":                      "3.0.x",
-                            "delta":                        "3.0.x",
-                            "demur":                        "1.0.x",
-                            "descendent":                   "1.0.x",
+                            "descendent":                   "2.0.x",
                             "foremost":                     "1.0.x",
-                            "interrupt":                    "7.0.x",
-                            "prolific.collector":           "8.0.x",
+                            "interrupt":                    "8.0.x",
+                            "prolific.collector":           "10.0.x",
                             "prolific.consolidator":        "8.0.x",
-                            "prolific.evaluator":           "1.0.x",
+                            "prolific.evaluator":           "3.0.x",
                             "prolific.inherit":             "7.0.x",
-                            "prolific.require":             "1.0.0",
-                            "reconfigure":                  "1.0.x",
-                            "signal":                       "7.0.x",
-                            "turnstile":                    "5.0.x"
+                            "prolific.require":             "1.0.x",
+                            "reconfigure":                  "2.0.x"
     },
     "devDependencies":
     {
-                            "destructible":                 "2.0.x",
-                            "fs-extra":                     "7.0.1",
-                            "prolific.chunk":               "6.0.x",
+                            "prolific.chunk":               "8.0.x",
                             "prolific.logger":              "10.0.x",
-                            "prolific.shuttle":             "22.0.x",
-                            "proof":                        "7.0.x"
+                            "prolific.shuttle":             "22.0.x"
     },
     "main":                 "prolific.bin",
     "bin":
@@ -53,6 +45,6 @@
     },
     "scripts":
     {
-                            "test": "proof test test/*.t.js"
+                            "test": "mocha test/*.test.js"
     }
 }

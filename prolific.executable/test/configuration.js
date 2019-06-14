@@ -1,20 +1,16 @@
-exports.triage = function () {
-    var assert = require('assert')
-    var count = 0
-    var LEVEL = require('prolific.level')
+processor.triage = function (require) {
+    const assert = require('assert')
+    const LEVEL = require('prolific.level')
+    let count = 0
     return function (level) {
         assert(count++ < 2)
         return level <= LEVEL.warn
     }
 }
 
-exports.process = function () {
-    var gather = require('prolific.gather')
-    gather.queue || (gather.queue = [])
-    var cadence = require('cadence')
-    return cadence(function () {
-        return function (entry) {
-            gather.queue.push(entry)
-        }
-    })
+processor.process = async function (require) {
+    const sink = require('prolific.sink')
+    return function () {
+        sink.json(1)
+    }
 }
