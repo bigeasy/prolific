@@ -26,15 +26,20 @@ describe('processor', () => {
 
         const processor = new Processor(configuration.copy)
         const test = []
-        processor.on('configuration', configuration => {
-            console.log(configuration)
-            test.push(configuration)
-        })
         destructible.durable('configure', processor.configure(), () => processor.destroy())
-        console.log('here', Date.now())
-        await new Promise(resolve => setTimeout(resolve, 50))
-        console.log('there', Date.now())
+        await new Promise(resolve => {
+            processor.on('configuration', configuration => {
+                test.push(configuration)
+                resolve()
+            })
+        })
+        assert.deepStrictEqual(test, [{
+            version: 0,
+            source: await fs.readFile(configuration.template, 'utf8')
+        }], 'test')
+        assert(!processor.destroyed, 'not destroyed')
         processor.destroy()
+        assert(processor.destroyed, 'destroyed')
     })
 })
 return

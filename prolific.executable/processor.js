@@ -27,7 +27,7 @@ class Processor extends events.EventEmitter {
         this.destroyed = false
 
         this._destructible = new Destructible('prolific/processor')
-        this._destructible.destructor(() => this.destroyed = true)
+        this._destructible.destruct(() => this.destroyed = true)
 
         this._path = path.resolve(module)
 
