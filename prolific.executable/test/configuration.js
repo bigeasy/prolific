@@ -9,8 +9,10 @@ processor.triage = function (require) {
 }
 
 processor.process = async function (require) {
+    const path = require('path')
+    const gather = require(path.join(__dirname, 'gather'))
     const sink = require('prolific.sink')
-    return function () {
-        sink.json(1)
+    return function (entry) {
+        gather.push(entry)
     }
 }

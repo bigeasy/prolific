@@ -21,10 +21,19 @@ describe('processor', () => {
 
     it('can configure', async () => {
         const destructible = new Destructible('configure')
+        const gather = require('./gather')
 
         await fs.copyFile(configuration.template, configuration.copy)
 
         const processor = new Processor(configuration.copy)
+        await processor.process([{
+            when: 0,
+            qualifier: 'qualifier',
+            label: 'label',
+            level: 'error',
+            body: { url: '/' },
+            system: { pid: 0 }
+        }])
         const test = []
         destructible.durable('configure', processor.configure(), () => processor.destroy())
         await new Promise(resolve => {
@@ -37,6 +46,15 @@ describe('processor', () => {
             version: 0,
             source: await fs.readFile(configuration.template, 'utf8')
         }], 'test')
+        assert.deepStrictEqual(gather, [{
+            when: 0,
+            qualifier: 'qualifier',
+            qualified: 'qualifier#label',
+            label: 'label',
+            level: 'error',
+            url: '/',
+            pid: 0
+        }], 'gather')
         assert(!processor.destroyed, 'not destroyed')
         processor.destroy()
         assert(processor.destroyed, 'destroyed')

@@ -29,18 +29,22 @@ class Processor extends events.EventEmitter {
         this._destructible = new Destructible('prolific/processor')
         this._destructible.destruct(() => this.destroyed = true)
 
-        this._path = path.resolve(module)
+        const file = path.resolve(module)
 
         this._version = 0
         this._versions = []
 
+        this._backlog = []
         sink.json = function (level, qualifier, label, body) {
         }
+        this._processor = {
+            process: entry => this._backlog.push(entry)
+        }
 
-        this._reconfigurator = new Reconfigurator(this._path, new class extends BufferConfigurator {
+        this._reconfigurator = new Reconfigurator(file, new class extends BufferConfigurator {
             async configure (buffer) {
                 const source = buffer.toString()
-                const processor = Evaluator.create(source)
+                const processor = Evaluator.create(source, file)
                 assert(processor.triage && processor.process)
                 const triage = processor.triage(require('prolific.require').require)
                 const process = await processor.process(require('prolific.require').require)
@@ -76,7 +80,7 @@ class Processor extends events.EventEmitter {
         this._setMonitorSink(process)
         this._processor = {
             process: entry => {
-                var header = {
+                const header = {
                     when: entry.when,
                     level: entry.level,
                     qualified: entry.qualifier + '#' + entry.label,
@@ -87,6 +91,9 @@ class Processor extends events.EventEmitter {
                     process(Object.assign(header, entry.system, entry.body))
                 }
             }
+        }
+        for (const entry of this._backlog) {
+            this._processor.process(entry) 
         }
         const version = this._version++
         this._versions.push({ previous: this._previous, version, process })
@@ -149,7 +156,7 @@ class Processor extends events.EventEmitter {
             if (entries.length == 0) {
                 break
             } else {
-                var control = entries.shift()[0]
+                const control = entries.shift()[0]
                 switch (control.method) {
                 case 'version':
                     const configuration = this._versions.shift()
