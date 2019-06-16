@@ -6,6 +6,8 @@ processor.triage = function (require) {
 }
 
 processor.process = async function (require) {
+    const path = require('path')
+    require(path.join(__dirname, 'other.js'))
     return function () {
     }
 }
