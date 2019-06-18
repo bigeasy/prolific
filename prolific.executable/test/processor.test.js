@@ -20,12 +20,15 @@ describe('processor', () => {
     }
 
     it('can configure', async () => {
+        const sink = require('prolific.sink')
+
         const destructible = new Destructible('configure')
         const gather = require('./gather')
 
         await fs.copyFile(configuration.template, configuration.copy)
 
         const processor = new Processor(configuration.copy)
+        sink.json(0, 'prolific', 'label', {}, { pid: 1 })
         await processor.process([{
             when: 0,
             qualifier: 'qualifier',
@@ -46,6 +49,11 @@ describe('processor', () => {
             version: 0,
             source: await fs.readFile(configuration.template, 'utf8')
         }], 'test')
+        processor.process([[{ method: 'version', version: 0 }]])
+        sink.json(0, 'prolific', 'label', {}, { pid: 1 })
+        assert(!processor.destroyed, 'not destroyed')
+        processor.destroy()
+        assert(processor.destroyed, 'destroyed')
         assert.deepStrictEqual(gather, [{
             when: 0,
             qualifier: 'qualifier',
@@ -54,10 +62,14 @@ describe('processor', () => {
             level: 'error',
             url: '/',
             pid: 0
+        }, {
+            label: 'label',
+            level: 0,
+            qualified: 'prolific#label',
+            qualifier: 'prolific',
+            when: 1,
+            pid: 1
         }], 'gather')
-        assert(!processor.destroyed, 'not destroyed')
-        processor.destroy()
-        assert(processor.destroyed, 'destroyed')
     })
 })
 return

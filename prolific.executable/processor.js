@@ -55,6 +55,7 @@ class Processor extends events.EventEmitter {
             }
         })
         this._reconfigurator.on('error', this.emit.bind(this, 'error'))
+        this._nextVersion = 0
 
         this._destructible.destruct(() => this._reconfigurator.destroy())
     }
@@ -96,7 +97,7 @@ class Processor extends events.EventEmitter {
             this._processor.process(entry) 
         }
         const version = this._version++
-        this._versions.push({ previous: this._previous, version, process })
+        this._versions.push({ previous: () => {}, version, process })
         this._previous = process
         this.emit('configuration', { version, source })
         for await (const { source, process } of this._reconfigurator) {
@@ -160,10 +161,11 @@ class Processor extends events.EventEmitter {
                 switch (control.method) {
                 case 'version':
                     const configuration = this._versions.shift()
-                    assert(version == configuration.version)
+                    assert(this._nextVersion == configuration.version)
+                    this._nextVersion++
                     const process = configuration.process
                     this._processor = { process: entry => process(entry) }
-                    setMonitorSink(process)
+                    this._setMonitorSink(process)
                     await configuration.previous.call(null, null)
                     break
                 case 'exit':
