@@ -37,6 +37,14 @@ describe('processor', () => {
             body: { url: '/' },
             system: { pid: 0 }
         }])
+        await processor.process([{
+            when: 0,
+            qualifier: 'qualifier',
+            label: 'label',
+            level: 'info',
+            body: { url: '/info' },
+            system: { pid: 0 }
+        }])
         const test = []
         destructible.durable('configure', processor.configure(), () => processor.destroy())
         await new Promise(resolve => {
