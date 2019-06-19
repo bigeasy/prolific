@@ -29,7 +29,7 @@ class Processor extends events.EventEmitter {
         this._destructible = new Destructible('prolific/processor')
         this._destructible.destruct(() => this.destroyed = true)
 
-        const file = path.resolve(module)
+        const file = this._configuration = path.resolve(module)
 
         this._version = 0
         this._versions = []
@@ -38,6 +38,7 @@ class Processor extends events.EventEmitter {
         sink.json = function (level, qualifier, label, body) {
         }
         this._processor = {
+            previous: () => {},
             process: entry => this._backlog.push(entry)
         }
 
@@ -51,7 +52,7 @@ class Processor extends events.EventEmitter {
                 return { buffer, source, triage, process }
             }
             reload (previous, buffer) {
-                super.reload(previous.buffer, buffer)
+                return super.reload(previous.buffer, buffer)
             }
         })
         this._reconfigurator.on('error', this.emit.bind(this, 'error'))
@@ -80,6 +81,7 @@ class Processor extends events.EventEmitter {
         const { source, triage, process } = await this._reconfigurator.shift()
         this._setMonitorSink(process)
         this._processor = {
+            previous: this._processor.previous,
             process: entry => {
                 const header = {
                     when: entry.when,
@@ -99,12 +101,12 @@ class Processor extends events.EventEmitter {
         const version = this._version++
         this._versions.push({ previous: () => {}, version, process })
         this._previous = process
-        this.emit('configuration', { version, source })
+        this.emit('configuration', { version, source, configuration: this._configuration })
         for await (const { source, process } of this._reconfigurator) {
             const version = this._version++
             this._versions.push({ previous: this._previous, version, process })
             this._previous = process
-            this.emit('configuration', { version, source })
+            this.emit('configuration', { version, source, configuration: this._configuration })
         }
     }
 
@@ -164,16 +166,27 @@ class Processor extends events.EventEmitter {
                     assert(this._nextVersion == configuration.version)
                     this._nextVersion++
                     const process = configuration.process
-                    this._processor = { process: entry => process(entry) }
+                    await this._processor.previous.call(null, null)
+                    this._processor = {
+                        previous: configuration.previous,
+                        process: entry => {
+                           process(Object.assign({
+                                when: entry.when,
+                                level: entry.level,
+                                qualified: entry.qualifier + '#' + entry.label,
+                                qualifier: entry.qualifier,
+                                label: entry.label
+                            }, entry.system, entry.body))
+                        }
+                    }
                     this._setMonitorSink(process)
-                    await configuration.previous.call(null, null)
                     break
                 case 'exit':
-                    this._destructible.destroy()
-                    await this._processor.call(null, null)
+                    await this._processor.previous.call(null, null)
                     for (const version of this._versions) {
-                        await version.processor.call(null, null)
+                        await version.process.call(null, null)
                     }
+                    this._destructible.destroy()
                     await this._destructible.promise
                     break
                 }
