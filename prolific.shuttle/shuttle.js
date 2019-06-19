@@ -83,7 +83,7 @@ class Shuttle {
         })
         descendent.on('prolific:accept', this._handlers.accept = function (message) {
             assert(message.body.source)
-            const processor = Evaluator.create(message.body.source)
+            const processor = Evaluator.create(message.body.source, message.body.file)
             assert(processor.triage)
             const triage = processor.triage(require('prolific.require').require)
             sink.json = function (level, qualifier, label, body, system) {

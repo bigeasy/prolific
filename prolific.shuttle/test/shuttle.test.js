@@ -36,6 +36,7 @@ describe('shuttle', () => {
         descendent.emit('prolific:accept', {
             body: {
                 source: fs.readFileSync(path.join(__dirname, 'processor.js')),
+                file: path.join(__dirname, 'processor.js'),
                 version: 1
             }
         })
