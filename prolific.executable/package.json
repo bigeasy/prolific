@@ -38,7 +38,7 @@
                             "mocha":                        "6.1.4",
                             "prolific.chunk":               "8.0.x",
                             "prolific.logger":              "10.0.x",
-                            "prolific.shuttle":             "22.0.x"
+                            "prolific.shuttle":             "24.0.x"
     },
     "main":                 "prolific.bin",
     "bin":
