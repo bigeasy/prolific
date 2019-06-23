@@ -22,14 +22,14 @@ const Destructible = require('destructible')
 
 //
 class Processor extends events.EventEmitter {
-    constructor (module) {
+    constructor (configuration) {
         super()
         this.destroyed = false
 
         this._destructible = new Destructible('prolific/processor')
         this._destructible.destruct(() => this.destroyed = true)
 
-        const file = this._configuration = path.resolve(module)
+        const file = this._file = path.resolve(configuration)
 
         this._version = 0
         this._versions = []
@@ -101,12 +101,12 @@ class Processor extends events.EventEmitter {
         const version = this._version++
         this._versions.push({ previous: () => {}, version, process })
         this._previous = process
-        this.emit('configuration', { version, source, configuration: this._configuration })
+        this.emit('configuration', { version, source, file: this._file })
         for await (const { source, process } of this._reconfigurator) {
             const version = this._version++
             this._versions.push({ previous: this._previous, version, process })
             this._previous = process
-            this.emit('configuration', { version, source, configuration: this._configuration })
+            this.emit('configuration', { version, source, file: this._file })
         }
     }
 

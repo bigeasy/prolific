@@ -74,11 +74,11 @@ describe('processor', () => {
         assert.deepStrictEqual(test, [{
             version: 0,
             source: await fs.readFile(configuration.configuration, 'utf8'),
-            configuration: configuration.source
+            file: configuration.source
         }, {
             version: 1,
             source: await fs.readFile(configuration.reconfiguration, 'utf8'),
-            configuration: configuration.source
+            file: configuration.source
         }], 'configuration')
         assert.deepStrictEqual(gather, [{
             when: 0,
