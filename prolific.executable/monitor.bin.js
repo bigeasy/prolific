@@ -12,65 +12,63 @@ require('arguable')(module, {
     $pipes: { 3: { readable: true } },
     $trap: { SIGINT: 'swallow', SIGTERM: 'swallow' },
     process: process
-}, require('cadence')(function (async, destructible, arguable) {
+}, async (arguable) => {
     arguable.required('configuration', 'supervisor')
 
+    const Destructible = require('destructible')
+    const destructible = new Destructible('monitor')
+
     // Node.js API.
-    var assert = require('assert')
+    const assert = require('assert')
 
-    // Route messages through a process hierarchy using Node.js IPC.
-    var Descendent = require('descendent')
+    const Consolidator = require('prolific.consolidator')
 
-    var Signal = require('signal')
-    var cadence = require('cadence')
-
-    var Consolidator = require('prolific.consolidator')
-
-    var descendent = require('foremost')('descendent')
+    const descendent = require('foremost')('descendent')
 
     descendent.process = arguable.options.process
     descendent.increment()
-    destructible.destruct.wait(descendent, 'decrement')
+    destructible.destruct(() => descendent.decrement())
 
-    var logger = require('prolific.logger').createLogger('prolific')
+    const logger = require('prolific.logger').createLogger('prolific')
     function memoryUsage () { logger.notice('memory', process.memoryUsage()) }
     memoryUsage()
-    var interval = setInterval(memoryUsage, 1000)
-    destructible.destruct.wait(function () { clearInterval(interval) })
+    const interval = setInterval(memoryUsage, 1000)
+    destructible.destruct(() => clearInterval(interval))
 
-    var Processor = require('./processor')
+    const Processor = require('./processor')
 
-    var Turnstile = require('turnstile')
-    Turnstile.Queue = require('turnstile/queue')
+    const processor = new Processor(arguable.ultimate.configuration)
 
-    var cadence = require('cadence')
-
-    async(function () {
-        var reloaded = descendent.up.bind(descendent, +arguable.ultimate.supervisor, 'prolific:accept')
-        destructible.durable('processor', Processor, arguable.ultimate.configuration, reloaded, async())
-    }, function (processor) {
-        // Drain all chunks immediately into a turnstile.
-        var turnstile = new Turnstile
-        var queue = new Turnstile.Queue(processor, 'process', turnstile)
-        turnstile.listen(destructible.durable('turnstile'))
-        destructible.destruct.wait(turnstile, 'destroy')
-
-        arguable.stdin.resume()
-
-        // Listen to our asynchronous pipe.
-        var consolidator = new Consolidator(arguable.pipes[3], arguable.stdin, queue)
-
-        consolidator.asynchronous(destructible.ephemeral('asynchronous'))
-        consolidator.synchronous(destructible.ephemeral('synchronous'))
-
-        destructible.destruct.wait(consolidator, 'exit')
-
-        destructible.destruct.wait(arguable.pipes[3], 'destroy')
-
-        // Let the supervisor know that we're ready. It will send our
-        // asynchronous pipe down to the monitored process.
-        descendent.up(+arguable.ultimate.supervisor, 'prolific:pipe', true)
-
-        return []
+    processor.on('configuration', (configuration) => {
+        descendent.up(+arguable.ultimate.supervisor, 'prolific:accept', configuration)
     })
-}))
+
+    arguable.stdin.resume()
+
+    const { default: PQueue } = require('p-queue')
+
+    const queue = new PQueue
+
+    // Listen to our asynchronous pipe.
+    const consolidator = new Consolidator(arguable.pipes[3], arguable.stdin, {
+        push: (entries) => queue.add(() => processor.process(entries))
+    })
+
+    destructible.ephemeral('configure', processor.configure(), () => processor.destroy())
+    destructible.durable('asynchronous', consolidator.asynchronous())
+    destructible.ephemeral('synchronous', consolidator.synchronous())
+
+    destructible.destruct(() => consolidator.exit())
+    destructible.destruct(() => arguable.pipes[3].destroy())
+
+    // Let the supervisor know that we're ready. It will send our asynchronous
+    // pipe down to the monitored process.
+    descendent.up(+arguable.ultimate.supervisor, 'prolific:pipe', true)
+
+    console.log('here')
+    destructible.destruct(() => console.log('destruct'))
+
+    await destructible.promise
+
+    return 0
+})
