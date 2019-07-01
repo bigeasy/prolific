@@ -30,7 +30,6 @@ describe('monitor', () => {
         }]
 
         messenger.parent.on('message', (message) => {
-            console.log('MESSAGE', message)
             test.push(message)
         })
 

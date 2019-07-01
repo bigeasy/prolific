@@ -65,9 +65,6 @@ require('arguable')(module, {
     // pipe down to the monitored process.
     descendent.up(+arguable.ultimate.supervisor, 'prolific:pipe', true)
 
-    console.log('here')
-    destructible.destruct(() => console.log('destruct'))
-
     await destructible.promise
 
     return 0
