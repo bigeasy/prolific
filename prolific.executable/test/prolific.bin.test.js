@@ -1,3 +1,13 @@
+describe('monitor', () => {
+    it('can execute', () => {
+        const prolific = require('..')
+        const path = require('path')
+        const child = path.join(__dirname, 'program.js')
+        const configuration = path.join(__dirname, 'prolific.bin.prolific.js')
+    })
+})
+
+return
 require('proof')(1, require('cadence')(prove))
 
 function prove (async, okay) {
