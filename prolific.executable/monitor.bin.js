@@ -27,45 +27,47 @@ require('arguable')(module, {
 
     descendent.process = arguable.options.process
     descendent.increment()
-    destructible.destruct(() => descendent.decrement())
+    try {
+        const logger = require('prolific.logger').createLogger('prolific')
+        function memoryUsage () { logger.notice('memory', process.memoryUsage()) }
+        memoryUsage()
+        const interval = setInterval(memoryUsage, 1000)
+        destructible.destruct(() => clearInterval(interval))
 
-    const logger = require('prolific.logger').createLogger('prolific')
-    function memoryUsage () { logger.notice('memory', process.memoryUsage()) }
-    memoryUsage()
-    const interval = setInterval(memoryUsage, 1000)
-    destructible.destruct(() => clearInterval(interval))
+        const Processor = require('./processor')
 
-    const Processor = require('./processor')
+        const processor = new Processor(arguable.ultimate.configuration)
 
-    const processor = new Processor(arguable.ultimate.configuration)
+        processor.on('configuration', (configuration) => {
+            descendent.up(+arguable.ultimate.supervisor, 'prolific:accept', configuration)
+        })
 
-    processor.on('configuration', (configuration) => {
-        descendent.up(+arguable.ultimate.supervisor, 'prolific:accept', configuration)
-    })
+        arguable.stdin.resume()
 
-    arguable.stdin.resume()
+        const { default: PQueue } = require('p-queue')
 
-    const { default: PQueue } = require('p-queue')
+        const queue = new PQueue
 
-    const queue = new PQueue
+        // Listen to our asynchronous pipe.
+        const consolidator = new Consolidator(arguable.pipes[3], arguable.stdin, {
+            push: (entries) => queue.add(() => processor.process(entries))
+        })
 
-    // Listen to our asynchronous pipe.
-    const consolidator = new Consolidator(arguable.pipes[3], arguable.stdin, {
-        push: (entries) => queue.add(() => processor.process(entries))
-    })
+        destructible.ephemeral('configure', processor.configure(), () => processor.destroy())
+        destructible.durable('asynchronous', consolidator.asynchronous())
+        destructible.ephemeral('synchronous', consolidator.synchronous())
 
-    destructible.ephemeral('configure', processor.configure(), () => processor.destroy())
-    destructible.durable('asynchronous', consolidator.asynchronous())
-    destructible.ephemeral('synchronous', consolidator.synchronous())
+        destructible.destruct(() => consolidator.exit())
+        destructible.destruct(() => arguable.pipes[3].destroy())
 
-    destructible.destruct(() => consolidator.exit())
-    destructible.destruct(() => arguable.pipes[3].destroy())
+        // Let the supervisor know that we're ready. It will send our asynchronous
+        // pipe down to the monitored process.
+        descendent.up(+arguable.ultimate.supervisor, 'prolific:pipe', true)
 
-    // Let the supervisor know that we're ready. It will send our asynchronous
-    // pipe down to the monitored process.
-    descendent.up(+arguable.ultimate.supervisor, 'prolific:pipe', true)
+        await destructible.promise
 
-    await destructible.promise
-
-    return 0
+        return 0
+    } finally {
+        descendent.decrement()
+    }
 })
