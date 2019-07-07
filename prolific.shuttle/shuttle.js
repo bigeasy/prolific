@@ -17,7 +17,7 @@ class Shuttle {
         this._queue = null
     }
 
-    start (options, callback) {
+    start (options) {
         if (this._initialized) {
             return Promise.resolve()
         }
