@@ -55,7 +55,7 @@ class Shuttle {
             })
         }
 
-        if (options.exit != null) {
+        if (options.exit == null || options.exit) {
             descendent.process.on('exit', () => {
                 this.close()
                 queue.exit()

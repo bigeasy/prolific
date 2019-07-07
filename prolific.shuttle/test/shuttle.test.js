@@ -21,7 +21,7 @@ describe('shuttle', () => {
         descendent.process.send = message => test.push(message)
         sink.properties.pid = 0
         sink.Date = { now: function () { return 0 } }
-        shuttle.start({ Date: { now: function () { return 0 } } })
+        shuttle.start({ exit: false, Date: { now: function () { return 0 } } })
         shuttle.start()
 
         sink.json('error', 'example', 'message', { key: 'value' }, { pid: 0 })
