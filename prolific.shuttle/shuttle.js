@@ -32,15 +32,15 @@ class Shuttle {
     }
 
     _listen (descendent, options) {
-        var now = coalesce(options.Date, Date).now()
-        var monitorProcessId = +descendent.process.env.PROLIFIC_SUPERVISOR_PROCESS_ID
+        const now = coalesce(options.Date, Date).now()
+        const monitorProcessId = +descendent.process.env.PROLIFIC_SUPERVISOR_PROCESS_ID
 
         descendent.increment()
 
-        var id = [ descendent.process.pid, now ]
-        var path = descendent.path.splice(descendent.path.indexOf(monitorProcessId))
+        const id = [ descendent.process.pid, now ]
+        const path = descendent.path.splice(descendent.path.indexOf(monitorProcessId))
 
-        var queue = new Queue(512, id, descendent.process.stderr, { path: path })
+        const queue = new Queue(512, id, descendent.process.stderr, { path: path })
         const send = queue.send()
         this._queue = queue
 
@@ -64,7 +64,7 @@ class Shuttle {
 
         // All filtering will be performed by the monitor initially. Until
         // we get a configuration we send everything.
-        var sink = require('prolific.resolver').sink
+        const sink = require('prolific.resolver').sink
         sink.json = function (level, qualifier, label, body, system) {
             queue.push({
                 when: this.Date.now(),
@@ -88,20 +88,13 @@ class Shuttle {
             const triage = processor.triage(require('prolific.require').require)
             sink.json = function (level, qualifier, label, body, system) {
                 if (triage(LEVEL[level], qualifier, label, body, system)) {
-                    var header = {
+                    queue.push(Object.assign({
                         when: body.when || this.Date.now(),
                         level: level,
                         qualifier: qualifier,
                         label: label,
                         qualified: qualifier + '#' + label
-                    }
-                    for (var key in system) {
-                        header[key] = system[key]
-                    }
-                    for (var key in body) {
-                        header[key] = body[key]
-                    }
-                    queue.push(header)
+                    }, system, body))
                 }
             }
             queue.push([{ method: 'version', version: message.body.version }])
