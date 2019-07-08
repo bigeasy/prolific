@@ -11,7 +11,7 @@ describe('logger', () => {
         logger.concat('error', 'greeting', {}, { a: 1 })
         logger.log('error', 'greeting', { a: 1 })
         logger.error('greeting', { a: 1 })
-        var expect = [{
+        const expect = [{
             vargs: [
                 'panic',
                 'hello',
