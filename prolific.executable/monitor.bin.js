@@ -53,7 +53,7 @@ require('arguable')(module, {
             push: (entries) => queue.add(() => processor.process(entries))
         })
 
-        destructible.ephemeral('configure', processor.configure(), () => processor.destroy())
+        destructible.ephemeral('configure', processor.configure())
         destructible.durable('asynchronous', consolidator.asynchronous())
         destructible.ephemeral('synchronous', consolidator.synchronous())
 
@@ -69,5 +69,6 @@ require('arguable')(module, {
         return 0
     } finally {
         descendent.decrement()
+        descendent.process = process
     }
 })
