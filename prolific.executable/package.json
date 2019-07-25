@@ -24,7 +24,7 @@
                             "descendent":                   "2.0.x",
                             "foremost":                     "1.0.x",
                             "interrupt":                    "8.0.x",
-                            "p-queue":                      "6.0.2",
+                            "p-queue":                      "6.1.0",
                             "prolific.collector":           "10.0.x",
                             "prolific.consolidator":        "10.0.x",
                             "prolific.evaluator":           "3.0.x",
