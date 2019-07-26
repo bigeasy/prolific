@@ -54,7 +54,7 @@ $ prolific --configuration ./configuration.js program.js
 $
 ```
 
-## High-Throughput but Still Thorough
+## High-Throughput But Still Thorough
 
 Inspired by an employer directive  to use the logging edicts of [The
 Twelve-Factor App](https://12factor.net/logs), my first go was to do just as it
