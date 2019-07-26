@@ -92,8 +92,8 @@ to prevent log loss. Prolific performs this automatically, transparently.
 
 ## Prolific Fast Triage
 
-You control logging levels, not through a flag, but through a JavaScript
-function that checks
+You control logging levels, not through a flag or string defination, but through
+a JavaScript function.
 
 ```javascript
 processor.triage = function (require) {
