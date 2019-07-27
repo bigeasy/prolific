@@ -90,6 +90,15 @@ which is used in [this snippet of
 code](https://github.com/pinojs/pino/blob/master/docs/extreme.md#log-loss-prevention)
 to prevent log loss. Prolific performs this automatically, transparently.
 
+## Multi-Process Ready
+
+Prolific was designed to monitor multi-process servers. It can ship the logs for
+multiple child processes using one monitor to serivce a number of child
+processes. The synchronous fatal error tunneling is done in such a way that even
+when multiple child processes are spewing their hurt down a common pipe, the
+Prolific monitor is still able to extract the tunneled message from the
+interplated text in the stream.
+
 ## Prolific Fast Triage
 
 You control logging levels, not through a flag or string defination, but through
