@@ -15,6 +15,7 @@ describe('processor', () => {
     const configuration = {
         configuration: path.join(__dirname, 'configuration.initial.js'),
         reconfiguration: path.join(__dirname, 'configuration.subsequent.js'),
+        objectconfiguration: path.join(__dirname, 'configuration.object.js'),
         source: path.join(__dirname, 'configuration.js')
     }
 
@@ -68,6 +69,15 @@ describe('processor', () => {
         })
         fs.copyFile(configuration.reconfiguration, configuration.source)
         await reconfigured
+        const configured = { object: null, subsequent: null }
+        configured.object = new Promise(resolve => {
+            processor.once('configuration', configuration => {
+                test.push(configuration)
+                resolve()
+            })
+        })
+        fs.copyFile(configuration.objectconfiguration, configuration.source)
+        await configured.object
         assert(!processor.destroyed, 'not destroyed')
         await processor.process([[{ method: 'exit' }]])
         assert(processor.destroyed, 'destroyed')
@@ -78,6 +88,10 @@ describe('processor', () => {
         }, {
             version: 1,
             source: await fs.readFile(configuration.reconfiguration, 'utf8'),
+            file: configuration.source
+        }, {
+            version: 2,
+            source: await fs.readFile(configuration.objectconfiguration, 'utf8'),
             file: configuration.source
         }], 'configuration')
         assert.deepStrictEqual(gather, [{

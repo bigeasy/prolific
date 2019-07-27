@@ -185,7 +185,9 @@ class Processor extends events.EventEmitter {
                 case 'exit':
                     await this._processor.previous.call(null, null)
                     for (const version of this._versions) {
-                        await version.processor.process(null)
+                        if (version.processor.destroy) {
+                            await version.processor.destroy()
+                        }
                     }
                     this._destructible.destroy()
                     await this._destructible.promise
