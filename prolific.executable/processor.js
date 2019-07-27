@@ -45,11 +45,12 @@ class Processor extends events.EventEmitter {
         this._reconfigurator = new Reconfigurator(file, new class extends BufferConfigurator {
             async configure (buffer) {
                 const source = buffer.toString()
-                const processor = Evaluator.create(source, file)
-                assert(processor.triage && processor.process)
-                const triage = processor.triage(require('prolific.require').require)
-                const process = await processor.process(require('prolific.require').require)
-                return { buffer, source, triage, process }
+                const definition = Evaluator.create(source, file)
+                assert(definition.triage && definition.process)
+                const triage = definition.triage(require('prolific.require').require)
+                const process = await definition.process(require('prolific.require').require)
+                const processor = typeof process == 'function' ? { process } : process
+                return { buffer, source, triage, processor }
             }
             reload (previous, buffer) {
                 return super.reload(previous.buffer, buffer)
@@ -65,9 +66,9 @@ class Processor extends events.EventEmitter {
         this._destructible.destroy()
     }
 
-    _setMonitorSink (process) {
+    _setMonitorSink (processor) {
         sink.json = function (level, qualifier, label, body, system) {
-            process(Object.assign({
+            processor.process(Object.assign({
                 when: body.when || this.Date.now(),
                 level: level,
                 qualifier: qualifier,
@@ -78,8 +79,8 @@ class Processor extends events.EventEmitter {
     }
 
     async configure () {
-        const { source, triage, process } = await this._reconfigurator.shift()
-        this._setMonitorSink(process)
+        const { source, triage, processor } = await this._reconfigurator.shift()
+        this._setMonitorSink(processor)
         this._processor = {
             previous: this._processor.previous,
             process: entry => {
@@ -91,7 +92,7 @@ class Processor extends events.EventEmitter {
                     label: entry.label
                 }
                 if (triage(LEVEL[entry.level], header, entry.body, entry.system)) {
-                    process(Object.assign(header, entry.system, entry.body))
+                    processor.process(Object.assign(header, entry.system, entry.body))
                 }
             }
         }
@@ -99,12 +100,12 @@ class Processor extends events.EventEmitter {
             this._processor.process(entry) 
         }
         const version = this._version++
-        this._versions.push({ previous: () => {}, version, process })
+        this._versions.push({ previous: () => {}, version, processor })
         this._previous = process
         this.emit('configuration', { version, source, file: this._file })
-        for await (const { source, process } of this._reconfigurator) {
+        for await (const { source, processor } of this._reconfigurator) {
             const version = this._version++
-            this._versions.push({ previous: this._previous, version, process })
+            this._versions.push({ previous: this._previous, version, processor })
             this._previous = process
             this.emit('configuration', { version, source, file: this._file })
         }
@@ -165,12 +166,12 @@ class Processor extends events.EventEmitter {
                     const configuration = this._versions.shift()
                     assert(this._nextVersion == configuration.version)
                     this._nextVersion++
-                    const process = configuration.process
+                    const processor = configuration.processor
                     await this._processor.previous.call(null, null)
                     this._processor = {
                         previous: configuration.previous,
                         process: entry => {
-                           process(Object.assign({
+                           processor.process(Object.assign({
                                 when: entry.when,
                                 level: entry.level,
                                 qualified: entry.qualifier + '#' + entry.label,
@@ -179,12 +180,12 @@ class Processor extends events.EventEmitter {
                             }, entry.system, entry.body))
                         }
                     }
-                    this._setMonitorSink(process)
+                    this._setMonitorSink(processor)
                     break
                 case 'exit':
                     await this._processor.previous.call(null, null)
                     for (const version of this._versions) {
-                        await version.process.call(null, null)
+                        await version.processor.process(null)
                     }
                     this._destructible.destroy()
                     await this._destructible.promise
