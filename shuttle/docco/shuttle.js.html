@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+
+<html>
+<head>
+  <title>shuttle.js</title>
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <meta name="viewport" content="width=device-width, target-densitydpi=160dpi, initial-scale=1.0; maximum-scale=1.0; user-scalable=0;">
+  <link rel="stylesheet" media="all" href="docco.css" />
+</head>
+<body>
+  <div id="container">
+    <div id="background"></div>
+
+      <ul id="jump_to">
+        <li>
+          <a class="large" href="javascript:void(0);">Jump To &hellip;</a>
+          <a class="small" href="javascript:void(0);">+</a>
+          <div id="jump_wrapper">
+          <div id="jump_page_wrapper">
+            <div id="jump_page">
+
+
+                <a class="source" href="index.js.html">
+                  index.js
+                </a>
+
+
+                <a class="source" href="shuttle.js.html">
+                  shuttle.js
+                </a>
+
+
+                <a class="source" href="uncaught.js.html">
+                  uncaught.js
+                </a>
+
+            </div>
+          </div>
+        </li>
+      </ul>
+
+    <ul class="sections">
+
+          <li id="title">
+              <div class="annotation">
+                  <h1>shuttle.js</h1>
+              </div>
+          </li>
+
+
+
+        <li id="section-1">
+            <div class="annotation">
+
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-1">&#182;</a>
+              </div>
+
+            </div>
+
+            <div class="content"><div class='highlight'><pre><span class="hljs-keyword">const</span> coalesce = <span class="hljs-built_in">require</span>(<span class="hljs-string">'extant'</span>)
+<span class="hljs-keyword">const</span> descendent = <span class="hljs-built_in">require</span>(<span class="hljs-string">'foremost'</span>)(<span class="hljs-string">'descendent'</span>)
+
+<span class="hljs-keyword">const</span> Evaluator = <span class="hljs-built_in">require</span>(<span class="hljs-string">'prolific.evaluator'</span>)
+<span class="hljs-keyword">const</span> Queue = <span class="hljs-built_in">require</span>(<span class="hljs-string">'prolific.queue'</span>)
+
+<span class="hljs-keyword">const</span> LEVEL = <span class="hljs-built_in">require</span>(<span class="hljs-string">'prolific.level'</span>)
+
+<span class="hljs-keyword">const</span> createUncaughtExceptionHandler = <span class="hljs-built_in">require</span>(<span class="hljs-string">'./uncaught'</span>)
+
+<span class="hljs-keyword">const</span> assert = <span class="hljs-built_in">require</span>(<span class="hljs-string">'assert'</span>)
+
+<span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">Shuttle</span> </span>{
+    <span class="hljs-keyword">constructor</span> () {
+        <span class="hljs-keyword">this</span>.closed = <span class="hljs-literal">false</span>
+        <span class="hljs-keyword">this</span>._initialized = <span class="hljs-literal">false</span>
+        <span class="hljs-keyword">this</span>._queue = <span class="hljs-literal">null</span>
+    }
+
+    start (options) {
+        <span class="hljs-keyword">if</span> (<span class="hljs-keyword">this</span>._initialized) {
+            <span class="hljs-keyword">return</span> <span class="hljs-built_in">Promise</span>.resolve()
+        }
+        <span class="hljs-keyword">this</span>._initialized = <span class="hljs-literal">true</span>
+        options || (options = {})
+        <span class="hljs-keyword">if</span> (descendent.process.env.PROLIFIC_SUPERVISOR_PROCESS_ID != <span class="hljs-literal">null</span>) {
+            <span class="hljs-keyword">return</span> <span class="hljs-keyword">this</span>._listen(descendent, options)
+        } <span class="hljs-keyword">else</span> {
+            <span class="hljs-keyword">this</span>.closed = <span class="hljs-literal">true</span>
+            <span class="hljs-keyword">return</span> <span class="hljs-built_in">Promise</span>.resolve()
+        }
+    }
+
+    _listen (descendent, options) {
+        <span class="hljs-keyword">const</span> now = coalesce(options.Date, <span class="hljs-built_in">Date</span>).now()
+        <span class="hljs-keyword">const</span> monitorProcessId = +descendent.process.env.PROLIFIC_SUPERVISOR_PROCESS_ID
+
+        descendent.increment()
+
+        <span class="hljs-keyword">const</span> id = [ descendent.process.pid, now ]
+        <span class="hljs-keyword">const</span> path = descendent.path.splice(descendent.path.indexOf(monitorProcessId))
+
+        <span class="hljs-keyword">const</span> queue = <span class="hljs-keyword">new</span> Queue(<span class="hljs-number">512</span>, id, descendent.process.stderr, { <span class="hljs-attr">path</span>: path })
+        <span class="hljs-keyword">const</span> send = queue.send()
+        <span class="hljs-keyword">this</span>._queue = queue</pre></div></div>
+
+        </li>
+
+
+        <li id="section-2">
+            <div class="annotation">
+
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-2">&#182;</a>
+              </div>
+              <p>TODO Unhandled rejection.</p>
+
+            </div>
+
+            <div class="content"><div class='highlight'><pre>        <span class="hljs-keyword">if</span> (options.uncaughtException != <span class="hljs-literal">null</span>) {
+            <span class="hljs-keyword">const</span> handler = createUncaughtExceptionHandler(options.uncaughtException)
+            descendent.process.on(<span class="hljs-string">'uncaughtException'</span>, (error) =&gt; {
+                <span class="hljs-keyword">this</span>.close()
+                handler(error)
+                queue.exit()
+                <span class="hljs-keyword">throw</span> error
+            })
+        }
+
+        <span class="hljs-keyword">if</span> (options.exit == <span class="hljs-literal">null</span> || options.exit) {
+            descendent.process.on(<span class="hljs-string">'exit'</span>, () =&gt; {
+                <span class="hljs-keyword">this</span>.close()
+                queue.exit()
+            })
+        }</pre></div></div>
+
+        </li>
+
+
+        <li id="section-3">
+            <div class="annotation">
+
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-3">&#182;</a>
+              </div>
+              <p>All filtering will be performed by the monitor initially. Until
+we get a configuration we send everything.</p>
+
+            </div>
+
+            <div class="content"><div class='highlight'><pre>        <span class="hljs-keyword">const</span> sink = <span class="hljs-built_in">require</span>(<span class="hljs-string">'prolific.resolver'</span>).sink
+        sink.json = <span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params">level, qualifier, label, body, system</span>) </span>{
+            queue.push({
+                <span class="hljs-attr">when</span>: <span class="hljs-keyword">this</span>.Date.now(),
+                <span class="hljs-attr">level</span>: level,
+                <span class="hljs-attr">qualifier</span>: qualifier,
+                <span class="hljs-attr">label</span>: label,
+                <span class="hljs-attr">body</span>: body,
+                <span class="hljs-attr">system</span>: system
+            })
+        }
+
+        <span class="hljs-keyword">this</span>._handlers = { <span class="hljs-attr">pipe</span>: <span class="hljs-literal">null</span>, <span class="hljs-attr">accept</span>: <span class="hljs-literal">null</span> }
+
+        descendent.once(<span class="hljs-string">'prolific:pipe'</span>, <span class="hljs-keyword">this</span>._handlers.pipe = <span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params">message, handle</span>) </span>{
+            queue.setPipe(handle)
+        })
+        descendent.on(<span class="hljs-string">'prolific:accept'</span>, <span class="hljs-keyword">this</span>._handlers.accept = <span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params">message</span>) </span>{
+            assert(message.body.source)
+            <span class="hljs-keyword">const</span> processor = Evaluator.create(message.body.source, message.body.file)
+            assert(processor.triage)
+            <span class="hljs-keyword">const</span> triage = processor.triage(<span class="hljs-built_in">require</span>(<span class="hljs-string">'prolific.require'</span>).require)
+            sink.json = <span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params">level, qualifier, label, body, system</span>) </span>{
+                <span class="hljs-keyword">if</span> (triage(LEVEL[level], qualifier, label, body, system)) {
+                    queue.push(<span class="hljs-built_in">Object</span>.assign({
+                        <span class="hljs-attr">when</span>: body.when || <span class="hljs-keyword">this</span>.Date.now(),
+                        <span class="hljs-attr">level</span>: level,
+                        <span class="hljs-attr">qualifier</span>: qualifier,
+                        <span class="hljs-attr">label</span>: label,
+                        <span class="hljs-attr">qualified</span>: qualifier + <span class="hljs-string">'#'</span> + label
+                    }, system, body))
+                }
+            }
+            queue.push([{ <span class="hljs-attr">method</span>: <span class="hljs-string">'version'</span>, <span class="hljs-attr">version</span>: message.body.version }])
+        })
+
+        descendent.up(monitorProcessId, <span class="hljs-string">'prolific:shuttle'</span>, id.join(<span class="hljs-string">'/'</span>))
+
+        <span class="hljs-keyword">return</span> send
+    }
+
+    close () {
+        <span class="hljs-keyword">if</span> (!<span class="hljs-keyword">this</span>.closed) {
+            <span class="hljs-keyword">this</span>.closed = <span class="hljs-literal">true</span>
+            descendent.removeListener(<span class="hljs-string">'prolific:pipe'</span>, <span class="hljs-keyword">this</span>._handlers.pipe)
+            descendent.removeListener(<span class="hljs-string">'prolific:accept'</span>, <span class="hljs-keyword">this</span>._handlers.accept)
+            descendent.decrement()
+            <span class="hljs-keyword">this</span>._queue.close()
+        }
+    }
+}
+
+Shuttle.sink = <span class="hljs-built_in">require</span>(<span class="hljs-string">'prolific.sink'</span>)
+
+<span class="hljs-built_in">module</span>.exports = Shuttle</pre></div></div>
+
+        </li>
+
+    </ul>
+  </div>
+</body>
+</html>

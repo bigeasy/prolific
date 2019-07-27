@@ -50,32 +50,267 @@
               <div class="pilwrap ">
                 <a class="pilcrow" href="#section-1">&#182;</a>
               </div>
+              <p>In order to prevent interpolation of our tunneled stream with standard error
+messages from other child processes, we must ensure that our formatted
+<code>Chunk</code> fits with a <code>PIPE_BUF</code>. We end every formatted <code>Chunk</code> with a
+newline. Now we can parse a standard error shared by multiple child processes
+by line and look for our formatted <code>Chunk</code>s at the end of each line. However,
+more often than not the <code>Chunk</code> will begin at the first character in the
+line.</p>
+<p>Because our formatted <code>Chunk</code> is less than the length of <code>PIPE_BUF</code> we know
+that no other child process will be able to interploate their standard error
+output into our formatted <code>Chunk</code> text. On the other hand, we might inject
+our formatted <code>Chunk</code> into the standard output spew of another child process.
+Because the formatted <code>Chunk</code> ends with a newline we know that our formatted
+<code>Chunk</code> will always occur at the end of an interplated line. We search for it
+with a regular expression that matches the pecular header that begins with
+<code>%</code> and has a well defined pattern of a slash-delimited numeric id followed
+by to hexidecimal checksums.</p>
+<p>With this we’re able to use standard error as a common synchronous channel
+for multi-process applications.</p>
+<p>Because we want to fit within <code>PIPE_BUF</code> we want to have a simplified header
+with a fixed width so that it is easy to split a buffer knowing an exact size
+for each segment. The buffer is not length-encoded. It must always end with a
+newline. We require that the payload is always a single line of JSON, so we
+know that they body will never have newlines itself. We no longer keep track
+of a series number in the header because the character width of the series
+number is variable, we rely on the linked list of the checksums and the fact
+that things are not going to get out of order since writing to standard error
+is synchronous.</p>
+<p>The header is of a peculiar format that ought to not occur naturally in
+standard error output of a production application. We search for this
+peculiar output at the end of every line in standard error. If we find it we
+look to the next line for the content of the chunk. The checksums mean that
+if we happen to accidentally match something that looks like a header but is
+not a header we’re probably going to have a checksum mismatch so that the
+chances of a false positive are slim. We’ll forward the header-looking line
+to standard error.</p>
+<p>Note that we’re only going to be tunneling through standard out after the
+pipe closes, which should only be during program shutdown. There is not a lot
+of opportunity for a false positive and it wouldn’t corrupt a stream of a
+running application.</p>
+<p>An id is an array of integers joined by slashes. Used to be anything but a
+space but with this restriction we can be discerning in our pattern matching.</p>
+<p>The header contains a control flag that indicates whether the chunk contains
+control information or body content. The flag is one for true, zero for
+false. The single character flags keeps the header a fixed with.</p>
+<p>Control chunks can contain stream control information or indicate the start
+of collection of entries which may be broken up into multiple chunks. Chunks
+containing body content are not control chunks and have zero value for
+control in the header.</p>
+<p>When we write the chunk we require the checksum of the previous checksum.
+This is printed with the current checksum to form a linked list of chunks.
+The checksums are 32-bit and represented in zero padded hexadecimal so that
+they too are fixed with.</p>
+<p>Notes on <code>PIPE_BUF</code>. <a href="https://serverfault.com/a/733611">https://serverfault.com/a/733611</a></p>
 
             </div>
 
-            <div class="content"><div class='highlight'><pre><span class="hljs-keyword">var</span> fnv = <span class="hljs-built_in">require</span>(<span class="hljs-string">'hash.fnv'</span>)
-<span class="hljs-keyword">var</span> hex = <span class="hljs-built_in">require</span>(<span class="hljs-string">'./hex'</span>)
+        </li>
 
-<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">Chunk</span> (<span class="hljs-params">number, buffer, value</span>) </span>{
-    <span class="hljs-keyword">this</span>.number = number
-    <span class="hljs-keyword">this</span>.checksum = hex(fnv(<span class="hljs-number">0</span>, buffer, <span class="hljs-number">0</span>, buffer.length), <span class="hljs-number">8</span>)
-    <span class="hljs-keyword">this</span>.value = value
-    <span class="hljs-keyword">this</span>.buffer = buffer
-}
 
-Chunk.prototype.header = <span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params">previousChecksum, length</span>) </span>{
-    <span class="hljs-keyword">return</span> <span class="hljs-keyword">new</span> Buffer([
-        <span class="hljs-string">'% '</span>,
-        <span class="hljs-keyword">this</span>.number, <span class="hljs-string">' '</span>,
-        previousChecksum, <span class="hljs-string">' '</span>,
-        <span class="hljs-keyword">this</span>.checksum, <span class="hljs-string">' '</span>,
-        <span class="hljs-keyword">this</span>.value, <span class="hljs-string">'\n'</span>
-    ].join(<span class="hljs-string">''</span>))
-}
+        <li id="section-2">
+            <div class="annotation">
 
-<span class="hljs-built_in">module</span>.exports = Chunk
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-2">&#182;</a>
+              </div>
+              <p>Node.js API.</p>
 
-</pre></div></div>
+            </div>
+
+            <div class="content"><div class='highlight'><pre><span class="hljs-keyword">const</span> assert = <span class="hljs-built_in">require</span>(<span class="hljs-string">'assert'</span>)</pre></div></div>
+
+        </li>
+
+
+        <li id="section-3">
+            <div class="annotation">
+
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-3">&#182;</a>
+              </div>
+              <p>A fast non-cryptogrpahic 32-bit hash.</p>
+
+            </div>
+
+            <div class="content"><div class='highlight'><pre><span class="hljs-keyword">const</span> fnv = <span class="hljs-built_in">require</span>(<span class="hljs-string">'hash.fnv'</span>)</pre></div></div>
+
+        </li>
+
+
+        <li id="section-4">
+            <div class="annotation">
+
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-4">&#182;</a>
+              </div>
+              <p>Format a hexadecimal number with leading zeros.</p>
+
+            </div>
+
+            <div class="content"><div class='highlight'><pre><span class="hljs-keyword">const</span> hex = <span class="hljs-built_in">require</span>(<span class="hljs-string">'./hex'</span>)</pre></div></div>
+
+        </li>
+
+
+        <li id="section-5">
+            <div class="annotation">
+
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-5">&#182;</a>
+              </div>
+              <p><code>Chunk</code> &mdash; encodes a single line of our tunneled standard error message
+format.</p>
+
+            </div>
+
+        </li>
+
+
+        <li id="section-6">
+            <div class="annotation">
+
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-6">&#182;</a>
+              </div>
+
+            </div>
+
+            <div class="content"><div class='highlight'><pre><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">Chunk</span> </span>{</pre></div></div>
+
+        </li>
+
+
+        <li id="section-7">
+            <div class="annotation">
+
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-7">&#182;</a>
+              </div>
+              <p><code>const chunk = new Chunk(control, id, buffer)</code> &mdash; Create a <code>Chunk</code>.</p>
+<ul>
+<li><code>control</code> &mdash; <code>boolean</code> indicating a control chunk if <code>true</code>.</li>
+<li><code>id</code> &mdash; an identifier consisting of an <code>Array</code> of numeric
+characters.</li>
+<li><code>buffer</code> &mdash; the <code>Buffer</code> payload.</li>
+</ul>
+<p>The <code>buffer</code> can contain any character except the newline character
+because the chunks are newline delimited.</p>
+
+            </div>
+
+        </li>
+
+
+        <li id="section-8">
+            <div class="annotation">
+
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-8">&#182;</a>
+              </div>
+
+            </div>
+
+            <div class="content"><div class='highlight'><pre>    <span class="hljs-keyword">constructor</span> (control, id, buffer) {
+        assert(<span class="hljs-built_in">Array</span>.isArray(id))
+        <span class="hljs-keyword">this</span>.control = control
+        <span class="hljs-keyword">this</span>.id = id.join(<span class="hljs-string">'/'</span>)
+        <span class="hljs-keyword">this</span>.checksum = fnv(<span class="hljs-number">0</span>, buffer, <span class="hljs-number">0</span>, buffer.length)
+        <span class="hljs-keyword">this</span>.buffer = buffer
+    }</pre></div></div>
+
+        </li>
+
+
+        <li id="section-9">
+            <div class="annotation">
+
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-9">&#182;</a>
+              </div>
+              <p><code>chunk.concat(previous)</code> &mdash; Create a buffer from the <code>Chunk</code>.</p>
+<ul>
+<li><code>previous</code> &mdash; integer value 32-bit hash of the previous <code>Chunk</code>.</li>
+</ul>
+
+            </div>
+
+        </li>
+
+
+        <li id="section-10">
+            <div class="annotation">
+
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-10">&#182;</a>
+              </div>
+
+            </div>
+
+            <div class="content"><div class='highlight'><pre>    concat (previous) {
+        <span class="hljs-keyword">const</span> header = Buffer.from(<span class="hljs-string">`% <span class="hljs-subst">${<span class="hljs-keyword">this</span>.id}</span> <span class="hljs-subst">${hex(<span class="hljs-keyword">this</span>.checksum)}</span>`</span> +
+            <span class="hljs-string">` <span class="hljs-subst">${hex(previous)}</span> <span class="hljs-subst">${(<span class="hljs-keyword">this</span>.control ? <span class="hljs-string">'1'</span> : <span class="hljs-string">'0'</span>)}</span> %\n`</span>)
+        <span class="hljs-keyword">return</span> Buffer.concat([ header, <span class="hljs-keyword">this</span>.buffer, Buffer.from(<span class="hljs-string">'\n'</span>) ])
+    }</pre></div></div>
+
+        </li>
+
+
+        <li id="section-11">
+            <div class="annotation">
+
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-11">&#182;</a>
+              </div>
+              <p><code>Chunk.getBodySize(pipeBuf, id) &amp;mdash; Calculate the space available in
+a chunk for the chunk body for a given</code>PIPE_BUF` size.</p>
+<ul>
+<li><code>pipeBuf</code> &mdash; length of <code>PIPE_BUF</code>.</li>
+<li><code>id</code> &mdash; an identifier consisting of an <code>Array</code> of numeric
+characters.</li>
+</ul>
+
+            </div>
+
+        </li>
+
+
+        <li id="section-12">
+            <div class="annotation">
+
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-12">&#182;</a>
+              </div>
+
+            </div>
+
+            <div class="content"><div class='highlight'><pre>    <span class="hljs-keyword">static</span> getBodySize (pipeBuf, id) {
+        assert(<span class="hljs-built_in">Array</span>.isArray(id))
+        <span class="hljs-keyword">const</span> headerSize = id.join(<span class="hljs-string">'/'</span>).length +  <span class="hljs-comment">// length of id</span>
+                          (<span class="hljs-number">8</span> * <span class="hljs-number">2</span>) +               <span class="hljs-comment">// two checksums</span>
+                          <span class="hljs-number">2</span> +                     <span class="hljs-comment">// two % borders</span>
+                          <span class="hljs-number">1</span> +                     <span class="hljs-comment">// control flag</span>
+                          <span class="hljs-number">2</span> +                     <span class="hljs-comment">// two newlines</span>
+                          <span class="hljs-number">5</span>                       <span class="hljs-comment">// five spaces in header</span>
+        <span class="hljs-keyword">return</span> pipeBuf - headerSize
+    }
+}</pre></div></div>
+
+        </li>
+
+
+        <li id="section-13">
+            <div class="annotation">
+
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-13">&#182;</a>
+              </div>
+              <p>Export the object.</p>
+
+            </div>
+
+            <div class="content"><div class='highlight'><pre><span class="hljs-built_in">module</span>.exports = Chunk</pre></div></div>
 
         </li>
 
