@@ -26,11 +26,10 @@
     },
     "devDependencies":
     {
-                            "proof":                        "7.0.x"
     },
     "main":                 "syslog",
     "scripts":
     {
-                            "test": "proof test test/*.t.js"
+                            "test": "mocha test/*.test.js"
     }
 }
