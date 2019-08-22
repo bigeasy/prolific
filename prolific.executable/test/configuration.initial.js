@@ -3,7 +3,8 @@ processor.triage = function (require) {
     const LEVEL = require('prolific.level')
     let count = 0
     return function (level) {
-        assert(count++ < 2)
+        assert(level != null)
+        assert(count++ < 3)
         return level <= LEVEL.warn
     }
 }

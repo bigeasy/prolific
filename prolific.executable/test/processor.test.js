@@ -27,8 +27,8 @@ describe('processor', () => {
 
         await fs.copyFile(configuration.configuration, configuration.source)
 
-        const processor = new Processor(configuration.source)
-        sink.json(0, 'prolific', 'label', {}, { pid: 1 })
+        const processor = new Processor(configuration.source, { now: () => 1 })
+        sink.json('error', 'prolific', 'label', {}, { pid: 1 })
         await processor.process([{
             when: 0,
             qualifier: 'qualifier',
@@ -60,7 +60,7 @@ describe('processor', () => {
             body: { url: '/after' },
             system: { pid: 0 }
         }])
-        sink.json(0, 'prolific', 'label', {}, { pid: 1 })
+        sink.json('error', 'prolific', 'label', {}, { pid: 1 })
         const reconfigured = new Promise(resolve => {
             processor.once('configuration', configuration => {
                 test.push(configuration)
@@ -94,29 +94,36 @@ describe('processor', () => {
             source: await fs.readFile(configuration.objectconfiguration, 'utf8'),
             file: configuration.source
         }], 'configuration')
-        assert.deepStrictEqual(gather, [{
-            when: 0,
-            qualifier: 'qualifier',
-            qualified: 'qualifier#label',
-            label: 'label',
-            level: 'error',
-            url: '/',
-            pid: 0
-        }, {
-            when: 0,
-            qualifier: 'qualifier',
-            qualified: 'qualifier#label',
-            label: 'label',
-            level: 'error',
-            url: '/after',
-            pid: 0
-        }, {
-            label: 'label',
-            level: 0,
-            qualified: 'prolific#label',
-            qualifier: 'prolific',
+        assert.deepStrictEqual(gather, [[{
             when: 1,
-            pid: 1
-        }], 'gather')
+            qualifier: 'prolific',
+            label: 'label',
+            level: 'error',
+            body: {},
+            system: { pid: 1 }
+        }], [{
+            when: 0,
+            qualifier: 'qualifier',
+            label: 'label',
+            level: 'error',
+            body: { url: '/' },
+            system: { pid: 0 }
+        }], [{
+            when: 0,
+            qualifier: 'qualifier',
+            label: 'label',
+            level: 'error',
+            body: { url: '/after' },
+            system: { pid: 0 }
+        }], [{
+            when: 1,
+            qualifier: 'prolific',
+            label: 'label',
+            level: 'error',
+            body: {},
+            system: { pid: 1 }
+        }]], 'gather')
+        processor.destroy()
+        return
     })
 })

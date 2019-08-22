@@ -22,7 +22,7 @@ const Destructible = require('destructible')
 
 //
 class Processor extends events.EventEmitter {
-    constructor (configuration) {
+    constructor (configuration, _Date = Date) {
         super()
         this.destroyed = false
 
@@ -35,11 +35,13 @@ class Processor extends events.EventEmitter {
         this._versions = []
 
         this._backlog = []
-        sink.json = function (level, qualifier, label, body) {
+        sink.json = (level, qualifier, label, body, system) => {
+            assert(typeof level == 'string')
+            this._processor.process([{ when: _Date.now(), level: level, qualifier, label, body, system }])
         }
         this._processor = {
             previous: () => {},
-            process: entry => this._backlog.push(entry)
+            process: entries => this._backlog.push(entries)
         }
 
         this._reconfigurator = new Reconfigurator(file, new class extends BufferConfigurator {
@@ -66,38 +68,18 @@ class Processor extends events.EventEmitter {
         this._destructible.destroy()
     }
 
-    _setMonitorSink (processor) {
-        sink.json = function (level, qualifier, label, body, system) {
-            processor.process(Object.assign({
-                when: body.when || this.Date.now(),
-                level: level,
-                qualifier: qualifier,
-                label: label,
-                qualified: qualifier + '#' + label
-            }, system, body))
-        }
-    }
-
     async configure () {
         const { source, triage, processor } = await this._reconfigurator.shift()
-        this._setMonitorSink(processor)
         this._processor = {
             previous: this._processor.previous,
-            process: entry => {
-                const header = {
-                    when: entry.when,
-                    level: entry.level,
-                    qualified: entry.qualifier + '#' + entry.label,
-                    qualifier: entry.qualifier,
-                    label: entry.label
-                }
-                if (triage(LEVEL[entry.level], header, entry.body, entry.system)) {
-                    processor.process(Object.assign(header, entry.system, entry.body))
-                }
+            process: entries => {
+                processor.process(entries.filter(entry => {
+                    return triage(LEVEL[entry.level], entry.qualifier, entry.label, entry.body, entry.system)
+                }))
             }
         }
-        for (const entry of this._backlog) {
-            this._processor.process(entry) 
+        for (const entries of this._backlog) {
+            this._processor.process(entries)
         }
         const version = this._version++
         this._versions.push({ previous: () => {}, version, processor })
@@ -154,10 +136,13 @@ class Processor extends events.EventEmitter {
             // handle entries in batches, which means that they don't have to
             // worry about chunking posts to 3rd parties, they're already kind
             // of chunked.
+            const actual = []
             while (entries.length && !Array.isArray(entries[0])) {
-                this._processor.process(entries.shift())
+                actual.push(entries.shift())
             }
-            if (entries.length == 0) {
+            if (actual.length != 0) {
+                this._processor.process(actual)
+            } else if (entries.length == 0) {
                 break
             } else {
                 const control = entries.shift()[0]
@@ -170,17 +155,10 @@ class Processor extends events.EventEmitter {
                     await this._processor.previous.call(null, null)
                     this._processor = {
                         previous: configuration.previous,
-                        process: entry => {
-                           processor.process(Object.assign({
-                                when: entry.when,
-                                level: entry.level,
-                                qualified: entry.qualifier + '#' + entry.label,
-                                qualifier: entry.qualifier,
-                                label: entry.label
-                            }, entry.system, entry.body))
+                        process: entries => {
+                           processor.process(entries)
                         }
                     }
-                    this._setMonitorSink(processor)
                     break
                 case 'exit':
                     await this._processor.previous.call(null, null)
