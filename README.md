@@ -17,7 +17,7 @@ features.
 ## Getting Started
 
 ```javascript
-require('prolific.shuttle', { exit: true })
+require('prolific.shuttle').start({ exit: true })
 
 require('prolific.sink').properties.global = 1
 
@@ -30,14 +30,14 @@ The program will run and produce no output. You'll have to run it under
 prolific for it produce output. You'll need a Prolific configuration.
 
 ```javascript
-process.triage = function (require) {
+processor.triage = function (require) {
     const LEVEL = require('prolific.level')
     return function (level) {
         return level <= LEVEL.info
     }
 }
 
-process.process = function () {
+processor.process = function () {
     return function (entries) {
         for (const entry of entries) {
             console.log(JSON.stringify(entry))
