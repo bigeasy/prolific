@@ -67,12 +67,7 @@ class Shuttle {
         const sink = require('prolific.resolver').sink
         sink.json = function (level, qualifier, label, body, system) {
             queue.push({
-                when: this.Date.now(),
-                level: level,
-                qualifier: qualifier,
-                label: label,
-                body: body,
-                system: system
+                when: body.when || this.Date.now(), level, qualifier, label, body, system
             })
         }
 
@@ -88,13 +83,9 @@ class Shuttle {
             const triage = processor.triage(require('prolific.require').require)
             sink.json = function (level, qualifier, label, body, system) {
                 if (triage(LEVEL[level], qualifier, label, body, system)) {
-                    queue.push(Object.assign({
-                        when: body.when || this.Date.now(),
-                        level: level,
-                        qualifier: qualifier,
-                        label: label,
-                        qualified: qualifier + '#' + label
-                    }, system, body))
+                    queue.push({
+                        when: body.when || this.Date.now(), level, qualifier, label, body, system
+                    })
                 }
             }
             queue.push([{ method: 'version', version: message.body.version }])
