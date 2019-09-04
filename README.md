@@ -49,7 +49,7 @@ processor.process = function () {
 Now you can run the following.
 
 ```console
-$ prolific --configuration ./configuration.js program.js
+$ prolific -p ./processor.js program.js
 {"when":1100,"qualifier":"compassion","label":"test","qualified":"compassion#test",global:1,local:2}
 $
 ```

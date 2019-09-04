@@ -6,7 +6,7 @@ describe('executable', () => {
         const stream = require('stream')
         const program = path.join(__dirname, 'program.js')
         const configuration = path.join(__dirname, 'prolific.bin.prolific.js')
-        const child = prolific([ '--inherit', '99', '--configuration', configuration, 'node', program ], {
+        const child = prolific([ '--inherit', '99', '--processor', configuration, 'node', program ], {
             $stderr: new stream.PassThrough({ highWaterMark: 1 })
         })
         await new Promise(resolve => setTimeout(resolve, 1000))

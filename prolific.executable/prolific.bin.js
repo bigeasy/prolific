@@ -12,8 +12,8 @@
         -s, --scram     <number>
             number of seconds to wait for children to exit
 
-        -c, --configuration <path>
-            path to configuration
+        -p, --processor <path>
+            path to processor
 
         --help
             display this message
@@ -64,7 +64,7 @@ require('arguable')(module, {}, async arguable => {
     const Destructible = require('destructible')
     const destructible = new Destructible('prolific')
 
-    const configuration = arguable.ultimate.configuration
+    const configuration = arguable.ultimate.processor
 
     process.env.PROLIFIC_SUPERVISOR_PROCESS_ID = process.pid
 
