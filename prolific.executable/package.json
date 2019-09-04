@@ -1,6 +1,6 @@
 {
     "name":                 "prolific",
-    "version":              "26.0.1",
+    "version":              "27.0.0-alpha.0",
     "description":
 
       "Main Prolific supervisor executable.",
