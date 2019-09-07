@@ -54,7 +54,9 @@ const descendent = require('foremost')('descendent')
 const coalesce = require('extant')
 
 // TODO Note that; we now require that anyone standing between a root Prolific
-// monitor and a leaf child process use the Descendent library.
+// monitor and a leaf child process use the Descendent library. When I write
+// multi-process applications I use [Olio](https://github.com/bigeasy/olio)
+// where this is already implemented.
 require('arguable')(module, {}, async arguable => {
     arguable.ultimate.ipc = true
 
