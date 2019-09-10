@@ -20,7 +20,7 @@
     },
     "dependencies":
     {
-                            "hash.fnv":                     "1.0.x"
+                            "ascension":                    "^1.0.3"
     },
     "devDependencies":
     {
