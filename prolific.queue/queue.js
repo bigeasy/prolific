@@ -120,14 +120,14 @@ class Queue {
     // pipe if it has arrived after we've closed.
 
     //
-    setPipe (input, output) {
+    setPipe (socket) {
         if (this._exited) {
-            input.end()
-            if (input !== output) {
-                output.end()
-            }
+            socket.end()
             return []
         } else {
+            const io = (socket instanceof require('net').Socket)
+                     ? { input: socket, output: socket }
+                     : socket
             this._piped = true
             if (this._entries.length) {
                 this._latch.call()
@@ -135,8 +135,8 @@ class Queue {
                 this._writing = false
             }
             return [
-                this._send(this._writable = new Staccato.Writable(output)),
-                this._receive(this._readable = new Staccato.Readable(byline(input)))
+                this._send(this._writable = new Staccato.Writable(io.output)),
+                this._receive(this._readable = new Staccato.Readable(byline(io.input)))
             ]
         }
     }

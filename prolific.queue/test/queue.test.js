@@ -62,7 +62,7 @@ describe('queue', () => {
             now: () => now++
         }, TMPDIR, [ 1, 2 ], 1)
         queue.exit(0)
-        queue.setPipe(new stream.PassThrough, new stream.PassThrough)
+        queue.setPipe({ end: () => {} })
         queue.exit(0)
         const gathered = await gatherer.promise
         assert.deepStrictEqual(gathered.map(data => data.body.method), [
@@ -83,8 +83,7 @@ describe('queue', () => {
         }, TMPDIR, [ 1, 2 ], 1)
         queue.push({ a: 1 })
         queue.exit(0)
-        const socket = new stream.PassThrough
-        queue.setPipe(socket, socket)
+        queue.setPipe({ end: () => {} })
         const gathered = await gatherer.promise
         assert.deepStrictEqual(gathered.map(data => data.body.method), [
             'start', 'log', 'exit'
@@ -104,7 +103,7 @@ describe('queue', () => {
         }, TMPDIR, [ 1, 2 ], 1)
         queue.exit(0)
         const socket = new stream.PassThrough
-        queue.setPipe(socket, socket)
+        queue.setPipe({ end: () => {} })
         queue.push({ a: 1 })
         const gathered = await gatherer.promise
         assert.deepStrictEqual(gathered.map(data => data.body.method), [
@@ -125,7 +124,7 @@ describe('queue', () => {
         }, TMPDIR, [ 1, 2 ], 1)
         const input = new stream.PassThrough
         const output = new stream.PassThrough
-        const promises = queue.setPipe(input, output)
+        const promises = queue.setPipe({ input, output })
         await new Promise(resolve => setTimeout(resolve, 5))
         queue.version(1)
         input.write(([{ series: 0 }]).map(JSON.stringify).join('\n') + '\n')
@@ -159,7 +158,7 @@ describe('queue', () => {
         const input = new stream.PassThrough
         const output = new stream.PassThrough
         queue.push({ a: 1 })
-        const promises = queue.setPipe(input, output)
+        const promises = queue.setPipe({ input, output })
         await new Promise(resolve => setTimeout(resolve, 5))
         queue.push({ a: 1 })
         input.write(([{ series: 0 }, { series: 1 }]).map(JSON.stringify).join('\n') + '\n')
@@ -192,7 +191,7 @@ describe('queue', () => {
         }, TMPDIR, [ 1, 2 ], 1)
         const input = new stream.PassThrough
         const output = new stream.PassThrough
-        const promises = queue.setPipe(input, output)
+        const promises = queue.setPipe({ input, output })
         await new Promise(resolve => setTimeout(resolve, 5))
         queue.push({ a: 1 })
         await new Promise(resolve => setTimeout(resolve, 5))
