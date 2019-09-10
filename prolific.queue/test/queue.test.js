@@ -10,8 +10,9 @@ describe('queue', () => {
 
     const rimraf = require('rimraf')
 
+    const Watcher = require('prolific.watcher')
+
     const Queue = require('../queue')
-    const Watcher = require('../../prolific.watcher/watcher')
 
     const TMPDIR = path.join(__dirname, 'tmp')
     const dir = {

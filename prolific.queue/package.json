@@ -30,6 +30,7 @@
     "devDependencies":
     {
                             "ascension":                    "^1.0.3",
+                            "prolific.watcher":             "^0.0.1",
                             "rimraf":                       "3.0.0"
     },
     "main":                 "queue",
