@@ -3,7 +3,7 @@
     "version":              "11.0.0-alpha.0",
     "description":
 
-      "Gather chunks of logs emitted from a monitored, Prolific-enabled program.",
+      "Gather synchronous log messages emitted from a monitored, Prolific-enabled program.",
 
     "keywords":
     [

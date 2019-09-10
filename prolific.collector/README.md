@@ -1,3 +1,3 @@
 ## Prolific Collector
 
-Gather chunks of logs emitted from a monitored, Prolific-enabled program.
+Gather synchronous log messages emitted from a monitored, Prolific-enabled program.
