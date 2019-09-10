@@ -3,17 +3,67 @@ describe('shuttle', () => {
     const events = require('events')
     const stream = require('stream')
     const Shuttle = require('../shuttle')
+    const callback = require('prospective/callback')
+    const rimraf = require('rimraf')
     const descendent = require('descendent')
     const sink = require('prolific.sink')
     const path = require('path')
-    const fs = require('fs')
-    it('can set a pipe', () => {
+    const Watcher = require('prolific.watcher')
+    const Collector = require('prolific.collector')
+    const Destructible = require('destructible')
+    const fs = require('fs').promises
+    const TMPDIR = path.join(__dirname, 'tmp')
+    const dir = {
+        stage: path.resolve(TMPDIR, 'stage'),
+        publish: path.resolve(TMPDIR, 'publish')
+    }
+    process.on('unhandledRejection', error => { throw error })
+    class Gatherer {
+        constructor (collector, method, count = 1) {
+            this._method = method
+            this._count = count
+            this.promise = new Promise(resolve => {
+                let count = 0
+                const gathered = []
+                collector.on('data', data => {
+                    gathered.push(data)
+                    if (data.body.method == this._method && ++count == this._count) {
+                        resolve(gathered)
+                    }
+                })
+            })
+        }
+    }
+    async function reset () {
+        await callback(callback => rimraf(TMPDIR, callback))
+        await fs.mkdir(dir.publish, { recursive: true })
+        await fs.mkdir(dir.stage, { recursive: true })
+        // For some reason we need to wait a bit for the above directories to
+        // actually take effect on OS X, otherwise files from previous run are
+        // extant and the first events are reporting a missing file.
+        await new Promise(resolve => setTimeout(resolve, 50))
+        const destructible = new Destructible(__filename)
+        const watcher = new Watcher(destructible, () => 0, path.join(TMPDIR, 'publish'))
+        const collector = new Collector
+        watcher.on('data', data => collector.data(data))
+        return { destructible, watcher, collector }
+    }
+    it('will not initialize when not run under prolific', async () => {
+        descendent.process = new events.EventEmitter
+        descendent.process.env = {}
+        const shuttle = new Shuttle()
+        assert(!shuttle.monitored, 'not monitored')
+        shuttle.exit(0)
+    })
+    it('can set a pipe', async () => {
+        const { destructible, collector } = await reset()
+        const gatherer = new Gatherer(collector, 'exit')
         const test = []
-        const shuttle = new Shuttle
         descendent.process = new events.EventEmitter
         descendent.process.env = {
             PROLIFIC_SUPERVISOR_PROCESS_ID: '1',
-            DESCENDENT_PROCESS_PATH: '1'
+            DESCENDENT_PROCESS_PATH: '1',
+            PROLIFIC_TMPDIR: path.resolve(__dirname, 'tmp')
         }
         descendent.process.pid = 2
         descendent.process.stderr = new stream.PassThrough
@@ -21,116 +71,65 @@ describe('shuttle', () => {
         descendent.process.send = message => test.push(message)
         sink.properties.pid = 0
         sink.Date = { now: function () { return 0 } }
-        shuttle.start({ exit: false, Date: { now: function () { return 0 } } })
-        shuttle.start()
-
+        const shuttle = new Shuttle({
+            Date: { now: function () { return 0 } },
+            interval: 1,
+            exit: false,
+            uncaughtException: false,
+            unhandledRejection: false
+        })
         sink.json('error', 'example', 'message', { key: 'value' }, { pid: 0 })
-        assert.deepStrictEqual(descendent.process.stderr.read().toString().split('\n'), [
-            '% 2/0 71c17733 aaaaaaaa 1 %',
-            '{"method":"announce","body":{"path":[1,2]}}',
-            ''
-        ], 'stderr start')
-
-        const pipe = new stream.PassThrough
-        descendent.emit('prolific:pipe', {}, pipe)
+        const input = new stream.PassThrough
+        const output = new stream.PassThrough
+        descendent.emit('prolific:pipe', {}, { input, output, unref: () => {}  })
         descendent.emit('prolific:accept', {
             body: {
-                source: fs.readFileSync(path.join(__dirname, 'processor.js')),
+                source: await fs.readFile(path.join(__dirname, 'processor.js')),
                 file: path.join(__dirname, 'processor.js'),
                 version: 1
             }
         })
         sink.json('error', 'example', 'droppable', { key: 'value' }, { pid: 0 })
         sink.json('error', 'example', 'acceptible', { key: 'value' }, { pid: 0 })
-        shuttle.close()
-        shuttle.close()
-        assert.deepStrictEqual(test, [{
-            module: 'descendent',
-            method: 'route',
-            name: 'prolific:shuttle',
-            to: [ 1 ],
-            path: [ 2 ],
-            body: '2/0'
-        }], 'test')
+        await new Promise(resolve => setTimeout(resolve, 100))
+        shuttle.exit(0)
+        const gathered = await gatherer.promise
+        destructible.destroy()
+        await destructible.promise
+        assert.deepStrictEqual(gathered.map(entry => entry.body.method), [
+            'start', 'log', 'log', 'log', 'exit'
+        ], 'synchronous')
+        const asynchronous = output.read()
+                                   .toString()
+                                   .split('\n')
+                                   .filter(line => line)
+                                   .map(JSON.parse)
+                                   .map(entry => entry.method)
+        assert.deepStrictEqual(asynchronous, [
+            'entries', 'version', 'entries'
+        ], 'asynchronous')
     })
-    it('will not initialize when not run under prolific', async () => {
-        descendent.process = new events.EventEmitter
-        descendent.process.env = {}
-        const shuttle = new Shuttle
-        await shuttle.start()
-        assert(shuttle.closed, 'closed')
-    })
-    it('will propagate an exception', async () => {
+    it('will set default handlers', async () => {
+        const { destructible, collector } = await reset()
+        const gatherer = new Gatherer(collector, 'exit')
         const test = []
         descendent.process = new events.EventEmitter
         descendent.process.env = {
             PROLIFIC_SUPERVISOR_PROCESS_ID: '1',
-            DESCENDENT_PROCESS_PATH: '1'
+            DESCENDENT_PROCESS_PATH: '1',
+            PROLIFIC_TMPDIR: path.resolve(__dirname, 'tmp')
         }
         descendent.process.pid = 2
         descendent.process.stderr = new stream.PassThrough
         descendent.process.connected = true
         descendent.process.send = message => test.push(message)
-        const shuttle = new Shuttle
-        const start = shuttle.start({
-            uncaughtException: error => test.push(error.message),
-            Date: { now: () => 0 }
-        })
-        assert(!shuttle.closed, 'closed')
-        try {
-            descendent.process.emit('uncaughtException', new Error('uncaught'))
-        } catch (error) {
-            test.push(error.message)
-        }
-        assert(shuttle.closed, 'closed')
-        assert.deepStrictEqual(test, [{
-            module: 'descendent',
-            method: 'route',
-            name: 'prolific:shuttle',
-            to: [ 1 ],
-            path: [ 2 ],
-            body: '2/0'
-        }, 'uncaught', 'uncaught' ], 'test')
-        await start
-        assert.deepStrictEqual(descendent.process.stderr.read().toString().split('\n'), [
-            '% 2/0 71c17733 aaaaaaaa 1 %',
-            '{"method":"announce","body":{"path":[1,2]}}',
-            '% 2/0 b798da34 71c17733 1 %',
-            '{\"method\":\"exit\"}',
-            ''
-        ], 'stderr')
-    })
-    it('will respond to an exit', async () => {
-        const test = []
-        descendent.process = new events.EventEmitter
-        descendent.process.env = {
-            PROLIFIC_SUPERVISOR_PROCESS_ID: '1',
-            DESCENDENT_PROCESS_PATH: '1'
-        }
-        descendent.process.pid = 2
-        descendent.process.stderr = new stream.PassThrough
-        descendent.process.connected = true
-        descendent.process.send = message => test.push(message)
-        const shuttle = new Shuttle
-        const start = shuttle.start({ exit: true, Date: { now: () => 0 } })
-        assert(!shuttle.closed, 'closed')
-        descendent.process.emit('exit')
-        assert(shuttle.closed, 'closed')
-        assert.deepStrictEqual(test, [{
-            module: 'descendent',
-            method: 'route',
-            name: 'prolific:shuttle',
-            to: [ 1 ],
-            path: [ 2 ],
-            body: '2/0'
-        } ], 'test')
-        await start
-        assert.deepStrictEqual(descendent.process.stderr.read().toString().split('\n'), [
-            '% 2/0 71c17733 aaaaaaaa 1 %',
-            '{"method":"announce","body":{"path":[1,2]}}',
-            '% 2/0 b798da34 71c17733 1 %',
-            '{\"method\":\"exit\"}',
-            ''
-        ], 'stderr')
+        const shuttle = require('..').create({})
+        shuttle.exit(0)
+        const gathered = await gatherer.promise
+        destructible.destroy()
+        await destructible.promise
+        assert.deepStrictEqual(gathered.map(entry => entry.body.method), [
+            'start', 'exit'
+        ], 'synchronous')
     })
 })

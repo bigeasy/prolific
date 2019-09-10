@@ -6,107 +6,92 @@ const Queue = require('prolific.queue')
 
 const LEVEL = require('prolific.level')
 
-const createUncaughtExceptionHandler = require('./uncaught')
-
 const assert = require('assert')
 
+const rethrow = require('./uncaught')
+
 class Shuttle {
-    constructor () {
-        this.closed = false
-        this._initialized = false
+    constructor (options) {
         this._queue = null
-    }
-
-    start (options) {
-        if (this._initialized) {
-            return Promise.resolve()
-        }
-        this._initialized = true
-        options || (options = {})
         if (descendent.process.env.PROLIFIC_SUPERVISOR_PROCESS_ID != null) {
-            return this._listen(descendent, options)
+            this.monitored = true
+            this._initialze(options)
         } else {
-            this.closed = true
-            return Promise.resolve()
+            this.monitored = false
         }
     }
 
-    _listen (descendent, options) {
-        const now = coalesce(options.Date, Date).now()
-        const monitorProcessId = +descendent.process.env.PROLIFIC_SUPERVISOR_PROCESS_ID
-
+    _initialze (options) {
         descendent.increment()
 
-        const id = [ descendent.process.pid, now ]
-        const path = descendent.path.splice(descendent.path.indexOf(monitorProcessId))
+        const supervisorId = +descendent.process.env.PROLIFIC_SUPERVISOR_PROCESS_ID
+        const path = descendent.path.splice(descendent.path.indexOf(supervisorId))
+        const directory = descendent.process.env.PROLIFIC_TMPDIR
 
-        const queue = new Queue(512, id, descendent.process.stderr, { path: path })
-        const send = queue.send()
-        this._queue = queue
+        const queue = this._queue = new Queue(Date, directory,
+                                              path, coalesce(options.interval, 1000))
 
-        // TODO Unhandled rejection.
-        if (options.uncaughtException != null) {
-            const handler = createUncaughtExceptionHandler(options.uncaughtException)
-            descendent.process.on('uncaughtException', (error) => {
-                this.close()
-                handler(error)
-                queue.exit()
-                throw error
-            })
+        if (options.uncaughtException == null || options.uncaughtException) {
+            descendent.process.on('uncaughtException', rethrow('uncaught'))
+        }
+
+        if (options.unhandledRejection == null || options.unhandledRejection) {
+            descendent.process.on('unhandledRejection', rethrow('unhandled'))
         }
 
         if (options.exit == null || options.exit) {
-            descendent.process.on('exit', () => {
-                this.close()
-                queue.exit()
-            })
+            descendent.process.on('exit', this.exit.bind(this))
         }
 
         // All filtering will be performed by the monitor initially. Until
         // we get a configuration we send everything.
         const sink = require('prolific.resolver').sink
+
         sink.json = function (level, qualifier, label, body, system) {
             queue.push({
                 when: body.when || this.Date.now(), level, qualifier, label, body, system
             })
         }
 
-        this._handlers = { pipe: null, accept: null }
-
-        descendent.once('prolific:pipe', this._handlers.pipe = function (message, handle) {
-            queue.setPipe(handle)
-        })
-        descendent.on('prolific:accept', this._handlers.accept = function (message) {
-            assert(message.body.source)
-            const processor = Evaluator.create(message.body.source, message.body.file)
-            assert(processor.triage)
-            const triage = processor.triage(require('prolific.require').require)
-            sink.json = function (level, qualifier, label, body, system) {
-                if (triage(LEVEL[level], qualifier, label, body, system)) {
-                    queue.push({
-                        when: body.when || this.Date.now(), level, qualifier, label, body, system
-                    })
+        const handlers = this._handlers = {
+            'prolific:pipe': function (message, handle) {
+                delete handlers['prolific:pipe']
+                handle.unref()
+                queue.setPipe(handle)
+            },
+            'prolific:accept': (message) => {
+                assert(message.body.source)
+                const processor = Evaluator.create(message.body.source, message.body.file)
+                assert(processor.triage)
+                const triage = processor.triage(require('prolific.require').require)
+                sink.json = function (level, qualifier, label, body, system) {
+                    if (triage(LEVEL[level], qualifier, label, body, system)) {
+                        queue.push({
+                            when: body.when || this.Date.now(), level, qualifier, label, body, system
+                        })
+                    }
                 }
+                queue.version(message.body.version)
             }
-            queue.push([{ method: 'version', version: message.body.version }])
-        })
+        }
 
-        descendent.up(monitorProcessId, 'prolific:shuttle', id.join('/'))
+        descendent.once('prolific:pipe', this._handlers['prolific:pipe'])
+        descendent.on('prolific:accept', this._handlers['prolific:accept'])
 
-        return send
     }
 
-    close () {
-        if (!this.closed) {
-            this.closed = true
-            descendent.removeListener('prolific:pipe', this._handlers.pipe)
-            descendent.removeListener('prolific:accept', this._handlers.accept)
+    exit (code) {
+        if (this.monitored && !this.exited) {
+            this.exited = true
+            for (const name in this._handlers) {
+                descendent.removeListener(name, this._handlers[name])
+            }
             descendent.decrement()
-            this._queue.close()
+            this._queue.exit(code)
         }
     }
 }
 
-Shuttle.sink = require('prolific.sink')
+Shuttle.sink = require('prolific.resolver').sink
 
 module.exports = Shuttle

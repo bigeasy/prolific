@@ -1,2 +1,5 @@
 const Shuttle = require('./shuttle')
-module.exports = new Shuttle
+const coalesce = require('extant')
+exports.create = function (options) {
+    return new Shuttle(coalesce(options, {}))
+}
