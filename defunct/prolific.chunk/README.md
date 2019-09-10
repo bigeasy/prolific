@@ -1,3 +1,6 @@
 ## Prolific Chunk
 
-Chunk log lines for transmission to the Prolific supervisor.
+Deprecated. No longer shipping fatal log lines chunks up through standard error.
+Writing to temporary files instead.
+
+See [Prolific](http://github.com/bigeasy/prolific).
