@@ -23,7 +23,6 @@
                             "descendent":                   "2.0.x",
                             "extant":                       "1.0.x",
                             "foremost":                     "1.0.x",
-                            "prolific.chunk":               "8.0.x",
                             "prolific.evaluator":           "3.0.x",
                             "prolific.level":               "1.0.x",
                             "prolific.queue":               "18.0.x",

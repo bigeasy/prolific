@@ -36,7 +36,6 @@
     "devDependencies":
     {
                             "mocha":                        "6.2.0",
-                            "prolific.chunk":               "8.0.x",
                             "prolific.logger":              "10.0.x",
                             "prolific.shuttle":             "24.0.x",
                             "rimraf":                       "3.0.0"

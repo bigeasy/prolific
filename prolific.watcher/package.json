@@ -20,7 +20,7 @@
     },
     "dependencies":
     {
-                            "avenue":                       "^0.1.6",
+                            "avenue":                       "^0.2.0-alpha.0",
                             "prolific.logger":              "^10.0.1"
     },
     "devDependencies":
