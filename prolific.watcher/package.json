@@ -25,7 +25,7 @@
     },
     "devDependencies":
     {
-                            "destructible":                 "^4.0.10",
+                            "destructible":                 "^5.0.0-alpha.0",
                             "foremost":                     "^1.0.4",
                             "mocha":                        "6.2.0",
                             "prospective":                  "^0.1.0-alpha.1",
