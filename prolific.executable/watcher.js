@@ -25,7 +25,7 @@ class Watcher extends events.EventEmitter {
         destructible.destruct(() => this._queue.push(null))
     }
 
-    _safeParse (json) {
+    _safeParse (json, eventType, filename) {
         try {
             return JSON.parse(json)
         } catch (error) {
@@ -72,7 +72,7 @@ class Watcher extends events.EventEmitter {
                     directory: this._directory, eventType, filename, actual, expected
                 })
             }
-            const json = this._safeParse(buffer.toString())
+            const json = this._safeParse(buffer.toString(), eventType, filename)
             if (json != null) {
                 this.emit('data', json)
             }
