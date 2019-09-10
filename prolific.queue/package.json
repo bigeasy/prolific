@@ -3,7 +3,7 @@
     "version":              "18.0.2",
     "description":
 
-      "A logging framework.",
+      "Queue for Prolific that submits log entries from the logged application to the logging monitor.",
 
     "keywords":
     [
