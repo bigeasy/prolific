@@ -42,8 +42,8 @@ describe('watcher', () => {
     }
     it('can watch and parse a directory', async () => {
         const { watcher, destructible } = await reset()
-        const data = once(watcher, 'data')
-        const entry = once(entries, 'entry')
+        const data = once(watcher, 'data').promise
+        const entry = once(entries, 'entry').promise
         await fs.writeFile(path.join(dir.stage, 'stage.json'), '1')
         await fs.rename(path.join(dir.stage, 'stage.json'),
                         path.join(dir.publish, 'publish-00000000.json'))
@@ -58,7 +58,7 @@ describe('watcher', () => {
     })
     it('can detect a bad file name', async () => {
         const { watcher, destructible } = await reset()
-        const entry = once(entries, 'entry')
+        const entry = once(entries, 'entry').promise
         await fs.writeFile(path.join(dir.stage, 'stage.json'), '1')
         await fs.rename(path.join(dir.stage, 'stage.json'),
                         path.join(dir.publish, 'publish.json'))
@@ -70,7 +70,7 @@ describe('watcher', () => {
     })
     it('can detect a bad checksum', async () => {
         const { watcher, destructible } = await reset()
-        const entry = once(entries, 'entry')
+        const entry = once(entries, 'entry').promise
         await fs.writeFile(path.join(dir.stage, 'stage.json'), '1')
         await fs.rename(path.join(dir.stage, 'stage.json'),
                         path.join(dir.publish, 'publish-1.json'))
@@ -82,7 +82,7 @@ describe('watcher', () => {
     })
     it('can detect bad json', async () => {
         const { watcher, destructible } = await reset()
-        const entry = once(entries, 'entry')
+        const entry = once(entries, 'entry').promise
         await fs.writeFile(path.join(dir.stage, 'stage.json'), '{')
         await fs.rename(path.join(dir.stage, 'stage.json'),
                         path.join(dir.publish, 'publish-0.json'))
