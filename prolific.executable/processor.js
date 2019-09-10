@@ -44,15 +44,19 @@ class Processor extends events.EventEmitter {
             process: entries => this._backlog.push(entries)
         }
 
+        const self = this
         this._reconfigurator = new Reconfigurator(file, new class extends BufferConfigurator {
             async configure (buffer) {
-                const source = buffer.toString()
-                const definition = Evaluator.create(source, file)
-                assert(definition.triage && definition.process)
-                const triage = definition.triage(require('prolific.require').require)
-                const process = await definition.process(require('prolific.require').require)
-                const processor = typeof process == 'function' ? { process } : process
-                return { buffer, source, triage, processor }
+                try {
+                    const source = buffer.toString()
+                    const definition = Evaluator.create(source, file)
+                    const triage = definition.triage(require('prolific.require').require)
+                    const process = await definition.process(require('prolific.require').require)
+                    const processor = typeof process == 'function' ? { process } : process
+                    return { buffer, source, triage, processor }
+                } catch (error) {
+                    self.emit('error', error)
+                }
             }
             reload (previous, buffer) {
                 return super.reload(previous.buffer, buffer)

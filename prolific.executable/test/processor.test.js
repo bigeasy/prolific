@@ -14,6 +14,7 @@ describe('processor', () => {
 
     const configuration = {
         configuration: path.join(__dirname, 'configuration.initial.js'),
+        bad: path.join(__dirname, 'configuration.bad.js'),
         reconfiguration: path.join(__dirname, 'configuration.subsequent.js'),
         objectconfiguration: path.join(__dirname, 'configuration.object.js'),
         source: path.join(__dirname, 'configuration.js')
@@ -28,6 +29,7 @@ describe('processor', () => {
         await fs.copyFile(configuration.configuration, configuration.source)
 
         const processor = new Processor(configuration.source, { now: () => 1 })
+        processor.on('error', error => console.log(error.stack))
         sink.json('error', 'prolific', 'label', {}, { pid: 1 })
         await processor.process([{
             when: 0,
@@ -67,7 +69,14 @@ describe('processor', () => {
                 resolve()
             })
         })
-        fs.copyFile(configuration.reconfiguration, configuration.source)
+        await fs.copyFile(configuration.bad, configuration.source)
+        await new Promise(resolve => {
+            processor.once('error', error => {
+                test.push('bad configure')
+                resolve()
+            })
+        })
+        await fs.copyFile(configuration.reconfiguration, configuration.source)
         await reconfigured
         const configured = { object: null, subsequent: null }
         configured.object = new Promise(resolve => {
@@ -76,7 +85,7 @@ describe('processor', () => {
                 resolve()
             })
         })
-        fs.copyFile(configuration.objectconfiguration, configuration.source)
+        await fs.copyFile(configuration.objectconfiguration, configuration.source)
         await configured.object
         assert(!processor.destroyed, 'not destroyed')
         await processor.process([[{ method: 'exit' }]])
@@ -85,7 +94,7 @@ describe('processor', () => {
             version: 0,
             source: await fs.readFile(configuration.configuration, 'utf8'),
             file: configuration.source
-        }, {
+        }, 'bad configure', {
             version: 1,
             source: await fs.readFile(configuration.reconfiguration, 'utf8'),
             file: configuration.source
