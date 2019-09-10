@@ -25,6 +25,18 @@ class Watcher extends events.EventEmitter {
         destructible.destruct(() => this._queue.push(null))
     }
 
+    _safeParse (json) {
+        try {
+            return JSON.parse(json)
+        } catch (error) {
+            assert(error instanceof SyntaxError, 'syntax error expected')
+            logger.warn('json', {
+                directory: this._directory,
+                eventType, filename, json
+            })
+        }
+    }
+
     async _change (shifter) {
         for await (const { eventType, filename } of shifter.iterator()) {
             const hash = /-[0-9a-f]{1,8}\.json$/.exec(filename)
@@ -60,15 +72,9 @@ class Watcher extends events.EventEmitter {
                     directory: this._directory, eventType, filename, actual, expected
                 })
             }
-            const json = buffer.toString()
-            try {
-                this.emit('data', JSON.parse(json))
-            } catch (error) {
-                assert(error instanceof SyntaxError, 'syntax error expected')
-                logger.warn('json', {
-                    directory: this._directory,
-                    eventType, filename, json
-                })
+            const json = this._safeParse(buffer.toString())
+            if (json != null) {
+                this.emit('data', json)
             }
         }
     }
