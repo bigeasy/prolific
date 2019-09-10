@@ -11,7 +11,7 @@ describe('queue', () => {
     const rimraf = require('rimraf')
 
     const Queue = require('../queue')
-    const Watcher = require('../../prolific.executable/watcher')
+    const Watcher = require('../../prolific.watcher/watcher')
 
     const TMPDIR = path.join(__dirname, 'tmp')
     const dir = {
