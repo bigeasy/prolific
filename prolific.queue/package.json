@@ -29,6 +29,7 @@
     {
                             "ascension":                    "^1.0.3",
                             "destructible":                 "^4.0.10",
+                            "prolific.collector":           "^11.0.0-alpha.1",
                             "prolific.watcher":             "^0.0.1",
                             "prospective":                  "^0.1.0-alpha.1",
                             "rimraf":                       "3.0.0"

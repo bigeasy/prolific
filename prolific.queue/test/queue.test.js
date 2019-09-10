@@ -10,6 +10,7 @@ describe('queue', () => {
 
     const rimraf = require('rimraf')
 
+    const Collector = require('prolific.collector')
     const Watcher = require('prolific.watcher')
 
     const Queue = require('../queue')
@@ -19,38 +20,6 @@ describe('queue', () => {
         stage: path.resolve(TMPDIR, 'stage'),
         publish: path.resolve(TMPDIR, 'publish')
     }
-    const sort = ascension([ Number, Number ], entry => [ entry.when, entry.series ])
-
-    const events = require('events')
-    class Collector extends events.EventEmitter {
-        constructor () {
-            super()
-            this._streams = []
-        }
-
-        exited (path) {
-        }
-
-        data (data) {
-            const path = data.path.join('/')
-            if (this._streams[path] == null) {
-                this._streams[path] = {
-                    start: data.start,
-                    series: 0,
-                    queue: []
-                }
-            }
-            const stream = this._streams[path]
-            assert.equal(stream.start, data.start, 'start time mismatch')
-            stream.queue.push(data)
-            stream.queue.sort(sort)
-            while (stream.queue.length != 0 && stream.series == stream.queue[0].series) {
-                stream.series = (stream.series + 1) & 0xffffff
-                this.emit('data', stream.queue.shift())
-            }
-        }
-    }
-
     process.on('unhandledRejection', error => { throw error })
     async function reset () {
         await callback(callback => rimraf(TMPDIR, callback))
@@ -76,7 +45,6 @@ describe('queue', () => {
                 collector.on('data', data => {
                     gathered.push(data)
                     if (data.body.method == this._method && ++count == this._count) {
-                        gathered.sort(sort)
                         resolve(gathered)
                     }
                 })
