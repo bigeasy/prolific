@@ -1,181 +1,246 @@
 describe('queue', () => {
     const assert = require('assert')
     const stream = require('stream')
-    const Queue = require('../queue')
-    it('can exit before setting a pipe', async () => {
-        const test = []
-        const stderr = new stream.PassThrough
-        const pipe = new stream.PassThrough
-        pipe.once('finish', () => test.push('finish'))
-        const queue = new Queue(512, [ 1, 2 ], stderr, 1, 0)
-        const send = queue.send()
-        queue.exit()
-        queue.exit()
-        queue.setPipe(pipe)
-        await send
-        assert.deepStrictEqual(stderr.read().toString().split('\n'), [
-            '% 1/2 224e8640 aaaaaaaa 1 %',
-            '{"method":"announce","body":1}',
-            '% 1/2 b798da34 224e8640 1 %',
-            '{"method":"exit"}',
-            ''
-        ], 'stderr')
-        assert.deepStrictEqual(test, [ 'finish' ], 'pipe closed')
-        queue.push(1) // this is no a no-op because we exited
-    })
-    it('can write through the pipe set after pushing', async () => {
-        const test = []
-        const stderr = new stream.PassThrough
-        const pipe = new stream.PassThrough
-        pipe.once('finish', () => test.push('finish'))
-        const queue = new Queue(512, [ 1, 2 ], stderr, 1, 25)
-        const send = queue.send()
-        queue.push(1)
-        queue.setPipe(pipe)
-        await new Promise(resolve => setImmediate(resolve))
-        queue.push(2)
-        queue.push(3)
-        queue.push(4)
-        await new Promise(resolve => setTimeout(resolve, 30))
-        queue.close()
-        queue.exit()
-        await send
-        assert.equal(pipe.read().toString(), '[1,2]\n[3,4]\n', 'pipe')
-        assert.deepStrictEqual(stderr.read().toString().split('\n'), [
-            '% 1/2 224e8640 aaaaaaaa 1 %',
-            '{"method":"announce","body":1}',
-            '% 1/2 b798da34 224e8640 1 %',
-            '{"method":"exit"}',
-            ''
-        ], 'stderr')
-        await new Promise(resolve => setImmediate(resolve))
-        assert.deepStrictEqual(test, [ 'finish' ], 'pipe closed')
-    })
-    it('can write through the pipe set before pushing', async () => {
-        const test = []
-        const stderr = new stream.PassThrough
-        const pipe = new stream.PassThrough
-        pipe.once('finish', () => test.push('finish'))
-        const queue = new Queue(512, [ 1, 2 ], stderr, 1, 25)
-        const send = queue.send()
-        queue.setPipe(pipe)
-        queue.push(1)
-        await new Promise(resolve => setImmediate(resolve))
-        queue.close()
-        queue.exit()
-        await send
-        assert.equal(pipe.read().toString(), '[1]\n', 'pipe')
-        assert.deepStrictEqual(stderr.read().toString().split('\n'), [
-            '% 1/2 224e8640 aaaaaaaa 1 %',
-            '{"method":"announce","body":1}',
-            '% 1/2 b798da34 224e8640 1 %',
-            '{"method":"exit"}',
-            ''
-        ], 'stderr')
-        await new Promise(resolve => setImmediate(resolve))
-        assert.deepStrictEqual(test, [ 'finish' ], 'pipe closed')
-    })
-    it('can write entries through stderr', async () => {
-        const test = []
-        const stderr = new stream.PassThrough
-        const pipe = new stream.PassThrough
-        pipe.once('finish', () => test.push('finish'))
-        const queue = new Queue(512, [ 1, 2 ], stderr, 1, 25)
-        const send = queue.send()
-        queue.setPipe(pipe)
-        queue.close()
-        queue.push(1)
-        await new Promise(resolve => setImmediate(resolve))
-        queue.close()
-        queue.exit()
-        await send
-        assert.equal(pipe.read(), null, 'pipe')
-        assert.deepStrictEqual(stderr.read().toString().split('\n'), [
-            '% 1/2 224e8640 aaaaaaaa 1 %',
-            '{"method":"announce","body":1}',
-            '% 1/2 d8c5403a 224e8640 1 %',
-            '{"method":"entries","series":"1","checksum":1981202788,"chunks":1}',
-            '% 1/2 7616c164 d8c5403a 0 %',
-            '[1]',
-            '% 1/2 b798da34 7616c164 1 %',
-            '{"method":"exit"}',
-            ''
-        ], 'stderr')
-        await new Promise(resolve => setImmediate(resolve))
-        assert.deepStrictEqual(test, [ 'finish' ], 'pipe closed')
-    })
-})
-return
-require('proof')(5, require('cadence')(prove))
+    const path = require('path')
+    const fs = require('fs').promises
 
-function prove (async, okay) {
-    var abend = require('abend')
-    var stream = require('stream')
-    var Queue = require('../queue')
-    var Chunk = require('prolific.chunk')
-    var queue
-    var count = 0
-    var expected = [
-        '[1]\n',
-        '[2,3]\n',
-        '[4]\n'
-    ]
-    var writable = {
-        write: function (buffer, callback) {
-            okay(buffer.toString(), expected.shift(), 'chunk ' + (++count))
-            this.wait = callback
-        },
-        end: function () {
+    const Destructible = require('destructible')
+    const callback = require('prospective/callback')
+    const ascension = require('ascension')
+
+    const rimraf = require('rimraf')
+
+    const Queue = require('../queue')
+    const Watcher = require('../../prolific.executable/watcher')
+
+    const TMPDIR = path.join(__dirname, 'tmp')
+    const dir = {
+        stage: path.resolve(TMPDIR, 'stage'),
+        publish: path.resolve(TMPDIR, 'publish')
+    }
+    const sort = ascension([ Number, Number ], entry => [ entry.when, entry.series ])
+
+    const events = require('events')
+    class Collector extends events.EventEmitter {
+        constructor () {
+            super()
+            this._streams = []
+        }
+
+        exited (path) {
+        }
+
+        data (data) {
+            const path = data.path.join('/')
+            if (this._streams[path] == null) {
+                this._streams[path] = {
+                    start: data.start,
+                    series: 0,
+                    queue: []
+                }
+            }
+            const stream = this._streams[path]
+            assert.equal(stream.start, data.start, 'start time mismatch')
+            stream.queue.push(data)
+            stream.queue.sort(sort)
+            while (stream.queue.length != 0 && stream.series == stream.queue[0].series) {
+                stream.series = (stream.series + 1) & 0xffffff
+                this.emit('data', stream.queue.shift())
+            }
         }
     }
-    async(function () {
-        // Step through closing before you've set the pipe.
-        var pipe = new stream.PassThrough
-        queue = new Queue(512, [ 1, 2 ], pipe, 1)
-        queue.send(async())
-        queue.exit()
-        queue.exit()
-        queue.setPipe(writable)
-    }, function () {
-        queue = new Queue(512, [ 1, 2 ], new stream.PassThrough, 1)
-        queue.send(async())
-        queue.push(1)
-        queue.setPipe(writable)
-        queue.push(2)
-        queue.push(3)
-        while (writable.wait != null) {
-            var wait = [writable.wait, writable.wait = null][0]
-            wait()
+
+    process.on('unhandledRejection', error => { throw error })
+    async function reset () {
+        await callback(callback => rimraf(TMPDIR, callback))
+        await fs.mkdir(dir.publish, { recursive: true })
+        await fs.mkdir(dir.stage, { recursive: true })
+        // For some reason we need to wait a bit for the above directories to
+        // actually take effect on OS X, otherwise files from previous run are
+        // extant and the first events are reporting a missing file.
+        await new Promise(resolve => setTimeout(resolve, 50))
+        const destructible = new Destructible(__filename)
+        const watcher = new Watcher(destructible, () => 0, path.join(TMPDIR, 'publish'))
+        const collector = new Collector
+        watcher.on('data', data => collector.data(data))
+        return { destructible, watcher, collector }
+    }
+    class Gatherer {
+        constructor (collector, method, count = 1) {
+            this._method = method
+            this._count = count
+            this.promise = new Promise(resolve => {
+                let count = 0
+                const gathered = []
+                collector.on('data', data => {
+                    gathered.push(data)
+                    if (data.body.method == this._method && ++count == this._count) {
+                        gathered.sort(sort)
+                        resolve(gathered)
+                    }
+                })
+            })
         }
-        queue.push(4)
-        while (writable.wait != null) {
-            var wait = [writable.wait, writable.wait = null][0]
-            wait()
-        }
-        queue.close()
-        queue.close()
-    }, function () {
-        var stderr = new stream.PassThrough
-        queue = new Queue(100, [ 1, 2 ], stderr, 1)
-        queue.setPipe(new stream.PassThrough)
-        queue.send(async())
-        queue.close()
-        queue.push({ alphabet: new Array(3).fill('abcdefghijklmnopqrstuvwxyz') })
-        queue.exit()
-        queue.push(2)
-        var chunk = stderr.read().toString()
-        okay(chunk.split('\n'), [
-            '% 1/2 224e8640 aaaaaaaa 1 %',
-            '{"method":"announce","body":1}',
-             '% 1/2 a8d518e8 224e8640 1 %',
-            '{"method":"entries","series":1,"checksum":3417670023,"chunks":2}',
-            '% 1/2 a6a72ac5 a8d518e8 0 %',
-            '[{"alphabet":["abcdefghijklmnopqrstuvwxyz","abcdefghijklmnopqrstuvwxyz"',
-            '% 1/2 c1e07487 a6a72ac5 0 %',
-            ',"abcdefghijklmnopqrstuvwxyz"]}]',
-            '% 1/2 b798da34 c1e07487 1 %',
-            '{"method":"exit"}',
-            ''
+    }
+    it('can exit before setting a pipe', async () => {
+        const { destructible, watcher, collector } = await reset()
+        const gatherer = new Gatherer(collector, 'exit')
+        let  now = 0
+        const test = []
+        const pipe = new stream.PassThrough
+        pipe.once('finish', () => test.push('finish'))
+        const queue = new Queue({
+            now: () => now++
+        }, TMPDIR, [ 1, 2 ], 1)
+        queue.exit(0)
+        queue.setPipe(new stream.PassThrough, new stream.PassThrough)
+        queue.exit(0)
+        const gathered = await gatherer.promise
+        assert.deepStrictEqual(gathered.map(data => data.body.method), [
+            'start', 'exit'
         ], 'exit')
+        destructible.destroy()
+        await destructible.promise
     })
-}
+    it('can write and exit before setting a pipe', async () => {
+        const { destructible, watcher, collector } = await reset()
+        const gatherer = new Gatherer(collector, 'exit')
+        let  now = 0
+        const test = []
+        const pipe = new stream.PassThrough
+        pipe.once('finish', () => test.push('finish'))
+        const queue = new Queue({
+            now: () => now++
+        }, TMPDIR, [ 1, 2 ], 1)
+        queue.push({ a: 1 })
+        queue.exit(0)
+        const socket = new stream.PassThrough
+        queue.setPipe(socket, socket)
+        const gathered = await gatherer.promise
+        assert.deepStrictEqual(gathered.map(data => data.body.method), [
+            'start', 'log', 'exit'
+        ], 'exit')
+        destructible.destroy()
+        await destructible.promise
+    })
+    it('can write after exit and before setting a pipe', async () => {
+        const { destructible, watcher, collector } = await reset()
+        const gatherer = new Gatherer(collector, 'log')
+        let  now = 0
+        const test = []
+        const pipe = new stream.PassThrough
+        pipe.once('finish', () => test.push('finish'))
+        const queue = new Queue({
+            now: () => now++
+        }, TMPDIR, [ 1, 2 ], 1)
+        queue.exit(0)
+        const socket = new stream.PassThrough
+        queue.setPipe(socket, socket)
+        queue.push({ a: 1 })
+        const gathered = await gatherer.promise
+        assert.deepStrictEqual(gathered.map(data => data.body.method), [
+            'start', 'exit', 'log'
+        ], 'exit')
+        destructible.destroy()
+        await destructible.promise
+    })
+    it('can write through a pipe', async () => {
+        const { destructible, watcher, collector } = await reset()
+        const gatherer = new Gatherer(collector, 'exit')
+        let  now = 0
+        const test = []
+        const pipe = new stream.PassThrough
+        pipe.once('finish', () => test.push('finish'))
+        const queue = new Queue({
+            now: () => now++
+        }, TMPDIR, [ 1, 2 ], 1)
+        const input = new stream.PassThrough
+        const output = new stream.PassThrough
+        const promises = queue.setPipe(input, output)
+        await new Promise(resolve => setTimeout(resolve, 5))
+        queue.version(1)
+        input.write(([{ series: 0 }]).map(JSON.stringify).join('\n') + '\n')
+        await new Promise(resolve => setTimeout(resolve, 5))
+        queue.exit(0)
+        const gathered = await gatherer.promise
+        assert.deepStrictEqual(gathered.map(data => data.body.method), [
+            'start', 'exit'
+        ], 'exit')
+        destructible.destroy()
+        await destructible.promise
+        await Promise.all(promises)
+        const lines = output.read()
+                            .toString()
+                            .split('\n')
+                            .filter(line => line != '')
+                            .map(JSON.parse)
+                            .map(entry => entry.method)
+        assert.deepStrictEqual(lines, [ 'version' ], 'entries')
+    })
+    it('can write through a pipe and send queued initial messages', async () => {
+        const { destructible, watcher, collector } = await reset()
+        const gatherer = new Gatherer(collector, 'exit')
+        let  now = 0
+        const test = []
+        const pipe = new stream.PassThrough
+        pipe.once('finish', () => test.push('finish'))
+        const queue = new Queue({
+            now: () => now++
+        }, TMPDIR, [ 1, 2 ], 1)
+        const input = new stream.PassThrough
+        const output = new stream.PassThrough
+        queue.push({ a: 1 })
+        const promises = queue.setPipe(input, output)
+        await new Promise(resolve => setTimeout(resolve, 5))
+        queue.push({ a: 1 })
+        input.write(([{ series: 0 }, { series: 1 }]).map(JSON.stringify).join('\n') + '\n')
+        await new Promise(resolve => setTimeout(resolve, 5))
+        queue.exit(0)
+        const gathered = await gatherer.promise
+        assert.deepStrictEqual(gathered.map(data => data.body.method), [
+            'start', 'exit'
+        ], 'exit')
+        destructible.destroy()
+        await destructible.promise
+        await Promise.all(promises)
+        const lines = output.read()
+                            .toString()
+                            .split('\n')
+                            .filter(line => line != '')
+                            .map(JSON.parse)
+                            .map(entry => entry.method)
+        assert.deepStrictEqual(lines, [ 'entries', 'entries' ], 'entries')
+    })
+    it('can resend unverified batches at exit', async () => {
+        const { destructible, watcher, collector } = await reset()
+        const gatherer = new Gatherer(collector, 'exit')
+        let  now = 0
+        const test = []
+        const pipe = new stream.PassThrough
+        pipe.once('finish', () => test.push('finish'))
+        const queue = new Queue({
+            now: () => now++
+        }, TMPDIR, [ 1, 2 ], 1)
+        const input = new stream.PassThrough
+        const output = new stream.PassThrough
+        const promises = queue.setPipe(input, output)
+        await new Promise(resolve => setTimeout(resolve, 5))
+        queue.push({ a: 1 })
+        await new Promise(resolve => setTimeout(resolve, 5))
+        queue.exit(0)
+        const gathered = await gatherer.promise
+        assert.deepStrictEqual(gathered.map(data => data.body.method), [
+            'start', 'log', 'exit'
+        ], 'exit')
+        destructible.destroy()
+        await destructible.promise
+        await Promise.all(promises)
+        const lines = output.read()
+                            .toString()
+                            .split('\n')
+                            .filter(line => line != '')
+                            .map(JSON.parse)
+                            .map(entry => entry.method)
+        assert.deepStrictEqual(lines, [ 'entries' ], 'entries')
+    })
+})

@@ -1,83 +1,62 @@
 const assert = require('assert')
 const fnv = require('hash.fnv')
-const Chunk = require('prolific.chunk')
-const split = require('./split')
-const Future = require('prospective/future')
-const Staccato = { Writable: require('staccato/writable') }
+const Staccato = require('staccato')
 const delay = require('delay')
+const fs = require('fs')
+const path = require('path')
+const byline = require('byline')
 
 class Queue {
-    constructor (size, id, stderr, announcement, interval) {
-        this._id = id
-        this._size = Chunk.getBodySize(size, id)
+    constructor (Date, directory, path, interval) {
+        this._directory = directory
         this._interval = interval
-        this._series = 1n
+        this._series = 0xffffff
+        this._start = Date.now()
         this._entries = []
-        this._available = new Future
+        this._unlatched = new Promise(resolve => this._latch = resolve)
         this._deferral = delay(0)
         this._batches = []
-        this._checksum = 0xaaaaaaaa
-        this._writable = { end: function () {} }
+        this._written = []
+        this._writable = { destroy: () => {} }
+        this._readable = { destroy: () => {} }
         this._writing = true
         this._piped = false
         this._sync = false
         this._exited = false
-        this._stderr = stderr
-        // Announce the child process to the supervisor. This will inform the
-        // supervisor that this child exists and that it may at some point send
-        // messages through chunks on standard error.
-        this._writeSync(new Chunk(true, this._id, Buffer.from(JSON.stringify({
-            method: 'announce',
-            body: announcement
-        }))))
+        this._path = path
+        this._Date = Date
+        this._publish({ method: 'start' })
     }
 
-    _writeSync (chunk) {
-        assert(chunk.buffer.length <= this._size)
-        this._stderr.write(chunk.concat(this._checksum))
-        this._checksum = chunk.checksum
-    }
-
-    // Set the asynchronous pipe and begin streaming entries or else close the
-    // pipe if it has arrived after we've closed.
-
-    //
-    setPipe (stream) {
-        if (this._sync) {
-            stream.end()
-        } else {
-            this._writable = new Staccato.Writable(stream)
-            this._piped = true
-            if (this._entries.length) {
-                this._available.resolve()
-            } else {
-                this._writing = false
-            }
+    _publish (body) {
+        const buffer = Buffer.from(JSON.stringify({
+            start: this._start,
+            path: this._path,
+            series: this._syncSeries = (this._syncSeries + 1) & 0xffffff,
+            when: this._Date.now(),
+            body: body
+        }))
+        const hash = Number(fnv(0, buffer, 0, buffer.length)).toString(16)
+        const filename = `prolific-${this._path.join('-')}-${this._Date.now()}-${hash}.json`
+        const files = {
+            stage: path.resolve(this._directory, 'stage', filename),
+            publish: path.resolve(this._directory, 'publish', filename)
         }
+        fs.writeFileSync(files.stage, buffer)
+        fs.renameSync(files.stage, files.publish)
     }
 
     _batchEntries () {
-        var entries = this._entries
+        const entries = this._entries
         if (entries.length == 0) {
             return
         }
         this._entries = []
         this._batches.push({
-            series: (this._series++).toString(16),
-            buffer: Buffer.from(JSON.stringify(entries) + '\n')
+            method: 'entries',
+            series: this._series = (this._series + 1) & 0xffffff,
+            entries: entries
         })
-    }
-
-    push (json) {
-        this._entries.push(json)
-        if (this._sync) {
-            this._batchEntries()
-            this._sendSync()
-        } else if (!this._writing) {
-            this._writing = true
-            this._batchEntries()
-            this._available.resolve()
-        }
     }
 
     // Flush logs to the dedicated logging pipe. Chunks entries so that we can send
@@ -92,7 +71,7 @@ class Queue {
     // So, first time through we don't mean it.
 
     //
-    async send () {
+    async _send (writable) {
         let interval = 0
         SEND: for (;;) {
             this._writing = ! this._piped
@@ -100,163 +79,104 @@ class Queue {
                 await (this._deferral = delay(this._interval))
             }
             interval = this._interval
-            await this._available.promise
-            this._available = new Future
-            if (this._sync) {
+            await this._unlatched
+            this._unlatched = new Promise(resolve => this._latch = resolve)
+            if (this._exited) {
                 break SEND
             }
-            for (;;) {
-                if (this._batches.length == 0) {
-                    continue SEND
-                } else {
-                    this._batchEntries()
-                }
-                await this._writable.write(this._batches[0].buffer)
-                this._batches.shift()
+            this._batchEntries()
+            while (this._batches.length != 0) {
+                const batch = this._batches.shift()
+                this._written.push(batch)
+                await writable.write(JSON.stringify(batch) + '\n')
             }
         }
     }
 
-    // Prolific has wrestled long and hard with the confusing available Node.js
-    // events for program shutdown. It was born of a desire to capture the fatal
-    // stack trace from a Node.js process and send it to a networked logging
-    // infrastructure. It was born from a frustration with the brutal
-    // performance of the "best practice" logging to standard out when standard
-    // out is synchronous in Node.js. We want to log somewhere asynchronously
-    // when times are good for performance, but we want to log somewhere
-    // synchronously when times are bad because there might not be another tick
-    // available to talk to the network.
-
-    // The "uncaughtException" handler is a final handler, or it should be. You
-    // should do something synchronous then rethrow the error. This is where
-    // Prolific began. Writing that error to standard error in such a way that a
-    // monitor could forward it to the network.
-
-    // It seemed then that the "exit" handler was the place to handle ordinary
-    // exit, and that hooking the "exit" handler would be a way to allow
-    // Prolific to shutdown normally by writing it's shutdown messages to
-    // standard error.
-
-    // However, default handlers for `SIGTERM` and `SIGINT` do not invoke
-    // `"exit"`. `"exit"` is really a work-queue-had-drained event, not an exit
-    // event. `SIGTERM` and `SIGINT` halt the program without working through
-    // the work queue. This came as a surprise. It's something that I forget
-    // about until I return to work on Prolific and wonder how it ever became so
-    // complicated.
-
-    // This caused me to create a lot of options and to find ways to determine
-    // the exit of a child process from the monitor.
-
-    // However, in the sort of network programming where I want to log to a
-    // networked logger I always hook `SIGTERM` and `SIGINT` and endeavor to
-    // unwind my work queue myself. If I can't unwind the work queue, I throw an
-    // exception. This means I'm always going to reach either
-    // `"uncaughtExcpetion"` or `"exit"`.
-
-    // This initial confusion about `"exit"` lead me to hedge against other
-    // behaviors that might surprise me. Time has passed and here's what I
-    // figure.
-
-    // If you need really robust multi-process logging, then defeat those signal
-    // handlers and unwind your program. If it can't unwind then that is an
-    // exception. I have a library called Destructible that throws an
-    // uncatchable exception with an elaborate stack trace that shows which
-    // operations blocked exit.
-
-    // If you really want a quick and dirty client I can probably detect that
-    // you're done from the supervisor when your child exits, so long as you're
-    // not having children wink in and out of existence. But that's unlikely for
-    // a program like a command line utlity where you might want to have Node.js
-    // just scram your work queue when you exit.
-
-    //
-
-    // Close the asynchronous pipe and log chunks to standard error. This needs
-    // to be called in response to `SIGTERM` or else the asynchronous pipe will
-    // keep the program from exiting.
-
-    //
-    close () {
-        if (this._sync) {
-            return
+    async _receive (readable) {
+        for await (const line of readable) {
+            const json = JSON.parse(line.toString())
+            assert.equal(this._written[0].series, json.series, 'series mismatch')
+            this._written.shift()
         }
-
-        this._sync = true
-        this._writable.end()
-        this._available.resolve()
-        this._deferral.clear()
-        this._batchEntries()
-        this._sendSync()
     }
 
     // Breaking up long buffers.
 
-    // TODO First, we need to prepend a new line so that if our write is
-    // interleaved in the output of another process that intends to write a
-    // large buffer to standard error. This is not unlikely given the size of
-    // the exception stack traces generated by your `Interrupt` library. With a
-    // preceding newline we would be able to spot the start of our chunk. We
-    // could then discard the preceding newline and not print it to standard
-    // error.
+    //
+    _writeSync () {
+        this._batchEntries()
+        while (this._written.length) {
+            const batch = this._written.shift()
+            this._publish({ method: 'log', batch })
+        }
+        while (this._batches.length) {
+            const batch = this._batches.shift()
+            this._publish({ method: 'log', batch })
+        }
+    }
 
-    // TODO Second, we need to split up chunks so that the fit with `PIPE_BUF`.
-    // This splitting is going to happen often on OS X where `PIPE_BUF` is a
-    // mere 512 bytes. Splitting lines is going to be made difficult by Unicode.
-    // If there are Unicode characters we don't want to split in the middle of
-    // character because we want to write valid UTF-8 to standard error. Looked
-    // around a bit for a utility, then looked a Unicode and remembered that I'd
-    // done this before. That is, I'd looked for a utility then realized that
-    // finding the start of a Unicode character is trivial.
-
-    // Send a group of entries inside chunks on standard error. We need to split
-    // the entires JSON up into chunks that will fit in `PIPE_BUF` sized buffers
-    // so that our writes to standard error are atomic and our chunks are not
-    // broken up by the output of other processes.
-
-    // For each entries array JSON we first write a control chunk that contains
-    // a checksum of the JSON and a count of subsequent body content chunks that
-    // will contain the JSON. We then write out the body content chunks.
-
-    // There's some description of the chunk format in the `chunk.js` file in
-    // the `prolific.chunk` project.
+    // Set the asynchronous pipe and begin streaming entries or else close the
+    // pipe if it has arrived after we've closed.
 
     //
-    _sendSync () {
+    setPipe (input, output) {
         if (this._exited) {
-            return
-        }
-        var buffers = []
-        while (this._batches.length) {
-            var batch = this._batches.shift()
-            var buffer = batch.buffer.slice(0, batch.buffer.length - 1)
-            var chunks = []
-            var begin = 0
-            while (begin < buffer.length) {
-                var end = split(buffer, begin + Math.min(this._size, buffer.length - begin))
-                chunks.push(new Chunk(false, this._id, buffer.slice(begin, end)))
-                begin = end
+            input.end()
+            if (input !== output) {
+                output.end()
             }
-            this._writeSync(new Chunk(true, this._id, Buffer.from(JSON.stringify({
-                method: 'entries',
-                series: batch.series,
-                checksum: fnv(0, buffer, 0, buffer.length),
-                chunks: chunks.length
-            }))))
-            chunks.forEach(function (chunk) { this._writeSync(chunk) }, this)
+            return []
+        } else {
+            this._piped = true
+            if (this._entries.length) {
+                this._latch.call()
+            } else {
+                this._writing = false
+            }
+            return [
+                this._send(this._writable = new Staccato.Writable(output)),
+                this._receive(this._readable = new Staccato.Readable(byline(input)))
+            ]
         }
+    }
+
+    _nudge () {
+        if (this._exited) {
+            this._writeSync()
+        } else if (!this._writing) {
+            this._writing = true
+            this._latch.call()
+        }
+    }
+
+    version (version) {
+        this._batchEntries()
+        this._batches.push({
+            method: 'version',
+            series: this._series = (this._series + 1) & 0xffffff,
+            version: version
+        })
+        this._nudge()
+    }
+
+    push (json) {
+        this._entries.push(json)
+        this._nudge()
     }
 
     // If you can tell the supervior that you are leaving, that would be very nice.
 
     //
-    exit () {
+    exit (code) {
         if (!this._exited) {
-            this.close()
-            this._batchEntries()
-            this._sendSync()
-            this._writeSync(new Chunk(true, this._id, Buffer.from(JSON.stringify({ method: 'exit' }))))
             this._exited = true
-            this._entries = { push: function () {}, length: 0 }
+            this._readable.destroy()
+            this._writable.destroy()
+            this._latch.call()
+            this._deferral.clear()
+            this._writeSync()
+            this._publish({ method: 'exit', code })
         }
     }
 }
