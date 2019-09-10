@@ -97,7 +97,7 @@ require('arguable')(module, {}, async arguable => {
                         descendent.addChild(monitor, { path: json.path, pid: pid })
 
                         destructible.durable([ 'monitor', monitor.pid ], (async () => {
-                            const [ exitCode, signal ] = await once(monitor, 'exit')
+                            const [ exitCode, signal ] = await once(monitor, 'exit').promise
                             Interrupt.assert(exitCode == 0, 'monitor.exit', {
                                 exitCode: exitCode,
                                 signal: signal,
@@ -144,7 +144,7 @@ require('arguable')(module, {}, async arguable => {
         })
 
         const close = async () => {
-            const [ exitCode, signal ] = await once(child, 'close')
+            const [ exitCode, signal ] = await once(child, 'close').promise
             // Will only ever equal zero. We do not have the `null, "SIGTERM"`
             // combo because we always register a `SIGTERM` handler. The
             // `"SIGTERM"` response is only when the default hander fires. The
