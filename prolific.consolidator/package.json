@@ -30,6 +30,6 @@
     "main":                 "consolidator",
     "scripts":
     {
-                            "test": "mocha"
+                            "test": "mocha test/*.test.js"
     }
 }
