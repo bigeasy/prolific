@@ -27,7 +27,7 @@ class Watcher extends events.EventEmitter {
 
     async _change (shifter) {
         for await (const { eventType, filename } of shifter.iterator()) {
-            const hash = /-[0-9af]{1,8}\.jsons$/.exec(filename)
+            const hash = /-[0-9af]{1,8}\.json$/.exec(filename)
             if (hash == null) {
                 logger.warn('filename', { directory: this._directory, eventType, filename })
                 continue

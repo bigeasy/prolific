@@ -44,9 +44,9 @@ describe('watcher', () => {
         const { watcher, destructible } = await reset()
         const data = once(watcher, 'data')
         const entry = once(entries, 'entry')
-        await fs.writeFile(path.join(dir.stage, 'stage.jsons'), '1')
-        await fs.rename(path.join(dir.stage, 'stage.jsons'),
-                        path.join(dir.publish, 'publish-00000000.jsons'))
+        await fs.writeFile(path.join(dir.stage, 'stage.json'), '1')
+        await fs.rename(path.join(dir.stage, 'stage.json'),
+                        path.join(dir.publish, 'publish-00000000.json'))
         const [ json ] = await data
         assert.equal(json, 1, 'received')
         await entry
@@ -59,9 +59,9 @@ describe('watcher', () => {
     it('can detect a bad file name', async () => {
         const { watcher, destructible } = await reset()
         const entry = once(entries, 'entry')
-        await fs.writeFile(path.join(dir.stage, 'stage.jsons'), '1')
-        await fs.rename(path.join(dir.stage, 'stage.jsons'),
-                        path.join(dir.publish, 'publish.jsons'))
+        await fs.writeFile(path.join(dir.stage, 'stage.json'), '1')
+        await fs.rename(path.join(dir.stage, 'stage.json'),
+                        path.join(dir.publish, 'publish.json'))
         await entry
         destructible.destroy()
         await destructible.promise
@@ -71,9 +71,9 @@ describe('watcher', () => {
     it('can detect a bad checksum', async () => {
         const { watcher, destructible } = await reset()
         const entry = once(entries, 'entry')
-        await fs.writeFile(path.join(dir.stage, 'stage.jsons'), '1')
-        await fs.rename(path.join(dir.stage, 'stage.jsons'),
-                        path.join(dir.publish, 'publish-1.jsons'))
+        await fs.writeFile(path.join(dir.stage, 'stage.json'), '1')
+        await fs.rename(path.join(dir.stage, 'stage.json'),
+                        path.join(dir.publish, 'publish-1.json'))
         await entry
         destructible.destroy()
         await destructible.promise
@@ -83,9 +83,9 @@ describe('watcher', () => {
     it('can detect bad json', async () => {
         const { watcher, destructible } = await reset()
         const entry = once(entries, 'entry')
-        await fs.writeFile(path.join(dir.stage, 'stage.jsons'), '{')
-        await fs.rename(path.join(dir.stage, 'stage.jsons'),
-                        path.join(dir.publish, 'publish-0.jsons'))
+        await fs.writeFile(path.join(dir.stage, 'stage.json'), '{')
+        await fs.rename(path.join(dir.stage, 'stage.json'),
+                        path.join(dir.publish, 'publish-0.json'))
         await entry
         destructible.destroy()
         await destructible.promise

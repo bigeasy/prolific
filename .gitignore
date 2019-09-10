@@ -10,3 +10,4 @@
 /prolific.executable/test/tmp
 /prolific.executable/test/configuration.js
 !/prolific.syslog/node_modules/json.js
+/*.*/test/tmp
