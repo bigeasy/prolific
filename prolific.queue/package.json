@@ -23,7 +23,6 @@
                             "byline":                       "5.0.0",
                             "delay":                        "4.3.0",
                             "hash.fnv":                     "1.0.x",
-                            "prospective":                  "^0.1.0-alpha.1",
                             "staccato":                     "^11.0.0-alpha.1"
     },
     "devDependencies":
@@ -31,6 +30,7 @@
                             "ascension":                    "^1.0.3",
                             "destructible":                 "^4.0.10",
                             "prolific.watcher":             "^0.0.1",
+                            "prospective":                  "^0.1.0-alpha.1",
                             "rimraf":                       "3.0.0"
     },
     "main":                 "queue",
