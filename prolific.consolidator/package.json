@@ -21,8 +21,7 @@
     "dependencies":
     {
                             "byline":                       "5.0.0",
-                            "prolific.error":               "0.0.x",
-                            "staccato":                     "10.0.x"
+                            "staccato":                     "^11.0.0-alpha.1"
     },
     "devDependencies":
     {
