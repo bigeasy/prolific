@@ -28,7 +28,7 @@
     "devDependencies":
     {
                             "ascension":                    "^1.0.3",
-                            "destructible":                 "^4.0.10",
+                            "destructible":                 "^5.0.0-alpha.0",
                             "prolific.collector":           "^11.0.0-alpha.1",
                             "prolific.watcher":             "^0.0.1",
                             "prospective":                  "^0.1.0-alpha.1",
