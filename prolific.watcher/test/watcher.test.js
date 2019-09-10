@@ -34,7 +34,7 @@ describe('watcher', () => {
         // actually take effect on OS X, otherwise files from previous run are
         // extant and the first events are reporting a missing file.
         await new Promise(resolve => setTimeout(resolve, 50))
-        const Watcher = require('../watcher')
+        const Watcher = require('..')
         const Destructible = require('destructible')
         const destructible = new Destructible(__filename)
         const watcher = new Watcher(destructible, () => 0, path.join(TMPDIR, 'publish'))
