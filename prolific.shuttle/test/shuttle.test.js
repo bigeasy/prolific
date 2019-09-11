@@ -28,7 +28,7 @@ describe('shuttle', () => {
                 collector.on('data', data => {
                     gathered.push(data)
                     if (data.body.method == this._method && ++count == this._count) {
-                        resolve(gathered)
+                        resolve(gathered.slice(0))
                     }
                 })
             })
@@ -128,6 +128,7 @@ describe('shuttle', () => {
         const gathered = await gatherer.promise
         destructible.destroy()
         await destructible.promise
+        console.log(require('util').inspect(gathered, { depth: null }))
         assert.deepStrictEqual(gathered.map(entry => entry.body.method), [
             'start', 'exit'
         ], 'synchronous')
