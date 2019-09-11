@@ -1,5 +1,6 @@
 describe('shuttle', () => {
     const assert = require('assert')
+    const fnv = require('hash.fnv')
     const events = require('events')
     const stream = require('stream')
     const Shuttle = require('../shuttle')
@@ -28,7 +29,7 @@ describe('shuttle', () => {
                 collector.on('data', data => {
                     gathered.push(data)
                     if (data.body.method == this._method && ++count == this._count) {
-                        resolve(gathered.slice(0))
+                        resolve(gathered)
                     }
                 })
             })
@@ -43,7 +44,9 @@ describe('shuttle', () => {
         // extant and the first events are reporting a missing file.
         await new Promise(resolve => setTimeout(resolve, 50))
         const destructible = new Destructible(__filename)
-        const watcher = new Watcher(destructible, () => 0, path.join(TMPDIR, 'publish'))
+        const watcher = new Watcher(destructible, buffer => {
+            return fnv(0, buffer, 0, buffer.length)
+        }, path.join(TMPDIR, 'publish'))
         const collector = new Collector
         watcher.on('data', data => collector.data(data))
         return { destructible, watcher, collector }
@@ -128,7 +131,6 @@ describe('shuttle', () => {
         const gathered = await gatherer.promise
         destructible.destroy()
         await destructible.promise
-        console.log(require('util').inspect(gathered, { depth: null }))
         assert.deepStrictEqual(gathered.map(entry => entry.body.method), [
             'start', 'exit'
         ], 'synchronous')
