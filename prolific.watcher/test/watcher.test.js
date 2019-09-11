@@ -8,18 +8,6 @@ describe('watcher', () => {
     const sink = require('foremost')('prolific.sink')
     const events = require('events')
     const entries = new events.EventEmitter
-    entries.log = []
-    const cache = {}
-    before(() => {
-        cache.json = sink.json
-        sink.json = (...vargs) => {
-            entries.log.push(vargs)
-            entries.emit('entry')
-        }
-    })
-    after(() => {
-        sink.json = cache.json
-    })
     const TMPDIR = path.join(__dirname, 'tmp')
     const dir = {
         stage: path.resolve(TMPDIR, 'stage'),
@@ -40,56 +28,65 @@ describe('watcher', () => {
         const watcher = new Watcher(destructible, () => 0, path.join(TMPDIR, 'publish'))
         return { destructible, watcher }
     }
+    class Notice {
+        constructor (watcher, label) {
+            const log = []
+            this.promise = new Promise(resolve => {
+                function notice (entry) {
+                    log.push(entry)
+                    watcher.removeListener('notice', notice)
+                    if (entry.label == label) {
+                        resolve(log)
+                    }
+                }
+                watcher.on('notice', notice)
+            })
+        }
+    }
     it('can watch and parse a directory', async () => {
         const { watcher, destructible } = await reset()
         const data = once(watcher, 'data').promise
-        const entry = once(entries, 'entry').promise
+        const notice = new Notice(watcher, 'read')
         await fs.writeFile(path.join(dir.stage, 'stage.json'), '1')
         await fs.rename(path.join(dir.stage, 'stage.json'),
                         path.join(dir.publish, 'publish-00000000.json'))
         const [ json ] = await data
         assert.equal(json, 1, 'received')
-        await entry
+        const log = await notice.promise
         destructible.destroy()
         await destructible.promise
-        const log = entries.log.splice(0)
-        assert.equal(log[0][2], 'read', 'read')
-        assert.equal(log[1][2], 'unlink', 'unlink')
+        assert.deepStrictEqual(log.map(entry => entry.label), [ 'read' ], 'read')
     })
     it('can detect a bad file name', async () => {
         const { watcher, destructible } = await reset()
-        const entry = once(entries, 'entry').promise
+        const notice = new Notice(watcher, 'filename')
         await fs.writeFile(path.join(dir.stage, 'stage.json'), '1')
         await fs.rename(path.join(dir.stage, 'stage.json'),
                         path.join(dir.publish, 'publish.json'))
-        await entry
+        const log = await notice.promise
         destructible.destroy()
-        await destructible.promise
-        const log = entries.log.splice(0)
-        assert.equal(log[0][2], 'filename', 'filename error')
+        assert.deepStrictEqual(log.map(entry => entry.label), [ 'filename' ], 'filename error')
     })
     it('can detect a bad checksum', async () => {
         const { watcher, destructible } = await reset()
-        const entry = once(entries, 'entry').promise
+        const notice = new Notice(watcher, 'checksum')
         await fs.writeFile(path.join(dir.stage, 'stage.json'), '1')
         await fs.rename(path.join(dir.stage, 'stage.json'),
                         path.join(dir.publish, 'publish-1.json'))
-        await entry
+        const log = await notice.promise
         destructible.destroy()
         await destructible.promise
-        const log = entries.log.splice(0)
-        assert.equal(log[0][2], 'checksum', 'checksum error')
+        assert.deepStrictEqual(log.map(entry => entry.label), [ 'checksum' ], 'checksum error')
     })
     it('can detect bad json', async () => {
         const { watcher, destructible } = await reset()
-        const entry = once(entries, 'entry').promise
+        const notice = new Notice(watcher, 'json')
         await fs.writeFile(path.join(dir.stage, 'stage.json'), '{')
         await fs.rename(path.join(dir.stage, 'stage.json'),
                         path.join(dir.publish, 'publish-0.json'))
-        await entry
+        const log = await notice.promise
         destructible.destroy()
         await destructible.promise
-        const log = entries.log.splice(0)
-        assert.equal(log[0][2], 'json', 'json error')
+        assert.deepStrictEqual(log.map(entry => entry.label), [ 'json' ], 'json error')
     })
 })
