@@ -14,16 +14,13 @@ describe('consolidator', () => {
         assert.equal(output.read().toString(), '{"series":0}\n{"series":1}\n', 'response')
         consolidator.synchronous({ series: 1 })
         consolidator.synchronous({ series: 2 })
-        consolidator.eos()
-        consolidator.eos()
+        consolidator.synchronous(null)
         assert.deepStrictEqual(queue, [{
             series: 0
         }, {
             series: 1
         }, {
             series: 2
-        }, {
-            method: 'eos'
-        }], 'queue')
+        }, null ], 'queue')
     })
 })

@@ -26,17 +26,12 @@ class Consolidator extends events.EventEmitter {
     synchronous (json) {
         this._readable.destroy()
         this._writable.destroy()
-        if (json.series == this._series) {
+        if (json == null) {
+            this._queue.push(null)
+        } else if (json.series == this._series) {
             this._series = (this._series + 1) & 0xffffff
             this._resumed = true
             this._queue.push(json)
-        }
-    }
-
-    eos () {
-        if (!this._eos) {
-            this._eos = true
-            this._queue.push({ method: 'eos' })
         }
     }
 }
