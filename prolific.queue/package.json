@@ -21,7 +21,6 @@
     "dependencies":
     {
                             "byline":                       "5.0.0",
-                            "delay":                        "4.3.0",
                             "duplicitous":                  "^0.0.0",
                             "hash.fnv":                     "^1.0.6",
                             "staccato":                     "^11.0.0-alpha.1"

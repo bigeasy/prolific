@@ -1,7 +1,6 @@
 const assert = require('assert')
 const fnv = require('hash.fnv')
 const Staccato = require('staccato')
-const delay = require('delay')
 const fs = require('fs')
 const path = require('path')
 const byline = require('byline')
@@ -14,7 +13,6 @@ class Queue {
         this._start = Date.now()
         this._entries = []
         this._unlatched = new Promise(resolve => this._latch = resolve)
-        this._deferral = delay(0)
         this._batches = []
         this._written = []
         this._writable = { destroy: () => {} }
@@ -76,7 +74,10 @@ class Queue {
         SEND: for (;;) {
             this._writing = ! this._piped
             if (interval != 0) {
-                await (this._deferral = delay(this._interval))
+                await new Promise(resolve => {
+                    this._timeout = setTimeout(resolve, this._interval)
+                    this._timeout.unref()
+                })
             }
             interval = this._interval
             await this._unlatched
@@ -172,7 +173,6 @@ class Queue {
             this._readable.destroy()
             this._writable.destroy()
             this._latch.call()
-            this._deferral.clear()
             this._writeSync()
             this._publish({ method: 'exit', code })
         }
