@@ -1,6 +1,5 @@
 describe('queue', () => {
     const assert = require('assert')
-    const stream = require('stream')
     const path = require('path')
     const fs = require('fs').promises
 
@@ -58,8 +57,6 @@ describe('queue', () => {
         const gatherer = new Gatherer(collector, 'exit')
         let  now = 0
         const test = []
-        const pipe = new stream.PassThrough
-        pipe.once('finish', () => test.push('finish'))
         const queue = new Queue({
             now: () => now++
         }, TMPDIR, [ 1, 2 ], 1)
@@ -100,7 +97,6 @@ describe('queue', () => {
             now: () => now++
         }, TMPDIR, [ 1, 2 ], 1)
         queue.exit(0)
-        const socket = new stream.PassThrough
         queue.setSocket({ end: () => {}, unref: () => {} })
         queue.push({ a: 1 })
         const gathered = await gatherer.promise
