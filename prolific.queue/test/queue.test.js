@@ -4,6 +4,8 @@ describe('queue', () => {
     const path = require('path')
     const fs = require('fs').promises
 
+    const Pipe = require('duplicitous/pipe')
+
     const Destructible = require('destructible')
     const callback = require('prospective/callback')
     const ascension = require('ascension')
@@ -62,7 +64,7 @@ describe('queue', () => {
             now: () => now++
         }, TMPDIR, [ 1, 2 ], 1)
         queue.exit(0)
-        queue.setPipe({ end: () => {} })
+        queue.setSocket({ end: () => {}, unref: () => {} })
         queue.exit(0)
         const gathered = await gatherer.promise
         assert.deepStrictEqual(gathered.map(data => data.body.method), [
@@ -76,14 +78,12 @@ describe('queue', () => {
         const gatherer = new Gatherer(collector, 'exit')
         let  now = 0
         const test = []
-        const pipe = new stream.PassThrough
-        pipe.once('finish', () => test.push('finish'))
         const queue = new Queue({
             now: () => now++
         }, TMPDIR, [ 1, 2 ], 1)
         queue.push({ a: 1 })
         queue.exit(0)
-        queue.setPipe({ end: () => {} })
+        queue.setSocket({ end: () => {}, unref: () => {} })
         const gathered = await gatherer.promise
         assert.deepStrictEqual(gathered.map(data => data.body.method), [
             'start', 'log', 'exit'
@@ -96,14 +96,12 @@ describe('queue', () => {
         const gatherer = new Gatherer(collector, 'log')
         let  now = 0
         const test = []
-        const pipe = new stream.PassThrough
-        pipe.once('finish', () => test.push('finish'))
         const queue = new Queue({
             now: () => now++
         }, TMPDIR, [ 1, 2 ], 1)
         queue.exit(0)
         const socket = new stream.PassThrough
-        queue.setPipe({ end: () => {} })
+        queue.setSocket({ end: () => {}, unref: () => {} })
         queue.push({ a: 1 })
         const gathered = await gatherer.promise
         assert.deepStrictEqual(gathered.map(data => data.body.method), [
@@ -117,17 +115,15 @@ describe('queue', () => {
         const gatherer = new Gatherer(collector, 'exit')
         let  now = 0
         const test = []
-        const pipe = new stream.PassThrough
-        pipe.once('finish', () => test.push('finish'))
         const queue = new Queue({
             now: () => now++
         }, TMPDIR, [ 1, 2 ], 1)
-        const input = new stream.PassThrough
-        const output = new stream.PassThrough
-        const promises = queue.setPipe({ input, output })
+        const pipe = new Pipe
+        pipe.client.unref = () => {}
+        const promises = queue.setSocket(pipe.client)
         await new Promise(resolve => setTimeout(resolve, 5))
         queue.version(1)
-        input.write(([{ series: 0 }]).map(JSON.stringify).join('\n') + '\n')
+        pipe.server.write(([{ series: 0 }]).map(JSON.stringify).join('\n') + '\n')
         await new Promise(resolve => setTimeout(resolve, 5))
         queue.exit(0)
         const gathered = await gatherer.promise
@@ -137,12 +133,13 @@ describe('queue', () => {
         destructible.destroy()
         await destructible.promise
         await Promise.all(promises)
-        const lines = output.read()
-                            .toString()
-                            .split('\n')
-                            .filter(line => line != '')
-                            .map(JSON.parse)
-                            .map(entry => entry.method)
+        const lines = pipe.server
+                          .read()
+                          .toString()
+                          .split('\n')
+                          .filter(line => line != '')
+                          .map(JSON.parse)
+                          .map(entry => entry.method)
         assert.deepStrictEqual(lines, [ 'version' ], 'entries')
     })
     it('can write through a pipe and send queued initial messages', async () => {
@@ -150,18 +147,16 @@ describe('queue', () => {
         const gatherer = new Gatherer(collector, 'exit')
         let  now = 0
         const test = []
-        const pipe = new stream.PassThrough
-        pipe.once('finish', () => test.push('finish'))
         const queue = new Queue({
             now: () => now++
         }, TMPDIR, [ 1, 2 ], 1)
-        const input = new stream.PassThrough
-        const output = new stream.PassThrough
+        const pipe = new Pipe
+        pipe.client.unref = () => {}
         queue.push({ a: 1 })
-        const promises = queue.setPipe({ input, output })
+        const promises = queue.setSocket(pipe.client)
         await new Promise(resolve => setTimeout(resolve, 5))
         queue.push({ a: 1 })
-        input.write(([{ series: 0 }, { series: 1 }]).map(JSON.stringify).join('\n') + '\n')
+        pipe.server.write(([{ series: 0 }, { series: 1 }]).map(JSON.stringify).join('\n') + '\n')
         await new Promise(resolve => setTimeout(resolve, 5))
         queue.exit(0)
         const gathered = await gatherer.promise
@@ -171,12 +166,13 @@ describe('queue', () => {
         destructible.destroy()
         await destructible.promise
         await Promise.all(promises)
-        const lines = output.read()
-                            .toString()
-                            .split('\n')
-                            .filter(line => line != '')
-                            .map(JSON.parse)
-                            .map(entry => entry.method)
+        const lines = pipe.server
+                          .read()
+                          .toString()
+                          .split('\n')
+                          .filter(line => line != '')
+                          .map(JSON.parse)
+                          .map(entry => entry.method)
         assert.deepStrictEqual(lines, [ 'entries', 'entries' ], 'entries')
     })
     it('can resend unverified batches at exit', async () => {
@@ -184,14 +180,12 @@ describe('queue', () => {
         const gatherer = new Gatherer(collector, 'exit')
         let  now = 0
         const test = []
-        const pipe = new stream.PassThrough
-        pipe.once('finish', () => test.push('finish'))
         const queue = new Queue({
             now: () => now++
         }, TMPDIR, [ 1, 2 ], 1)
-        const input = new stream.PassThrough
-        const output = new stream.PassThrough
-        const promises = queue.setPipe({ input, output })
+        const pipe = new Pipe
+        pipe.client.unref = () => {}
+        const promises = queue.setSocket(pipe.client)
         await new Promise(resolve => setTimeout(resolve, 5))
         queue.push({ a: 1 })
         await new Promise(resolve => setTimeout(resolve, 5))
@@ -203,12 +197,13 @@ describe('queue', () => {
         destructible.destroy()
         await destructible.promise
         await Promise.all(promises)
-        const lines = output.read()
-                            .toString()
-                            .split('\n')
-                            .filter(line => line != '')
-                            .map(JSON.parse)
-                            .map(entry => entry.method)
+        const lines = pipe.server
+                          .read()
+                          .toString()
+                          .split('\n')
+                          .filter(line => line != '')
+                          .map(JSON.parse)
+                          .map(entry => entry.method)
         assert.deepStrictEqual(lines, [ 'entries' ], 'entries')
     })
 })
