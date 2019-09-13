@@ -29,6 +29,7 @@ class Queue {
     _publish (body) {
         const buffer = Buffer.from(JSON.stringify({
             start: this._start,
+            pid: this._path[this._path.length - 1],
             path: this._path,
             series: this._syncSeries = (this._syncSeries + 1) & 0xffffff,
             when: this._Date.now(),
