@@ -71,6 +71,7 @@ describe('shuttle', () => {
         descendent.process.pid = 2
         descendent.process.stderr = new stream.PassThrough
         descendent.process.connected = true
+        descendent.process.channel = { unref: () => {} }
         descendent.process.send = message => test.push(message)
         sink.properties.pid = 0
         sink.Date = { now: function () { return 0 } }
@@ -126,6 +127,7 @@ describe('shuttle', () => {
         descendent.process.stderr = new stream.PassThrough
         descendent.process.connected = true
         descendent.process.send = message => test.push(message)
+        descendent.process.channel = { unref: () => {} }
         const shuttle = require('..').create({})
         shuttle.exit(0)
         const gathered = await gatherer.promise
