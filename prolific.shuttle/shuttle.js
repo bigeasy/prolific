@@ -35,6 +35,20 @@ class Shuttle {
         const queue = this._queue = new Queue(Date, directory,
                                               path, coalesce(options.interval, 1000))
 
+        queue.on('triage', update => {
+            const processor = Evaluator.create(update.source, update.file)
+            assert(processor.triage)
+            const triage = processor.triage(require('prolific.require').require)
+            sink.json = function (level, qualifier, label, body, system) {
+                if (triage(LEVEL[level], qualifier, label, body, system)) {
+                    queue.push({
+                        when: body.when || this.Date.now(), level, qualifier, label, body, system
+                    })
+                }
+            }
+            queue.version(update.version)
+        })
+
         if (options.uncaughtException == null || options.uncaughtException) {
             descendent.process.on('uncaughtException', rethrow('uncaught'))
         }
@@ -62,26 +76,10 @@ class Shuttle {
                 delete handlers['prolific:pipe']
                 handle.unref()
                 queue.setSocket(handle)
-            },
-            'prolific:accept': (message) => {
-                assert(message.body.source)
-                const processor = Evaluator.create(message.body.source, message.body.file)
-                assert(processor.triage)
-                const triage = processor.triage(require('prolific.require').require)
-                sink.json = function (level, qualifier, label, body, system) {
-                    if (triage(LEVEL[level], qualifier, label, body, system)) {
-                        queue.push({
-                            when: body.when || this.Date.now(), level, qualifier, label, body, system
-                        })
-                    }
-                }
-                queue.version(message.body.version)
             }
         }
 
         descendent.once('prolific:pipe', this._handlers['prolific:pipe'])
-        descendent.on('prolific:accept', this._handlers['prolific:accept'])
-
     }
 
     exit (code) {

@@ -86,13 +86,13 @@ describe('shuttle', () => {
         const pipe = new Pipe
         pipe.client.unref = () => {}
         descendent.emit('prolific:pipe', {}, pipe.client)
-        descendent.emit('prolific:accept', {
-            body: {
-                source: await fs.readFile(path.join(__dirname, 'processor.js')),
-                file: path.join(__dirname, 'processor.js'),
-                version: 1
-            }
-        })
+        pipe.server.write(JSON.stringify({
+            method: 'triage',
+            source: await fs.readFile(path.join(__dirname, 'processor.js'), 'utf8'),
+            file: path.join(__dirname, 'processor.js'),
+            version: 1
+        }) + '\n')
+        await new Promise(resolve => setImmediate(resolve))
         sink.json('error', 'example', 'droppable', { key: 'value' }, { pid: 0 })
         sink.json('error', 'example', 'acceptible', { key: 'value' }, { pid: 0 })
         await new Promise(resolve => setTimeout(resolve, 100))
