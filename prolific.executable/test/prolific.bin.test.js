@@ -1,4 +1,5 @@
-describe('executable', () => {
+describe('executable', function () {
+    this.sidecar(10000)
     const assert = require('assert')
     it('can execute', async () => {
         const prolific = require('..')

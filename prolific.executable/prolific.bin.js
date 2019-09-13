@@ -102,7 +102,7 @@ require('arguable')(module, {}, async arguable => {
     try {
         // TODO What do you really want to name this?
         const Destructible = require('destructible')
-        const destructible = new Destructible('prolific')
+        const destructible = new Destructible(1500, 'prolific')
 
         const tmp = await Tmp(coalesce(process.env.TMPDIR, '/tmp'), async () => {
             const [ bytes ] = await callback(callback => crypto.randomBytes(16, callback))

@@ -1,4 +1,5 @@
-describe('sidecar', () => {
+describe('sidecar', function () {
+    this.timeout(10000)
     const assert = require('assert')
     const path = require('path')
     const stream = require('stream')
