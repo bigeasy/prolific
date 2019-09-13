@@ -4,9 +4,11 @@ const Staccato = require('staccato')
 const fs = require('fs')
 const path = require('path')
 const byline = require('byline')
+const events = require('events')
 
-class Queue {
+class Queue extends events.EventEmitter {
     constructor (Date, directory, path, interval) {
+        super()
         this._directory = directory
         this._interval = interval
         this._series = 0xffffff
@@ -98,8 +100,15 @@ class Queue {
     async _receive (readable) {
         for await (const line of readable) {
             const json = JSON.parse(line.toString())
-            assert.equal(this._written[0].series, json.series, 'series mismatch')
-            this._written.shift()
+            switch (json.method) {
+            case 'receipt':
+                assert.equal(this._written[0].series, json.series, 'series mismatch')
+                this._written.shift()
+                break
+            case 'triage':
+                this.emit('triage', json.source)
+                break
+            }
         }
     }
 

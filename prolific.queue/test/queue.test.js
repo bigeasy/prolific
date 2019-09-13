@@ -16,6 +16,8 @@ describe('queue', () => {
 
     const Queue = require('../queue')
 
+    const once = require('prospective/once')
+
     const TMPDIR = path.join(__dirname, 'tmp')
     const dir = {
         stage: path.resolve(TMPDIR, 'stage'),
@@ -119,7 +121,7 @@ describe('queue', () => {
         const promises = queue.setSocket(pipe.client)
         await new Promise(resolve => setTimeout(resolve, 5))
         queue.version(1)
-        pipe.server.write(([{ series: 0 }]).map(JSON.stringify).join('\n') + '\n')
+        pipe.server.write(([{ method: 'receipt', series: 0 }]).map(JSON.stringify).join('\n') + '\n')
         await new Promise(resolve => setTimeout(resolve, 5))
         queue.exit(0)
         const gathered = await gatherer.promise
@@ -146,13 +148,20 @@ describe('queue', () => {
         const queue = new Queue({
             now: () => now++
         }, TMPDIR, [ 1, 2 ], 1)
+        const triage = once(queue, 'triage').promise
         const pipe = new Pipe
         pipe.client.unref = () => {}
         queue.push({ a: 1 })
         const promises = queue.setSocket(pipe.client)
         await new Promise(resolve => setTimeout(resolve, 5))
         queue.push({ a: 1 })
-        pipe.server.write(([{ series: 0 }, { series: 1 }]).map(JSON.stringify).join('\n') + '\n')
+        pipe.server.write(([{
+            method: 'receipt', series: 0
+        }, {
+            method: 'receipt', series: 1
+        }, {
+            method: 'triage', source: '1 + 1'
+        }]).map(JSON.stringify).join('\n') + '\n')
         await new Promise(resolve => setTimeout(resolve, 5))
         queue.exit(0)
         const gathered = await gatherer.promise
@@ -170,6 +179,7 @@ describe('queue', () => {
                           .map(JSON.parse)
                           .map(entry => entry.method)
         assert.deepStrictEqual(lines, [ 'entries', 'entries' ], 'entries')
+        assert.equal(await triage, '1 + 1', 'triage')
     })
     it('can resend unverified batches at exit', async () => {
         const { destructible, watcher, collector } = await reset()
