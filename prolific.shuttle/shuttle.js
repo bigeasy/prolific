@@ -24,6 +24,10 @@ class Shuttle {
     _initialze (options) {
         descendent.increment()
 
+        // **TODO** A hack to prevent Prolific Shuttle from preventing the event
+        // loop from exiting, but far too invasive. We must remove.
+        process.channel.unref()
+
         const supervisorId = +descendent.process.env.PROLIFIC_SUPERVISOR_PROCESS_ID
         const path = descendent.path.splice(descendent.path.indexOf(supervisorId))
         const directory = descendent.process.env.PROLIFIC_TMPDIR
