@@ -104,7 +104,7 @@ require('arguable')(module, {}, async arguable => {
         const Destructible = require('destructible')
         const destructible = new Destructible('prolific')
 
-        const tmp = await Tmp(process.env.TMPDIR, async () => {
+        const tmp = await Tmp(coalesce(process.env.TMPDIR, '/tmp'), async () => {
             const [ bytes ] = await callback(callback => crypto.randomBytes(16, callback))
             return bytes.toString('hex')
         }, process.pid)
