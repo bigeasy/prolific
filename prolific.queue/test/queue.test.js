@@ -83,14 +83,14 @@ describe('queue', () => {
         queue.setSocket({ end: () => {}, unref: () => {} })
         const gathered = await gatherer.promise
         assert.deepStrictEqual(gathered.map(data => data.body.method), [
-            'start', 'log', 'exit'
+            'start', 'entries', 'exit'
         ], 'exit')
         destructible.destroy()
         await destructible.promise
     })
     it('can write after exit and before setting a pipe', async () => {
         const { destructible, watcher, collector } = await reset()
-        const gatherer = new Gatherer(collector, 'log')
+        const gatherer = new Gatherer(collector, 'entries')
         let  now = 0
         const test = []
         const queue = new Queue({
@@ -101,7 +101,7 @@ describe('queue', () => {
         queue.push({ a: 1 })
         const gathered = await gatherer.promise
         assert.deepStrictEqual(gathered.map(data => data.body.method), [
-            'start', 'exit', 'log'
+            'start', 'exit', 'entries'
         ], 'exit')
         destructible.destroy()
         await destructible.promise
@@ -136,7 +136,7 @@ describe('queue', () => {
                           .filter(line => line != '')
                           .map(JSON.parse)
                           .map(entry => entry.method)
-        assert.deepStrictEqual(lines, [ 'version' ], 'entries')
+        assert.deepStrictEqual(lines, [ 'version' ], 'version')
     })
     it('can write through a pipe and send queued initial messages', async () => {
         const { destructible, watcher, collector } = await reset()
@@ -188,7 +188,7 @@ describe('queue', () => {
         queue.exit(0)
         const gathered = await gatherer.promise
         assert.deepStrictEqual(gathered.map(data => data.body.method), [
-            'start', 'log', 'exit'
+            'start', 'entries', 'exit'
         ], 'exit')
         destructible.destroy()
         await destructible.promise

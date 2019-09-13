@@ -110,11 +110,11 @@ class Queue {
         this._batchEntries()
         while (this._written.length) {
             const batch = this._written.shift()
-            this._publish({ method: 'log', batch })
+            this._publish({ method: 'batch', ...batch })
         }
         while (this._batches.length) {
             const batch = this._batches.shift()
-            this._publish({ method: 'log', batch })
+            this._publish({ method: 'batch', ...batch })
         }
     }
 
