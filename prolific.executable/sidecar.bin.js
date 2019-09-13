@@ -1,6 +1,6 @@
 /*
     ___ usage ___ en_US ___
-    usage: node monitor.bin.js
+    usage: node sidecar.bin.js
 
         -c, --configuration <string>    json configuration path
         -s, --supervisor <string>       pid of supervisor
@@ -16,7 +16,7 @@ require('arguable')(module, {
     arguable.required('configuration', 'supervisor')
 
     const Destructible = require('destructible')
-    const destructible = new Destructible('monitor')
+    const destructible = new Destructible('sidecar')
 
     // Node.js API.
     const assert = require('assert')

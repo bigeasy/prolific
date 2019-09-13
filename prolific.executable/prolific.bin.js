@@ -68,7 +68,7 @@ const Tmp = require('./tmp')
 const Killer = require('./killer')
 
 // TODO Note that; we now require that anyone standing between a root Prolific
-// monitor and a leaf child process use the Descendent library. When I write
+// sidecar and a leaf child process use the Descendent library. When I write
 // multi-process applications I use [Olio](https://github.com/bigeasy/olio)
 // where this is already implemented.
 require('arguable')(module, {}, async arguable => {
@@ -80,19 +80,19 @@ require('arguable')(module, {}, async arguable => {
 
     process.env.PROLIFIC_SUPERVISOR_PROCESS_ID = process.pid
 
-    const monitors = {}
+    const sidecars = {}
     const pids = {}
     const pipes = {} // See race condition below.
 
     const supervise = {
-        monitor: async (monitor, pid) => {
-            const [ exitCode, signal ] = await once(monitor, 'exit').promise
-            Interrupt.assert(exitCode == 0, 'monitor.exit', {
+        sidecar: async (sidecar, pid) => {
+            const [ exitCode, signal ] = await once(sidecar, 'exit').promise
+            Interrupt.assert(exitCode == 0, 'sidecar.exit', {
                 exitCode: exitCode,
                 signal: signal,
                 argv: arguable.argv
             })
-            delete monitors[pid]
+            delete sidecars[pid]
         }
     }
 
@@ -150,31 +150,31 @@ require('arguable')(module, {}, async arguable => {
             switch (data.body.method) {
             case 'start': {
                     killer.start(pid)
-                    const monitor = children.spawn('node', [
-                        path.join(__dirname, 'monitor.bin.js'),
+                    const sidecar = children.spawn('node', [
+                        path.join(__dirname, 'sidecar.bin.js'),
                         '--configuration', processor,
                         '--supervisor', process.pid
                     ], {
                         stdio: [ 'inherit', 'inherit', 'inherit', 'pipe', 'ipc' ]
                     })
-                    monitors[pid] = monitor
-                    pipes[pid] = monitor.stdio[3]
-                    descendent.addChild(monitor, { path: data.path, pid: pid })
-                    destructible.durable([ 'monitor', monitor.pid ], supervise.monitor(monitor, pid))
+                    sidecars[pid] = sidecar
+                    pipes[pid] = sidecar.stdio[3]
+                    descendent.addChild(sidecar, { path: data.path, pid: pid })
+                    destructible.durable([ 'sidecar', sidecar.pid ], supervise.sidecar(sidecar, pid))
                 }
                 break
             case 'eos':
                 // TODO No need to `killer.purge()`, we can absolutely remove
                 // the pid from the `Killer` here.
-                const monitor = monitors[pid]
-                descendent.down([ monitor.pid ], 'prolific:synchronous', null)
+                const sidecar = sidecars[pid]
+                descendent.down([ sidecar.pid ], 'prolific:synchronous', null)
                 break
             default: {
                     killer.exit(pid)
-                    const monitor = monitors[pid]
+                    const sidecar = sidecars[pid]
                     // **TODO** Wait on callback?
                     console.log('data >', data)
-                    descendent.down([ monitor.pid ], 'prolific:synchronous', data.body)
+                    descendent.down([ sidecar.pid ], 'prolific:synchronous', data.body)
                 }
                 break
             }
