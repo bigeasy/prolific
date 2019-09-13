@@ -21,11 +21,12 @@
     "dependencies":
     {
                             "descendent":                   "2.0.x",
+                            "duplicitous":                  "^0.0.0",
                             "extant":                       "1.0.x",
                             "foremost":                     "1.0.x",
                             "prolific.evaluator":           "3.0.x",
                             "prolific.level":               "1.0.x",
-                            "prolific.queue":               "^19.0.0-alpha.3",
+                            "prolific.queue":               "^19.0.0-alpha.4",
                             "prolific.require":             "1.0.x",
                             "prolific.resolver":            "9.0.x",
                             "prolific.sink":                "7.0.x"

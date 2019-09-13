@@ -10,6 +10,7 @@ describe('shuttle', () => {
     const sink = require('prolific.sink')
     const path = require('path')
     const Watcher = require('prolific.watcher')
+    const Pipe = require('duplicitous/pipe')
     const Collector = require('prolific.collector')
     const Destructible = require('destructible')
     const fs = require('fs').promises
@@ -69,7 +70,6 @@ describe('shuttle', () => {
             PROLIFIC_TMPDIR: path.resolve(__dirname, 'tmp')
         }
         descendent.process.pid = 2
-        descendent.process.stderr = new stream.PassThrough
         descendent.process.connected = true
         descendent.process.channel = { unref: () => {} }
         descendent.process.send = message => test.push(message)
@@ -83,9 +83,9 @@ describe('shuttle', () => {
             unhandledRejection: false
         })
         sink.json('error', 'example', 'message', { key: 'value' }, { pid: 0 })
-        const input = new stream.PassThrough
-        const output = new stream.PassThrough
-        descendent.emit('prolific:pipe', {}, { input, output, unref: () => {}  })
+        const pipe = new Pipe
+        pipe.client.unref = () => {}
+        descendent.emit('prolific:pipe', {}, pipe.client)
         descendent.emit('prolific:accept', {
             body: {
                 source: await fs.readFile(path.join(__dirname, 'processor.js')),
@@ -103,12 +103,13 @@ describe('shuttle', () => {
         assert.deepStrictEqual(gathered.map(entry => entry.body.method), [
             'start', 'log', 'log', 'log', 'exit'
         ], 'synchronous')
-        const asynchronous = output.read()
-                                   .toString()
-                                   .split('\n')
-                                   .filter(line => line)
-                                   .map(JSON.parse)
-                                   .map(entry => entry.method)
+        const asynchronous = pipe.server
+                                 .read()
+                                 .toString()
+                                 .split('\n')
+                                 .filter(line => line)
+                                 .map(JSON.parse)
+                                 .map(entry => entry.method)
         assert.deepStrictEqual(asynchronous, [
             'entries', 'version', 'entries'
         ], 'asynchronous')
@@ -124,7 +125,6 @@ describe('shuttle', () => {
             PROLIFIC_TMPDIR: path.resolve(__dirname, 'tmp')
         }
         descendent.process.pid = 2
-        descendent.process.stderr = new stream.PassThrough
         descendent.process.connected = true
         descendent.process.send = message => test.push(message)
         descendent.process.channel = { unref: () => {} }

@@ -61,7 +61,7 @@ class Shuttle {
             'prolific:pipe': function (message, handle) {
                 delete handlers['prolific:pipe']
                 handle.unref()
-                queue.setPipe(handle)
+                queue.setSocket(handle)
             },
             'prolific:accept': (message) => {
                 assert(message.body.source)
