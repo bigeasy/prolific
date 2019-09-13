@@ -101,7 +101,7 @@ describe('shuttle', () => {
         destructible.destroy()
         await destructible.promise
         assert.deepStrictEqual(gathered.map(entry => entry.body.method), [
-            'start', 'log', 'log', 'log', 'exit'
+            'start', 'entries', 'version', 'entries', 'exit'
         ], 'synchronous')
         const asynchronous = pipe.server
                                  .read()
