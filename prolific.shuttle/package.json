@@ -26,7 +26,7 @@
                             "foremost":                     "1.0.x",
                             "prolific.evaluator":           "3.0.x",
                             "prolific.level":               "1.0.x",
-                            "prolific.queue":               "^19.0.0-alpha.4",
+                            "prolific.queue":               "^19.0.0-alpha.5",
                             "prolific.require":             "1.0.x",
                             "prolific.resolver":            "9.0.x",
                             "prolific.sink":                "7.0.x"
@@ -35,7 +35,7 @@
     {
                             "destructible":                 "^5.0.0-alpha.0",
                             "mocha":                        "6.2.0",
-                            "prolific.collector":           "^11.0.0-alpha.1",
+                            "prolific.collector":           "^11.0.0-alpha.2",
                             "prolific.watcher":             "^0.0.3",
                             "rimraf":                       "3.0.0"
     },
