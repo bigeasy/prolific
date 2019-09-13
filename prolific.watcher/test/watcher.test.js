@@ -90,17 +90,29 @@ describe('watcher', () => {
         assert.deepStrictEqual(log.map(entry => entry.label), [ 'json' ], 'json error')
     })
     it('can emit eos', async () => {
-        const { watcher, destructible } = await reset()
-        const notice = new Notice(watcher, 'unlink')
         const test = []
-        watcher.on('data', data => test.push(data))
+        await callback(callback => rimraf(TMPDIR, callback))
+        await fs.mkdir(dir.publish, { recursive: true })
+        await fs.mkdir(dir.stage, { recursive: true })
+        await new Promise(resolve => setTimeout(resolve, 50))
         await fs.writeFile(path.join(dir.stage, 'stage.json'), '1')
         await fs.rename(path.join(dir.stage, 'stage.json'),
                         path.join(dir.publish, 'publish-00000000.json'))
         await fs.writeFile(path.join(dir.stage, 'stage.json'), '2')
         await fs.rename(path.join(dir.stage, 'stage.json'),
                         path.join(dir.publish, 'publish-1-00000000.json'))
+        // For some reason we need to wait a bit for the above directories to
+        // actually take effect on OS X, otherwise files from previous run are
+        // extant and the first events are reporting a missing file.
+        const Watcher = require('..')
+        const Destructible = require('destructible')
+        const destructible = new Destructible(__filename)
+        const watcher = new Watcher(destructible, () => 0, path.join(TMPDIR, 'publish'))
+        watcher.on('data', data => test.push(data))
+        const notice = new Notice(watcher, 'unlink')
         watcher.killed(1)
+        await fs.utimes(path.join(dir.publish, 'publish-00000000.json'), Date.now(), Date.now())
+        await fs.utimes(path.join(dir.publish, 'publish-1-00000000.json'), Date.now(), Date.now())
         const log = await notice.promise
         destructible.destroy()
         await destructible.promise
