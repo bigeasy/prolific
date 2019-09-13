@@ -31,21 +31,24 @@ describe('processor', () => {
         const processor = new Processor(configuration.source, { now: () => 1 })
         processor.on('error', error => console.log(error.stack))
         sink.json('error', 'prolific', 'label', {}, { pid: 1 })
-        await processor.process([{
-            when: 0,
-            qualifier: 'qualifier',
-            label: 'label',
-            level: 'error',
-            body: { url: '/' },
-            system: { pid: 0 }
-        }, {
-            when: 0,
-            qualifier: 'qualifier',
-            label: 'label',
-            level: 'info',
-            body: { url: '/info' },
-            system: { pid: 0 }
-        }])
+        await processor.process({
+            method: 'entries',
+            entries: [{
+                when: 0,
+                qualifier: 'qualifier',
+                label: 'label',
+                level: 'error',
+                body: { url: '/' },
+                system: { pid: 0 }
+            }, {
+                when: 0,
+                qualifier: 'qualifier',
+                label: 'label',
+                level: 'info',
+                body: { url: '/info' },
+                system: { pid: 0 }
+            }]
+        })
         const test = []
         destructible.durable('configure', processor.configure(), () => processor.destroy())
         await new Promise(resolve => {
@@ -54,14 +57,18 @@ describe('processor', () => {
                 resolve()
             })
         })
-        await processor.process([[{ method: 'version', version: 0 }], {
-            when: 0,
-            qualifier: 'qualifier',
-            label: 'label',
-            level: 'error',
-            body: { url: '/after' },
-            system: { pid: 0 }
-        }])
+        await processor.process({ method: 'version', version: 0 })
+        await processor.process({
+            method: 'entries',
+            entries: [{
+                when: 0,
+                qualifier: 'qualifier',
+                label: 'label',
+                level: 'error',
+                body: { url: '/after' },
+                system: { pid: 0 }
+            }]
+        })
         sink.json('error', 'prolific', 'label', {}, { pid: 1 })
         const reconfigured = new Promise(resolve => {
             processor.once('configuration', configuration => {
@@ -88,7 +95,8 @@ describe('processor', () => {
         await fs.copyFile(configuration.objectconfiguration, configuration.source)
         await configured.object
         assert(!processor.destroyed, 'not destroyed')
-        await processor.process([[{ method: 'exit' }]])
+        await processor.process({ method: 'exit' })
+        await processor.process(null)
         assert(processor.destroyed, 'destroyed')
         assert.deepStrictEqual(test, [{
             version: 0,

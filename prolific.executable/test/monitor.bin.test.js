@@ -3,6 +3,7 @@ describe('monitor', () => {
     const path = require('path')
     const stream = require('stream')
     const fs = require('fs').promises
+    const Pipe = require('duplicitous/pipe')
 
     it('can monitor', async () => {
         const monitor = require('../monitor.bin')
@@ -30,18 +31,28 @@ describe('monitor', () => {
         }]
 
         messenger.parent.on('message', (message) => {
+            console.log(message)
             test.push(message)
         })
 
         messenger.env = {}
         messenger.pid = 2
 
+        const pipe = new Pipe
+
         const child = monitor({ configuration, supervisor: '1' }, {
-            $pipes: { 3: new stream.PassThrough },
+            $pipes: { 3: pipe.server },
             $stdin: stdin,
             process: messenger
         })
-        stdin.end()
+        messenger.emit('message', {
+            module: 'descendent',
+            method: 'route',
+            name: 'prolific:synchronous',
+            to: [],
+            path: [ 1, 2 ],
+            body: null
+        })
         await child.promise
 
         assert.deepStrictEqual(test, [{

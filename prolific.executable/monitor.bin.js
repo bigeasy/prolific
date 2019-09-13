@@ -42,22 +42,21 @@ require('arguable')(module, {
             descendent.up(+arguable.ultimate.supervisor, 'prolific:accept', configuration)
         })
 
-        arguable.stdin.resume()
-
-        const { default: PQueue } = require('p-queue')
-
-        const queue = new PQueue
+        const Queue = require('avenue')
+        const queue = new Queue
 
         // Listen to our asynchronous pipe.
-        const consolidator = new Consolidator(arguable.pipes[3], arguable.stdin, {
-            push: (entries) => queue.add(() => processor.process(entries))
-        })
+        const consolidator = new Consolidator(arguable.pipes[3], arguable.pipes[3], queue)
 
+        destructible.durable('process', queue.shifter().pump(batch => processor.process(batch)))
         destructible.ephemeral('configure', processor.configure())
         destructible.durable('asynchronous', consolidator.asynchronous())
-        destructible.ephemeral('synchronous', consolidator.synchronous())
 
-        destructible.destruct(() => consolidator.exit())
+        descendent.on('prolific:synchronous', synchronous => {
+            console.log('>', synchronous.body)
+            consolidator.synchronous(synchronous.body)
+        })
+
         destructible.destruct(() => arguable.pipes[3].destroy())
 
         // Let the supervisor know that we're ready. It will send our asynchronous

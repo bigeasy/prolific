@@ -21,26 +21,30 @@
     "dependencies":
     {
                             "arguable":                     "^11.0.0-alpha.0",
+                            "avenue":                       "^0.2.0-alpha.0",
                             "descendent":                   "2.0.x",
                             "foremost":                     "1.0.x",
                             "interrupt":                    "8.0.x",
                             "is-running":                   "2.1.0",
                             "isochronous":                  "^4.0.0-alpha.0",
                             "p-queue":                      "6.1.1",
-                            "prolific.collector":           "10.0.x",
-                            "prolific.consolidator":        "10.0.x",
+                            "hash.fnv":                     "^1.0.6",
+                            "prolific.collector":           "^11.0.0-alpha.1",
+                            "prolific.consolidator":        "^11.0.0-alpha.0",
                             "prolific.evaluator":           "3.0.x",
                             "prolific.inherit":             "7.0.x",
                             "prolific.require":             "1.0.x",
+                            "prolific.watcher":             "^0.0.6",
                             "prospective":                  "^0.1.0-alpha.1",
-                            "reconfigure":                  "^3.0.0-alpha.1"
+                            "reconfigure":                  "^3.0.0-alpha.1",
+                            "rimraf":                       "3.0.0"
     },
     "devDependencies":
     {
+                            "duplicitous":                  "^0.0.0",
                             "mocha":                        "6.2.0",
                             "prolific.logger":              "10.0.x",
-                            "prolific.shuttle":             "24.0.x",
-                            "rimraf":                       "3.0.0"
+                            "prolific.shuttle":             "^25.0.0-alpha.4"
     },
     "main":                 "prolific.bin",
     "bin":

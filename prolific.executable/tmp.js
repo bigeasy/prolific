@@ -10,6 +10,7 @@ module.exports = async function (tmp, random, pid) {
             await fs.mkdir(dirname)
             return dirname
         } catch (error) {
+            console.log(error.stack)
             assert(error.code == 'EEXIST')
         } finally {
             process.umask(umask)
