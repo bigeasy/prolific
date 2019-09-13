@@ -1,6 +1,6 @@
 {
     "name":                 "prolific.collector",
-    "version":              "11.0.0-alpha.1",
+    "version":              "11.0.0-alpha.2",
     "description":
 
       "Gather synchronous log messages emitted from a monitored, Prolific-enabled program.",
