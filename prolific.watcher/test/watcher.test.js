@@ -34,8 +34,8 @@ describe('watcher', () => {
             this.promise = new Promise(resolve => {
                 function notice (entry) {
                     log.push(entry)
-                    watcher.removeListener('notice', notice)
                     if (entry.label == label) {
+                        watcher.removeListener('notice', notice)
                         resolve(log)
                     }
                 }
@@ -88,5 +88,26 @@ describe('watcher', () => {
         destructible.destroy()
         await destructible.promise
         assert.deepStrictEqual(log.map(entry => entry.label), [ 'json' ], 'json error')
+    })
+    it('can emit eos', async () => {
+        const { watcher, destructible } = await reset()
+        const notice = new Notice(watcher, 'unlink')
+        const test = []
+        watcher.on('data', data => test.push(data))
+        await fs.writeFile(path.join(dir.stage, 'stage.json'), '1')
+        await fs.rename(path.join(dir.stage, 'stage.json'),
+                        path.join(dir.publish, 'publish-00000000.json'))
+        await fs.writeFile(path.join(dir.stage, 'stage.json'), '2')
+        await fs.rename(path.join(dir.stage, 'stage.json'),
+                        path.join(dir.publish, 'publish-1-00000000.json'))
+        watcher.killed(1)
+        const log = await notice.promise
+        destructible.destroy()
+        await destructible.promise
+        const filename = log.filter(entry => entry.label == 'filename')
+                         .map(entry => entry.filename)
+                         .shift()
+        assert.equal(filename, 'publish-00000000.json')
+        assert.deepStrictEqual(test, [ 1, 2, { pid: 1, body: { method: 'eos' } } ], 'test')
     })
 })
