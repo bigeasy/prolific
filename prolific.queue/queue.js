@@ -106,7 +106,11 @@ class Queue extends events.EventEmitter {
                 this._written.shift()
                 break
             case 'triage':
-                this.emit('triage', json.source)
+                this.emit('triage', {
+                    version: json.version,
+                    file: json.file,
+                    source: json.source
+                })
                 break
             }
         }

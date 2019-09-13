@@ -160,7 +160,7 @@ describe('queue', () => {
         }, {
             method: 'receipt', series: 1
         }, {
-            method: 'triage', source: '1 + 1'
+            method: 'triage', source: '1 + 1', file: '/opt/processor.js', version: 1
         }]).map(JSON.stringify).join('\n') + '\n')
         await new Promise(resolve => setTimeout(resolve, 5))
         queue.exit(0)
@@ -179,7 +179,11 @@ describe('queue', () => {
                           .map(JSON.parse)
                           .map(entry => entry.method)
         assert.deepStrictEqual(lines, [ 'entries', 'entries' ], 'entries')
-        assert.equal(await triage, '1 + 1', 'triage')
+        assert.deepStrictEqual((await triage)[0], {
+            source: '1 + 1',
+            file: '/opt/processor.js',
+            version: 1
+        }, 'triage')
     })
     it('can resend unverified batches at exit', async () => {
         const { destructible, watcher, collector } = await reset()
