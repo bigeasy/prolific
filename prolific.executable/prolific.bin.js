@@ -196,11 +196,6 @@ require('arguable')(module, {}, async arguable => {
             descendent.down(message.cookie.path, 'prolific:pipe', true, coalesce(pipes[pid]))
         })
 
-        descendent.on('prolific:accept', function (message) {
-            const pid = message.from[message.from.length - 1]
-            descendent.down(message.cookie.path, 'prolific:accept', message.body)
-        })
-
         const close = async () => {
             const [ exitCode, signal ] = await once(child, 'exit').promise
             // Will only ever equal zero. We do not have the `null, "SIGTERM"`

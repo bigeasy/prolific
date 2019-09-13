@@ -38,22 +38,40 @@ require('arguable')(module, {
 
         const processor = new Processor(arguable.ultimate.configuration)
 
-        processor.on('configuration', (configuration) => {
-            descendent.up(+arguable.ultimate.supervisor, 'prolific:accept', configuration)
-        })
-
         const Queue = require('avenue')
         const queue = new Queue
+
+        const processors = new Queue().shifter().paired
+
+        const Future = require('prospective/future')
+
+        const receiving = new Future
+
+        async function update () {
+            await receiving.promise
+            for await (const processor of processors.shifter.iterator()) {
+                arguable.pipes[3].write(JSON.stringify(processor) + '\n')
+            }
+        }
+
+        destructible.durable('update', update())
+        destructible.destruct(() => processors.shifter.destroy())
+
+        processor.on('configuration', (configuration) => {
+            receiving.resolve()
+            processors.queue.push(configuration)
+        })
 
         // Listen to our asynchronous pipe.
         const consolidator = new Consolidator(arguable.pipes[3], arguable.pipes[3], queue)
 
-        destructible.durable('process', queue.shifter().pump(batch => processor.process(batch)))
+        destructible.durable('process', queue.shifter().pump(entry => {
+            processor.process(entry)
+        }))
         destructible.ephemeral('configure', processor.configure())
         destructible.durable('asynchronous', consolidator.asynchronous())
 
         descendent.on('prolific:synchronous', synchronous => {
-            console.log('>', synchronous.body)
             consolidator.synchronous(synchronous.body)
         })
 

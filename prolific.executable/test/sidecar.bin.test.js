@@ -62,13 +62,6 @@ describe('sidecar', () => {
             to: [ 1 ],
             path: [ 2 ],
             body: true
-        }, {
-            module: 'descendent',
-            method: 'route',
-            name: 'prolific:accept',
-            to: [ 1 ],
-            path: [ 2 ],
-            body: { version: 0, file: configuration, source: await fs.readFile(configuration, 'utf8') }
         }], 'test')
     })
 })
