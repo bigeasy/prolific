@@ -96,8 +96,6 @@ require('arguable')(module, {}, async arguable => {
         }
     }
 
-    const exited = { '0': 0 }
-
     descendent.increment()
     try {
         // TODO What do you really want to name this?
