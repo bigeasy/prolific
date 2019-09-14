@@ -145,7 +145,6 @@ require('arguable')(module, {}, async arguable => {
         watcher.on('data', data => collector.data(data))
 
         collector.on('data', data => {
-            killer.purge()
             const pid = data.pid
             switch (data.body.method) {
             case 'start': {
