@@ -29,7 +29,6 @@
                             "foremost":                     "^1.0.4",
                             "mocha":                        "6.2.0",
                             "prospective":                  "^0.1.0-alpha.1",
-                            "prolific.resolver":            "^9.0.3",
                             "rimraf":                       "3.0.0"
     },
     "main":                 "watcher",

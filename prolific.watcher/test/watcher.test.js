@@ -5,7 +5,6 @@ describe('watcher', () => {
     const fs = require('fs').promises
     const callback = require('prospective/callback')
     const once = require('prospective/once')
-    const sink = require('prolific.resolver').sink
     const events = require('events')
     const entries = new events.EventEmitter
     const TMPDIR = path.join(__dirname, 'tmp')
