@@ -138,7 +138,7 @@ require('arguable')(module, {}, async arguable => {
         destructible.durable('toucher', toucher.start())
         destructible.destruct(() => toucher.stop())
 
-        const killer = new Killer(100, 30000)
+        const killer = new Killer(100)
 
         killer.on('killed', pid => {
             watcher.killed(pid)
@@ -217,7 +217,7 @@ require('arguable')(module, {}, async arguable => {
 
         return 0
     } catch (error) {
-        console.log(killer.destroyed, killer._pids)
+        console.log(killer.destroyed, killer._pids, killer._exited)
         throw error
     } finally {
         descendent.decrement()

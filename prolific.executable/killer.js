@@ -4,7 +4,7 @@ const Isochronous = require('isochronous')
 const isRunning = require('is-running')
 
 class Killer extends events.EventEmitter {
-    constructor (interval, timeout) {
+    constructor (interval) {
         super()
         this._isochronous = new Isochronous(interval, true, async () => {
             let i = 0, I = this._pids.length
@@ -28,7 +28,7 @@ class Killer extends events.EventEmitter {
             }
             await this._unlatched
         })
-        this._timeout = timeout
+        this.destroyed = false
         this._pids = []
         this._exited = {}
         this._clean()
