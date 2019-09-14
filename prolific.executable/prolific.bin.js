@@ -93,6 +93,21 @@ require('arguable')(module, {}, async arguable => {
                 argv: arguable.argv
             })
             delete sidecars[pid]
+        },
+        child: async (child) => {
+            const [ exitCode, signal ] = await once(child, 'exit').promise
+            // Will only ever equal zero. We do not have the `null, "SIGTERM"`
+            // combo because we always register a `SIGTERM` handler. The
+            // `"SIGTERM"` response is only when the default hander fires. The
+            // `"SIGTERM"` is determined by whether or not the child has a
+            // `"SIGTERM"` handler, not by any action by the parent. (i.e.
+            // whether or not the parent calles `child.kill()`. The behavior is
+            // still the same if we send a kill signal from the shell.
+            Interrupt.assert(exitCode == 0, 'child.exit', {
+                exitCode: exitCode,
+                signal: signal,
+                argv: arguable.argv
+            })
         }
     }
 
@@ -128,6 +143,7 @@ require('arguable')(module, {}, async arguable => {
         killer.on('killed', pid => {
             watcher.killed(pid)
         })
+        killer.on('drain', () => destructible.destroy())
 
         destructible.durable('killer', killer.run())
         destructible.destruct(() => killer.destroy())
@@ -156,7 +172,7 @@ require('arguable')(module, {}, async arguable => {
                     sidecars[pid] = sidecar
                     pipes[pid] = sidecar.stdio[3]
                     descendent.addChild(sidecar, { path: data.path, pid: pid })
-                    destructible.durable([ 'sidecar', sidecar.pid ], supervise.sidecar(sidecar, pid))
+                    destructible.ephemeral([ 'sidecar', sidecar.pid ], supervise.sidecar(sidecar, pid))
                 }
                 break
             case 'eos': {
@@ -193,23 +209,7 @@ require('arguable')(module, {}, async arguable => {
             descendent.down(message.cookie.path, 'prolific:pipe', true, coalesce(pipes[pid]))
         })
 
-        const close = async () => {
-            const [ exitCode, signal ] = await once(child, 'exit').promise
-            // Will only ever equal zero. We do not have the `null, "SIGTERM"`
-            // combo because we always register a `SIGTERM` handler. The
-            // `"SIGTERM"` response is only when the default hander fires. The
-            // `"SIGTERM"` is determined by whether or not the child has a
-            // `"SIGTERM"` handler, not by any action by the parent. (i.e.
-            // whether or not the parent calles `child.kill()`. The behavior is
-            // still the same if we send a kill signal from the shell.
-            Interrupt.assert(exitCode == 0, 'child.exit', {
-                exitCode: exitCode,
-                signal: signal,
-                argv: arguable.argv
-            })
-        }
-
-        destructible.ephemeral('close', close())
+        destructible.ephemeral('close', supervise.child(child))
 
         await arguable.destroyed
         destructible.destroy()

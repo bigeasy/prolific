@@ -20,6 +20,7 @@ class Killer extends events.EventEmitter {
             }
             if (this._pids.length == 0) {
                 if (this.destroyed) {
+                    this.emit('drain')
                     this._isochronous.stop()
                 } else {
                     this._clean()
