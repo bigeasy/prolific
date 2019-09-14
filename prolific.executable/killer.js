@@ -19,7 +19,11 @@ class Killer extends events.EventEmitter {
                 }
             }
             if (this._pids.length == 0) {
-                this._clean()
+                if (this.destroyed) {
+                    this._isochronous.stop()
+                } else {
+                    this._clean()
+                }
             }
             await this._unlatched
         })
@@ -63,8 +67,13 @@ class Killer extends events.EventEmitter {
     }
 
     destroy () {
-        this._isochronous.stop()
-        this._latch.call()
+        if (!this.destroyed) {
+            this.destroyed = true
+            if (this._pids.length == 0) {
+                this._isochronous.stop()
+            }
+            this._latch.call()
+        }
     }
 }
 
