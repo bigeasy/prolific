@@ -216,6 +216,9 @@ require('arguable')(module, {}, async arguable => {
         await destructible.promise
 
         return 0
+    } catch (error) {
+        console.log(killer.destroyed, killer._pids)
+        throw error
     } finally {
         descendent.decrement()
     }
