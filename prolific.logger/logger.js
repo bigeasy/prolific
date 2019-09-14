@@ -37,7 +37,7 @@ Object.keys(require('prolific.level')).forEach(function (level) {
     }
 })
 
-Logger.createLogger = function (context) { return new Logger(context) }
+Logger.create = function (context) { return new Logger(context) }
 
 Logger.sink = sink
 

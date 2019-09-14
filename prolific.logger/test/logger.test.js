@@ -7,7 +7,7 @@ describe('logger', () => {
         prolific.sink.json = function (...vargs) {
             test.push(vargs)
         }
-        const logger = Logger.createLogger('hello')
+        const logger = Logger.create('hello')
         logger.concat('error', 'greeting', {}, { a: 1 })
         logger.log('error', 'greeting', { a: 1 })
         logger.error('greeting', { a: 1 })
