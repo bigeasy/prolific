@@ -173,7 +173,6 @@ require('arguable')(module, {}, async arguable => {
                     killer.exit(pid)
                     const sidecar = sidecars[pid]
                     // **TODO** Wait on callback?
-                    console.log('data >', data)
                     descendent.down([ sidecar.pid ], 'prolific:synchronous', data.body)
                 }
                 break
