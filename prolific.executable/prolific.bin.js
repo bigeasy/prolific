@@ -111,6 +111,8 @@ require('arguable')(module, {}, async arguable => {
         }
     }
 
+    const killer = new Killer(100)
+
     descendent.increment()
     try {
         // TODO What do you really want to name this?
@@ -137,8 +139,6 @@ require('arguable')(module, {}, async arguable => {
 
         destructible.durable('toucher', toucher.start())
         destructible.destruct(() => toucher.stop())
-
-        const killer = new Killer(100)
 
         killer.on('killed', pid => {
             watcher.killed(pid)
