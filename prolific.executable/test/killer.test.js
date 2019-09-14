@@ -21,13 +21,13 @@ describe('killer', () => {
         process.kill(child.first.pid)
         await first
         killer.exit(child.second.pid)
+        killer.exited(child.first.pid)
         killer.destroy()
-        killer.purge()
         await new Promise(resolve => setTimeout(resolve, 101))
-        killer.purge()
         const second = once(killer, 'killed').promise
         process.kill(child.second.pid)
         await second
+        killer.exited(child.second.pid)
         killer.destroy()
         await run
     })

@@ -41,7 +41,7 @@ class Killer extends events.EventEmitter {
         return this._isochronous.start()
     }
 
-    start (pid) {
+    exited (pid) {
         assert(this._pids.filter(p => p == pid).length == 0)
         delete this._exited[pid]
     }
@@ -53,16 +53,6 @@ class Killer extends events.EventEmitter {
             this._latch.call()
         } else {
             this._exited[pid].when = Date.now()
-        }
-    }
-
-    purge () {
-        const expired = Date.now() - this._timeout
-        for (const pid in this._exited) {
-            const exited = this._exited[pid]
-            if (exited.when < expired) {
-                this.start(exited.pid)
-            }
         }
     }
 

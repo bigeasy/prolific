@@ -149,7 +149,6 @@ require('arguable')(module, {}, async arguable => {
             const pid = data.pid
             switch (data.body.method) {
             case 'start': {
-                    killer.start(pid)
                     const sidecar = children.spawn('node', [
                         path.join(__dirname, 'sidecar.bin.js'),
                         '--configuration', processor,
@@ -163,11 +162,13 @@ require('arguable')(module, {}, async arguable => {
                     destructible.durable([ 'sidecar', sidecar.pid ], supervise.sidecar(sidecar, pid))
                 }
                 break
-            case 'eos':
-                // TODO No need to `killer.purge()`, we can absolutely remove
-                // the pid from the `Killer` here.
-                const sidecar = sidecars[pid]
-                descendent.down([ sidecar.pid ], 'prolific:synchronous', null)
+            case 'eos': {
+                    killer.exited(pid)
+                    // TODO No need to `killer.purge()`, we can absolutely remove
+                    // the pid from the `Killer` here.
+                    const sidecar = sidecars[pid]
+                    descendent.down([ sidecar.pid ], 'prolific:synchronous', null)
+                }
                 break
             default: {
                     killer.exit(pid)
