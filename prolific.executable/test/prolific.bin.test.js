@@ -1,6 +1,7 @@
 describe('executable', function () {
     this.timeout(10000)
     const assert = require('assert')
+    process.on('unhandledRejection', error => { throw error })
     it('can execute', async () => {
         const prolific = require('..')
         const path = require('path')
