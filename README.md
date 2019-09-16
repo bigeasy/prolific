@@ -1,3 +1,7 @@
+[![Actions Status](https://github.com/bigeasy/prolific/workflows/Node%20CI/badge.svg)](https://github.com/bigeasy/prolific/actions)
+[![codecov](https://codecov.io/gh/bigeasy/prolific/branch/master/graph/badge.svg)](https://codecov.io/gh/bigeasy/prolific)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+
 # Prolific
 
 Prolific is a high-performance logging framework for Node.js with the following
