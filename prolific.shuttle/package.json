@@ -26,6 +26,7 @@
                             "foremost":                     "1.0.x",
                             "prolific.evaluator":           "3.0.x",
                             "prolific.level":               "1.0.x",
+                            "prolific.logger":              "^11.0.0-alpha.0",
                             "prolific.queue":               "^19.0.0-alpha.8",
                             "prolific.require":             "1.0.x",
                             "prolific.resolver":            "9.0.x",
