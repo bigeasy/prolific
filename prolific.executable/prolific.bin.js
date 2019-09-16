@@ -195,7 +195,7 @@ require('arguable')(module, {}, async arguable => {
                         '--configuration', processor,
                         '--supervisor', process.pid
                     ], {
-                        stdio: [ 'inherit', 'inherit', 'inherit', 'pipe', 'ipc' ]
+                        stdio: [ 'inherit', 'inherit', 'inherit', 'ipc' ]
                     })
                     destructible.increment()
                     sidecars[pid] = sidecar

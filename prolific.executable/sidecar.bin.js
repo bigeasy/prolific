@@ -9,7 +9,6 @@
     ___ . ___
 */
 require('arguable')(module, {
-    $pipes: { 3: { readable: true } },
     $trap: { SIGINT: 'swallow', SIGTERM: 'swallow' },
     process: process
 }, async (arguable) => {
@@ -47,14 +46,14 @@ require('arguable')(module, {
 
         const receiving = new Future
 
-        async function update () {
+        async function update (socket) {
             for await (const processor of processors.shifter.iterator()) {
-                arguable.pipes[3].write(JSON.stringify(processor) + '\n')
+                socket.write(JSON.stringify(processor) + '\n')
             }
         }
 
         descendent.on('prolific:socket', (message, socket) => {
-            destructible.durable('read', update())
+            destructible.durable('read', update(socket))
             destructible.durable('asynchronous', consolidator.asynchronous(socket, socket))
         })
 
@@ -76,8 +75,6 @@ require('arguable')(module, {
         descendent.on('prolific:synchronous', synchronous => {
             consolidator.synchronous(synchronous.body)
         })
-
-        destructible.destruct(() => arguable.pipes[3].destroy())
 
         // Let the supervisor know that we're ready. It will send our asynchronous
         // pipe down to the monitored process.
