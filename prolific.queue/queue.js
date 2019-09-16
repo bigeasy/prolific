@@ -21,7 +21,7 @@ class Queue extends events.EventEmitter {
         this._written = []
         this._readable = { destroy: () => {} }
         this._writable = { destroy: () => {} }
-        this._recieving = new Promise(resolve => this._received = resolve)
+        this._receiving = new Promise(resolve => this._received = resolve)
         this._writing = true
         this._sync = false
         this._exited = false

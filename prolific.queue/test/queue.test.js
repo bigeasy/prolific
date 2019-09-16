@@ -131,6 +131,10 @@ describe('queue', () => {
         net.pipe.client.emit('connect')
         await new Promise(resolve => setTimeout(resolve, 5))
         queue.version(1)
+        net.pipe.server.write(([{
+            method: 'triage', source: '1 + 1', file: '/opt/processor.js', version: 1
+        }]).map(JSON.stringify).join('\n') + '\n')
+        await new Promise(resolve => setImmediate(resolve))
         net.pipe.server.write(([{ method: 'receipt', series: 0 }]).map(JSON.stringify).join('\n') + '\n')
         await new Promise(resolve => setTimeout(resolve, 5))
         queue.exit(0)
@@ -164,11 +168,11 @@ describe('queue', () => {
         await new Promise(resolve => setTimeout(resolve, 5))
         queue.push({ a: 1 })
         net.pipe.server.write(([{
-            method: 'receipt', series: 0
-        }, {
-            method: 'receipt', series: 1
-        }, {
             method: 'triage', source: '1 + 1', file: '/opt/processor.js', version: 1
+        }]).map(JSON.stringify).join('\n') + '\n')
+        await new Promise(resolve => setImmediate(resolve))
+        net.pipe.server.write(([{
+            method: 'receipt', series: 0
         }]).map(JSON.stringify).join('\n') + '\n')
         await new Promise(resolve => setTimeout(resolve, 5))
         queue.exit(0)
@@ -186,7 +190,7 @@ describe('queue', () => {
                               .filter(line => line != '')
                               .map(JSON.parse)
                               .map(entry => entry.method)
-        assert.deepStrictEqual(lines, [ 'announce', 'entries', 'entries' ], 'entries')
+        assert.deepStrictEqual(lines, [ 'announce', 'entries' ], 'entries')
         assert.deepStrictEqual((await triage)[0], {
             source: '1 + 1',
             file: '/opt/processor.js',
@@ -236,6 +240,10 @@ describe('queue', () => {
         net.pipe.client.emit('connect')
         await new Promise(resolve => setTimeout(resolve, 5))
         queue.version(1)
+        net.pipe.server.write(([{
+            method: 'triage', source: '1 + 1', file: '/opt/processor.js', version: 1
+        }]).map(JSON.stringify).join('\n') + '\n')
+        await new Promise(resolve => setImmediate(resolve))
         net.pipe.server.write('[')
         net.pipe.server.end()
         await new Promise(resolve => setTimeout(resolve, 50))
