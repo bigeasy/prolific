@@ -22,12 +22,12 @@ describe('killer', () => {
         await first
         killer.exit(child.second.pid)
         killer.exited(child.first.pid)
-        killer.destroy()
         await new Promise(resolve => setTimeout(resolve, 101))
         const second = once(killer, 'killed').promise
         process.kill(child.second.pid)
         await second
         killer.exited(child.second.pid)
+        killer.destroy()
         killer.destroy()
         await run
     })
