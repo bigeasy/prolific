@@ -20,7 +20,6 @@ class Killer extends events.EventEmitter {
             }
             if (this._pids.length == 0) {
                 if (this.destroyed) {
-                    this.emit('drain')
                     this._isochronous.stop()
                 } else {
                     this._clean()
@@ -48,12 +47,11 @@ class Killer extends events.EventEmitter {
     }
 
     exit (pid) {
+        assert(!this.destroyed)
         if (this._exited[pid] == null) {
-            this._exited[pid] = { pid, when: Date.now() }
+            this._exited[pid] = pid
             this._pids.push(pid)
             this._latch.call()
-        } else {
-            this._exited[pid].when = Date.now()
         }
     }
 

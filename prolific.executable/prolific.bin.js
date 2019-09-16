@@ -84,6 +84,11 @@ require('arguable')(module, {}, async arguable => {
     const pids = {}
     const pipes = {} // See race condition below.
 
+    // TODO What do you really want to name this?
+    const Destructible = require('destructible')
+    const destructible = new Destructible(1500, 'prolific')
+    destructible.increment(1)
+
     const supervise = {
         sidecar: async (sidecar, pid) => {
             const [ exitCode, signal ] = await once(sidecar, 'exit').promise
@@ -93,6 +98,7 @@ require('arguable')(module, {}, async arguable => {
                 argv: arguable.argv
             })
             delete sidecars[pid]
+            destructible.decrement()
         },
         child: async (child) => {
             const [ exitCode, signal ] = await once(child, 'exit').promise
@@ -108,6 +114,7 @@ require('arguable')(module, {}, async arguable => {
                 signal: signal,
                 argv: arguable.argv
             })
+            destructible.decrement()
         }
     }
 
@@ -115,10 +122,6 @@ require('arguable')(module, {}, async arguable => {
 
     descendent.increment()
     try {
-        // TODO What do you really want to name this?
-        const Destructible = require('destructible')
-        const destructible = new Destructible(1500, 'prolific')
-
         const tmp = await Tmp(coalesce(process.env.TMPDIR, '/tmp'), async () => {
             const [ bytes ] = await callback(callback => crypto.randomBytes(16, callback))
             return bytes.toString('hex')
@@ -143,7 +146,6 @@ require('arguable')(module, {}, async arguable => {
         killer.on('killed', pid => {
             watcher.killed(pid)
         })
-        killer.on('drain', () => destructible.destroy())
 
         destructible.durable('killer', killer.run())
         destructible.destruct(() => killer.destroy())
@@ -169,6 +171,7 @@ require('arguable')(module, {}, async arguable => {
                     ], {
                         stdio: [ 'inherit', 'inherit', 'inherit', 'pipe', 'ipc' ]
                     })
+                    destructible.increment()
                     sidecars[pid] = sidecar
                     pipes[pid] = sidecar.stdio[3]
                     descendent.addChild(sidecar, { path: data.path, pid: pid })
@@ -211,14 +214,12 @@ require('arguable')(module, {}, async arguable => {
 
         destructible.ephemeral('close', supervise.child(child))
 
-        await arguable.destroyed
-        destructible.destroy()
+        // TODO How do we propogate signals?
+        // await arguable.destroyed
+        // destructible.destroy()
         await destructible.promise
 
         return 0
-    } catch (error) {
-        console.log(killer.destroyed, killer._pids, killer._exited)
-        throw error
     } finally {
         descendent.decrement()
     }
