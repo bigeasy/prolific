@@ -33,7 +33,7 @@
     },
     "devDependencies":
     {
-                            "destructible":                 "^5.0.0-alpha.0",
+                            "destructible":                 "^5.1.0-alpha.2",
                             "mocha":                        "6.2.0",
                             "prolific.collector":           "^11.0.0-alpha.2",
                             "prolific.watcher":             "^0.0.3",
