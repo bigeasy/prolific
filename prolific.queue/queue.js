@@ -21,6 +21,7 @@ class Queue extends events.EventEmitter {
         this._written = []
         this._readable = { destroy: () => {} }
         this._writable = { destroy: () => {} }
+        this._recieving = new Promise(resolve => this._received = resolve)
         this._writing = true
         this._sync = false
         this._exited = false
@@ -74,6 +75,7 @@ class Queue extends events.EventEmitter {
     //
     async _send (writable) {
         let interval = 0
+        await this._receiving
         SEND: for (;;) {
             // We set writing false because from here we either sleep or wait.
             this._writing = false
@@ -106,22 +108,32 @@ class Queue extends events.EventEmitter {
         })
     }
 
+    _dispatch (line) {
+        const json = JSON.parse(line)
+        switch (json.method) {
+        case 'receipt':
+            assert.equal(this._written[0].series, json.series, 'series mismatch')
+            this._written.shift()
+            break
+        case 'triage':
+            this._triage(json)
+            break
+        }
+    }
+
     // Note that in case of a truncated stream, `byline` will not give us a
     // partial line at the end of file, so we can always count on each line
     // being a full line with a single JSON object.
-    async _receive (readable) {
-        let truncated = null
-        for await (const line of readable) {
-            const json = JSON.parse(line.toString())
-            switch (json.method) {
-            case 'receipt':
-                assert.equal(this._written[0].series, json.series, 'series mismatch')
-                this._written.shift()
-                break
-            case 'triage':
-                this._triage(json)
-                break
-            }
+    async _receive (bylined) {
+        this._readable = new Staccato.Readable(bylined)
+        for await (const line of this._readable) {
+            this._dispatch(line.toString())
+            break
+        }
+        this._readable = new Staccato.Readable(bylined)
+        this._received.call()
+        for await (const line of this._readable) {
+            this._dispatch(line.toString())
         }
     }
 
@@ -156,12 +168,11 @@ class Queue extends events.EventEmitter {
         if (this._exited) {
             return []
         }
-        this._readable = new Staccato.Readable(byline(this._socket))
         this._writable = new Staccato.Writable(this._socket)
         await this._writable.write(JSON.stringify({ method: 'announce', pid: this._pid }) + '\n')
         // We may have exited, but that's unlikely at runtime, and the loops
         // here will both exit immediately, so we don't have to check for exit.
-        return [ this._send(this._writable), this._receive(this._readable) ]
+        return [ this._send(this._writable), this._receive(byline(this._socket)) ]
     }
 
     _nudge () {
@@ -196,6 +207,7 @@ class Queue extends events.EventEmitter {
             this._exited = true
             this._readable.destroy()
             this._writable.destroy()
+            this._received.call()
             this._latch.call()
             this._writeSync()
             this._publish({ method: 'exit', code })

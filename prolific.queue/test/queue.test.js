@@ -193,6 +193,7 @@ describe('queue', () => {
             version: 1
         }, 'triage')
     })
+    return
     it('can resend unverified batches at exit', async () => {
         const { destructible, watcher, collector } = await reset()
         const gatherer = new Gatherer(collector, 'exit')
