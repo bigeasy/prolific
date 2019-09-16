@@ -20,10 +20,8 @@
     },
     "dependencies":
     {
-                            "descendent":                   "2.0.x",
                             "duplicitous":                  "^0.1.0-alpha.0",
                             "extant":                       "1.0.x",
-                            "foremost":                     "1.0.x",
                             "prolific.evaluator":           "3.0.x",
                             "prolific.level":               "1.0.x",
                             "prolific.logger":              "^11.0.0-alpha.0",
@@ -35,9 +33,9 @@
     "devDependencies":
     {
                             "destructible":                 "^5.1.0-alpha.2",
-                            "mocha":                        "6.2.0",
                             "prolific.collector":           "^11.0.0-alpha.2",
                             "prolific.watcher":             "^0.1.0-alpha.0",
+                            "prospective":                  "^0.1.0-alpha.1",
                             "rimraf":                       "3.0.0"
     },
     "scripts":

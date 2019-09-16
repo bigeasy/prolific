@@ -1,8 +1,8 @@
 const coalesce = require('extant')
-const descendent = require('foremost')('descendent')
-
 const Evaluator = require('prolific.evaluator')
 const Queue = require('prolific.queue')
+const path = require('path')
+const net = require('net')
 
 const LEVEL = require('prolific.level')
 
@@ -12,8 +12,11 @@ const rethrow = require('./uncaught')
 
 class Shuttle {
     constructor (options) {
+        this._env = coalesce(options.env, process.env)
+        this._pid = coalesce(options.pid, process.pid)
+        this._process = coalesce(options.process, process)
         this._queue = null
-        if (descendent.process.env.PROLIFIC_SUPERVISOR_PROCESS_ID != null) {
+        if (this._env.PROLIFIC_SUPERVISOR_PROCESS_ID != null) {
             this.monitored = true
             this._initialze(options)
         } else {
@@ -22,18 +25,11 @@ class Shuttle {
     }
 
     _initialze (options) {
-        descendent.increment()
-
-        // **TODO** A hack to prevent Prolific Shuttle from preventing the event
-        // loop from exiting, but far too invasive. We must remove.
-        descendent.process.channel.unref()
-
-        const supervisorId = +descendent.process.env.PROLIFIC_SUPERVISOR_PROCESS_ID
-        const path = descendent.path.splice(descendent.path.indexOf(supervisorId))
-        const directory = descendent.process.env.PROLIFIC_TMPDIR
+        const supervisorId = +this._env.PROLIFIC_SUPERVISOR_PROCESS_ID
+        const directory = this._env.PROLIFIC_TMPDIR
 
         const queue = this._queue = new Queue(Date, directory,
-                                              path, coalesce(options.interval, 1000))
+                                              this._pid, coalesce(options.interval, 1000))
 
         queue.on('triage', update => {
             const processor = Evaluator.create(update.source, update.file)
@@ -50,15 +46,15 @@ class Shuttle {
         })
 
         if (options.uncaughtException == null || options.uncaughtException) {
-            descendent.process.on('uncaughtException', rethrow('uncaught'))
+            this._process.on('uncaughtException', rethrow('uncaught'))
         }
 
         if (options.unhandledRejection == null || options.unhandledRejection) {
-            descendent.process.on('unhandledRejection', rethrow('unhandled'))
+            this._process.on('unhandledRejection', rethrow('unhandled'))
         }
 
         if (options.exit == null || options.exit) {
-            descendent.process.on('exit', this.exit.bind(this))
+            this._process.on('exit', this.exit.bind(this))
         }
 
         // All filtering will be performed by the monitor initially. Until
@@ -71,24 +67,12 @@ class Shuttle {
             })
         }
 
-        const handlers = this._handlers = {
-            'prolific:pipe': function (message, handle) {
-                delete handlers['prolific:pipe']
-                handle.unref()
-                queue.setSocket(handle)
-            }
-        }
-
-        descendent.once('prolific:pipe', this._handlers['prolific:pipe'])
+        queue.connect(net, path.resolve(this._env.PROLIFIC_TMPDIR, 'socket'))
     }
 
     exit (code) {
         if (this.monitored && !this.exited) {
             this.exited = true
-            for (const name in this._handlers) {
-                descendent.removeListener(name, this._handlers[name])
-            }
-            descendent.decrement()
             this._queue.exit(code)
         }
     }
