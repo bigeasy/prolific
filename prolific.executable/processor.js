@@ -49,6 +49,7 @@ class Processor extends events.EventEmitter {
             async configure (buffer) {
                 try {
                     const source = buffer.toString()
+                    console.log('SOURCE', source)
                     const definition = Evaluator.create(source, file)
                     const triage = definition.triage(require('prolific.require').require)
                     const process = await definition.process(require('prolific.require').require)
