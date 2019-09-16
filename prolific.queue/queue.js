@@ -124,16 +124,14 @@ class Queue extends events.EventEmitter {
     // Note that in case of a truncated stream, `byline` will not give us a
     // partial line at the end of file, so we can always count on each line
     // being a full line with a single JSON object.
-    async _receive (bylined) {
-        this._readable = new Staccato.Readable(bylined)
-        for await (const line of this._readable) {
+    async _receive () {
+        const line = await this._readable.read()
+        if (line != null) {
             this._dispatch(line.toString())
-            break
-        }
-        this._readable = new Staccato.Readable(bylined)
-        this._received.call()
-        for await (const line of this._readable) {
-            this._dispatch(line.toString())
+            this._received.call()
+            for await (const line of this._readable) {
+                this._dispatch(line.toString())
+            }
         }
     }
 
@@ -169,10 +167,11 @@ class Queue extends events.EventEmitter {
             return []
         }
         this._writable = new Staccato.Writable(this._socket)
+        this._readable = new Staccato.Readable(byline(this._socket))
         await this._writable.write(JSON.stringify({ method: 'announce', pid: this._pid }) + '\n')
         // We may have exited, but that's unlikely at runtime, and the loops
         // here will both exit immediately, so we don't have to check for exit.
-        return [ this._send(this._writable), this._receive(byline(this._socket)) ]
+        return [ this._send(this._writable), this._receive() ]
     }
 
     _nudge () {

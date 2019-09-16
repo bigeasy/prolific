@@ -193,7 +193,6 @@ describe('queue', () => {
             version: 1
         }, 'triage')
     })
-    return
     it('can resend unverified batches at exit', async () => {
         const { destructible, watcher, collector } = await reset()
         const gatherer = new Gatherer(collector, 'exit')
@@ -203,6 +202,9 @@ describe('queue', () => {
         const net = new Net
         const promises = queue.connect(net, './socket')
         net.pipe.client.emit('connect')
+        net.pipe.server.write(JSON.stringify({
+            method: 'triage', source: '1 + 1', file: '/opt/processor.js', version: 1
+        }) + '\n')
         await new Promise(resolve => setTimeout(resolve, 5))
         queue.push({ a: 1 })
         await new Promise(resolve => setTimeout(resolve, 5))
