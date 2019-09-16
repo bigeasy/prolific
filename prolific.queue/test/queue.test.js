@@ -58,17 +58,28 @@ describe('queue', () => {
             })
         }
     }
+    class Net {
+        constructor () {
+            this.pipe = new Pipe
+            this.pipe.client.unref = () => {}
+        }
+
+        connect (path) {
+            return this.pipe.client
+        }
+    }
     it('can exit before setting a pipe', async () => {
         const { destructible, watcher, collector } = await reset()
         const gatherer = new Gatherer(collector, 'exit')
         let  now = 0
         const test = []
-        const queue = new Queue({
-            now: () => now++
-        }, TMPDIR, [ 1, 2 ], 1)
+        const queue = new Queue({ now: () => now++ }, TMPDIR, 2, 1)
         queue.exit(0)
-        queue.setSocket({ end: () => {}, unref: () => {} })
+        const net = new Net
+        queue.connect(net, './socket')
         queue.exit(0)
+        net.pipe.client.emit('connect')
+        await new Promise(resolve => setImmediate(resolve))
         const gathered = await gatherer.promise
         assert.deepStrictEqual(gathered.map(data => data.body.method), [
             'start', 'exit'
@@ -81,12 +92,11 @@ describe('queue', () => {
         const gatherer = new Gatherer(collector, 'exit')
         let  now = 0
         const test = []
-        const queue = new Queue({
-            now: () => now++
-        }, TMPDIR, [ 1, 2 ], 1)
+        const queue = new Queue({ now: () => now++ }, TMPDIR, 2, 1)
         queue.push({ a: 1 })
         queue.exit(0)
-        queue.setSocket({ end: () => {}, unref: () => {} })
+        const net = new Net
+        queue.connect(net, './socket')
         const gathered = await gatherer.promise
         assert.deepStrictEqual(gathered.map(data => data.body.method), [
             'start', 'entries', 'exit'
@@ -99,11 +109,10 @@ describe('queue', () => {
         const gatherer = new Gatherer(collector, 'entries')
         let  now = 0
         const test = []
-        const queue = new Queue({
-            now: () => now++
-        }, TMPDIR, [ 1, 2 ], 1)
+        const queue = new Queue({ now: () => now++ }, TMPDIR, 2, 1)
         queue.exit(0)
-        queue.setSocket({ end: () => {}, unref: () => {} })
+        const net = new Net
+        queue.connect(net, './socket')
         queue.push({ a: 1 })
         const gathered = await gatherer.promise
         assert.deepStrictEqual(gathered.map(data => data.body.method), [
@@ -117,15 +126,13 @@ describe('queue', () => {
         const gatherer = new Gatherer(collector, 'exit')
         let  now = 0
         const test = []
-        const queue = new Queue({
-            now: () => now++
-        }, TMPDIR, [ 1, 2 ], 1)
-        const pipe = new Pipe
-        pipe.client.unref = () => {}
-        const promises = queue.setSocket(pipe.client)
+        const queue = new Queue({ now: () => now++ }, TMPDIR, 2, 1)
+        const net = new Net
+        const promises = queue.connect(net, './socket')
+        net.pipe.client.emit('connect')
         await new Promise(resolve => setTimeout(resolve, 5))
         queue.version(1)
-        pipe.server.write(([{ method: 'receipt', series: 0 }]).map(JSON.stringify).join('\n') + '\n')
+        net.pipe.server.write(([{ method: 'receipt', series: 0 }]).map(JSON.stringify).join('\n') + '\n')
         await new Promise(resolve => setTimeout(resolve, 5))
         queue.exit(0)
         const gathered = await gatherer.promise
@@ -134,32 +141,30 @@ describe('queue', () => {
         ], 'exit')
         destructible.destroy()
         await destructible.promise
-        await Promise.all(promises)
-        const lines = pipe.server
-                          .read()
-                          .toString()
-                          .split('\n')
-                          .filter(line => line != '')
-                          .map(JSON.parse)
-                          .map(entry => entry.method)
-        assert.deepStrictEqual(lines, [ 'version' ], 'version')
+        await Promise.all(await promises)
+        const lines = net.pipe.server
+                              .read()
+                              .toString()
+                              .split('\n')
+                              .filter(line => line != '')
+                              .map(JSON.parse)
+                              .map(entry => entry.method)
+        assert.deepStrictEqual(lines, [ 'announce', 'version' ], 'version')
     })
     it('can write through a pipe and send queued initial messages', async () => {
         const { destructible, watcher, collector } = await reset()
         const gatherer = new Gatherer(collector, 'exit')
         let  now = 0
         const test = []
-        const queue = new Queue({
-            now: () => now++
-        }, TMPDIR, [ 1, 2 ], 1)
+        const queue = new Queue({ now: () => now++ }, TMPDIR, 2, 1)
         const triage = once(queue, 'triage').promise
-        const pipe = new Pipe
-        pipe.client.unref = () => {}
         queue.push({ a: 1 })
-        const promises = queue.setSocket(pipe.client)
+        const net = new Net
+        const promises = queue.connect(net, './socket')
+        net.pipe.client.emit('connect')
         await new Promise(resolve => setTimeout(resolve, 5))
         queue.push({ a: 1 })
-        pipe.server.write(([{
+        net.pipe.server.write(([{
             method: 'receipt', series: 0
         }, {
             method: 'receipt', series: 1
@@ -174,15 +179,15 @@ describe('queue', () => {
         ], 'exit')
         destructible.destroy()
         await destructible.promise
-        await Promise.all(promises)
-        const lines = pipe.server
-                          .read()
-                          .toString()
-                          .split('\n')
-                          .filter(line => line != '')
-                          .map(JSON.parse)
-                          .map(entry => entry.method)
-        assert.deepStrictEqual(lines, [ 'entries', 'entries' ], 'entries')
+        await Promise.all(await promises)
+        const lines = net.pipe.server
+                              .read()
+                              .toString()
+                              .split('\n')
+                              .filter(line => line != '')
+                              .map(JSON.parse)
+                              .map(entry => entry.method)
+        assert.deepStrictEqual(lines, [ 'announce', 'entries', 'entries' ], 'entries')
         assert.deepStrictEqual((await triage)[0], {
             source: '1 + 1',
             file: '/opt/processor.js',
@@ -194,12 +199,10 @@ describe('queue', () => {
         const gatherer = new Gatherer(collector, 'exit')
         let  now = 0
         const test = []
-        const queue = new Queue({
-            now: () => now++
-        }, TMPDIR, [ 1, 2 ], 1)
-        const pipe = new Pipe
-        pipe.client.unref = () => {}
-        const promises = queue.setSocket(pipe.client)
+        const queue = new Queue({ now: () => now++ }, TMPDIR, 2, 1)
+        const net = new Net
+        const promises = queue.connect(net, './socket')
+        net.pipe.client.emit('connect')
         await new Promise(resolve => setTimeout(resolve, 5))
         queue.push({ a: 1 })
         await new Promise(resolve => setTimeout(resolve, 5))
@@ -210,14 +213,45 @@ describe('queue', () => {
         ], 'exit')
         destructible.destroy()
         await destructible.promise
-        await Promise.all(promises)
-        const lines = pipe.server
-                          .read()
-                          .toString()
-                          .split('\n')
-                          .filter(line => line != '')
-                          .map(JSON.parse)
-                          .map(entry => entry.method)
-        assert.deepStrictEqual(lines, [ 'entries' ], 'entries')
+        await Promise.all(await promises)
+        const lines = net.pipe.server
+                              .read()
+                                .toString()
+                               .split('\n')
+                               .filter(line => line != '')
+                               .map(JSON.parse)
+                               .map(entry => entry.method)
+        assert.deepStrictEqual(lines, [ 'announce', 'entries' ], 'entries')
+    })
+    it('can cope with a truncated stream', async () => {
+        const { destructible, watcher, collector } = await reset()
+        const gatherer = new Gatherer(collector, 'exit')
+        let  now = 0
+        const test = []
+        const queue = new Queue({ now: () => now++ }, TMPDIR, 2, 1)
+        const net = new Net
+        const promises = queue.connect(net, './socket')
+        net.pipe.client.emit('connect')
+        await new Promise(resolve => setTimeout(resolve, 5))
+        queue.version(1)
+        net.pipe.server.write('[')
+        net.pipe.server.end()
+        await new Promise(resolve => setTimeout(resolve, 50))
+        queue.exit(0)
+        const gathered = await gatherer.promise
+        assert.deepStrictEqual(gathered.map(data => data.body.method), [
+            'start', 'version', 'exit'
+        ], 'exit')
+        destructible.destroy()
+        await destructible.promise
+        await Promise.all(await promises)
+        const lines = net.pipe.server
+                              .read()
+                              .toString()
+                              .split('\n')
+                              .filter(line => line != '')
+                              .map(JSON.parse)
+                              .map(entry => entry.method)
+        assert.deepStrictEqual(lines, [ 'announce', 'version' ], 'version')
     })
 })

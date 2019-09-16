@@ -5,25 +5,26 @@ const fs = require('fs')
 const path = require('path')
 const byline = require('byline')
 const events = require('events')
+const once = require('prospective/once')
 
 class Queue extends events.EventEmitter {
-    constructor (Date, directory, path, interval) {
+    constructor (Date, directory, pid, interval) {
         super()
         this._directory = directory
         this._interval = interval
         this._series = 0xffffff
         this._start = Date.now()
         this._entries = []
-        this._unlatched = new Promise(resolve => this._latch = resolve)
+        this._unlatched = null
+        this._latch = () => {}
         this._batches = []
         this._written = []
-        this._writable = { destroy: () => {} }
         this._readable = { destroy: () => {} }
+        this._writable = { destroy: () => {} }
         this._writing = true
-        this._piped = false
         this._sync = false
         this._exited = false
-        this._path = path
+        this._pid = pid
         this._Date = Date
         this._publish({ method: 'start' })
     }
@@ -31,14 +32,13 @@ class Queue extends events.EventEmitter {
     _publish (body) {
         const buffer = Buffer.from(JSON.stringify({
             start: this._start,
-            pid: this._path[this._path.length - 1],
-            path: this._path,
+            pid: this._pid,
             series: this._syncSeries = (this._syncSeries + 1) & 0xffffff,
             when: this._Date.now(),
             body: body
         }))
         const hash = Number(fnv(0, buffer, 0, buffer.length)).toString(16)
-        const filename = `prolific-${this._path.join('-')}-${this._Date.now()}-${hash}.json`
+        const filename = `prolific-${this._pid}-${this._Date.now()}-${hash}.json`
         const files = {
             stage: path.resolve(this._directory, 'stage', filename),
             publish: path.resolve(this._directory, 'publish', filename)
@@ -75,7 +75,8 @@ class Queue extends events.EventEmitter {
     async _send (writable) {
         let interval = 0
         SEND: for (;;) {
-            this._writing = ! this._piped
+            // We set writing false because from here we either sleep or wait.
+            this._writing = false
             if (interval != 0) {
                 await new Promise(resolve => {
                     this._timeout = setTimeout(resolve, this._interval)
@@ -97,7 +98,19 @@ class Queue extends events.EventEmitter {
         }
     }
 
+    _triage (json) {
+        this.emit('triage', {
+            version: json.version,
+            file: json.file,
+            source: json.source
+        })
+    }
+
+    // Note that in case of a truncated stream, `byline` will not give us a
+    // partial line at the end of file, so we can always count on each line
+    // being a full line with a single JSON object.
     async _receive (readable) {
+        let truncated = null
         for await (const line of readable) {
             const json = JSON.parse(line.toString())
             switch (json.method) {
@@ -106,11 +119,7 @@ class Queue extends events.EventEmitter {
                 this._written.shift()
                 break
             case 'triage':
-                this.emit('triage', {
-                    version: json.version,
-                    file: json.file,
-                    source: json.source
-                })
+                this._triage(json)
                 break
             }
         }
@@ -134,24 +143,25 @@ class Queue extends events.EventEmitter {
     // Set the asynchronous pipe and begin streaming entries or else close the
     // pipe if it has arrived after we've closed.
 
-    //
-    setSocket (socket) {
-        socket.unref()
+    // TODO Okay, we won't shutdown the server until after the countdown either,
+    // so we will be performing these actions until exit. We assume no errors on
+    // this socket because the domain server is going still to be there while
+    // we're still here.
+    async connect (net, path) {
+        this._socket = net.connect(path)
+        this._socket.unref()
+        await once(this._socket, 'connect').promise
+        // Unlikely at runtime since exit will only ever really occur in the
+        // exit handler, but we skip loop start up in any case.
         if (this._exited) {
-            socket.end()
             return []
-        } else {
-            this._piped = true
-            if (this._entries.length) {
-                this._latch.call()
-            } else {
-                this._writing = false
-            }
-            return [
-                this._send(this._writable = new Staccato.Writable(socket)),
-                this._receive(this._readable = new Staccato.Readable(byline(socket)))
-            ]
         }
+        this._readable = new Staccato.Readable(byline(this._socket))
+        this._writable = new Staccato.Writable(this._socket)
+        await this._writable.write(JSON.stringify({ method: 'announce', pid: this._pid }) + '\n')
+        // We may have exited, but that's unlikely at runtime, and the loops
+        // here will both exit immediately, so we don't have to check for exit.
+        return [ this._send(this._writable), this._receive(this._readable) ]
     }
 
     _nudge () {
