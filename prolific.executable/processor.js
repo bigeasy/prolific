@@ -89,7 +89,7 @@ class Processor extends events.EventEmitter {
         const version = this._version++
         this._versions.push({ previous: () => {}, version, processor })
         this._previous = process
-        console.log('EMITTING', { version, source, file: _file })
+        console.log('EMITTING', { version, source, file: this._file })
         this.emit('configuration', { version, source, file: this._file })
         for await (const { source, processor } of this._reconfigurator) {
             const version = this._version++

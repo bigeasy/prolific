@@ -60,6 +60,7 @@ require('arguable')(module, {
         destructible.destruct(() => processors.shifter.destroy())
 
         processor.on('configuration', (configuration) => {
+            console.log('PROCESSOR', configuration)
             receiving.resolve()
             processors.queue.push(configuration)
         })
