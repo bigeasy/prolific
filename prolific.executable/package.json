@@ -41,7 +41,7 @@
     },
     "devDependencies":
     {
-                            "duplicitous":                  "^0.0.0",
+                            "duplicitous":                  "^0.1.0-alpha.0",
                             "mocha":                        "6.2.0",
                             "prolific.logger":              "10.0.x",
                             "prolific.shuttle":             "^25.0.0-alpha.4"
