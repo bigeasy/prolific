@@ -34,7 +34,7 @@
                             "prolific.evaluator":           "3.0.x",
                             "prolific.inherit":             "7.0.x",
                             "prolific.require":             "1.0.x",
-                            "prolific.watcher":             "^0.0.6",
+                            "prolific.watcher":             "^0.1.0-alpha.0",
                             "prospective":                  "^0.1.0-alpha.1",
                             "reconfigure":                  "^3.0.0-alpha.1",
                             "rimraf":                       "3.0.0"
