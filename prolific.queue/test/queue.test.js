@@ -8,7 +8,6 @@ describe('queue', () => {
 
     const Destructible = require('destructible')
     const callback = require('prospective/callback')
-    const ascension = require('ascension')
 
     const rimraf = require('rimraf')
 

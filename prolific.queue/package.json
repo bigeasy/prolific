@@ -26,7 +26,6 @@
     },
     "devDependencies":
     {
-                            "ascension":                    "^1.0.3",
                             "destructible":                 "^5.1.0-alpha.2",
                             "duplicitous":                  "^0.1.0-alpha.0",
                             "prolific.collector":           "^11.0.0-alpha.2",
