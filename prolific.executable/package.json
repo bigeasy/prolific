@@ -22,6 +22,7 @@
     {
                             "arguable":                     "^11.0.0-alpha.0",
                             "avenue":                       "^0.2.0-alpha.0",
+                            "cubbyhole":                    "^2.0.1",
                             "descendent":                   "2.0.x",
                             "foremost":                     "1.0.x",
                             "interrupt":                    "9.0.0-alpha.0",

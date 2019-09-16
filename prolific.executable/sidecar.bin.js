@@ -48,13 +48,16 @@ require('arguable')(module, {
         const receiving = new Future
 
         async function update () {
-            await receiving.promise
             for await (const processor of processors.shifter.iterator()) {
                 arguable.pipes[3].write(JSON.stringify(processor) + '\n')
             }
         }
 
-        destructible.durable('update', update())
+        descendent.on('prolific:socket', (message, socket) => {
+            destructible.durable('read', update())
+            destructible.durable('asynchronous', consolidator.asynchronous(socket, socket))
+        })
+
         destructible.destruct(() => processors.shifter.destroy())
 
         processor.on('configuration', (configuration) => {
@@ -63,13 +66,12 @@ require('arguable')(module, {
         })
 
         // Listen to our asynchronous pipe.
-        const consolidator = new Consolidator(arguable.pipes[3], arguable.pipes[3], queue)
+        const consolidator = new Consolidator(queue)
 
         destructible.durable('process', queue.shifter().pump(entry => {
             processor.process(entry)
         }))
         destructible.ephemeral('configure', processor.configure())
-        destructible.durable('asynchronous', consolidator.asynchronous())
 
         descendent.on('prolific:synchronous', synchronous => {
             consolidator.synchronous(synchronous.body)
@@ -79,7 +81,7 @@ require('arguable')(module, {
 
         // Let the supervisor know that we're ready. It will send our asynchronous
         // pipe down to the monitored process.
-        descendent.up(+arguable.ultimate.supervisor, 'prolific:pipe', true)
+        descendent.up(+arguable.ultimate.supervisor, 'prolific:receiving', process.pid)
 
         await destructible.promise
 

@@ -59,10 +59,10 @@ describe('sidecar', function () {
         assert.deepStrictEqual(test, [{
             module: 'descendent',
             method: 'route',
-            name: 'prolific:pipe',
+            name: 'prolific:receiving',
             to: [ 1 ],
             path: [ 2 ],
-            body: true
+            body: process.pid
         }], 'test')
     })
 })

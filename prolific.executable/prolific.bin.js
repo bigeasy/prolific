@@ -36,11 +36,14 @@ const url = require('url')
 const children = require('child_process')
 const crypto = require('crypto')
 const fs = require('fs').promises
+const net = require('net')
 
 const once = require('prospective/once')
 const callback = require('prospective/callback')
 
 const rimraf = require('rimraf')
+
+const Queue = require('avenue')
 
 const fnv = require('hash.fnv')
 
@@ -66,6 +69,9 @@ const coalesce = require('extant')
 
 const Tmp = require('./tmp')
 const Killer = require('./killer')
+const Header = require('./header')
+
+const Cubbyhole = require('cubbyhole')
 
 // TODO Note that; we now require that anyone standing between a root Prolific
 // sidecar and a leaf child process use the Descendent library. When I write
@@ -119,6 +125,7 @@ require('arguable')(module, {}, async arguable => {
     }
 
     const killer = new Killer(100)
+    const cubbyhole = new Cubbyhole
 
     descendent.increment()
     try {
@@ -127,6 +134,25 @@ require('arguable')(module, {}, async arguable => {
             return bytes.toString('hex')
         }, process.pid)
         destructible.destruct(() => callback(callback => rimraf(tmp, callback)))
+
+        const sockets = new Queue().shifter().paired
+        destructible.durable('sockets', sockets.shifter.pump(async socket => {
+            if (socket != null) {
+                socket.unref()
+                const header = await Header(socket)
+                assert.equal(header.method, 'announce', 'announce missing')
+                const pid = await cubbyhole.get(header.pid)
+                cubbyhole.remove(header.pid)
+                descendent.down([ pid ], 'prolific:socket', header, socket)
+            }
+        }))
+        destructible.destruct(() => sockets.shifter.destroy())
+
+        const server = net.createServer(socket => {
+            sockets.queue.push(socket)
+        })
+        destructible.destruct(() => server.close())
+        await callback(callback => server.listen(path.resolve(tmp, 'socket'), callback))
 
         await fs.mkdir(path.resolve(tmp, 'stage'))
         await fs.mkdir(path.resolve(tmp, 'publish'))
@@ -174,7 +200,7 @@ require('arguable')(module, {}, async arguable => {
                     destructible.increment()
                     sidecars[pid] = sidecar
                     pipes[pid] = sidecar.stdio[3]
-                    descendent.addChild(sidecar, { path: data.path, pid: pid })
+                    descendent.addChild(sidecar, { pid: pid })
                     destructible.ephemeral([ 'sidecar', sidecar.pid ], supervise.sidecar(sidecar, pid))
                 }
                 break
@@ -207,9 +233,8 @@ require('arguable')(module, {}, async arguable => {
 
         descendent.addChild(child, null)
 
-        descendent.on('prolific:pipe', function (message) {
-            const pid = message.cookie.path[message.cookie.path.length - 1]
-            descendent.down(message.cookie.path, 'prolific:pipe', true, coalesce(pipes[pid]))
+        descendent.on('prolific:receiving', function (message) {
+            cubbyhole.set(message.cookie.pid, message.body)
         })
 
         destructible.ephemeral('close', supervise.child(child))
