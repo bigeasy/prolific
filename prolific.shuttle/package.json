@@ -36,7 +36,7 @@
                             "destructible":                 "^5.1.0-alpha.2",
                             "mocha":                        "6.2.0",
                             "prolific.collector":           "^11.0.0-alpha.2",
-                            "prolific.watcher":             "^0.0.3",
+                            "prolific.watcher":             "^0.1.0-alpha.0",
                             "rimraf":                       "3.0.0"
     },
     "scripts":
