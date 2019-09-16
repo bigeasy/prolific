@@ -28,7 +28,7 @@ require('arguable')(module, {
     descendent.process = arguable.options.process
     descendent.increment()
     try {
-        const logger = require('prolific.logger').createLogger('prolific')
+        const logger = require('prolific.logger').create('prolific')
         function memoryUsage () { logger.notice('memory', process.memoryUsage()) }
         memoryUsage()
         const interval = setInterval(memoryUsage, 1000)

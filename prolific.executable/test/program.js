@@ -1,7 +1,7 @@
 process.stderr.write('make confuse!\n')
 const descendent = require('foremost')('descendent')
 const children = require('child_process')
-const logger = require('prolific.logger').createLogger('prolific')
+const logger = require('prolific.logger').create('prolific')
 require('prolific.shuttle').create()
 //const interval = setInterval(() => {}, 1000)
 //process.on('SIGTERM', () => clearInterval(interval))

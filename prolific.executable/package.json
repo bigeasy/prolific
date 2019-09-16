@@ -43,7 +43,7 @@
     {
                             "duplicitous":                  "^0.1.0-alpha.0",
                             "mocha":                        "6.2.0",
-                            "prolific.logger":              "10.0.x",
+                            "prolific.logger":              "11.0.0-alpha.0",
                             "prolific.shuttle":             "^25.0.0-alpha.4"
     },
     "main":                 "prolific.bin",
