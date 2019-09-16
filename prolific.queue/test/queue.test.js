@@ -2,6 +2,7 @@ describe('queue', () => {
     const assert = require('assert')
     const path = require('path')
     const fs = require('fs').promises
+    const fnv = require('hash.fnv')
 
     const Pipe = require('duplicitous/pipe')
 
@@ -33,9 +34,12 @@ describe('queue', () => {
         // extant and the first events are reporting a missing file.
         await new Promise(resolve => setTimeout(resolve, 50))
         const destructible = new Destructible(__filename)
-        const watcher = new Watcher(destructible, () => 0, path.join(TMPDIR, 'publish'))
+        const watcher = new Watcher(destructible, buffer => {
+            return fnv(0, buffer, 0, buffer.length)
+        }, path.join(TMPDIR, 'publish'))
         const collector = new Collector
         watcher.on('data', data => collector.data(data))
+        watcher.on('data', data => data)
         return { destructible, watcher, collector }
     }
     class Gatherer {
