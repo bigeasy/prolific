@@ -131,6 +131,10 @@ describe('queue', () => {
         net.pipe.client.emit('connect')
         await new Promise(resolve => setTimeout(resolve, 5))
         queue.version(1)
+        net.pipe.server.write(([{
+            method: 'triage', source: '1 + 1', file: '/opt/processor.js', version: 1
+        }]).map(JSON.stringify).join('\n') + '\n')
+        await new Promise(resolve => setImmediate(resolve))
         net.pipe.server.write(([{ method: 'receipt', series: 0 }]).map(JSON.stringify).join('\n') + '\n')
         await new Promise(resolve => setTimeout(resolve, 5))
         queue.exit(0)
@@ -164,11 +168,11 @@ describe('queue', () => {
         await new Promise(resolve => setTimeout(resolve, 5))
         queue.push({ a: 1 })
         net.pipe.server.write(([{
-            method: 'receipt', series: 0
-        }, {
-            method: 'receipt', series: 1
-        }, {
             method: 'triage', source: '1 + 1', file: '/opt/processor.js', version: 1
+        }]).map(JSON.stringify).join('\n') + '\n')
+        await new Promise(resolve => setImmediate(resolve))
+        net.pipe.server.write(([{
+            method: 'receipt', series: 0
         }]).map(JSON.stringify).join('\n') + '\n')
         await new Promise(resolve => setTimeout(resolve, 5))
         queue.exit(0)
@@ -186,7 +190,7 @@ describe('queue', () => {
                               .filter(line => line != '')
                               .map(JSON.parse)
                               .map(entry => entry.method)
-        assert.deepStrictEqual(lines, [ 'announce', 'entries', 'entries' ], 'entries')
+        assert.deepStrictEqual(lines, [ 'announce', 'entries' ], 'entries')
         assert.deepStrictEqual((await triage)[0], {
             source: '1 + 1',
             file: '/opt/processor.js',
@@ -236,6 +240,10 @@ describe('queue', () => {
         net.pipe.client.emit('connect')
         await new Promise(resolve => setTimeout(resolve, 5))
         queue.version(1)
+        net.pipe.server.write(([{
+            method: 'triage', source: '1 + 1', file: '/opt/processor.js', version: 1
+        }]).map(JSON.stringify).join('\n') + '\n')
+        await new Promise(resolve => setImmediate(resolve))
         net.pipe.server.write('[')
         net.pipe.server.end()
         await new Promise(resolve => setTimeout(resolve, 50))
@@ -255,5 +263,35 @@ describe('queue', () => {
                               .map(JSON.parse)
                               .map(entry => entry.method)
         assert.deepStrictEqual(lines, [ 'announce', 'version' ], 'version')
+    })
+    it('can cope with end of stream', async () => {
+        const { destructible, watcher, collector } = await reset()
+        const gatherer = new Gatherer(collector, 'exit')
+        let  now = 0
+        const test = []
+        const queue = new Queue({ now: () => now++ }, TMPDIR, 2, 1)
+        const net = new Net
+        const promises = queue.connect(net, './socket')
+        net.pipe.client.emit('connect')
+        await new Promise(resolve => setTimeout(resolve, 5))
+        queue.version(1)
+        net.pipe.server.end()
+        await new Promise(resolve => setTimeout(resolve, 50))
+        queue.exit(0)
+        const gathered = await gatherer.promise
+        assert.deepStrictEqual(gathered.map(data => data.body.method), [
+            'start', 'version', 'exit'
+        ], 'exit')
+        destructible.destroy()
+        await destructible.promise
+        await Promise.all(await promises)
+        const lines = net.pipe.server
+                              .read()
+                              .toString()
+                              .split('\n')
+                              .filter(line => line != '')
+                              .map(JSON.parse)
+                              .map(entry => entry.method)
+        assert.deepStrictEqual(lines, [ 'announce' ], 'version')
     })
 })
