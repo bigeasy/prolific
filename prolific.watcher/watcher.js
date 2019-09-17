@@ -11,6 +11,7 @@ const LEVEL = { ENOENT: 'debug' }
 class Watcher extends events.EventEmitter {
     constructor (destructible, hash, directory) {
         super()
+        this.destroyed = false
         this._queue = new Queue
         this._hash = hash
         this._pids = []
@@ -22,8 +23,8 @@ class Watcher extends events.EventEmitter {
         })
         this._watcher.on('error', this.emit.bind(this, 'error'))
         destructible.durable('shift', this._shift(this._queue.shifter()))
-        destructible.destruct(() => this._watcher.close())
-        destructible.destruct(() => this._queue.push(null))
+        destructible.destruct(() => this.destroyed = true)
+        destructible.destruct(() => this._checkClose())
     }
 
     killed (pid) {
@@ -72,6 +73,14 @@ class Watcher extends events.EventEmitter {
         }
     }
 
+    async _checkClose () {
+        const dir = await fs.readdir(this._directory)
+        if (dir.length == 0) {
+            this._watcher.close()
+            this._queue.push(null)
+        }
+    }
+
     async _changed (eventType, filename) {
         await this._killed()
         const hash = /-([0-9a-f]{1,8})\.json$/.exec(filename)
@@ -104,6 +113,9 @@ class Watcher extends events.EventEmitter {
                 eventType, filename, message: error.message, code: error.code
             })
             return
+        }
+        if (this.destroyed) {
+            await this._checkClose()
         }
         const expected = parseInt(hash[1], 16)
         const actual = this._hash.call(null, buffer)
