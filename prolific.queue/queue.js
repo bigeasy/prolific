@@ -1,16 +1,16 @@
 const assert = require('assert')
-const fnv = require('hash.fnv')
 const Staccato = require('staccato')
-const fs = require('fs')
-const path = require('path')
 const byline = require('byline')
 const events = require('events')
 const once = require('prospective/once')
 
+const Publisher = require('./publisher')
+
 class Queue extends events.EventEmitter {
     constructor (Date, directory, pid, interval) {
         super()
-        this._directory = directory
+        this._publisher = new Publisher(Date, directory, pid)
+        this._pid = pid
         this._interval = interval
         this._series = 0xffffff
         this._start = Date.now()
@@ -25,27 +25,8 @@ class Queue extends events.EventEmitter {
         this._writing = true
         this._sync = false
         this._exited = false
-        this._pid = pid
         this._Date = Date
-        this._publish({ method: 'start' })
-    }
-
-    _publish (body) {
-        const buffer = Buffer.from(JSON.stringify({
-            start: this._start,
-            pid: this._pid,
-            series: this._syncSeries = (this._syncSeries + 1) & 0xffffff,
-            when: this._Date.now(),
-            body: body
-        }))
-        const hash = Number(fnv(0, buffer, 0, buffer.length)).toString(16)
-        const filename = `prolific-${this._pid}-${this._Date.now()}-${hash}.json`
-        const files = {
-            stage: path.resolve(this._directory, 'stage', filename),
-            publish: path.resolve(this._directory, 'publish', filename)
-        }
-        fs.writeFileSync(files.stage, buffer)
-        fs.renameSync(files.stage, files.publish)
+        this._publisher.publish({ method: 'start' })
     }
 
     _batchEntries () {
@@ -142,11 +123,11 @@ class Queue extends events.EventEmitter {
         this._batchEntries()
         while (this._written.length) {
             const batch = this._written.shift()
-            this._publish({ method: 'batch', ...batch })
+            this._publisher.publish({ method: 'batch', ...batch })
         }
         while (this._batches.length) {
             const batch = this._batches.shift()
-            this._publish({ method: 'batch', ...batch })
+            this._publisher.publish({ method: 'batch', ...batch })
         }
     }
 
@@ -209,7 +190,7 @@ class Queue extends events.EventEmitter {
             this._received.call()
             this._latch.call()
             this._writeSync()
-            this._publish({ method: 'exit', code })
+            this._publisher.publish({ method: 'exit', code })
         }
     }
 }
