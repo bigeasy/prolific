@@ -12,9 +12,11 @@ class Watcher extends events.EventEmitter {
     constructor (destructible, hash, directory) {
         super()
         this.destroyed = false
-        this._queue = new Queue
+        const paired = new Queue().shifter().paired
+        this._queue = paired.queue
         this._hash = hash
         this._pids = []
+        this._draining = false
         this._processes = {}
         this._directory = directory
         this._watcher = filesystem.watch(directory)
@@ -22,9 +24,14 @@ class Watcher extends events.EventEmitter {
             this._queue.push({ method: 'changed', eventType, filename })
         })
         this._watcher.on('error', this.emit.bind(this, 'error'))
-        destructible.durable('shift', this._shift(this._queue.shifter()))
+        destructible.durable('shift', this._shift(paired.shifter))
         destructible.destruct(() => this.destroyed = true)
-        destructible.destruct(() => this._checkClose())
+        destructible.destruct(() => this._watcher.close())
+        destructible.destruct(() => paired.shifter.destroy())
+    }
+
+    drain () {
+        this._queue.push({ method: 'drain' })
     }
 
     killed (pid) {
@@ -71,17 +78,19 @@ class Watcher extends events.EventEmitter {
                 }
             }
         }
+        if (this._draining) {
+            await this._drained()
+        }
     }
 
-    async _checkClose () {
+    async _drained () {
         const dir = await fs.readdir(this._directory)
-        if (dir.length == 0) {
-            this._watcher.close()
+        if (dir.length == 0 && this._pids.length == 0) {
             this._queue.push(null)
         }
     }
 
-    async _changed (eventType, filename) {
+    async _harvest (eventType, filename) {
         await this._killed()
         const hash = /-([0-9a-f]{1,8})\.json$/.exec(filename)
         if (hash == null) {
@@ -114,9 +123,6 @@ class Watcher extends events.EventEmitter {
             })
             return
         }
-        if (this.destroyed) {
-            await this._checkClose()
-        }
         const expected = parseInt(hash[1], 16)
         const actual = this._hash.call(null, buffer)
         if (actual != expected) {
@@ -133,6 +139,13 @@ class Watcher extends events.EventEmitter {
         }
     }
 
+    async _changed (eventType, filename) {
+        await this._harvest(eventType, filename)
+        if (this._draining) {
+            await this._drained()
+        }
+    }
+
     async _shift (shifter) {
         for await (const entry of shifter.iterator()) {
             switch (entry.method) {
@@ -143,7 +156,14 @@ class Watcher extends events.EventEmitter {
             case 'changed':
                 await this._changed(entry.eventType, entry.filename)
                 break
+            case 'drain':
+                this._draining = true
+                await this._drained()
+                break
             }
+        }
+        if (this._draining) {
+            this.emit('drain')
         }
     }
 }
