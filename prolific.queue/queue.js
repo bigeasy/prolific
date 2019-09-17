@@ -122,12 +122,10 @@ class Queue extends events.EventEmitter {
     _writeSync () {
         this._batchEntries()
         while (this._written.length) {
-            const batch = this._written.shift()
-            this._publisher.publish({ method: 'batch', ...batch })
+            this._publisher.publish(this._written.shift())
         }
         while (this._batches.length) {
-            const batch = this._batches.shift()
-            this._publisher.publish({ method: 'batch', ...batch })
+            this._publisher.publish(this._batches.shift())
         }
     }
 
