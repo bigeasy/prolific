@@ -31,13 +31,6 @@ require('arguable')(module, {
     const logger = new Logger(destructible.durable('logger'), Date, PROLIFIC_TMPDIR, process.pid, 1000)
     logger.say('sidecar.start', { PROLIFIC_TMPDIR })
 
-    function dump (...vargs) {
-        console.log('message', vargs)
-    }
-
-    process.on('message', dump)
-    process.on('internalMessage', dump)
-
     descendant.process = arguable.options.process
     descendant.increment()
     destructible.destruct(() => descendant.decrement())
@@ -97,9 +90,6 @@ require('arguable')(module, {
     descendant.up(+arguable.ultimate.supervisor, 'prolific:receiving', process.pid)
 
     await destructible.promise
-
-    process.removeListener('message', dump)
-    process.removeListener('internalMessage', dump)
 
     return 0
 })
