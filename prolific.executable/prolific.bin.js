@@ -161,6 +161,7 @@ require('arguable')(module, {}, async arguable => {
         }
     }))
     children.destruct(() => sockets.shifter.destroy())
+    children.destruct(() => printer.say('destruct.children', {}))
 
     const server = net.createServer(socket => {
         sockets.queue.push(socket)

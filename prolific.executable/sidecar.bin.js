@@ -59,7 +59,7 @@ require('arguable')(module, {
         }
 
         descendent.on('prolific:socket', (message, socket) => {
-            logger.say('sidecar.socket', { message, socket: !! socket })
+            logger.say('sidecar.socket', { message, socket: !! socket, connected: process.connected })
             destructible.ephemeral('read', update(socket))
             destructible.ephemeral('asynchronous', consolidator.asynchronous(socket, socket))
         })
