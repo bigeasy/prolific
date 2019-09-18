@@ -21,5 +21,5 @@ child.on('exit', function () {
         logger.warn('foo', {})
         logger.warn('bar', {})
         logger.warn('baz', {})
-    }, 500)
+    }, 1500)
 })
