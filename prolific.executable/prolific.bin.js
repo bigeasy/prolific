@@ -151,6 +151,7 @@ require('arguable')(module, {}, async arguable => {
     children.durable('sockets', sockets.shifter.pump(async socket => {
         if (socket != null) {
             const header = await Header(socket)
+            printer.say('header', header)
             assert.equal(header.method, 'announce', 'announce missing')
             const pid = await cubbyhole.get(header.pid)
             cubbyhole.remove(header.pid)
@@ -254,6 +255,7 @@ require('arguable')(module, {}, async arguable => {
     descendent.addChild(child, null)
 
     descendent.on('prolific:receiving', function (message) {
+        printer.say('receiving', message)
         cubbyhole.set(message.cookie.pid, message.body)
     })
 
