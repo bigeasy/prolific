@@ -155,7 +155,7 @@ require('arguable')(module, {}, async arguable => {
             assert.equal(header.method, 'announce', 'announce missing')
             const pid = await cubbyhole.get(header.pid)
             cubbyhole.remove(header.pid)
-            printer.say('dispatch', { header, !! socket })
+            printer.say('dispatch', { header, socket: !! socket })
             descendent.down([ pid ], 'prolific:socket', header, socket)
         }
     }))
