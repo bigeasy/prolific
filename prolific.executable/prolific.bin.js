@@ -240,7 +240,7 @@ require('arguable')(module, {}, async arguable => {
         }
     })
 
-    printer.say({ when: Date.now(), label: 'prolific.start' })
+    printer.say('start', {})
 
     const stdio = inherit(arguable)
     stdio.push('ipc')

@@ -17,8 +17,8 @@ class Printer {
         })
     }
 
-    say (entry) {
-        this._entries.push(entry)
+    say (label, entry) {
+        this._entries.push({ when: Date.now(), qualifier: 'prolific', label, ...entry })
     }
 
     push (envelope) {

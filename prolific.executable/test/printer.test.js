@@ -12,8 +12,8 @@ describe('printer', () => {
             latch.unlatch.call()
         }, JSON.stringify, 100)
         const now = Date.now()
-        printer.push({ entries: [{ when: now, a: 1 }] })
-        printer.say({ when: now, a: 1 })
+        printer.say('label', { a: 1 })
+        printer.push({ entries: [{ when: Date.now(), a: 1 }] })
         await latch.unlatched
         destructible.destroy()
         await destructible.promise
