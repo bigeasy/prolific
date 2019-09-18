@@ -1,5 +1,5 @@
 const ascension = require('ascension')
-const sort = ascension([ Number ], entry => entry.when)
+const sort = ascension([ Number ], entry => [ entry.when ])
 
 const Isochronous = require('isochronous')
 
