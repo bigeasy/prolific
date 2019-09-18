@@ -156,6 +156,7 @@ require('arguable')(module, {}, async arguable => {
             const pid = await cubbyhole.get(header.pid)
             cubbyhole.remove(header.pid)
             printer.say('dispatch', { header, socket: !! socket })
+            socket.destroy = () => {}
             descendent.down([ pid ], 'prolific:socket', header, socket)
         }
     }))
