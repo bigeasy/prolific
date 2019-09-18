@@ -13,7 +13,7 @@ describe('printer', () => {
         }, JSON.stringify, 100)
         const now = Date.now()
         printer.push({ entries: [{ when: now, a: 1 }] })
-        printer.push({ entries: [{ when: now, a: 1 }] })
+        printer.log({ when: now, a: 1 })
         await latch.unlatched
         destructible.destroy()
         await destructible.promise

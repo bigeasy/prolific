@@ -133,7 +133,6 @@ require('arguable')(module, {}, async arguable => {
     const cubbyhole = new Cubbyhole
 
     const Printer = require('./printer')
-    const Logger = require('./logger')
 
     descendent.increment()
     children.destruct(() => descendent.decrement())
@@ -143,13 +142,6 @@ require('arguable')(module, {}, async arguable => {
         return bytes.toString('hex')
     }, process.pid)
     supervisor.destruct(() => callback(callback => rimraf(tmp, callback)))
-
-    // Please remember to ensure that messages in the supervisor are only
-    // generated in responses to actual events, so that we're not logging to a
-    // dead logger after the children exit.
-
-    //
-    const logger = new Logger(children.durable('logger'), Date, tmp, process.pid, 1000)
 
     const printer = new Printer(supervisor.durable('printer'), lines => {
         console.log(lines)
@@ -248,7 +240,7 @@ require('arguable')(module, {}, async arguable => {
         }
     })
 
-    logger.log({ label: 'prolific.start' })
+    printer.log({ when: Date.now(), label: 'prolific.start' })
 
     const stdio = inherit(arguable)
     stdio.push('ipc')

@@ -14,6 +14,10 @@ class Printer {
         destructible.destruct(() => this._log(this._entries.splice(0)))
     }
 
+    log (entry) {
+        this._entries.push(entry)
+    }
+
     push (envelope) {
         this._entries.push.apply(this._entries, envelope.entries)
     }
