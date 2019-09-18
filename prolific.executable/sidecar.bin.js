@@ -31,6 +31,12 @@ require('arguable')(module, {
     const logger = new Logger(destructible.durable('logger'), Date, PROLIFIC_TMPDIR, process.pid, 1000)
     logger.say('sidecar.start', { PROLIFIC_TMPDIR })
 
+    function dump (...vargs) {
+        console.log('message', vargs)
+    }
+
+    process.on('message', dump)
+
     descendent.process = arguable.options.process
     descendent.increment()
     try {
@@ -93,6 +99,7 @@ require('arguable')(module, {
         return 0
     } finally {
         descendent.decrement()
+        process.removeListener('message', dump)
         descendent.process = process
     }
 })
