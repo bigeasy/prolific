@@ -136,144 +136,142 @@ require('arguable')(module, {}, async arguable => {
     const Logger = require('./logger')
 
     descendent.increment()
-    try {
-        const tmp = await Tmp(coalesce(process.env.TMPDIR, '/tmp'), async () => {
-            const [ bytes ] = await callback(callback => crypto.randomBytes(16, callback))
-            return bytes.toString('hex')
-        }, process.pid)
-        supervisor.destruct(() => callback(callback => rimraf(tmp, callback)))
+    children.destruct(() => descendent.decrement())
 
-        // Please remember to ensure that messages in the supervisor are only
-        // generated in responses to actual events, so that we're not logging to
-        // a dead logger after the children exit.
+    const tmp = await Tmp(coalesce(process.env.TMPDIR, '/tmp'), async () => {
+        const [ bytes ] = await callback(callback => crypto.randomBytes(16, callback))
+        return bytes.toString('hex')
+    }, process.pid)
+    supervisor.destruct(() => callback(callback => rimraf(tmp, callback)))
 
-        //
-        const logger = new Logger(children.durable('logger'), Date, tmp, process.pid, 1000)
+    // Please remember to ensure that messages in the supervisor are only
+    // generated in responses to actual events, so that we're not logging to a
+    // dead logger after the children exit.
 
-        const printer = new Printer(supervisor.durable('printer'), lines => {
-            console.log(lines)
-        }, JSON.stringify, 1000)
+    //
+    const logger = new Logger(children.durable('logger'), Date, tmp, process.pid, 1000)
 
-        const sockets = new Queue().shifter().paired
-        children.durable('sockets', sockets.shifter.pump(async socket => {
-            if (socket != null) {
-                socket.unref()
-                const header = await Header(socket)
-                assert.equal(header.method, 'announce', 'announce missing')
-                const pid = await cubbyhole.get(header.pid)
-                cubbyhole.remove(header.pid)
-                descendent.down([ pid ], 'prolific:socket', header, socket)
+    const printer = new Printer(supervisor.durable('printer'), lines => {
+        console.log(lines)
+    }, JSON.stringify, 1000)
+
+    const sockets = new Queue().shifter().paired
+    children.durable('sockets', sockets.shifter.pump(async socket => {
+        if (socket != null) {
+            socket.unref()
+            const header = await Header(socket)
+            assert.equal(header.method, 'announce', 'announce missing')
+            const pid = await cubbyhole.get(header.pid)
+            cubbyhole.remove(header.pid)
+            descendent.down([ pid ], 'prolific:socket', header, socket)
+        }
+    }))
+    children.destruct(() => sockets.shifter.destroy())
+
+    const server = net.createServer(socket => {
+        sockets.queue.push(socket)
+    })
+    children.destruct(() => server.close())
+    await callback(callback => server.listen(path.resolve(tmp, 'socket'), callback))
+
+    await fs.mkdir(path.resolve(tmp, 'stage'))
+    await fs.mkdir(path.resolve(tmp, 'publish'))
+
+    process.env.PROLIFIC_TMPDIR = tmp
+
+    const toucher = new Isochronous(60000, true, async () => {
+        const now = Date.now()
+        await fs.utimes(tmp, now, now)
+        await fs.utimes(path.resolve(tmp, 'stage'), now, now)
+        await fs.utimes(path.resolve(tmp, 'publish'), now, now)
+    })
+
+    children.durable('toucher', toucher.start())
+    children.destruct(() => toucher.stop())
+
+    killer.on('killed', pid => {
+        watcher.killed(pid)
+    })
+
+    children.durable('killer', killer.run())
+    children.destruct(() => killer.destroy())
+
+    const watcher = new Watcher(children.durable('watcher'), buffer => {
+        return fnv(0, buffer, 0, buffer.length)
+    }, path.join(tmp, 'publish'))
+
+    countdown.destruct(() => watcher.drain())
+
+    const collector = new Collector
+
+    // watcher.on('notice', notice => console.log(notice))
+
+    watcher.on('data', data => collector.data(data))
+
+    collector.on('data', data => {
+        const pid = data.pid
+        switch (data.body.method) {
+        case 'start': {
+                const sidecar = processes.spawn('node', [
+                    path.join(__dirname, 'sidecar.bin.js'),
+                    '--configuration', processor,
+                    '--supervisor', process.pid
+                ], {
+                    stdio: [ 'inherit', 'inherit', 'inherit', 'ipc' ]
+                })
+                countdown.increment()
+                sidecars[pid] = sidecar
+                pipes[pid] = sidecar.stdio[3]
+                descendent.addChild(sidecar, { pid: pid })
+                children.ephemeral([ 'sidecar', sidecar.pid ], supervise.sidecar(sidecar, pid))
             }
-        }))
-        children.destruct(() => sockets.shifter.destroy())
-
-        const server = net.createServer(socket => {
-            sockets.queue.push(socket)
-        })
-        children.destruct(() => server.close())
-        await callback(callback => server.listen(path.resolve(tmp, 'socket'), callback))
-
-        await fs.mkdir(path.resolve(tmp, 'stage'))
-        await fs.mkdir(path.resolve(tmp, 'publish'))
-
-        process.env.PROLIFIC_TMPDIR = tmp
-
-        const toucher = new Isochronous(60000, true, async () => {
-            const now = Date.now()
-            await fs.utimes(tmp, now, now)
-            await fs.utimes(path.resolve(tmp, 'stage'), now, now)
-            await fs.utimes(path.resolve(tmp, 'publish'), now, now)
-        })
-
-        children.durable('toucher', toucher.start())
-        children.destruct(() => toucher.stop())
-
-        killer.on('killed', pid => {
-            watcher.killed(pid)
-        })
-
-        children.durable('killer', killer.run())
-        children.destruct(() => killer.destroy())
-
-        const watcher = new Watcher(children.durable('watcher'), buffer => {
-            return fnv(0, buffer, 0, buffer.length)
-        }, path.join(tmp, 'publish'))
-
-        countdown.destruct(() => watcher.drain())
-
-        const collector = new Collector
-
-        // watcher.on('notice', notice => console.log(notice))
-
-        watcher.on('data', data => collector.data(data))
-
-        collector.on('data', data => {
-            const pid = data.pid
-            switch (data.body.method) {
-            case 'start': {
-                    const sidecar = processes.spawn('node', [
-                        path.join(__dirname, 'sidecar.bin.js'),
-                        '--configuration', processor,
-                        '--supervisor', process.pid
-                    ], {
-                        stdio: [ 'inherit', 'inherit', 'inherit', 'ipc' ]
-                    })
-                    countdown.increment()
-                    sidecars[pid] = sidecar
-                    pipes[pid] = sidecar.stdio[3]
-                    descendent.addChild(sidecar, { pid: pid })
-                    children.ephemeral([ 'sidecar', sidecar.pid ], supervise.sidecar(sidecar, pid))
-                }
-                break
-            case 'log': {
-                    printer.push(data.body)
-                }
-                break
-            case 'eos': {
-                    killer.exited(pid)
-                    // TODO No need to `killer.purge()`, we can absolutely remove
-                    // the pid from the `Killer` here.
-                    const sidecar = sidecars[pid]
-                    descendent.down([ sidecar.pid ], 'prolific:synchronous', null)
-                }
-                break
-            default: {
-                    killer.exit(pid)
-                    const sidecar = sidecars[pid]
-                    // **TODO** Wait on callback?
-                    descendent.down([ sidecar.pid ], 'prolific:synchronous', data.body)
-                }
-                break
+            break
+        case 'log': {
+                printer.push(data.body)
             }
-        })
+            break
+        case 'eos': {
+                killer.exited(pid)
+                // TODO No need to `killer.purge()`, we can absolutely remove
+                // the pid from the `Killer` here.
+                const sidecar = sidecars[pid]
+                descendent.down([ sidecar.pid ], 'prolific:synchronous', null)
+            }
+            break
+        default: {
+                killer.exit(pid)
+                const sidecar = sidecars[pid]
+                // **TODO** Wait on callback?
+                descendent.down([ sidecar.pid ], 'prolific:synchronous', data.body)
+            }
+            break
+        }
+    })
 
-        logger.push({ label: 'prolific.start' })
+    logger.push({ label: 'prolific.start' })
 
-        const stdio = inherit(arguable)
-        stdio.push('ipc')
+    const stdio = inherit(arguable)
+    stdio.push('ipc')
 
-        const argv = arguable.argv.slice()
-        // TODO Restore inheritance.
-        const child = processes.spawn(argv.shift(), argv, { stdio: stdio })
-        // TODO Maybe have something to call to notify of failure to finish.
-        // destructible.destruct(() => child.kill())
+    const argv = arguable.argv.slice()
+    // TODO Restore inheritance.
+    const child = processes.spawn(argv.shift(), argv, { stdio: stdio })
+    // TODO Maybe have something to call to notify of failure to finish.
+    // destructible.destruct(() => child.kill())
 
-        descendent.addChild(child, null)
+    descendent.addChild(child, null)
 
-        descendent.on('prolific:receiving', function (message) {
-            cubbyhole.set(message.cookie.pid, message.body)
-        })
+    descendent.on('prolific:receiving', function (message) {
+        cubbyhole.set(message.cookie.pid, message.body)
+    })
 
-        children.ephemeral('close', supervise.child(child))
+    children.ephemeral('close', supervise.child(child))
 
-        // TODO How do we propogate signals?
-        // await arguable.destroyed
-        // destructible.destroy()
-        await children.promise
-        supervisor.destroy()
-        await supervisor.promise
-        return 0
-    } finally {
-        descendent.decrement()
-    }
+    // TODO How do we propogate signals?
+    // await arguable.destroyed
+    // destructible.destroy()
+    await children.promise
+    supervisor.destroy()
+    await supervisor.promise
+    return 0
 })
