@@ -76,12 +76,12 @@ require('arguable')(module, {
     const consolidator = new Consolidator(queue)
 
     destructible.durable('process', queue.shifter().pump(chunk => {
-        logger.say('processor.chunk', { chunk })
         processor.process(chunk)
     }))
     destructible.ephemeral('configure', processor.configure())
 
     descendant.on('prolific:synchronous', synchronous => {
+        logger.say('processor.chunk', { synchronous })
         consolidator.synchronous(synchronous.body)
     })
 
