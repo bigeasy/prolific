@@ -36,6 +36,7 @@ require('arguable')(module, {
     }
 
     process.on('message', dump)
+    process.on('internalMessage', dump)
 
     descendent.process = arguable.options.process
     descendent.increment()
@@ -100,6 +101,7 @@ require('arguable')(module, {
     } finally {
         descendent.decrement()
         process.removeListener('message', dump)
+        process.removeListener('internalMessage', dump)
         descendent.process = process
     }
 })
