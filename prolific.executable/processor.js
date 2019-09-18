@@ -49,7 +49,6 @@ class Processor extends events.EventEmitter {
             async configure (buffer) {
                 try {
                     const source = buffer.toString()
-                    console.log('SOURCE', source)
                     const definition = Evaluator.create(source, file)
                     const triage = definition.triage(require('prolific.require').require)
                     const process = await definition.process(require('prolific.require').require)
@@ -78,7 +77,7 @@ class Processor extends events.EventEmitter {
         this._processor = {
             previous: this._processor.previous,
             process: entries => {
-                processor.process(entries.filter(entry => {
+                return processor.process(entries.filter(entry => {
                     return triage(LEVEL[entry.level], entry.qualifier, entry.label, entry.body, entry.system)
                 }))
             }
@@ -89,7 +88,6 @@ class Processor extends events.EventEmitter {
         const version = this._version++
         this._versions.push({ previous: () => {}, version, processor })
         this._previous = process
-        console.log('EMITTING', { version, source, file: this._file })
         this.emit('configuration', { version, source, file: this._file })
         for await (const { source, processor } of this._reconfigurator) {
             const version = this._version++
@@ -149,14 +147,12 @@ class Processor extends events.EventEmitter {
                 await this._processor.previous.call(null, null)
                 this._processor = {
                     previous: configuration.previous,
-                    process: entries => {
-                       processor.process(entries)
-                    }
+                    process: entries => processor.process(entries)
                 }
             }
             break
         case 'entries': {
-                this._processor.process(batch.entries)
+                await this._processor.process(batch.entries)
             }
             break
         case 'exit': {

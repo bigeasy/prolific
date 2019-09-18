@@ -12,8 +12,8 @@ class Logger {
         destructible.destruct(() => this._flush())
     }
 
-    log (entry) {
-        this._entries.push({ when: this._Date.now(), ...entry })
+    log (label, entry) {
+        this._entries.push({ when: this._Date.now(), qualifier: 'prolific', label, ...entry })
     }
 
     _flush () {

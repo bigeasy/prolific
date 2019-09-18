@@ -4,9 +4,21 @@ describe('sidecar', function () {
     const path = require('path')
     const stream = require('stream')
     const fs = require('fs').promises
+
     const Pipe = require('duplicitous/pipe')
 
+    const rimraf = require('rimraf')
+    const callback = require('prospective/callback')
+
+    const TMPDIR = path.join(__dirname, 'tmp')
+    const dir = {
+        stage: path.resolve(TMPDIR, 'stage'),
+        publish: path.resolve(TMPDIR, 'publish')
+    }
     it('can sidecar', async () => {
+        await callback(callback => rimraf(TMPDIR, callback))
+        await fs.mkdir(dir.publish, { recursive: true })
+        await fs.mkdir(dir.stage, { recursive: true })
         const sidecar = require('../sidecar.bin')
         const stdin = new stream.PassThrough
         const Messenger = require('arguable/messenger')
@@ -36,7 +48,7 @@ describe('sidecar', function () {
             test.push(message)
         })
 
-        messenger.env = {}
+        messenger.env = { PROLIFIC_TMPDIR: TMPDIR }
         messenger.pid = 2
 
         const pipe = new Pipe
