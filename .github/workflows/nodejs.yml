@@ -24,7 +24,7 @@ jobs:
     - name: npm install nyc, mocha, codecov
       run:  npm install -g nyc mocha codecov
     - name: npm test
-      run: cd prolific.executable && nyc npm test
+      run: cd prolific.executable && npm test
       env:
         CI: true
     - name: generate codecov report
