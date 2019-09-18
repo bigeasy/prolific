@@ -7,7 +7,7 @@ class Logger {
         this._publisher = new Publisher(Date, directory, pid)
         this._Date = Date
         const isochornous = new Isochronous(interval, true, this._flush.bind(this))
-        destructible.durable('interval', isochornous.start())
+        destructible.durable('isochornous', isochornous.start())
         destructible.destruct(() => isochornous.stop())
         destructible.destruct(() => this._flush())
     }
