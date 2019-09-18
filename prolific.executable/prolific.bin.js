@@ -158,7 +158,9 @@ require('arguable')(module, {}, async arguable => {
             console.log('socket', socket)
             printer.say('dispatch', { header, destroyed: socket.destroyed, socket: !! socket })
             socket.destroy = () => {}
-            descendent.down([ pid ], 'prolific:socket', header, socket)
+            if (!socket.destroyed) {
+                descendent.down([ pid ], 'prolific:socket', header, socket)
+            }
         }
     }))
     children.destruct(() => sockets.shifter.destroy())
