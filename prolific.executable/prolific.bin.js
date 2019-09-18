@@ -150,7 +150,6 @@ require('arguable')(module, {}, async arguable => {
     const sockets = new Queue().shifter().paired
     children.durable('sockets', sockets.shifter.pump(async socket => {
         if (socket != null) {
-            socket.unref()
             const header = await Header(socket)
             assert.equal(header.method, 'announce', 'announce missing')
             const pid = await cubbyhole.get(header.pid)
