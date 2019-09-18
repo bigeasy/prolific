@@ -50,8 +50,6 @@ require('arguable')(module, {
 
     const processors = new Queue().shifter().paired
 
-    const Future = require('prospective/future')
-
     async function update (socket) {
         for await (const processor of processors.shifter.iterator()) {
             logger.say('processor.send', { processor })
