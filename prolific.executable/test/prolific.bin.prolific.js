@@ -7,6 +7,6 @@ processor.triage = function (require) {
 
 processor.process = function () {
     return function (entries) {
-        console.log('PROCESSING >', entries)
+        console.log('>', entries)
     }
 }
