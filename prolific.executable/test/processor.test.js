@@ -12,12 +12,12 @@ describe('processor', () => {
     sink.Date = { now: () => 1 }
     sink.properties.pid = 2
 
-    const configuration = {
-        configuration: path.join(__dirname, 'configuration.initial.js'),
-        bad: path.join(__dirname, 'configuration.bad.js'),
-        reconfiguration: path.join(__dirname, 'configuration.subsequent.js'),
-        objectconfiguration: path.join(__dirname, 'configuration.object.js'),
-        source: path.join(__dirname, 'configuration.js')
+    const processors = {
+        configuration: path.join(__dirname, 'processor.initial.js'),
+        bad: path.join(__dirname, 'processor.bad.js'),
+        reconfiguration: path.join(__dirname, 'processor.subsequent.js'),
+        objectconfiguration: path.join(__dirname, 'processor.object.js'),
+        source: path.join(__dirname, 'processor.js')
     }
 
     it('can configure', async () => {
@@ -26,9 +26,9 @@ describe('processor', () => {
         const destructible = new Destructible('configure')
         const gather = require('./gather')
 
-        await fs.copyFile(configuration.configuration, configuration.source)
+        await fs.copyFile(processors.configuration, processors.source)
 
-        const processor = new Processor(configuration.source, { now: () => 1 })
+        const processor = new Processor(processors.source, { now: () => 1 })
         processor.on('error', error => console.log(error.stack))
         sink.json('error', 'prolific', 'label', {}, { pid: 1 })
         await processor.process({
@@ -52,8 +52,8 @@ describe('processor', () => {
         const test = []
         destructible.durable('configure', processor.configure(), () => processor.destroy())
         await new Promise(resolve => {
-            processor.once('configuration', configuration => {
-                test.push(configuration)
+            processor.once('processor', processor => {
+                test.push(processor)
                 resolve()
             })
         })
@@ -71,28 +71,28 @@ describe('processor', () => {
         })
         sink.json('error', 'prolific', 'label', {}, { pid: 1 })
         const reconfigured = new Promise(resolve => {
-            processor.once('configuration', configuration => {
-                test.push(configuration)
+            processor.once('processor', processor => {
+                test.push(processor)
                 resolve()
             })
         })
-        await fs.copyFile(configuration.bad, configuration.source)
+        await fs.copyFile(processors.bad, processors.source)
         await new Promise(resolve => {
             processor.once('error', error => {
                 test.push('bad configure')
                 resolve()
             })
         })
-        await fs.copyFile(configuration.reconfiguration, configuration.source)
+        await fs.copyFile(processors.reconfiguration, processors.source)
         await reconfigured
         const configured = { object: null, subsequent: null }
         configured.object = new Promise(resolve => {
-            processor.once('configuration', configuration => {
-                test.push(configuration)
+            processor.once('processor', processor => {
+                test.push(processor)
                 resolve()
             })
         })
-        await fs.copyFile(configuration.objectconfiguration, configuration.source)
+        await fs.copyFile(processors.objectconfiguration, processors.source)
         await configured.object
         assert(!processor.destroyed, 'not destroyed')
         await processor.process({ method: 'exit' })
@@ -100,16 +100,16 @@ describe('processor', () => {
         assert(processor.destroyed, 'destroyed')
         assert.deepStrictEqual(test, [{
             version: 0,
-            source: await fs.readFile(configuration.configuration, 'utf8'),
-            file: configuration.source
+            source: await fs.readFile(processors.configuration, 'utf8'),
+            file: processors.source
         }, 'bad configure', {
             version: 1,
-            source: await fs.readFile(configuration.reconfiguration, 'utf8'),
-            file: configuration.source
+            source: await fs.readFile(processors.reconfiguration, 'utf8'),
+            file: processors.source
         }, {
             version: 2,
-            source: await fs.readFile(configuration.objectconfiguration, 'utf8'),
-            file: configuration.source
+            source: await fs.readFile(processors.objectconfiguration, 'utf8'),
+            file: processors.source
         }], 'configuration')
         assert.deepStrictEqual(gather, [[{
             when: 1,

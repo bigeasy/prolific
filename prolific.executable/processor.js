@@ -11,9 +11,9 @@ const Evaluator = require('prolific.evaluator')
 
 const Destructible = require('destructible')
 
-// Construct a processor that will reload it's configuration from the given
-// configuration and call the given function with the new in-process Acceptor
-// configuration. The in-process Acceptor configuration will be routed to the
+// Construct a processor that will reload it's source from the given source and
+// call the given function with the new in-process Acceptor soure THIS IS OUT OF
+// DATE. The in-process Acceptor source oof, blah, blah will be routed to the
 // child process we're monitoring and injected into it so that the first round
 // of filtering will happen in-process saving copying time.
 //
@@ -22,14 +22,14 @@ const Destructible = require('destructible')
 
 //
 class Processor extends events.EventEmitter {
-    constructor (configuration, _Date = Date) {
+    constructor (source, _Date = Date) {
         super()
         this.destroyed = false
 
         this._destructible = new Destructible('prolific/processor')
         this._destructible.destruct(() => this.destroyed = true)
 
-        const file = this._file = path.resolve(configuration)
+        const file = this._file = path.resolve(source)
 
         this._version = 0
         this._versions = []
@@ -88,12 +88,12 @@ class Processor extends events.EventEmitter {
         const version = this._version++
         this._versions.push({ previous: () => {}, version, processor })
         this._previous = process
-        this.emit('configuration', { version, source, file: this._file })
+        this.emit('processor', { version, source, file: this._file })
         for await (const { source, processor } of this._reconfigurator) {
             const version = this._version++
             this._versions.push({ previous: this._previous, version, processor })
             this._previous = process
-            this.emit('configuration', { version, source, file: this._file })
+            this.emit('processor', { version, source, file: this._file })
         }
     }
 
@@ -139,14 +139,14 @@ class Processor extends events.EventEmitter {
         // already kind of chunked.
         switch (batch && batch.method) {
         case 'version': {
-                const configuration = this._versions.shift()
-                assert(this._nextVersion == configuration.version)
+                const version = this._versions.shift()
+                assert(this._nextVersion == version.version)
                 assert(this._nextVersion == batch.version)
                 this._nextVersion++
-                const processor = configuration.processor
+                const processor = version.processor
                 await this._processor.previous.call(null, null)
                 this._processor = {
-                    previous: configuration.previous,
+                    previous: version.previous,
                     process: entries => processor.process(entries)
                 }
             }

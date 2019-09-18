@@ -24,7 +24,7 @@ describe('sidecar', function () {
         const Messenger = require('arguable/messenger')
         const messenger = new Messenger
         const test = []
-        const configuration = path.join(__dirname, 'configuration.sidecar.js')
+        const processor = path.join(__dirname, 'processor.sidecar.js')
 
         const senders = [function (message) {
             const pid = message.path[0]
@@ -53,7 +53,7 @@ describe('sidecar', function () {
 
         const pipe = new Pipe
 
-        const child = sidecar({ configuration, supervisor: '1' }, {
+        const child = sidecar({ processor, supervisor: '1' }, {
             $pipes: { 3: pipe.server },
             $stdin: stdin,
             process: messenger

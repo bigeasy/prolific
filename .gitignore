@@ -8,7 +8,7 @@
 /*.*/.nyc_output
 /.nyc_output
 /prolific.executable/test/tmp
-/prolific.executable/test/configuration.js
+/prolific.executable/test/processor.js
 !/prolific.syslog/node_modules/json.js
 /*.*/test/tmp
 /*.*/.dots

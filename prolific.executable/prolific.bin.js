@@ -209,7 +209,7 @@ require('arguable')(module, {}, async arguable => {
         case 'start': {
                 const sidecar = processes.spawn('node', [
                     path.join(__dirname, 'sidecar.bin.js'),
-                    '--configuration', processor,
+                    '--processor', processor,
                     '--supervisor', process.pid
                 ], {
                     stdio: [ 'inherit', 'inherit', 'inherit', 'ipc' ]

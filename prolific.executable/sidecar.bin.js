@@ -2,7 +2,7 @@
     ___ usage ___ en_US ___
     usage: node sidecar.bin.js
 
-        -c, --configuration <string>    json configuration path
+        -c, --processor <string>        processor path
         -s, --supervisor <string>       pid of supervisor
             --help                      display this message
 
@@ -12,7 +12,7 @@ require('arguable')(module, {
     $trap: { SIGINT: 'swallow', SIGTERM: 'swallow' },
     process: process
 }, async (arguable) => {
-    arguable.required('configuration', 'supervisor')
+    arguable.required('processor', 'supervisor')
 
     const Destructible = require('destructible')
     const destructible = new Destructible('sidecar')
@@ -43,7 +43,7 @@ require('arguable')(module, {
 
     const Processor = require('./processor')
 
-    const processor = new Processor(arguable.ultimate.configuration)
+    const processor = new Processor(arguable.ultimate.processor)
 
     const Queue = require('avenue')
     const queue = new Queue
@@ -67,7 +67,7 @@ require('arguable')(module, {
 
     destructible.destruct(() => processors.shifter.destroy())
 
-    processor.on('configuration', (processor) => {
+    processor.on('processor', (processor) => {
         logger.say('processor.load', { processor })
         processors.queue.push(processor)
     })
