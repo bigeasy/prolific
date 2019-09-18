@@ -79,7 +79,7 @@ require('arguable')(module, {
     destructible.ephemeral('configure', processor.configure())
 
     descendant.on('prolific:synchronous', synchronous => {
-        logger.say('processor.chunk', { synchronous })
+        logger.say('processor.synchronous', { synchronous })
         consolidator.synchronous(synchronous.body)
     })
 
