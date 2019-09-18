@@ -12,7 +12,7 @@ class Logger {
         destructible.destruct(() => this._flush())
     }
 
-    push (entry) {
+    log (entry) {
         this._entries.push({ when: this._Date.now(), ...entry })
     }
 

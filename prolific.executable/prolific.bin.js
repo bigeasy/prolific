@@ -92,11 +92,11 @@ require('arguable')(module, {}, async arguable => {
 
     // TODO What do you really want to name this?
     const Destructible = require('destructible')
-    const _destructible = new Destructible(1500, 'prolific')
+    const destructible = new Destructible(1500, 'prolific')
 
-    const countdown = _destructible.ephemeral('countdown')
-    const children = _destructible.ephemeral('children')
-    const supervisor = _destructible.durable('supervisor')
+    const countdown = destructible.ephemeral('countdown')
+    const children = destructible.ephemeral('children')
+    const supervisor = destructible.durable('supervisor')
 
     countdown.increment()
 
@@ -248,7 +248,7 @@ require('arguable')(module, {}, async arguable => {
         }
     })
 
-    logger.push({ label: 'prolific.start' })
+    logger.log({ label: 'prolific.start' })
 
     const stdio = inherit(arguable)
     stdio.push('ipc')

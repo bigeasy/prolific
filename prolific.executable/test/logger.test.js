@@ -31,7 +31,7 @@ describe('logger', () => {
         const logger = new Logger(destructible.durable('logger'), {
             now: () => 0
         }, TMPDIR, 2, 100)
-        logger.push({ a: 1 })
+        logger.log({ a: 1 })
         const [ log ] = await data
         assert.deepStrictEqual(log.body.entries, [ { when: 0, a: 1 } ])
         destructible.destroy()
