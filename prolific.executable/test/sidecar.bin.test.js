@@ -33,7 +33,7 @@ describe('sidecar', function () {
             const pid = message.path[0]
             message.path[0] = 2
             assert.deepStrictEqual(message, {
-                module: 'descendent',
+                module: 'descendant',
                 method: 'route',
                 name: 'prolific:accept',
             }, 'accept message')
@@ -59,7 +59,7 @@ describe('sidecar', function () {
             process: messenger
         })
         messenger.emit('message', {
-            module: 'descendent',
+            module: 'descendant',
             method: 'route',
             name: 'prolific:synchronous',
             to: [],
@@ -69,7 +69,7 @@ describe('sidecar', function () {
         await child.promise
 
         assert.deepStrictEqual(test, [{
-            module: 'descendent',
+            module: 'descendant',
             method: 'route',
             name: 'prolific:receiving',
             to: [ 1 ],

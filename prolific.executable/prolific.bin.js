@@ -49,9 +49,6 @@ const fnv = require('hash.fnv')
 
 const Isochronous = require('isochronous')
 
-// Route messages through a process hierarchy using Node.js IPC.
-const Descendent = require('descendent')
-
 // Exceptions that you can catch by type.
 const Interrupt = require('interrupt').create('prolific')
 
@@ -63,7 +60,7 @@ const Collector = require('prolific.collector')
 const Watcher = require('prolific.watcher')
 
 // Pass messages and sockets all around the process tree.
-const descendent = require('foremost')('descendent')
+const descendant = require('foremost')('descendant')
 
 const coalesce = require('extant')
 
@@ -74,7 +71,7 @@ const Header = require('./header')
 const Cubbyhole = require('cubbyhole')
 
 // TODO Note that; we now require that anyone standing between a root Prolific
-// sidecar and a leaf child process use the Descendent library. When I write
+// sidecar and a leaf child process use the Descendant library. When I write
 // multi-process applications I use [Olio](https://github.com/bigeasy/olio)
 // where this is already implemented.
 require('arguable')(module, {}, async arguable => {
@@ -134,8 +131,8 @@ require('arguable')(module, {}, async arguable => {
 
     const Printer = require('./printer')
 
-    descendent.increment()
-    children.destruct(() => descendent.decrement())
+    descendant.increment()
+    children.destruct(() => descendant.decrement())
 
     const tmp = await Tmp(coalesce(process.env.TMPDIR, '/tmp'), async () => {
         const [ bytes ] = await callback(callback => crypto.randomBytes(16, callback))
@@ -159,7 +156,7 @@ require('arguable')(module, {}, async arguable => {
             printer.say('dispatch', { header, destroyed: socket.destroyed, socket: !! socket })
             socket.destroy = () => {}
             if (!socket.destroyed) {
-                descendent.down([ pid ], 'prolific:socket', header, socket)
+                descendant.down([ pid ], 'prolific:socket', header, socket)
             }
         }
     }))
@@ -220,7 +217,7 @@ require('arguable')(module, {}, async arguable => {
                 countdown.increment()
                 sidecars[pid] = sidecar
                 pipes[pid] = sidecar.stdio[3]
-                descendent.addChild(sidecar, { pid: pid })
+                descendant.addChild(sidecar, { pid: pid })
                 children.ephemeral([ 'sidecar', sidecar.pid ], supervise.sidecar(sidecar, pid))
             }
             break
@@ -233,14 +230,14 @@ require('arguable')(module, {}, async arguable => {
                 // TODO No need to `killer.purge()`, we can absolutely remove
                 // the pid from the `Killer` here.
                 const sidecar = sidecars[pid]
-                descendent.down([ sidecar.pid ], 'prolific:synchronous', null)
+                descendant.down([ sidecar.pid ], 'prolific:synchronous', null)
             }
             break
         default: {
                 killer.exit(pid)
                 const sidecar = sidecars[pid]
                 // **TODO** Wait on callback?
-                descendent.down([ sidecar.pid ], 'prolific:synchronous', data.body)
+                descendant.down([ sidecar.pid ], 'prolific:synchronous', data.body)
             }
             break
         }
@@ -257,9 +254,9 @@ require('arguable')(module, {}, async arguable => {
     // TODO Maybe have something to call to notify of failure to finish.
     // destructible.destruct(() => child.kill())
 
-    descendent.addChild(child, null)
+    descendant.addChild(child, null)
 
-    descendent.on('prolific:receiving', function (message) {
+    descendant.on('prolific:receiving', function (message) {
         printer.say('receiving', message)
         cubbyhole.set(message.cookie.pid, message.body)
     })

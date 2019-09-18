@@ -22,7 +22,7 @@ require('arguable')(module, {
 
     const Consolidator = require('prolific.consolidator')
 
-    const descendent = require('foremost')('descendent')
+    const descendant = require('foremost')('descendant')
 
     const Logger = require('./logger')
 
@@ -38,8 +38,8 @@ require('arguable')(module, {
     process.on('message', dump)
     process.on('internalMessage', dump)
 
-    descendent.process = arguable.options.process
-    descendent.increment()
+    descendant.process = arguable.options.process
+    descendant.increment()
     try {
         const _logger = require('prolific.logger').create('prolific')
         function memoryUsage () { _logger.notice('memory', process.memoryUsage()) }
@@ -65,7 +65,7 @@ require('arguable')(module, {
             }
         }
 
-        descendent.on('prolific:socket', (message, socket) => {
+        descendant.on('prolific:socket', (message, socket) => {
             logger.say('sidecar.socket', { message, socket: !! socket, connected: process.connected })
             destructible.ephemeral('read', update(socket))
             destructible.ephemeral('asynchronous', consolidator.asynchronous(socket, socket))
@@ -87,21 +87,21 @@ require('arguable')(module, {
         }))
         destructible.ephemeral('configure', processor.configure())
 
-        descendent.on('prolific:synchronous', synchronous => {
+        descendant.on('prolific:synchronous', synchronous => {
             consolidator.synchronous(synchronous.body)
         })
 
         // Let the supervisor know that we're ready. It will send our asynchronous
         // pipe down to the monitored process.
-        descendent.up(+arguable.ultimate.supervisor, 'prolific:receiving', process.pid)
+        descendant.up(+arguable.ultimate.supervisor, 'prolific:receiving', process.pid)
 
         await destructible.promise
 
         return 0
     } finally {
-        descendent.decrement()
+        descendant.decrement()
         process.removeListener('message', dump)
         process.removeListener('internalMessage', dump)
-        descendent.process = process
+        descendant.process = process
     }
 })

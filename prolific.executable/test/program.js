@@ -1,5 +1,4 @@
 process.stderr.write('make confuse!\n')
-const descendent = require('foremost')('descendent')
 const children = require('child_process')
 const logger = require('prolific.logger').create('prolific')
 require('prolific.shuttle').create()
@@ -14,7 +13,6 @@ process.send({})
 //process.stderr.write(JSON.stringify(process.env) + '\n')
 process.stderr.write('wait?\n')
 const child = children.spawn('node', [ '-e', '1' ])
-descendent.addChild(child, null)
 process.channel.unref()
 child.on('exit', function () {
     setTimeout(function () {
