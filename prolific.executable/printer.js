@@ -11,10 +11,7 @@ class Printer {
         const isochronous = new Isochronous(interval, true, this._check.bind(this))
         destructible.durable('isochronous', isochronous.start())
         destructible.destruct(() => isochronous.stop())
-        destructible.destruct(() => {
-            this._entries.sort(sort)
-            this._log(this._entries.splice(0))
-        })
+        destructible.destruct(() => this._log(this._entries.splice(0).sort(sort)))
     }
 
     say (label, entry) {
