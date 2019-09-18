@@ -17,7 +17,7 @@ class Printer {
         })
     }
 
-    log (entry) {
+    say (entry) {
         this._entries.push(entry)
     }
 

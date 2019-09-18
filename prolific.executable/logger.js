@@ -12,13 +12,13 @@ class Logger {
         destructible.destruct(() => this._flush())
     }
 
-    log (label, entry) {
+    say (label, entry) {
         this._entries.push({ when: this._Date.now(), qualifier: 'prolific', label, ...entry })
     }
 
     _flush () {
         if (this._entries.length != 0) {
-            this._publisher.publish({ method: 'log', entries: this._entries.splice(0) })
+            this._publisher.publish({ method: 'say', entries: this._entries.splice(0) })
         }
     }
 }

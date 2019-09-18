@@ -218,7 +218,7 @@ require('arguable')(module, {}, async arguable => {
                 children.ephemeral([ 'sidecar', sidecar.pid ], supervise.sidecar(sidecar, pid))
             }
             break
-        case 'log': {
+        case 'say': {
                 printer.push(data.body)
             }
             break
@@ -240,7 +240,7 @@ require('arguable')(module, {}, async arguable => {
         }
     })
 
-    printer.log({ when: Date.now(), label: 'prolific.start' })
+    printer.say({ when: Date.now(), label: 'prolific.start' })
 
     const stdio = inherit(arguable)
     stdio.push('ipc')

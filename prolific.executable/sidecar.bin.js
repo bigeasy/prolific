@@ -29,7 +29,7 @@ require('arguable')(module, {
     const PROLIFIC_TMPDIR = arguable.options.process.env.PROLIFIC_TMPDIR
 
     const logger = new Logger(destructible.durable('logger'), Date, PROLIFIC_TMPDIR, process.pid, 1000)
-    logger.log('sidecar.start', { PROLIFIC_TMPDIR })
+    logger.say('sidecar.start', { PROLIFIC_TMPDIR })
 
     descendent.process = arguable.options.process
     descendent.increment()
@@ -53,13 +53,13 @@ require('arguable')(module, {
 
         async function update (socket) {
             for await (const processor of processors.shifter.iterator()) {
-                logger.log('processor.send', { processor })
+                logger.say('processor.send', { processor })
                 socket.write(JSON.stringify(processor) + '\n')
             }
         }
 
         descendent.on('prolific:socket', (message, socket) => {
-            logger.log('sidecar.socket', { message, socket: !! socket })
+            logger.say('sidecar.socket', { message, socket: !! socket })
             destructible.ephemeral('read', update(socket))
             destructible.ephemeral('asynchronous', consolidator.asynchronous(socket, socket))
         })
@@ -67,7 +67,7 @@ require('arguable')(module, {
         destructible.destruct(() => processors.shifter.destroy())
 
         processor.on('configuration', (processor) => {
-            logger.log('processor.load', { processor })
+            logger.say('processor.load', { processor })
             processors.queue.push(processor)
         })
 
@@ -75,7 +75,7 @@ require('arguable')(module, {
         const consolidator = new Consolidator(queue)
 
         destructible.durable('process', queue.shifter().pump(chunk => {
-            logger.log('processor.chunk', { chunk })
+            logger.say('processor.chunk', { chunk })
             processor.process(chunk)
         }))
         destructible.ephemeral('configure', processor.configure())
