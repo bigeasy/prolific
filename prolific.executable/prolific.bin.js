@@ -244,8 +244,6 @@ require('arguable')(module, {}, async arguable => {
     const argv = arguable.argv.slice()
     // TODO Restore inheritance.
     const child = processes.spawn(argv.shift(), argv, { stdio: stdio })
-    // TODO Maybe have something to call to notify of failure to finish.
-    // destructible.destruct(() => child.kill())
 
     descendant.addChild(child, null)
 
