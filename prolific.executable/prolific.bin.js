@@ -84,8 +84,6 @@ require('arguable')(module, {}, async arguable => {
     process.env.PROLIFIC_SUPERVISOR_PROCESS_ID = process.pid
 
     const sidecars = {}
-    const pids = {}
-    const pipes = {} // See race condition below.
 
     // TODO What do you really want to name this?
     const Destructible = require('destructible')
@@ -213,7 +211,6 @@ require('arguable')(module, {}, async arguable => {
                 })
                 countdown.increment()
                 sidecars[pid] = sidecar
-                pipes[pid] = sidecar.stdio[3]
                 descendant.addChild(sidecar, { pid: pid })
                 children.ephemeral([ 'sidecar', sidecar.pid ], supervise.sidecar(sidecar, pid))
             }
