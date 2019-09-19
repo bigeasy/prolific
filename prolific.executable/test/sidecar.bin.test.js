@@ -48,12 +48,12 @@ describe('sidecar', function () {
             test.push(message)
         })
 
-        messenger.env = { PROLIFIC_TMPDIR: TMPDIR }
+        messenger.env = {}
         messenger.pid = 2
 
         const pipe = new Pipe
 
-        const child = sidecar({ processor, supervisor: '1' }, {
+        const child = sidecar({ processor, supervisor: '1', tmp: TMPDIR }, {
             $pipes: { 3: pipe.server },
             $stdin: stdin,
             process: messenger

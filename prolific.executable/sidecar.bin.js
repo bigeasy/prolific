@@ -4,6 +4,7 @@
 
         -c, --processor <string>        processor path
         -s, --supervisor <string>       pid of supervisor
+        -t, --tmp <string>              path of temporary directory
             --help                      display this message
 
     ___ . ___
@@ -26,10 +27,12 @@ require('arguable')(module, {
 
     const Logger = require('./logger')
 
-    const PROLIFIC_TMPDIR = arguable.options.process.env.PROLIFIC_TMPDIR
+    const tmp = arguable.ultimate.tmp
+    console.log(arguable.ultimate)
+    require('assert')(tmp)
 
-    const logger = new Logger(destructible.durable('logger'), Date, PROLIFIC_TMPDIR, process.pid, 1000)
-    logger.say('sidecar.start', { PROLIFIC_TMPDIR })
+    const logger = new Logger(destructible.durable('logger'), Date, tmp, process.pid, 1000)
+    logger.say('sidecar.start', { tmp })
 
     descendant.process = arguable.options.process
     descendant.increment()
