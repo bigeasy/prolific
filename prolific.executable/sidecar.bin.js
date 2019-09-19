@@ -60,6 +60,9 @@ require('arguable')(module, {
 
     descendant.on('prolific:socket', (message, socket) => {
         logger.say('sidecar.socket', { message, socket: !! socket, connected: process.connected })
+        socket.on('error', error => {
+            logger.say('socket.error', { stack: error.stack })
+        })
         destructible.ephemeral('read', update(socket))
         destructible.ephemeral('asynchronous', consolidator.asynchronous(socket, socket))
     })
