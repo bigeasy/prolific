@@ -11,7 +11,6 @@ module.exports = async function (input) {
         accumulator = Buffer.concat([ accumulator, buffer ])
         if (~accumulator.indexOf(0xa)) {
             readable.destroy()
-            console.log(accumulator.toString())
             return JSON.parse(accumulator.toString('utf8'))
         }
     }

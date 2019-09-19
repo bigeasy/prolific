@@ -28,8 +28,6 @@ require('arguable')(module, {
     const Logger = require('./logger')
 
     const tmp = arguable.ultimate.tmp
-    console.log(arguable.ultimate)
-    require('assert')(tmp)
 
     const logger = new Logger(destructible.durable('logger'), Date, tmp, process.pid, 1000)
     logger.say('sidecar.start', { tmp })
