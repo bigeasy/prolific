@@ -126,7 +126,6 @@ require('arguable')(module, {}, async arguable => {
         }
     }
 
-    const killer = new Killer(100)
     const cubbyhole = new Cubbyhole
 
     const Printer = require('./printer')
@@ -184,10 +183,8 @@ require('arguable')(module, {}, async arguable => {
     children.durable('toucher', toucher.start())
     children.destruct(() => toucher.stop())
 
-    killer.on('killed', pid => {
-        watcher.killed(pid)
-    })
-
+    const killer = new Killer(100)
+    killer.on('killed', pid => watcher.killed(pid))
     children.durable('killer', killer.run())
     children.destruct(() => killer.destroy())
 
