@@ -239,13 +239,10 @@ require('arguable')(module, {}, async arguable => {
     printer.say('start', {})
 
     const stdio = inherit(arguable)
-    stdio.push('ipc')
 
     const argv = arguable.argv.slice()
     // TODO Restore inheritance.
     const child = processes.spawn(argv.shift(), argv, { stdio: stdio })
-
-    descendant.addChild(child, null)
 
     descendant.on('prolific:receiving', function (message) {
         printer.say('receiving', message)

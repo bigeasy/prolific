@@ -9,11 +9,9 @@ try {
 } catch (e) {
     console.log(e.stack)
 }
-process.send({})
 //process.stderr.write(JSON.stringify(process.env) + '\n')
 process.stderr.write('wait?\n')
 const child = children.spawn('node', [ '-e', '1' ])
-process.channel.unref()
 child.on('exit', function () {
     setTimeout(function () {
         logger.warn('foo', {})
