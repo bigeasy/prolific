@@ -75,8 +75,6 @@ const Cubbyhole = require('cubbyhole')
 // multi-process applications I use [Olio](https://github.com/bigeasy/olio)
 // where this is already implemented.
 require('arguable')(module, {}, async arguable => {
-    arguable.ultimate.ipc = true
-
     arguable.helpIf(arguable.ultimate.help)
 
     const processor = arguable.ultimate.processor
