@@ -205,7 +205,7 @@ require('arguable')(module, {}, async arguable => {
                     '--processor', processor,
                     '--supervisor', process.pid
                 ], {
-                    stdio: [ 'inherit', 'inherit', 'inherit', 'ipc' ]
+                    stdio: [ 'ignore', 'inherit', 'inherit', 'ipc' ]
                 })
                 countdown.increment()
                 sidecars[pid] = sidecar
