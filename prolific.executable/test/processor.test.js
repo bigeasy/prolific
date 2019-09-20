@@ -139,6 +139,13 @@ describe('processor', () => {
             level: 'error',
             body: {},
             system: { pid: 1 }
+        }], [{
+            when: 1,
+            qualifier: 'prolific',
+            label: 'eos',
+            level: 'panic',
+            body: {},
+            system: { pid: 2 }
         }]], 'gather')
         processor.destroy()
         return

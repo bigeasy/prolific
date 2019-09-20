@@ -159,6 +159,15 @@ class Processor extends events.EventEmitter {
             }
             break
         case null: {
+                // TODO Normalize context.
+                await this._processor.process([{
+                    when: sink.Date.now(),
+                    level: 'panic',
+                    qualifier: 'prolific',
+                    label: 'eos',
+                    body: {},
+                    system: sink.properties
+                }])
                 await this._processor.previous.call(null, null)
                 for (const version of this._versions) {
                     if (version.processor.destroy) {
