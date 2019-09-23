@@ -29,7 +29,6 @@
                             "interrupt":                    "9.0.0-alpha.0",
                             "is-running":                   "2.1.0",
                             "isochronous":                  "^4.0.0-alpha.2",
-                            "p-queue":                      "6.1.1",
                             "hash.fnv":                     "^1.0.6",
                             "prolific.collector":           "^11.0.0-alpha.2",
                             "prolific.consolidator":        "^11.0.0-alpha.2",
