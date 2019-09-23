@@ -2,9 +2,10 @@
     ___ usage ___ en_US ___
     usage: node sidecar.bin.js
 
-        -c, --processor <string>        processor path
+        -p, --processor <string>        processor path
         -s, --supervisor <string>       pid of supervisor
         -t, --tmp <string>              path of temporary directory
+        -c, --child <string>            monitored pid
             --help                      display this message
 
     ___ . ___
@@ -23,8 +24,6 @@ require('arguable')(module, {
 
     const Consolidator = require('prolific.consolidator')
 
-    const descendant = require('foremost')('descendant')
-
     const Logger = require('./logger')
 
     const tmp = arguable.ultimate.tmp
@@ -32,10 +31,6 @@ require('arguable')(module, {
     const logger = new Logger(destructible.durable('logger'), Date, tmp, process.pid, 1000)
     logger.say('sidecar.start', { tmp })
 
-    descendant.process = arguable.options.process
-    descendant.increment()
-    destructible.destruct(() => descendant.decrement())
-    destructible.destruct(() => descendant.process = process)
     const _logger = require('prolific.logger').create('prolific')
     function memoryUsage () { _logger.notice('memory', process.memoryUsage()) }
     memoryUsage()
@@ -58,15 +53,6 @@ require('arguable')(module, {
         }
     }
 
-    descendant.on('prolific:socket', (message, socket) => {
-        logger.say('sidecar.socket', { message, socket: !! socket, connected: process.connected })
-        socket.on('error', error => {
-            logger.say('socket.error', { stack: error.stack })
-        })
-        destructible.ephemeral('read', update(socket))
-        destructible.ephemeral('asynchronous', consolidator.asynchronous(socket, socket))
-    })
-
     destructible.destruct(() => processors.shifter.destroy())
 
     processor.on('processor', (processor) => {
@@ -82,14 +68,34 @@ require('arguable')(module, {
     }))
     destructible.ephemeral('configure', processor.configure())
 
-    descendant.on('prolific:synchronous', synchronous => {
-        logger.say('processor.synchronous', { synchronous })
-        consolidator.synchronous(synchronous.body)
-    })
+    function message (message, socket) {
+        switch (`${message.module}:${message.method}`) {
+        case 'prolific:socket':
+            logger.say('sidecar.socket', { message, socket: !! socket })
+            if (socket != null) {
+                socket.on('error', error => {
+                    logger.say('socket.error', { stack: error.stack })
+                })
+                destructible.ephemeral('read', update(socket))
+                destructible.ephemeral('asynchronous', consolidator.asynchronous(socket, socket))
+            }
+            break
+        case 'prolific:synchronous':
+            logger.say('processor.synchronous', { message })
+            consolidator.synchronous(message.body)
+            break
+        }
+    }
+    arguable.options.process.on('message', message)
+    destructible.destruct(() => arguable.options.process.removeListener('message', message))
 
     // Let the supervisor know that we're ready. It will send our asynchronous
     // pipe down to the monitored process.
-    descendant.up(+arguable.ultimate.supervisor, 'prolific:receiving', process.pid)
+    arguable.options.process.send({
+        module: 'prolific',
+        method: 'receiving',
+        child: +arguable.ultimate.child
+    })
 
     await destructible.promise
 

@@ -44,7 +44,6 @@ describe('sidecar', function () {
         }]
 
         messenger.parent.on('message', (message) => {
-            console.log(message)
             test.push(message)
         })
 
@@ -53,28 +52,28 @@ describe('sidecar', function () {
 
         const pipe = new Pipe
 
-        const child = sidecar({ processor, supervisor: '1', tmp: TMPDIR }, {
+        const child = sidecar({ processor, supervisor: '1', tmp: TMPDIR, child: 3 }, {
             $pipes: { 3: pipe.server },
             $stdin: stdin,
             process: messenger
         })
         messenger.emit('message', {
-            module: 'descendant',
-            method: 'route',
-            name: 'prolific:synchronous',
-            to: [],
-            path: [ 1, 2 ],
+            module: 'prolific',
+            method: 'socket',
+            body: null
+        })
+        await new Promise(resolve => setImmediate(resolve))
+        messenger.emit('message', {
+            module: 'prolific',
+            method: 'synchronous',
             body: null
         })
         await child.promise
 
         assert.deepStrictEqual(test, [{
-            module: 'descendant',
-            method: 'route',
-            name: 'prolific:receiving',
-            to: [ 1 ],
-            path: [ 2 ],
-            body: process.pid
+            module: 'prolific',
+            method: 'receiving',
+            child: 3
         }], 'test')
     })
 })

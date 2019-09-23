@@ -59,9 +59,6 @@ const inherit = require('prolific.inherit')
 const Collector = require('prolific.collector')
 const Watcher = require('prolific.watcher')
 
-// Pass messages and sockets all around the process tree.
-const descendant = require('foremost')('descendant')
-
 const coalesce = require('extant')
 
 const Tmp = require('./tmp')
@@ -70,10 +67,6 @@ const Header = require('./header')
 
 const Cubbyhole = require('cubbyhole')
 
-// TODO Note that; we now require that anyone standing between a root Prolific
-// sidecar and a leaf child process use the Descendant library. When I write
-// multi-process applications I use [Olio](https://github.com/bigeasy/olio)
-// where this is already implemented.
 require('arguable')(module, {}, async arguable => {
     arguable.helpIf(arguable.ultimate.help)
 
@@ -126,9 +119,6 @@ require('arguable')(module, {}, async arguable => {
 
     const Printer = require('./printer')
 
-    descendant.increment()
-    children.destruct(() => descendant.decrement())
-
     const tmp = await Tmp(coalesce(process.env.TMPDIR, '/tmp'), async () => {
         const [ bytes ] = await callback(callback => crypto.randomBytes(16, callback))
         return bytes.toString('hex')
@@ -145,13 +135,15 @@ require('arguable')(module, {}, async arguable => {
             const header = await Header(socket)
             printer.say('header', header)
             assert.equal(header.method, 'announce', 'announce missing')
-            const pid = await cubbyhole.get(header.pid)
+            await cubbyhole.get(header.pid)
             cubbyhole.remove(header.pid)
-            printer.say('dispatch', { header, destroyed: socket.destroyed, socket: !! socket })
-            socket.destroy = () => {}
-            if (!socket.destroyed) {
-                descendant.down([ pid ], 'prolific:socket', header, socket)
-            }
+            printer.say('dispatch', { header, destroyed: socket.destroyed })
+            // **TODO** Uncomment to hang unit test.
+            // throw new Error
+            sidecars[header.pid].send({
+                module: 'prolific',
+                method: 'socket'
+            }, socket)
         }
     }))
     children.destruct(() => sockets.shifter.destroy())
@@ -203,13 +195,20 @@ require('arguable')(module, {}, async arguable => {
                     path.join(__dirname, 'sidecar.bin.js'),
                     '--processor', processor,
                     '--supervisor', process.pid,
-                    '--tmp', tmp
+                    '--tmp', tmp,
+                    '--child', pid
                 ], {
                     stdio: [ 'ignore', 'inherit', 'inherit', 'ipc' ]
                 })
+                function message (message) {
+                    assert.equal(`${message.module}:${message.method}`, 'prolific:receiving')
+                    printer.say('receiving', message)
+                    cubbyhole.set(message.child, true)
+                }
+                sidecar.on('message', message)
+                sidecar.on('exit', () => sidecar.removeListener('message', message))
                 countdown.increment()
                 sidecars[pid] = sidecar
-                descendant.addChild(sidecar, { pid: pid })
                 children.ephemeral([ 'sidecar', sidecar.pid ], supervise.sidecar(sidecar, pid))
             }
             break
@@ -222,14 +221,22 @@ require('arguable')(module, {}, async arguable => {
                 // TODO No need to `killer.purge()`, we can absolutely remove
                 // the pid from the `Killer` here.
                 const sidecar = sidecars[pid]
-                descendant.down([ sidecar.pid ], 'prolific:synchronous', null)
+                sidecar.send({
+                    module: 'prolific',
+                    method: 'synchronous',
+                    body: null
+                })
             }
             break
         default: {
                 killer.exit(pid)
                 const sidecar = sidecars[pid]
                 // **TODO** Wait on callback?
-                descendant.down([ sidecar.pid ], 'prolific:synchronous', data.body)
+                sidecar.send({
+                    module: 'prolific',
+                    method: 'synchronous',
+                    body: data.body
+                })
             }
             break
         }
@@ -242,11 +249,6 @@ require('arguable')(module, {}, async arguable => {
     const argv = arguable.argv.slice()
     // TODO Restore inheritance.
     const child = processes.spawn(argv.shift(), argv, { stdio: stdio })
-
-    descendant.on('prolific:receiving', function (message) {
-        printer.say('receiving', message)
-        cubbyhole.set(message.cookie.pid, message.body)
-    })
 
     children.ephemeral('close', supervise.child(child))
 
