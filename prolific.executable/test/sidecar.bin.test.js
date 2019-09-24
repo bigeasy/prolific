@@ -35,7 +35,7 @@ describe('sidecar', function () {
             assert.deepStrictEqual(message, {
                 module: 'descendant',
                 method: 'route',
-                name: 'prolific:accept',
+                name: 'prolific:accept'
             }, 'accept message')
             // TODO Move the close to the part above to see that we hang on exit
             // with the current destructible. Need to decide what to do when
@@ -52,7 +52,7 @@ describe('sidecar', function () {
 
         const pipe = new Pipe
 
-        const child = sidecar({ processor, supervisor: '1', tmp: TMPDIR, child: 3 }, {
+        const child = sidecar({ processor, supervisor: '1', tmp: TMPDIR, child: 3, main: __filename }, {
             $pipes: { 3: pipe.server },
             $stdin: stdin,
             process: messenger

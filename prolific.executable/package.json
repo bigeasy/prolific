@@ -32,7 +32,7 @@
                             "hash.fnv":                     "^1.0.6",
                             "prolific.collector":           "^11.0.0-alpha.2",
                             "prolific.consolidator":        "^11.0.0-alpha.2",
-                            "prolific.evaluator":           "3.0.x",
+                            "prolific.evaluator":           "^3.1.0-alpha.2",
                             "prolific.inherit":             "7.0.x",
                             "prolific.require":             "1.0.x",
                             "prolific.watcher":             "^0.1.0-alpha.2",

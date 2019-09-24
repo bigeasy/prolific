@@ -22,7 +22,7 @@ const Destructible = require('destructible')
 
 //
 class Processor extends events.EventEmitter {
-    constructor (source, _Date = Date) {
+    constructor (source, main, _Date = Date) {
         super()
         this.destroyed = false
 
@@ -47,16 +47,12 @@ class Processor extends events.EventEmitter {
         const self = this
         this._reconfigurator = new Reconfigurator(file, new class extends BufferConfigurator {
             async configure (buffer) {
-                try {
-                    const source = buffer.toString()
-                    const definition = Evaluator.create(source, file)
-                    const triage = definition.triage(require('prolific.require').require)
-                    const process = await definition.process(require('prolific.require').require)
-                    const processor = typeof process == 'function' ? { process } : process
-                    return { buffer, source, triage, processor }
-                } catch (error) {
-                    self.emit('error', error)
-                }
+                const source = buffer.toString()
+                const definition = Evaluator.create(source, file, main)
+                const triage = definition.triage(require('prolific.require').require)
+                const process = await definition.process(require('prolific.require').require)
+                const processor = typeof process == 'function' ? { process } : process
+                return { buffer, source, triage, processor, main }
             }
             reload (previous, buffer) {
                 return super.reload(previous.buffer, buffer)
@@ -73,7 +69,7 @@ class Processor extends events.EventEmitter {
     }
 
     async configure () {
-        const { source, triage, processor } = await this._reconfigurator.shift()
+        const { source, main, triage, processor } = await this._reconfigurator.shift()
         this._processor = {
             previous: this._processor.previous,
             process: entries => {
@@ -88,12 +84,12 @@ class Processor extends events.EventEmitter {
         const version = this._version++
         this._versions.push({ previous: () => {}, version, processor })
         this._previous = process
-        this.emit('processor', { version, source, file: this._file })
-        for await (const { source, processor } of this._reconfigurator) {
+        this.emit('processor', { version, source, file: this._file, require: main })
+        for await (const { main, source, processor } of this._reconfigurator) {
             const version = this._version++
             this._versions.push({ previous: this._previous, version, processor })
             this._previous = process
-            this.emit('processor', { version, source, file: this._file })
+            this.emit('processor', { version, source, file: this._file, require: main })
         }
     }
 

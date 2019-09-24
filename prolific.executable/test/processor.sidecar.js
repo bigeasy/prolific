@@ -1,7 +1,7 @@
-processor.triage = function (require) {
+processor.triage = function () {
     return function () { return true }
 }
 
-processor.process = function (require) {
+processor.process = function () {
     return function (entry) {}
 }

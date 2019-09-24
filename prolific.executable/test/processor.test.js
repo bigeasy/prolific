@@ -28,7 +28,7 @@ describe('processor', () => {
 
         await fs.copyFile(processors.configuration, processors.source)
 
-        const processor = new Processor(processors.source, { now: () => 1 })
+        const processor = new Processor(processors.source, __filename, { now: () => 1 })
         processor.on('error', error => console.log(error.stack))
         sink.json('error', 'prolific', 'label', {}, { pid: 1 })
         await processor.process({
@@ -101,14 +101,17 @@ describe('processor', () => {
         assert.deepStrictEqual(test, [{
             version: 0,
             source: await fs.readFile(processors.configuration, 'utf8'),
+            require: __filename,
             file: processors.source
         }, 'bad configure', {
             version: 1,
             source: await fs.readFile(processors.reconfiguration, 'utf8'),
+            require: __filename,
             file: processors.source
         }, {
             version: 2,
             source: await fs.readFile(processors.objectconfiguration, 'utf8'),
+            require: __filename,
             file: processors.source
         }], 'configuration')
         assert.deepStrictEqual(gather, [[{

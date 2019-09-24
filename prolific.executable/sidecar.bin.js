@@ -6,6 +6,7 @@
         -s, --supervisor <string>       pid of supervisor
         -t, --tmp <string>              path of temporary directory
         -c, --child <string>            monitored pid
+        -m, --main <string>             source of child process
             --help                      display this message
 
     ___ . ___
@@ -37,9 +38,9 @@ require('arguable')(module, {
     const interval = setInterval(memoryUsage, 1000)
     destructible.destruct(() => clearInterval(interval))
 
-    const Processor = require('./processor')
+    const Processor = require('./processor', arguable.ultimate.main)
 
-    const processor = new Processor(arguable.ultimate.processor)
+    const processor = new Processor(arguable.ultimate.processor, arguable.ultimate.main)
 
     const Queue = require('avenue')
     const queue = new Queue

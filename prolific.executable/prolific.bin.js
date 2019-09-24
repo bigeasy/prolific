@@ -187,6 +187,9 @@ require('arguable')(module, {}, async arguable => {
 
     watcher.on('data', data => collector.data(data))
 
+    const argv = arguable.argv.slice()
+    const main = argv.shift()
+
     collector.on('data', data => {
         const pid = data.pid
         switch (data.body.method) {
@@ -196,7 +199,8 @@ require('arguable')(module, {}, async arguable => {
                     '--processor', processor,
                     '--supervisor', process.pid,
                     '--tmp', tmp,
-                    '--child', pid
+                    '--child', pid,
+                    '--main', main
                 ], {
                     stdio: [ 'ignore', 'inherit', 'inherit', 'ipc' ]
                 })
@@ -246,9 +250,8 @@ require('arguable')(module, {}, async arguable => {
 
     const stdio = inherit(arguable)
 
-    const argv = arguable.argv.slice()
     // TODO Restore inheritance.
-    const child = processes.spawn(argv.shift(), argv, { stdio: stdio })
+    const child = processes.spawn(main, argv, { stdio: stdio })
 
     children.ephemeral('close', supervise.child(child))
 
