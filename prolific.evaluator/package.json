@@ -23,6 +23,7 @@
     },
     "devDependencies":
     {
+                            "prolific.level":               "^1.0.1"
     },
     "main":                 "evaluator",
     "scripts":

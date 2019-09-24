@@ -1,13 +1,15 @@
-processor.triage = function (require) {
-    require('fs')
+const LEVEL = require('prolific.level')
+
+processor.triage = function () {
     return function (level) {
-        return level == 0
+        return level == LEVEL.panic
     }
 }
 
-processor.process = async function (require) {
+processor.process = async function () {
     const path = require('path')
-    require(path.join(__dirname, 'other.js'))
-    return function () {
+    const other = require('./other')
+    return function (entries) {
+        return other
     }
 }
