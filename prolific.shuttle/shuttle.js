@@ -32,9 +32,8 @@ class Shuttle {
                                               this._pid, coalesce(options.interval, 1000))
 
         queue.on('triage', update => {
-            const processor = Evaluator.create(update.source, update.file)
-            assert(processor.triage)
-            const triage = processor.triage(require('prolific.require').require)
+            const processor = Evaluator.create(update.source, update.file, update.require)
+            const triage = processor.triage()
             sink.json = function (level, qualifier, label, body, system) {
                 if (triage(LEVEL[level], qualifier, label, body, system)) {
                     queue.push({

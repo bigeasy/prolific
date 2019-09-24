@@ -68,6 +68,7 @@ describe('shuttle', () => {
             socket.write(JSON.stringify({
                 method: 'triage',
                 source,
+                require: __filename,
                 file: path.join(__dirname, 'processor.js'),
                 version: 1
             }) + '\n')

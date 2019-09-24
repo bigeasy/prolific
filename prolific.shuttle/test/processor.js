@@ -1,4 +1,4 @@
-processor.triage = function (require) {
+processor.triage = function () {
     require('prolific.level')
     return function (level, qualifier, label) {
         return label == 'acceptible'
