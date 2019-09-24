@@ -132,7 +132,11 @@ describe('queue', () => {
         await new Promise(resolve => setTimeout(resolve, 5))
         queue.version(1)
         net.pipe.server.write(([{
-            method: 'triage', source: '1 + 1', file: '/opt/processor.js', version: 1
+            method: 'triage',
+            version: 1,
+            require: '/opt/src/main.js',
+            file: '/opt/processor.js',
+            source: '1 + 1'
         }]).map(JSON.stringify).join('\n') + '\n')
         await new Promise(resolve => setImmediate(resolve))
         net.pipe.server.write(([{ method: 'receipt', series: 0 }]).map(JSON.stringify).join('\n') + '\n')
@@ -168,7 +172,11 @@ describe('queue', () => {
         await new Promise(resolve => setTimeout(resolve, 5))
         queue.push({ a: 1 })
         net.pipe.server.write(([{
-            method: 'triage', source: '1 + 1', file: '/opt/processor.js', version: 1
+            method: 'triage',
+            version: 1,
+            require: '/opt/src/main.js',
+            file: '/opt/processor.js',
+            source: '1 + 1'
         }]).map(JSON.stringify).join('\n') + '\n')
         await new Promise(resolve => setImmediate(resolve))
         net.pipe.server.write(([{
@@ -192,9 +200,10 @@ describe('queue', () => {
                               .map(entry => entry.method)
         assert.deepStrictEqual(lines, [ 'announce', 'entries' ], 'entries')
         assert.deepStrictEqual((await triage)[0], {
-            source: '1 + 1',
+            version: 1,
+            require: '/opt/src/main.js',
             file: '/opt/processor.js',
-            version: 1
+            source: '1 + 1'
         }, 'triage')
     })
     it('can resend unverified batches at exit', async () => {

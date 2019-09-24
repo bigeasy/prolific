@@ -85,7 +85,8 @@ class Queue extends events.EventEmitter {
         this.emit('triage', {
             version: json.version,
             file: json.file,
-            source: json.source
+            source: json.source,
+            require: json.require
         })
     }
 
