@@ -21,6 +21,8 @@ describe('processor', () => {
     }
 
     it('can configure', async () => {
+        const test = []
+
         const sink = require('prolific.sink')
 
         const destructible = new Destructible('configure')
@@ -28,8 +30,11 @@ describe('processor', () => {
 
         await fs.copyFile(processors.configuration, processors.source)
 
-        const processor = new Processor(processors.source, __filename, { now: () => 1 })
+        const processor = new Processor(processors.source, __filename, {
+            say: (...vargs) => test.push(vargs)
+        }, { now: () => 1 })
         processor.on('error', error => console.log(error.stack))
+        await processor.process({ method: 'entries', entries: [] })
         sink.json('error', 'prolific', 'label', {}, { pid: 1 })
         await processor.process({
             method: 'entries',
@@ -49,7 +54,6 @@ describe('processor', () => {
                 system: { pid: 0 }
             }]
         })
-        const test = []
         destructible.durable('configure', processor.configure(), () => processor.destroy())
         await new Promise(resolve => {
             processor.once('processor', processor => {
@@ -98,7 +102,11 @@ describe('processor', () => {
         await processor.process({ method: 'exit' })
         await processor.process(null)
         assert(processor.destroyed, 'destroyed')
-        assert.deepStrictEqual(test, [{
+        test[0][1].stack = test[0][1].stack != null
+        assert.deepStrictEqual(test, [[
+            'process.error',
+            { stack: true }
+        ], {
             version: 0,
             source: await fs.readFile(processors.configuration, 'utf8'),
             require: __filename,

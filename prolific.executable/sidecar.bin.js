@@ -40,7 +40,7 @@ require('arguable')(module, {
 
     const Processor = require('./processor', arguable.ultimate.main)
 
-    const processor = new Processor(arguable.ultimate.processor, arguable.ultimate.main)
+    const processor = new Processor(arguable.ultimate.processor, arguable.ultimate.main, _logger)
 
     const Queue = require('avenue')
     const queue = new Queue

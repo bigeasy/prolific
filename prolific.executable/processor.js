@@ -22,9 +22,11 @@ const Destructible = require('destructible')
 
 //
 class Processor extends events.EventEmitter {
-    constructor (source, main, _Date = Date) {
+    constructor (source, main, logger, _Date = Date) {
         super()
         this.destroyed = false
+
+        this._logger = logger
 
         this._destructible = new Destructible('prolific/processor')
         this._destructible.destruct(() => this.destroyed = true)
@@ -37,7 +39,7 @@ class Processor extends events.EventEmitter {
         this._backlog = []
         sink.json = (level, qualifier, label, body, system) => {
             assert(typeof level == 'string')
-            this._processor.process([{ when: _Date.now(), level: level, qualifier, label, body, system }])
+            this._process([{ when: _Date.now(), level: level, qualifier, label, body, system }])
         }
         this._processor = {
             previous: () => {},
@@ -79,7 +81,7 @@ class Processor extends events.EventEmitter {
             }
         }
         for (const entries of this._backlog) {
-            this._processor.process(entries)
+            await this._process(entries)
         }
         const version = this._version++
         this._versions.push({ previous: () => {}, version, processor })
@@ -90,6 +92,14 @@ class Processor extends events.EventEmitter {
             this._versions.push({ previous: this._previous, version, processor })
             this._previous = process
             this.emit('processor', { version, source, file: this._file, require: main })
+        }
+    }
+
+    async _process (entries) {
+        try {
+            await this._processor.process(entries)
+        } catch (error) {
+            this._logger.say('process.error', { stack: error.stack })
         }
     }
 
@@ -148,7 +158,7 @@ class Processor extends events.EventEmitter {
             }
             break
         case 'entries': {
-                await this._processor.process(batch.entries)
+                await this._process(batch.entries)
             }
             break
         case 'exit': {
@@ -156,7 +166,7 @@ class Processor extends events.EventEmitter {
             break
         case null: {
                 // TODO Normalize context.
-                await this._processor.process([{
+                await this._process([{
                     when: sink.Date.now(),
                     level: 'panic',
                     qualifier: 'prolific',

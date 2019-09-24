@@ -10,10 +10,14 @@ processor.triage = function () {
 }
 
 processor.process = async function () {
+    let count = 0
     const path = require('path')
     const gather = require(path.join(__dirname, 'gather'))
     const sink = require('prolific.sink')
     return function (entry) {
+        if (count++ == 0) {
+            throw new Error('thrown')
+        }
         gather.push(entry)
     }
 }
