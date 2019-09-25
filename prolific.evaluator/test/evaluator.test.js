@@ -6,7 +6,9 @@ describe('evaluator', () => {
     it('can load a processor', async () => {
         const file = path.join(__dirname, 'processor.js')
         const source = await fs.readFile(file, 'utf8')
-        const processor = Evaluator.create(source, file, path.resolve(__dirname, '..', 'evaluator.js'))
+        const resolved = Evaluator.resolve(file, path.resolve(__dirname, '..', 'evaluator.js'))
+
+        const processor = Evaluator.create(source, resolved)
         const triage = await processor.triage()
         assert(!triage(1), 'triage skip')
         assert(triage(0), 'triage hit')
@@ -16,5 +18,12 @@ describe('evaluator', () => {
             __dirname: path.resolve(__dirname, '..'),
             __filename: path.resolve(__dirname, '..', 'processor.js')
         }, 'processor')
+    })
+    it('can resolve a processor module', () => {
+        const resolved = Evaluator.resolve('./test/processor', path.resolve(__dirname, '..', 'evaluator.js'))
+        assert.deepStrictEqual(resolved, {
+            filename: path.resolve(__dirname, './processor.js'),
+            __filename: path.resolve(__dirname, './processor.js')
+        }, 'resolved')
     })
 })
