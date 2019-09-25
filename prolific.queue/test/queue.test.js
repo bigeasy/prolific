@@ -134,9 +134,11 @@ describe('queue', () => {
         net.pipe.server.write(([{
             method: 'triage',
             version: 1,
-            require: '/opt/src/main.js',
-            file: '/opt/processor.js',
-            source: '1 + 1'
+            source: '1 + 1',
+            resolved: {
+                __filename: '/opt/src/processor.js',
+                filename: '/opt/var/processor.js',
+            }
         }]).map(JSON.stringify).join('\n') + '\n')
         await new Promise(resolve => setImmediate(resolve))
         net.pipe.server.write(([{ method: 'receipt', series: 0 }]).map(JSON.stringify).join('\n') + '\n')
@@ -174,9 +176,11 @@ describe('queue', () => {
         net.pipe.server.write(([{
             method: 'triage',
             version: 1,
-            require: '/opt/src/main.js',
-            file: '/opt/processor.js',
-            source: '1 + 1'
+            source: '1 + 1',
+            resolved: {
+                __filename: '/opt/src/processor.js',
+                filename: '/opt/var/processor.js',
+            }
         }]).map(JSON.stringify).join('\n') + '\n')
         await new Promise(resolve => setImmediate(resolve))
         net.pipe.server.write(([{
@@ -201,9 +205,11 @@ describe('queue', () => {
         assert.deepStrictEqual(lines, [ 'announce', 'entries' ], 'entries')
         assert.deepStrictEqual((await triage)[0], {
             version: 1,
-            require: '/opt/src/main.js',
-            file: '/opt/processor.js',
-            source: '1 + 1'
+            source: '1 + 1',
+            resolved: {
+                __filename: '/opt/src/processor.js',
+                filename: '/opt/var/processor.js',
+            }
         }, 'triage')
     })
     it('can resend unverified batches at exit', async () => {
