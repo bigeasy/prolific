@@ -1,4 +1,4 @@
-processor.triage = function () {
+exports.triage = function () {
     const assert = require('assert')
     const LEVEL = require('prolific.level')
     let count = 0
@@ -9,7 +9,7 @@ processor.triage = function () {
     }
 }
 
-processor.process = async function () {
+exports.process = async function () {
     let count = 0
     const path = require('path')
     const gather = require(path.join(__dirname, 'gather'))

@@ -1,4 +1,4 @@
-processor.process = async function () {
+exports.process = async function () {
     const path = require('path')
     const gather = require(path.join(__dirname, 'gather'))
     const sink = require('prolific.sink')

@@ -1,7 +1,7 @@
-processor.triage = function () {
+exports.triage = function () {
     return function () { return true }
 }
 
-processor.process = function () {
+exports.process = function () {
     return function (entry) {}
 }

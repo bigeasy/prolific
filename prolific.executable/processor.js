@@ -50,11 +50,12 @@ class Processor extends events.EventEmitter {
         this._reconfigurator = new Reconfigurator(file, new class extends BufferConfigurator {
             async configure (buffer) {
                 const source = buffer.toString()
-                const definition = Evaluator.create(source, file, main)
-                const triage = definition.triage(require('prolific.require').require)
-                const process = await definition.process(require('prolific.require').require)
+                const resolved = Evaluator.resolve(file, main)
+                const definition = Evaluator.create(source, resolved)
+                const triage = definition.triage()
+                const process = await definition.process()
                 const processor = typeof process == 'function' ? { process } : process
-                return { buffer, source, triage, processor, main }
+                return { buffer, source, triage, processor, resolved }
             }
             reload (previous, buffer) {
                 return super.reload(previous.buffer, buffer)
@@ -71,7 +72,7 @@ class Processor extends events.EventEmitter {
     }
 
     async configure () {
-        const { source, main, triage, processor } = await this._reconfigurator.shift()
+        const { source, resolved, triage, processor } = await this._reconfigurator.shift()
         this._processor = {
             previous: this._processor.previous,
             process: entries => {
@@ -86,12 +87,12 @@ class Processor extends events.EventEmitter {
         const version = this._version++
         this._versions.push({ previous: () => {}, version, processor })
         this._previous = process
-        this.emit('processor', { version, source, file: this._file, require: main })
-        for await (const { main, source, processor } of this._reconfigurator) {
+        this.emit('processor', { version, source, resolved })
+        for await (const { resolved, source, processor } of this._reconfigurator) {
             const version = this._version++
             this._versions.push({ previous: this._previous, version, processor })
             this._previous = process
-            this.emit('processor', { version, source, file: this._file, require: main })
+            this.emit('processor', { version, source, resolved })
         }
     }
 

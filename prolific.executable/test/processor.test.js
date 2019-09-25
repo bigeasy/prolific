@@ -109,18 +109,24 @@ describe('processor', () => {
         ], {
             version: 0,
             source: await fs.readFile(processors.configuration, 'utf8'),
-            require: __filename,
-            file: processors.source
+            resolved: {
+                filename: processors.source,
+                __filename: processors.source
+            }
         }, 'bad configure', {
             version: 1,
             source: await fs.readFile(processors.reconfiguration, 'utf8'),
-            require: __filename,
-            file: processors.source
+            resolved: {
+                filename: processors.source,
+                __filename: processors.source
+            }
         }, {
             version: 2,
             source: await fs.readFile(processors.objectconfiguration, 'utf8'),
-            require: __filename,
-            file: processors.source
+            resolved: {
+                filename: processors.source,
+                __filename: processors.source
+            }
         }], 'configuration')
         assert.deepStrictEqual(gather, [[{
             when: 1,
