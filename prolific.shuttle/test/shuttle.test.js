@@ -67,10 +67,12 @@ describe('shuttle', () => {
             socket.pipe(received)
             socket.write(JSON.stringify({
                 method: 'triage',
+                version: 1,
                 source,
-                require: __filename,
-                file: path.join(__dirname, 'processor.js'),
-                version: 1
+                resolved: {
+                    filename: path.join(__dirname, 'processor.js'),
+                    __filename: path.join(__dirname, 'processor.js')
+                }
             }) + '\n')
         })
         server.listen(path.resolve(TMPDIR, 'socket'))
