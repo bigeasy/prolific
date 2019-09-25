@@ -1,15 +1,14 @@
-const LEVEL = require('prolific.level')
-
-processor.triage = function () {
+exports.triage = async function () {
+    const LEVEL = require('prolific.level')
     return function (level) {
         return level == LEVEL.panic
     }
 }
 
-processor.process = async function () {
+exports.process = async function () {
     const path = require('path')
-    const other = require('./other')
+    const other = require('./test/other')
     return function (entries) {
-        return other
+        return { other, __filename, __dirname }
     }
 }
