@@ -188,7 +188,6 @@ class Queue extends events.EventEmitter {
             this._received.call()
             this._latch.call()
             this._writeSync()
-            this._publisher.publish({ method: 'exit', code })
         }
     }
 }

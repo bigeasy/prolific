@@ -69,7 +69,7 @@ describe('queue', () => {
     }
     it('can exit before setting a pipe', async () => {
         const { destructible, watcher, collector } = await reset()
-        const gatherer = new Gatherer(collector, 'exit')
+        const gatherer = new Gatherer(collector, 'start')
         let  now = 0
         const test = []
         const queue = new Queue({ now: () => now++ }, TMPDIR, 2, 1)
@@ -81,14 +81,14 @@ describe('queue', () => {
         await new Promise(resolve => setImmediate(resolve))
         const gathered = await gatherer.promise
         assert.deepStrictEqual(gathered.map(data => data.body.method), [
-            'start', 'exit'
+            'start'
         ], 'exit')
         destructible.destroy()
         await destructible.promise
     })
     it('can write and exit before setting a pipe', async () => {
         const { destructible, watcher, collector } = await reset()
-        const gatherer = new Gatherer(collector, 'exit')
+        const gatherer = new Gatherer(collector, 'entries')
         let  now = 0
         const test = []
         const queue = new Queue({ now: () => now++ }, TMPDIR, 2, 1)
@@ -98,7 +98,7 @@ describe('queue', () => {
         queue.connect(net, './socket')
         const gathered = await gatherer.promise
         assert.deepStrictEqual(gathered.map(data => data.body.method), [
-            'start', 'entries', 'exit'
+            'start', 'entries'
         ], 'exit')
         destructible.destroy()
         await destructible.promise
@@ -115,14 +115,14 @@ describe('queue', () => {
         queue.push({ a: 1 })
         const gathered = await gatherer.promise
         assert.deepStrictEqual(gathered.map(data => data.body.method), [
-            'start', 'exit', 'entries'
+            'start', 'entries'
         ], 'exit')
         destructible.destroy()
         await destructible.promise
     })
     it('can write through a pipe', async () => {
         const { destructible, watcher, collector } = await reset()
-        const gatherer = new Gatherer(collector, 'exit')
+        const gatherer = new Gatherer(collector, 'start')
         let  now = 0
         const test = []
         const queue = new Queue({ now: () => now++ }, TMPDIR, 2, 1)
@@ -145,9 +145,7 @@ describe('queue', () => {
         await new Promise(resolve => setTimeout(resolve, 5))
         queue.exit(0)
         const gathered = await gatherer.promise
-        assert.deepStrictEqual(gathered.map(data => data.body.method), [
-            'start', 'exit'
-        ], 'exit')
+        assert.deepStrictEqual(gathered.map(data => data.body.method), [ 'start' ], 'exit')
         destructible.destroy()
         await destructible.promise
         await Promise.all(await promises)
@@ -162,7 +160,7 @@ describe('queue', () => {
     })
     it('can write through a pipe and send queued initial messages', async () => {
         const { destructible, watcher, collector } = await reset()
-        const gatherer = new Gatherer(collector, 'exit')
+        const gatherer = new Gatherer(collector, 'start')
         let  now = 0
         const test = []
         const queue = new Queue({ now: () => now++ }, TMPDIR, 2, 1)
@@ -189,9 +187,7 @@ describe('queue', () => {
         await new Promise(resolve => setTimeout(resolve, 5))
         queue.exit(0)
         const gathered = await gatherer.promise
-        assert.deepStrictEqual(gathered.map(data => data.body.method), [
-            'start', 'exit'
-        ], 'exit')
+        assert.deepStrictEqual(gathered.map(data => data.body.method), [ 'start' ], 'exit')
         destructible.destroy()
         await destructible.promise
         await Promise.all(await promises)
@@ -214,7 +210,7 @@ describe('queue', () => {
     })
     it('can resend unverified batches at exit', async () => {
         const { destructible, watcher, collector } = await reset()
-        const gatherer = new Gatherer(collector, 'exit')
+        const gatherer = new Gatherer(collector, 'entries')
         let  now = 0
         const test = []
         const queue = new Queue({ now: () => now++ }, TMPDIR, 2, 1)
@@ -230,7 +226,7 @@ describe('queue', () => {
         queue.exit(0)
         const gathered = await gatherer.promise
         assert.deepStrictEqual(gathered.map(data => data.body.method), [
-            'start', 'entries', 'exit'
+            'start', 'entries'
         ], 'exit')
         destructible.destroy()
         await destructible.promise
@@ -246,7 +242,7 @@ describe('queue', () => {
     })
     it('can cope with a truncated stream', async () => {
         const { destructible, watcher, collector } = await reset()
-        const gatherer = new Gatherer(collector, 'exit')
+        const gatherer = new Gatherer(collector, 'version')
         let  now = 0
         const test = []
         const queue = new Queue({ now: () => now++ }, TMPDIR, 2, 1)
@@ -265,7 +261,7 @@ describe('queue', () => {
         queue.exit(0)
         const gathered = await gatherer.promise
         assert.deepStrictEqual(gathered.map(data => data.body.method), [
-            'start', 'version', 'exit'
+            'start', 'version'
         ], 'exit')
         destructible.destroy()
         await destructible.promise
@@ -281,7 +277,7 @@ describe('queue', () => {
     })
     it('can cope with end of stream', async () => {
         const { destructible, watcher, collector } = await reset()
-        const gatherer = new Gatherer(collector, 'exit')
+        const gatherer = new Gatherer(collector, 'version')
         let  now = 0
         const test = []
         const queue = new Queue({ now: () => now++ }, TMPDIR, 2, 1)
@@ -295,7 +291,7 @@ describe('queue', () => {
         queue.exit(0)
         const gathered = await gatherer.promise
         assert.deepStrictEqual(gathered.map(data => data.body.method), [
-            'start', 'version', 'exit'
+            'start', 'version'
         ], 'exit')
         destructible.destroy()
         await destructible.promise
