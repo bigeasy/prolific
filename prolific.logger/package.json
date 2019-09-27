@@ -20,13 +20,14 @@
     },
     "dependencies":
     {
+                            "foremost":                     "^1.0.4",
                             "prolific.level":               "1.0.x",
-                            "prolific.resolver":            "9.0.x"
+                            "prolific.sink":                "^7.0.3"
     },
     "devDependencies":
     {
+        "mocha": "6.2.0"
     },
-    "main":                 "logger",
     "scripts":
     {
                             "test": "mocha test/*.test.js"

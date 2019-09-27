@@ -3,8 +3,7 @@ describe('logger', () => {
     const Logger = require('..')
     it('can log', () => {
         const test = []
-        const prolific = require('prolific.resolver')
-        prolific.sink.json = function (...vargs) {
+        Logger.sink.json = function (...vargs) {
             test.push(vargs)
         }
         const logger = Logger.create('hello')
@@ -30,7 +29,7 @@ describe('logger', () => {
             ],
             message: 'no level nor context nor properties'
         }]
-        prolific.sink.json = function (...vargs) {
+        Logger.sink.json = function (...vargs) {
             test.push(vargs)
         }
         const error = new Error('ouch')
