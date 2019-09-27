@@ -98,19 +98,7 @@ require('arguable')(module, {}, async arguable => {
             countdown.decrement()
         },
         child: async (child) => {
-            const [ exitCode, signal ] = await once(child, 'exit').promise
-            // Will only ever equal zero. We do not have the `null, "SIGTERM"`
-            // combo because we always register a `SIGTERM` handler. The
-            // `"SIGTERM"` response is only when the default hander fires. The
-            // `"SIGTERM"` is determined by whether or not the child has a
-            // `"SIGTERM"` handler, not by any action by the parent. (i.e.
-            // whether or not the parent calles `child.kill()`. The behavior is
-            // still the same if we send a kill signal from the shell.
-            Interrupt.assert(exitCode == 0, 'child.exit', {
-                exitCode: exitCode,
-                signal: signal,
-                argv: arguable.argv
-            })
+            await exit
             countdown.decrement()
         }
     }
@@ -221,15 +209,25 @@ require('arguable')(module, {}, async arguable => {
             }
             break
         case 'eos': {
-                killer.exited(pid)
                 // TODO No need to `killer.purge()`, we can absolutely remove
                 // the pid from the `Killer` here.
-                const sidecar = sidecars[pid]
-                sidecar.send({
-                    module: 'prolific',
-                    method: 'synchronous',
-                    body: null
-                })
+                destructible.ephemeral('exit', (async () => {
+                    killer.exited(pid)
+                    const sidecar = sidecars[pid]
+                    const [ code, signal ] = await exit
+                    /*
+                    sidecar.send({
+                        module: 'prolific',
+                        method: 'synchronous',
+                        body: { method: 'exit', code: code, signal: signal }
+                    })
+                    */
+                    sidecar.send({
+                        module: 'prolific',
+                        method: 'synchronous',
+                        body: null
+                    })
+                })())
             }
             break
         default: {
@@ -252,6 +250,7 @@ require('arguable')(module, {}, async arguable => {
 
     // TODO Restore inheritance.
     const child = processes.spawn(main, argv, { stdio: stdio })
+    const exit = once(child, 'exit').promise
 
     children.ephemeral('close', supervise.child(child))
 
