@@ -77,7 +77,7 @@ describe('shuttle', () => {
         })
         server.listen(path.resolve(TMPDIR, 'socket'))
         await once(server, 'listening').promise
-        const gatherer = new Gatherer(collector, 'exit')
+        const gatherer = new Gatherer(collector, 'entries', 2)
         const test = []
         sink.properties.pid = 0
         sink.Date = { now: function () { return 0 } }
@@ -104,7 +104,7 @@ describe('shuttle', () => {
         destructible.destroy()
         await destructible.promise
         assert.deepStrictEqual(gathered.map(entry => entry.body.method), [
-            'start', 'entries', 'version', 'entries', 'exit'
+            'start', 'entries', 'version', 'entries'
         ], 'synchronous')
         const asynchronous = received
                                  .read()
@@ -127,7 +127,7 @@ describe('shuttle', () => {
         })
         server.listen(path.resolve(TMPDIR, 'socket'))
         await once(server, 'listening').promise
-        const gatherer = new Gatherer(collector, 'exit')
+        const gatherer = new Gatherer(collector, 'start')
         const test = []
         sink.properties.pid = 0
         sink.Date = { now: function () { return 0 } }
@@ -146,7 +146,7 @@ describe('shuttle', () => {
         destructible.destroy()
         await destructible.promise
         assert.deepStrictEqual(gathered.map(entry => entry.body.method), [
-            'start', 'exit'
+            'start'
         ], 'synchronous')
         server.close()
     })
