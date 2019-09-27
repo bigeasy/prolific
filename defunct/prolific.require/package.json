@@ -1,6 +1,6 @@
 {
     "name":                 "prolific.require",
-    "version":              "1.0.1",
+    "version":              "2.0.0",
     "description":
 
       "Specifies the `require` used within triage and processor function builders for the Prolific logging framework.",
