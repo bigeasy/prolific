@@ -1,6 +1,6 @@
 {
     "name":                 "prolific.resolver",
-    "version":              "9.0.3",
+    "version":              "10.0.0",
     "description":
 
       "A logging framework.",
