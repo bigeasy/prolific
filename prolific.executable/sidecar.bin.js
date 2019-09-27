@@ -49,7 +49,7 @@ require('arguable')(module, {
 
     async function update (socket) {
         for await (const processor of processors.shifter.iterator()) {
-            logger.say('processor.send', { processor })
+            logger.say('sidecar.triage', { processor })
             socket.write(JSON.stringify(processor) + '\n')
         }
     }
@@ -57,7 +57,7 @@ require('arguable')(module, {
     destructible.destruct(() => processors.shifter.destroy())
 
     processor.on('processor', (processor) => {
-        logger.say('processor.load', { processor })
+        logger.say('sidecar.processor', { processor })
         processors.queue.push(processor)
     })
 
@@ -82,7 +82,7 @@ require('arguable')(module, {
             }
             break
         case 'prolific:synchronous':
-            logger.say('processor.synchronous', { message })
+            logger.say('sidecar.synchronous', { message })
             consolidator.synchronous(message.body)
             break
         }
