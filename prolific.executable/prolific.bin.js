@@ -129,41 +129,28 @@ require('arguable')(module, {}, async arguable => {
         console.log(lines)
     }, JSON.stringify, 1000)
 
-    const worker = new Queue().shifter().paired
-    // **TODO** We have room for this now, in `Destructible`.
-    // children.durable('worker', async data => {
-    //    for (const data of worker.shifter.iterator()) {
-    //    }
-    // })
-    children.durable('worker', worker.shifter.pump(async data => {
-        // **TODO** Maybe a first argument of `false` to `pump` and `null` is
-        // never sent.
-        if (data == null) {
-            return
-        }
-        switch (data.body.method) {
-        case 'socket': {
-                const header = await Header(data.socket)
-                printer.say('header', header)
-                assert.equal(header.method, 'announce', 'announce missing')
-                await cubbyhole.get(header.pid)
-                cubbyhole.remove(header.pid)
-                printer.say('dispatch', { header, destroyed: data.socket.destroyed })
-                // **TODO** Uncomment to hang unit test.
-                // throw new Error
-                sidecars[header.pid].send({
-                    module: 'prolific',
-                    method: 'socket'
-                }, data.socket)
-            }
-            break
+    const sockets = new Queue().shifter().paired
+    children.durable('sockets', sockets.shifter.pump(async socket => {
+        if (socket != null) {
+            const header = await Header(socket)
+            printer.say('header', header)
+            assert.equal(header.method, 'announce', 'announce missing')
+            await cubbyhole.get(header.pid)
+            cubbyhole.remove(header.pid)
+            printer.say('dispatch', { header, destroyed: socket.destroyed })
+            // **TODO** Uncomment to hang unit test.
+            // throw new Error
+            sidecars[header.pid].send({
+                module: 'prolific',
+                method: 'socket'
+            }, socket)
         }
     }))
-    children.destruct(() => worker.shifter.destroy())
+    children.destruct(() => sockets.shifter.destroy())
     children.destruct(() => printer.say('destruct.children', {}))
 
     const server = net.createServer(socket => {
-        worker.queue.push({ body: { method: 'socket' }, socket })
+        sockets.queue.push(socket)
     })
     children.destruct(() => server.close())
     await callback(callback => server.listen(path.resolve(tmp, 'socket'), callback))
