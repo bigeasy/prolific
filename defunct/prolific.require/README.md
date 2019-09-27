@@ -1,4 +1,6 @@
 ## Prolific Require
 
-Specifies the `require` used within triage and processor function builders for
-the Prolific logging framework.
+Deprecated. Now using `require('module').createRequire()` to create a `require`
+function in the proper context.
+
+See [Prolific](http://github.com/bigeasy/prolific).
