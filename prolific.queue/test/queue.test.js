@@ -133,11 +133,13 @@ describe('queue', () => {
         queue.version(1)
         net.pipe.server.write(([{
             method: 'triage',
-            version: 1,
-            source: '1 + 1',
-            resolved: {
-                __filename: '/opt/src/processor.js',
-                filename: '/opt/var/processor.js',
+            update: {
+                version: 1,
+                source: '1 + 1',
+                resolved: {
+                    __filename: '/opt/src/processor.js',
+                    filename: '/opt/var/processor.js',
+                }
             }
         }]).map(JSON.stringify).join('\n') + '\n')
         await new Promise(resolve => setImmediate(resolve))
@@ -173,11 +175,13 @@ describe('queue', () => {
         queue.push({ a: 1 })
         net.pipe.server.write(([{
             method: 'triage',
-            version: 1,
-            source: '1 + 1',
-            resolved: {
-                __filename: '/opt/src/processor.js',
-                filename: '/opt/var/processor.js',
+            update: {
+                version: 1,
+                source: '1 + 1',
+                resolved: {
+                    __filename: '/opt/src/processor.js',
+                    filename: '/opt/var/processor.js',
+                }
             }
         }]).map(JSON.stringify).join('\n') + '\n')
         await new Promise(resolve => setImmediate(resolve))
