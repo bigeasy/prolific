@@ -58,7 +58,7 @@ class Shuttle {
 
         // All filtering will be performed by the monitor initially. Until
         // we get a configuration we send everything.
-        const sink = require('prolific.resolver').sink
+        const sink = require('prolific.logger').sink
 
         sink.json = function (level, qualifier, label, body, system) {
             queue.push({
@@ -76,7 +76,5 @@ class Shuttle {
         }
     }
 }
-
-Shuttle.sink = require('prolific.resolver').sink
 
 module.exports = Shuttle
