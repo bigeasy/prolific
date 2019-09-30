@@ -31,9 +31,8 @@ class Shuttle {
         const queue = this._queue = new Queue(Date, directory,
                                               this._pid, coalesce(options.interval, 1000))
 
-        queue.on('triage', update => {
-            const processor = Evaluator.create(update.source, update.resolved)
-            const triage = processor.triage()
+        queue.on('triage', processor => {
+            const triage = Evaluator.create(processor.source, processor.resolved).triage()
             sink.json = function (level, qualifier, label, body, system) {
                 if (triage(LEVEL[level], qualifier, label, body, system)) {
                     queue.push({
@@ -41,7 +40,7 @@ class Shuttle {
                     })
                 }
             }
-            queue.version(update.version)
+            queue.version(processor.version)
         })
 
         if (options.uncaughtException == null || options.uncaughtException) {

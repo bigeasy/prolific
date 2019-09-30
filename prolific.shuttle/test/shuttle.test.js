@@ -67,7 +67,7 @@ describe('shuttle', () => {
             socket.pipe(received)
             socket.write(JSON.stringify({
                 method: 'triage',
-                update: {
+                processor: {
                     version: 1,
                     source,
                     resolved: {
