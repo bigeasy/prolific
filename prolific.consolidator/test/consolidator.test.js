@@ -19,7 +19,13 @@ describe('consolidator', () => {
         input.end()
         await async
         await new Promise(resolve => setImmediate(resolve))
-        assert.equal(output.read().toString(), '{"series":0}\n{"series":1}\n', 'response')
+        assert.equal(output.read().toString(), ([{
+            method: 'receipt',
+            series: 0
+        }, {
+            method: 'receipt',
+            series: 1
+        }]).map(JSON.stringify).join('\n') + '\n', 'response')
         consolidator.synchronous({ series: 1 })
         consolidator.synchronous({ series: 2 })
         consolidator.synchronous(null)

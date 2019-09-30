@@ -21,7 +21,10 @@ class Consolidator extends events.EventEmitter {
             assert.equal(json.series, this._series, 'series mismatch')
             this._series = (this._series + 1) & 0xffffff
             this._queue.push(json)
-            await this._writable.write(JSON.stringify({ series: json.series }) + '\n')
+            await this._writable.write(JSON.stringify({
+                method: 'receipt',
+                series: json.series
+            }) + '\n')
         }
     }
 
