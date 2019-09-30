@@ -29,6 +29,7 @@
                             "is-running":                   "2.1.0",
                             "isochronous":                  "^4.0.0-alpha.2",
                             "hash.fnv":                     "^1.0.6",
+                            "nop":                          "1.0.0",
                             "prolific.collector":           "^11.0.0-alpha.2",
                             "prolific.consolidator":        "^11.0.0-alpha.2",
                             "prolific.evaluator":           "^3.1.0-alpha.5",

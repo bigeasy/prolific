@@ -37,6 +37,9 @@ const processes = require('child_process')
 const crypto = require('crypto')
 const fs = require('fs').promises
 const net = require('net')
+const os = require('os')
+
+const noop = require('nop')
 
 const once = require('prospective/once')
 const callback = require('prospective/callback')
@@ -67,7 +70,27 @@ const Header = require('./header')
 
 const Cubbyhole = require('cubbyhole')
 
-require('arguable')(module, {}, async arguable => {
+// Selected signals for propagation. These would appear to be the sort of
+// signals that a user would send to the monitored child from the terminal.
+// Either that or the sort of signals that a supervisor program would expect
+// the supervised program to respond to. Either way, the Prolific supervisor
+// doesn't really have a plan to handle them, so it forwards them to the
+// supervised child.
+//
+// Other signals would appear to be the sort of signals that the operating
+// system would send directly to the affected process.
+//
+// At some point we may add command line switches to specify with signals to
+// forward, but for now we'll provide this list as a convention and adjust the
+// convention to user feedback. We could give the option to cancel all
+// forwarding and then the user would be responsible for sending signals
+// directly to the supervised child process by its pid.
+//
+// https://nodejs.org/api/process.html#process_signal_events
+//
+const signals =  [ 'SIGINT', 'SIGTERM', 'SIGHUP', 'SIGQUIT', 'SIGABRT', 'SIGUSR2' ]
+
+require('arguable')(module, { $trap: false }, async arguable => {
     arguable.helpIf(arguable.ultimate.help)
 
     const processor = arguable.ultimate.processor
@@ -250,6 +273,12 @@ require('arguable')(module, {}, async arguable => {
 
     // TODO Restore inheritance.
     const child = processes.spawn(main, argv, { stdio: stdio })
+
+    const traps = {}
+    for (const signal of signals) {
+        process.on(signal, traps[signal] = child.kill.bind(child, signal))
+    }
+
     const exit = once(child, 'exit').promise
 
     children.ephemeral('close', supervise.child(child))
@@ -260,5 +289,13 @@ require('arguable')(module, {}, async arguable => {
     await children.promise
     supervisor.destroy()
     await supervisor.promise
-    return 0
+    const [ code, signal ] = await exit
+    for (const signal in traps) {
+        process.removeListener(signal, traps[signal])
+    }
+    if (signal != null) {
+        setInterval(noop, 1000)
+        setImmediate(() => process.kill(process.pid, signal))
+    }
+    return code
 })
