@@ -50,7 +50,7 @@ require('arguable')(module, {
     async function update (socket) {
         for await (const processor of processors.shifter.iterator()) {
             logger.say('sidecar.triage', { processor })
-            socket.write(JSON.stringify({ method: 'triage', update: processor }) + '\n')
+            socket.write(JSON.stringify({ method: 'triage', processor }) + '\n')
         }
     }
 
