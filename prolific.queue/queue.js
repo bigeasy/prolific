@@ -82,7 +82,7 @@ class Queue extends events.EventEmitter {
     }
 
     _triage (json) {
-        this.emit('triage', json.update)
+        this.emit('triage', json.processor)
     }
 
     _dispatch (line) {

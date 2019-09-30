@@ -133,7 +133,7 @@ describe('queue', () => {
         queue.version(1)
         net.pipe.server.write(([{
             method: 'triage',
-            update: {
+            processor: {
                 version: 1,
                 source: '1 + 1',
                 resolved: {
@@ -175,7 +175,7 @@ describe('queue', () => {
         queue.push({ a: 1 })
         net.pipe.server.write(([{
             method: 'triage',
-            update: {
+            processor: {
                 version: 1,
                 source: '1 + 1',
                 resolved: {
