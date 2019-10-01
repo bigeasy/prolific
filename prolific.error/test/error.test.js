@@ -1,7 +1,4 @@
-describe('error', () => {
-    const assert = require('assert')
+require('proof')(1, (okay) => {
     const Prolific = { Error: require('..') }
-    it('is an error', () => {
-        assert(new Prolific.Error() instanceof Error, 'is error')
-    })
+    okay(new Prolific.Error() instanceof Error, 'is error')
 })

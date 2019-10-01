@@ -24,10 +24,11 @@
     },
     "devDependencies":
     {
+                            "proof":                        "^8.0.0-alpha.5"
     },
     "main":                 "error",
     "scripts":
     {
-                            "test": "mocha"
+                            "test": "proof test/*.test.js"
     }
 }
