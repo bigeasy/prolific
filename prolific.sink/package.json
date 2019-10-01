@@ -23,10 +23,11 @@
     },
     "devDependencies":
     {
+                            "proof":                        "^8.0.0-alpha.5"
     },
     "main":                 "sink",
     "scripts":
     {
-                            "test": "mocha"
+                            "test": "proof test/*.test.js"
     }
 }

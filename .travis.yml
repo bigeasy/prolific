@@ -14,7 +14,7 @@ branches:
 install:
   - for dir in prolific.*; do (cd $dir && npm install --no-save --no-package-lock); done
   - npm install --no-save --no-package-lock
-  - npm install -g nyc mocha
+  - npm install -g nyc mocha prove
   - git checkout .
 
 script:
