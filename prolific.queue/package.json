@@ -31,11 +31,12 @@
                             "prolific.collector":           "^11.0.0-alpha.2",
                             "prolific.watcher":             "^0.1.0-alpha.0",
                             "prospective":                  "^0.1.0-alpha.1",
+                            "proof":                        "^8.0.0-alpha.5",
                             "rimraf":                       "3.0.0"
     },
     "main":                 "queue",
     "scripts":
     {
-                            "test": "mocha"
+                            "test": "proof test/*.test.js"
     }
 }
