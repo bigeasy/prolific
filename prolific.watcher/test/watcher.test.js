@@ -1,5 +1,4 @@
-describe('watcher', () => {
-    const assert = require('assert')
+require('proof')(9, async (okay) => {
     const rimraf = require('rimraf')
     const path = require('path')
     const fs = require('fs').promises
@@ -42,7 +41,7 @@ describe('watcher', () => {
             })
         }
     }
-    it('can watch and parse a directory', async () => {
+    {
         const { watcher, destructible } = await reset()
         const data = once(watcher, 'data').promise
         const notice = new Notice(watcher, 'read')
@@ -50,13 +49,13 @@ describe('watcher', () => {
         await fs.rename(path.join(dir.stage, 'stage.json'),
                         path.join(dir.publish, 'publish-00000000.json'))
         const [ json ] = await data
-        assert.equal(json, 1, 'received')
+        okay(json, 1, 'received')
         const log = await notice.promise
         destructible.destroy()
         await destructible.promise
-        assert.deepStrictEqual(log.map(entry => entry.label), [ 'read' ], 'read')
-    })
-    it('can detect a bad file name', async () => {
+        okay(log.map(entry => entry.label), [ 'read' ], 'read')
+    }
+    {
         const { watcher, destructible } = await reset()
         const notice = new Notice(watcher, 'filename')
         await fs.writeFile(path.join(dir.stage, 'stage.json'), '1')
@@ -64,9 +63,9 @@ describe('watcher', () => {
                         path.join(dir.publish, 'publish.json'))
         const log = await notice.promise
         destructible.destroy()
-        assert.deepStrictEqual(log.map(entry => entry.label), [ 'filename' ], 'filename error')
-    })
-    it('can detect a bad checksum', async () => {
+        okay(log.map(entry => entry.label), [ 'filename' ], 'filename error')
+    }
+    {
         const { watcher, destructible } = await reset()
         const notice = new Notice(watcher, 'checksum')
         await fs.writeFile(path.join(dir.stage, 'stage.json'), '1')
@@ -75,9 +74,9 @@ describe('watcher', () => {
         const log = await notice.promise
         destructible.destroy()
         await destructible.promise
-        assert.deepStrictEqual(log.map(entry => entry.label), [ 'checksum' ], 'checksum error')
-    })
-    it('can detect bad json', async () => {
+        okay(log.map(entry => entry.label), [ 'checksum' ], 'checksum error')
+    }
+    {
         const { watcher, destructible } = await reset()
         const notice = new Notice(watcher, 'json')
         await fs.writeFile(path.join(dir.stage, 'stage.json'), '{')
@@ -86,9 +85,9 @@ describe('watcher', () => {
         const log = await notice.promise
         destructible.destroy()
         await destructible.promise
-        assert.deepStrictEqual(log.map(entry => entry.label), [ 'json' ], 'json error')
-    })
-    it('can emit eos', async () => {
+        okay(log.map(entry => entry.label), [ 'json' ], 'json error')
+    }
+    {
         const test = []
         await callback(callback => rimraf(TMPDIR, callback))
         await fs.mkdir(dir.publish, { recursive: true })
@@ -118,10 +117,10 @@ describe('watcher', () => {
         const filename = log.filter(entry => entry.label == 'filename')
                          .map(entry => entry.filename)
                          .shift()
-        assert.equal(filename, 'publish-00000000.json')
-        assert.deepStrictEqual(test, [ 1, 2, { pid: 1, body: { method: 'eos' } } ], 'test')
-    })
-    it('can drain', async () => {
+        okay(filename, 'publish-00000000.json')
+        okay(test, [ 1, 2, { pid: 1, body: { method: 'eos' } } ], 'test')
+    }
+    {
         const test = []
         await callback(callback => rimraf(TMPDIR, callback))
         await fs.mkdir(dir.publish, { recursive: true })
@@ -153,7 +152,7 @@ describe('watcher', () => {
         const filename = log.filter(entry => entry.label == 'filename')
                          .map(entry => entry.filename)
                          .shift()
-        assert.equal(filename, 'publish-00000000.json')
-        assert.deepStrictEqual(test, [ 1, 2, { pid: 1, body: { method: 'eos' } } ], 'test')
-    })
+        okay(filename, 'publish-00000000.json')
+        okay(test, [ 1, 2, { pid: 1, body: { method: 'eos' } } ], 'test')
+    }
 })
