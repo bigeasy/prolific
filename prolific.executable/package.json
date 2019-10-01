@@ -25,10 +25,10 @@
                             "avenue":                       "^0.2.0-alpha.0",
                             "cubbyhole":                    "^3.0.0-alpha.1",
                             "foremost":                     "1.0.x",
+                            "hash.fnv":                     "^1.0.6",
                             "interrupt":                    "9.0.0-alpha.0",
                             "is-running":                   "2.1.0",
                             "isochronous":                  "^4.0.0-alpha.2",
-                            "hash.fnv":                     "^1.0.6",
                             "nop":                          "1.0.0",
                             "prolific.collector":           "^11.0.0-alpha.2",
                             "prolific.consolidator":        "^11.0.0-alpha.4",
@@ -42,9 +42,9 @@
     "devDependencies":
     {
                             "duplicitous":                  "^0.1.0-alpha.0",
-                            "mocha":                        "6.2.0",
                             "prolific.logger":              "^11.0.0",
-                            "prolific.shuttle":             "^25.0.0"
+                            "prolific.shuttle":             "^25.0.0",
+                            "proof":                        "^8.0.0-alpha.5"
     },
     "main":                 "prolific.bin",
     "bin":
@@ -53,6 +53,6 @@
     },
     "scripts":
     {
-                            "test": "mocha test/*.test.js"
+                            "test": "proof test/*.test.js"
     }
 }
