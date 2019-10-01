@@ -1,5 +1,4 @@
-describe('shuttle', () => {
-    const assert = require('assert')
+require('proof')(4, async (okay) => {
     const fnv = require('hash.fnv')
     const events = require('events')
     const stream = require('stream')
@@ -19,7 +18,6 @@ describe('shuttle', () => {
         stage: path.resolve(TMPDIR, 'stage'),
         publish: path.resolve(TMPDIR, 'publish')
     }
-    process.on('unhandledRejection', error => { throw error })
     class Gatherer {
         constructor (collector, method, count = 1) {
             this._method = method
@@ -52,12 +50,12 @@ describe('shuttle', () => {
         watcher.on('data', data => collector.data(data))
         return { destructible, watcher, collector }
     }
-    it('will not initialize when not run under prolific', async () => {
+    {
         const shuttle = new Shuttle({ env: {} })
-        assert(!shuttle.monitored, 'not monitored')
+        okay(!shuttle.monitored, 'not monitored')
         shuttle.exit(0)
-    })
-    it('can set a pipe', async () => {
+    }
+    {
         const { destructible, collector } = await reset()
         const net = require('net')
         const source = await fs.readFile(path.resolve(__dirname, 'processor.js'), 'utf8')
@@ -105,7 +103,7 @@ describe('shuttle', () => {
         const gathered = await gatherer.promise
         destructible.destroy()
         await destructible.promise
-        assert.deepStrictEqual(gathered.map(entry => entry.body.method), [
+        okay(gathered.map(entry => entry.body.method), [
             'start', 'entries', 'version', 'entries'
         ], 'synchronous')
         const asynchronous = received
@@ -115,12 +113,12 @@ describe('shuttle', () => {
                                  .filter(line => line)
                                  .map(JSON.parse)
                                  .map(entry => entry.method)
-        assert.deepStrictEqual(asynchronous, [
+        okay(asynchronous, [
             'announce', 'entries', 'version', 'entries'
         ], 'asynchronous')
         server.close()
-    })
-    it('will set default handlers', async () => {
+    }
+    {
         const { destructible, collector } = await reset()
         const net = require('net')
         const source = await fs.readFile(path.resolve(__dirname, 'processor.js'), 'utf8')
@@ -147,9 +145,9 @@ describe('shuttle', () => {
         const gathered = await gatherer.promise
         destructible.destroy()
         await destructible.promise
-        assert.deepStrictEqual(gathered.map(entry => entry.body.method), [
+        okay(gathered.map(entry => entry.body.method), [
             'start'
         ], 'synchronous')
         server.close()
-    })
+    }
 })
