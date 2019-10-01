@@ -26,10 +26,11 @@
     },
     "devDependencies":
     {
+                            "proof":                        "^8.0.0-alpha.5"
     },
     "main":                 "syslog",
     "scripts":
     {
-                            "test": "mocha test/*.test.js"
+                            "test": "proof test/*.test.js"
     }
 }
