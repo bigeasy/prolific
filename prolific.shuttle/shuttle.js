@@ -4,8 +4,6 @@ const Queue = require('prolific.queue')
 const path = require('path')
 const net = require('net')
 
-const LEVEL = require('prolific.level')
-
 const assert = require('assert')
 
 const rethrow = require('./uncaught')
@@ -34,7 +32,7 @@ class Shuttle {
         queue.on('triage', processor => {
             const triage = Evaluator.create(processor.source, processor.resolved).triage()
             sink.json = function (level, qualifier, label, body, system) {
-                if (triage(LEVEL[level], qualifier, label, body, system)) {
+                if (triage(level, qualifier, label, body, system)) {
                     queue.push({
                         when: body.when || this.Date.now(), level, qualifier, label, body, system
                     })
