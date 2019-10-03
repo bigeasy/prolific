@@ -1,7 +1,4 @@
-describe('facility', () => {
-    const assert = require('assert')
+require('proof')(1, (okay) => {
     const LEVEL = require('..')
-    it('can provide facility flags', () => {
-        assert.equal(LEVEL.kern, 0, 'panic')
-    })
+    okay(LEVEL.kern, 0, 'panic')
 })
