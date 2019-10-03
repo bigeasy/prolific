@@ -24,11 +24,12 @@
     },
     "devDependencies":
     {
-                            "prolific.level":               "^1.0.1"
+                            "prolific.level":               "^1.0.1",
+                            "proof":                        "^8.0.0-alpha.7"
     },
     "main":                 "evaluator",
     "scripts":
     {
-                            "test": "mocha test/*.test.js"
+                            "test": "proof test/*.test.js"
     }
 }
