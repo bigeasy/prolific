@@ -1,7 +1,4 @@
-describe('levels', () => {
-    const assert = require('assert')
+require('proof')(1, (okay) => {
     const LEVEL = require('..')
-    it('can provide logging levels', () => {
-        assert.equal(LEVEL.panic, 0, 'panic')
-    })
+    okay(LEVEL.panic, 0, 'panic')
 })
