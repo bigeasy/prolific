@@ -1,14 +1,13 @@
-describe('consolidator', () => {
-    const assert = require('assert')
+require('proof')(3, async (okay) => {
     const stream = require('stream')
     const Consolidator = require('../consolidator')
-    it('can exit early', async () => {
+    {
         const queue = []
         const consolidator = new Consolidator(queue)
         consolidator.synchronous(null)
-        assert(queue, [ null ], 'queue')
-    })
-    it('can consolidate', async () => {
+        okay(queue, [ null ], 'queue')
+    }
+    {
         const input = new stream.PassThrough
         const output = new stream.PassThrough
         const queue = []
@@ -19,7 +18,7 @@ describe('consolidator', () => {
         input.end()
         await async
         await new Promise(resolve => setImmediate(resolve))
-        assert.equal(output.read().toString(), ([{
+        okay(output.read().toString(), ([{
             method: 'receipt',
             series: 0
         }, {
@@ -29,12 +28,12 @@ describe('consolidator', () => {
         consolidator.synchronous({ series: 1 })
         consolidator.synchronous({ series: 2 })
         consolidator.synchronous(null)
-        assert.deepStrictEqual(queue, [{
+        okay(queue, [{
             series: 0
         }, {
             series: 1
         }, {
             series: 2
         }, null ], 'queue')
-    })
+    }
 })
