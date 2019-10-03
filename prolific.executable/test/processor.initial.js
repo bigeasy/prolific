@@ -5,7 +5,7 @@ exports.triage = function () {
     return function (level) {
         assert(level != null)
         assert(count++ < 3)
-        return level <= LEVEL.warn
+        return LEVEL[level] <= LEVEL.warn
     }
 }
 

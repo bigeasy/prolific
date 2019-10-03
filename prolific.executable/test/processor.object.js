@@ -4,7 +4,7 @@ exports.triage = function () {
     let count = 0
     return function (level) {
         assert(count++ < 2)
-        return level <= LEVEL.warn
+        return LEVEL[level] <= LEVEL.warn
     }
 }
 

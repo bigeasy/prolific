@@ -5,7 +5,6 @@ const events = require('events')
 
 const Reconfigurator = require('reconfigure')
 const BufferConfigurator = require('reconfigure/buffer')
-const LEVEL = require('prolific.level')
 const sink = require('prolific.sink')
 const Evaluator = require('prolific.evaluator')
 
@@ -77,7 +76,7 @@ class Processor extends events.EventEmitter {
             previous: this._processor.previous,
             process: entries => {
                 return processor.process(entries.filter(entry => {
-                    return triage(LEVEL[entry.level], entry.qualifier, entry.label, entry.body, entry.system)
+                    return triage(entry.level, entry.qualifier, entry.label, entry.body, entry.system)
                 }))
             }
         }
