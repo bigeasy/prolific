@@ -28,6 +28,6 @@
     "main":                 "collector",
     "scripts":
     {
-                            "test": "mocha"
+                            "test": "proof test/*.test.js"
     }
 }

@@ -1,7 +1,6 @@
-describe('collector', () => {
-    const assert = require('assert')
+require('proof')(2, (okay) => {
     const Collector = require('..')
-    it('can order synchronous messages', () => {
+    {
         const collector = new Collector
         const test = []
         collector.on('data', data => test.push(data.body.method))
@@ -24,9 +23,9 @@ describe('collector', () => {
             pid: 2,
             body: { method: 'eos' }
         })
-        assert.deepStrictEqual(test, [ 'start', 'exit', 'eos' ], 'ordered')
-    })
-    it('can exit with missing messages', () => {
+        okay(test, [ 'start', 'exit', 'eos' ], 'ordered')
+    }
+    {
         const collector = new Collector
         const test = []
         collector.on('data', data => test.push(data.body.method))
@@ -49,6 +48,6 @@ describe('collector', () => {
             pid: 2,
             body: { method: 'eos' }
         })
-        assert.deepStrictEqual(test, [ 'start', 'gap', 'eos' ], 'ordered')
-    })
+        okay(test, [ 'start', 'gap', 'eos' ], 'ordered')
+    }
 })
