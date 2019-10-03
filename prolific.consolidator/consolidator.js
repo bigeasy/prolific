@@ -1,4 +1,3 @@
-const assert = require('assert')
 const byline = require('byline')
 const Staccato = require('staccato')
 const events = require('events')
