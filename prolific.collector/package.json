@@ -24,6 +24,7 @@
     },
     "devDependencies":
     {
+                            "proof":                        "^8.0.0-alpha.7"
     },
     "main":                 "collector",
     "scripts":
