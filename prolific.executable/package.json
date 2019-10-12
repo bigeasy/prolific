@@ -33,7 +33,7 @@
                             "prolific.collector":           "^11.0.0-alpha.2",
                             "prolific.consolidator":        "^11.0.0-alpha.4",
                             "prolific.evaluator":           "^3.1.0-alpha.5",
-                            "prolific.inherit":             "7.0.x",
+                            "prolific.inherit":             "^7.0.2",
                             "prolific.watcher":             "^0.1.0-alpha.2",
                             "prospective":                  "^0.1.0-alpha.1",
                             "reconfigure":                  "^3.0.0-alpha.1",
