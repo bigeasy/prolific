@@ -24,7 +24,7 @@
                             "ascension":                    "^1.0.3",
                             "avenue":                       "^0.2.0-alpha.0",
                             "cubbyhole":                    "^3.0.0-alpha.1",
-                            "foremost":                     "1.0.x",
+                            "foremost":                     "^1.0.4",
                             "hash.fnv":                     "^1.0.6",
                             "interrupt":                    "9.0.0-alpha.0",
                             "is-running":                   "2.1.0",
