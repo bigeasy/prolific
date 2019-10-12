@@ -1,7 +1,6 @@
 exports.triage = async function () {
-    const LEVEL = require('prolific.level')
     return function (level) {
-        return level == LEVEL.panic
+        return level == 'panic'
     }
 }
 

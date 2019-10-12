@@ -9,8 +9,8 @@ require('proof')(4, async (okay) => {
 
         const processor = Evaluator.create(source, resolved)
         const triage = await processor.triage()
-        okay(!triage(1), 'triage skip')
-        okay(triage(0), 'triage hit')
+        okay(!triage('info'), 'triage skip')
+        okay(triage('panic'), 'triage hit')
         const process = await processor.process()
         okay(await process(), {
             other: 1,
