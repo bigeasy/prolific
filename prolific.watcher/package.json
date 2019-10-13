@@ -24,7 +24,7 @@
     },
     "devDependencies":
     {
-                            "destructible":                 "^5.1.0-alpha.2",
+                            "destructible":                 "^5.2.0-alpha.2",
                             "foremost":                     "^1.0.4",
                             "proof":                        "^8.0.0-alpha.5",
                             "prospective":                  "^0.1.0-alpha.1",

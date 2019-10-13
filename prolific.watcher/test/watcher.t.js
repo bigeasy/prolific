@@ -52,7 +52,7 @@ require('proof')(9, async (okay) => {
         okay(json, 1, 'received')
         const log = await notice.promise
         destructible.destroy()
-        await destructible.promise
+        await destructible.destructed
         okay(log.map(entry => entry.label), [ 'read' ], 'read')
     }
     {
@@ -73,7 +73,7 @@ require('proof')(9, async (okay) => {
                         path.join(dir.publish, 'publish-1.json'))
         const log = await notice.promise
         destructible.destroy()
-        await destructible.promise
+        await destructible.destructed
         okay(log.map(entry => entry.label), [ 'checksum' ], 'checksum error')
     }
     {
@@ -84,7 +84,7 @@ require('proof')(9, async (okay) => {
                         path.join(dir.publish, 'publish-0.json'))
         const log = await notice.promise
         destructible.destroy()
-        await destructible.promise
+        await destructible.destructed
         okay(log.map(entry => entry.label), [ 'json' ], 'json error')
     }
     {
@@ -113,7 +113,7 @@ require('proof')(9, async (okay) => {
         await fs.utimes(path.join(dir.publish, 'publish-1-00000000.json'), Date.now(), Date.now())
         const log = await notice.promise
         destructible.destroy()
-        await destructible.promise
+        await destructible.destructed
         const filename = log.filter(entry => entry.label == 'filename')
                          .map(entry => entry.filename)
                          .shift()
@@ -148,7 +148,7 @@ require('proof')(9, async (okay) => {
         await fs.utimes(path.join(dir.publish, 'publish-1-00000000.json'), Date.now(), Date.now())
         const log = await notice.promise
         await drain
-        await destructible.promise
+        await destructible.destructed
         const filename = log.filter(entry => entry.label == 'filename')
                          .map(entry => entry.filename)
                          .shift()
