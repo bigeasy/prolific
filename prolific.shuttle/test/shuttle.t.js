@@ -102,7 +102,7 @@ require('proof')(4, async (okay) => {
         shuttle.exit(0)
         const gathered = await gatherer.promise
         destructible.destroy()
-        await destructible.promise
+        await destructible.destructed
         okay(gathered.map(entry => entry.body.method), [
             'start', 'entries', 'version', 'entries'
         ], 'synchronous')
@@ -144,7 +144,7 @@ require('proof')(4, async (okay) => {
         shuttle.exit(0)
         const gathered = await gatherer.promise
         destructible.destroy()
-        await destructible.promise
+        await destructible.destructed
         okay(gathered.map(entry => entry.body.method), [
             'start'
         ], 'synchronous')
