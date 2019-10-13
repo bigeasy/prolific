@@ -4,12 +4,13 @@ const Isochronous = require('isochronous')
 const isRunning = require('is-running')
 
 class Killer extends events.EventEmitter {
-    constructor (interval) {
+    constructor (interval, printer = { say: () => {} }) {
         super()
         this._isochronous = new Isochronous(interval, true, async () => {
             let i = 0, I = this._pids.length
             while (i < I) {
                 const pid = this._pids[i]
+                printer.say('liveness', { pid })
                 if (!isRunning(pid)) {
                     this.emit('killed', pid)
                     this._pids.splice(i, 1)
@@ -42,7 +43,15 @@ class Killer extends events.EventEmitter {
         delete this._exited[pid]
     }
 
-    exit (pid) {
+    unwatch (pid) {
+        const index = this._pids.indexOf(pid)
+        if (~index) {
+            this._pids.splice(index, 1)
+        }
+        delete this._exited[pid]
+    }
+
+    watch (pid) {
         assert(!this.destroyed)
         if (this._exited[pid] == null) {
             this._exited[pid] = pid

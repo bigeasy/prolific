@@ -1,6 +1,7 @@
 require('proof')(1, async (okay) => {
     const path = require('path')
     const stream = require('stream')
+    const events = require('events')
     const fs = require('fs').promises
 
     const Pipe = require('duplicitous/pipe')
@@ -57,7 +58,7 @@ require('proof')(1, async (okay) => {
     messenger.emit('message', {
         module: 'prolific',
         method: 'socket',
-        body: null
+        body: null,
     })
     await new Promise(resolve => setImmediate(resolve))
     messenger.emit('message', {
@@ -70,6 +71,10 @@ require('proof')(1, async (okay) => {
     okay(test, [{
         module: 'prolific',
         method: 'receiving',
+        child: 3
+    }, {
+        module: 'prolific',
+        method: 'closed',
         child: 3
     }], 'test')
 })

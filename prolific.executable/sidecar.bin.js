@@ -70,8 +70,25 @@ require('arguable')(module, {
     function message (message, socket) {
         switch (`${message.module}:${message.method}`) {
         case 'prolific:socket':
+            const listeners = [ 'end', 'close' ]
+            const closed = () => {
+                for (const listener of listeners) {
+                    socket.removeListener(listener, closed)
+                }
+                arguable.options.process.send({
+                    module: 'prolific',
+                    method: 'closed',
+                    child: +arguable.ultimate.child
+                })
+            }
             logger.say('sidecar.socket', { message, socket: !! socket })
-            if (socket != null) {
+            if (socket == null) {
+                listeners.length = 0
+                closed()
+            } else {
+                for (const listener of listeners) {
+                    socket.on(listener, closed)
+                }
                 socket.on('error', error => {
                     logger.say('socket.error', { stack: error.stack })
                 })

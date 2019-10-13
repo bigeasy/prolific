@@ -144,17 +144,17 @@ require('arguable')(module, { $trap: false }, async arguable => {
     children.durable('sockets', sockets.shifter.pump(async socket => {
         if (socket != null) {
             const header = await Header(socket)
-            printer.say('header', header)
-            assert.equal(header.method, 'announce', 'announce missing')
-            await cubbyhole.get(header.pid)
-            cubbyhole.remove(header.pid)
-            printer.say('dispatch', { header, destroyed: socket.destroyed })
-            // **TODO** Uncomment to hang unit test.
-            // throw new Error
-            sidecars[header.pid].send({
-                module: 'prolific',
-                method: 'socket'
-            }, socket)
+            printer.say('header', { header })
+            if (header != null) {
+                assert.equal(header.method, 'announce', 'announce missing')
+                killers.start.unwatch(header.pid)
+                await cubbyhole.get(header.pid)
+                cubbyhole.remove(header.pid)
+                printer.say('dispatch', { header, destroyed: socket.destroyed })
+                // **TODO** Uncomment to hang unit test.
+                // throw new Error
+                sidecars[header.pid].send({ module: 'prolific', method: 'socket' }, socket)
+            }
         }
     }))
     children.destruct(() => sockets.shifter.destroy())
@@ -181,16 +181,22 @@ require('arguable')(module, { $trap: false }, async arguable => {
     children.durable('toucher', toucher.start())
     children.destruct(() => toucher.stop())
 
-    const killer = new Killer(100)
-    killer.on('killed', pid => watcher.killed(pid))
-    children.durable('killer', killer.run())
-    children.destruct(() => killer.destroy())
-
     const watcher = new Watcher(children.durable('watcher'), buffer => {
         return fnv(0, buffer, 0, buffer.length)
     }, path.join(tmp, 'publish'))
-
     countdown.destruct(() => watcher.drain())
+
+    const killers = {
+        start: new Killer(100, printer),
+        exit: new Killer(100, printer)
+    }
+    Error.stackTraceLimit = 32
+    killers.start.on('killed', killers.exit.watch.bind(killers.exit))
+    killers.exit.on('killed', watcher.killed.bind(watcher))
+    children.durable([ 'killer', 'start' ], killers.start.run())
+    children.durable([ 'killer', 'exit' ], killers.exit.run())
+    children.destruct(() => killers.start.destroy())
+    children.destruct(() => killers.exit.destroy())
 
     const collector = new Collector
 
@@ -216,9 +222,15 @@ require('arguable')(module, { $trap: false }, async arguable => {
                     stdio: [ 'ignore', 'inherit', 'inherit', 'ipc' ]
                 })
                 function message (message) {
-                    assert.equal(`${message.module}:${message.method}`, 'prolific:receiving')
-                    printer.say('receiving', message)
-                    cubbyhole.set(message.child, true)
+                    printer.say(message.method, message)
+                    switch (message.method) {
+                    case 'receiving':
+                        cubbyhole.set(message.child, true)
+                        break
+                    case 'closed':
+                        killers.exit.watch(message.child)
+                        break
+                    }
                 }
                 sidecar.on('message', message)
                 sidecar.on('exit', () => sidecar.removeListener('message', message))
@@ -235,7 +247,6 @@ require('arguable')(module, { $trap: false }, async arguable => {
                 // TODO No need to `killer.purge()`, we can absolutely remove
                 // the pid from the `Killer` here.
                 destructible.ephemeral('exit', (async () => {
-                    killer.exited(pid)
                     const sidecar = sidecars[pid]
                     const [ code, signal ] = await exit
                     /*
@@ -273,6 +284,7 @@ require('arguable')(module, { $trap: false }, async arguable => {
 
     // TODO Restore inheritance.
     const child = processes.spawn(main, argv, { stdio: stdio })
+    killers.start.watch(child.pid)
 
     const traps = {}
     for (const signal of signals) {
