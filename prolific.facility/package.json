@@ -1,6 +1,6 @@
 {
     "name":                 "prolific.facility",
-    "version":              "1.0.0",
+    "version":              "1.0.1",
     "description":
 
       "Common facility constants used by the Prolific Logging framework.",
