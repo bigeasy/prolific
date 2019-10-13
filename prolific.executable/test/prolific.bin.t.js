@@ -7,5 +7,5 @@ require('proof')(1, async (okay) => {
     const child = prolific([ '--inherit', '99', '--processor', processor, 'node', program ])
     await new Promise(resolve => setTimeout(resolve, 1000))
     child.destroy()
-    okay(0, await child.promise, 'ran')
+    okay(0, await child.exit, 'ran')
 })

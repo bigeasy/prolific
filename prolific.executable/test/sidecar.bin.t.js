@@ -66,7 +66,7 @@ require('proof')(1, async (okay) => {
         method: 'synchronous',
         body: null
     })
-    await child.promise
+    await child.exit
 
     okay(test, [{
         module: 'prolific',
