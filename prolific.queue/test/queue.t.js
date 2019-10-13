@@ -82,7 +82,7 @@ require('proof')(14, async (okay) => {
             'start'
         ], 'exit')
         destructible.destroy()
-        await destructible.promise
+        await destructible.destructed
     }
     {
         const { destructible, watcher, collector } = await reset()
@@ -99,7 +99,7 @@ require('proof')(14, async (okay) => {
             'start', 'entries'
         ], 'exit')
         destructible.destroy()
-        await destructible.promise
+        await destructible.destructed
     }
     {
         const { destructible, watcher, collector } = await reset()
@@ -116,7 +116,7 @@ require('proof')(14, async (okay) => {
             'start', 'entries'
         ], 'exit')
         destructible.destroy()
-        await destructible.promise
+        await destructible.destructed
     }
     {
         const { destructible, watcher, collector } = await reset()
@@ -147,7 +147,7 @@ require('proof')(14, async (okay) => {
         const gathered = await gatherer.promise
         okay(gathered.map(data => data.body.method), [ 'start' ], 'exit')
         destructible.destroy()
-        await destructible.promise
+        await destructible.destructed
         await Promise.all(await promises)
         const lines = net.pipe.server
                               .read()
@@ -191,7 +191,7 @@ require('proof')(14, async (okay) => {
         const gathered = await gatherer.promise
         okay(gathered.map(data => data.body.method), [ 'start' ], 'exit')
         destructible.destroy()
-        await destructible.promise
+        await destructible.destructed
         await Promise.all(await promises)
         const lines = net.pipe.server
                               .read()
@@ -231,7 +231,7 @@ require('proof')(14, async (okay) => {
             'start', 'entries'
         ], 'exit')
         destructible.destroy()
-        await destructible.promise
+        await destructible.destructed
         await Promise.all(await promises)
         const lines = net.pipe.server
                               .read()
@@ -266,7 +266,7 @@ require('proof')(14, async (okay) => {
             'start', 'version'
         ], 'exit')
         destructible.destroy()
-        await destructible.promise
+        await destructible.destructed
         await Promise.all(await promises)
         const lines = net.pipe.server
                               .read()
@@ -296,7 +296,7 @@ require('proof')(14, async (okay) => {
             'start', 'version'
         ], 'exit')
         destructible.destroy()
-        await destructible.promise
+        await destructible.destructed
         await Promise.all(await promises)
         const lines = net.pipe.server
                               .read()
