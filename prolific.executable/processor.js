@@ -181,7 +181,7 @@ class Processor extends events.EventEmitter {
                     }
                 }
                 this._destructible.destroy()
-                await this._destructible.promise
+                await this._destructible.destructed
             }
             break
         }

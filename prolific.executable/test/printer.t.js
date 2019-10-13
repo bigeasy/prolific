@@ -14,7 +14,7 @@ require('proof')(2, async (okay) => {
     printer.push({ entries: [{ when: Date.now(), a: 1 }] })
     await latch.unlatched
     destructible.destroy()
-    await destructible.promise
+    await destructible.destructed
     okay(test.length, 1, 'printed')
     okay(test[0].split('\n').length, 2, 'batched')
 })

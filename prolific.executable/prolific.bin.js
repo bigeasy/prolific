@@ -298,9 +298,9 @@ require('arguable')(module, { $trap: false }, async arguable => {
     // TODO How do we propogate signals?
     // await arguable.destroyed
     // destructible.destroy()
-    await children.promise
+    await children.destructed
     supervisor.destroy()
-    await supervisor.promise
+    await supervisor.destructed
     const [ code, signal ] = await exit
     for (const signal in traps) {
         process.removeListener(signal, traps[signal])

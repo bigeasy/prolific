@@ -32,5 +32,5 @@ require('proof')(1, async (okay) => {
     const [ log ] = await data
     okay(log.body.entries, [ { when: 0, qualifier: 'prolific', label: 'label', a: 1 } ], 'entries')
     destructible.destroy()
-    await destructible.promise
+    await destructible.destructed
 })

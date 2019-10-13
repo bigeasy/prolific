@@ -113,7 +113,7 @@ require('arguable')(module, {
         child: +arguable.ultimate.child
     })
 
-    await destructible.promise
+    await destructible.destructed
 
     return 0
 })
