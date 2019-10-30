@@ -265,7 +265,7 @@ require('arguable')(module, { $trap: false }, async arguable => {
             }
             break
         default: {
-                killer.exit(pid)
+                killers.exit.watch(pid)
                 const sidecar = sidecars[pid]
                 // **TODO** Wait on callback?
                 sidecar.send({
