@@ -44,8 +44,6 @@ class Processor extends events.EventEmitter {
             previous: () => {},
             process: entries => this._backlog.push(entries)
         }
-
-        const self = this
         this._reconfigurator = new Reconfigurator(file, new class extends BufferConfigurator {
             async configure (buffer) {
                 const source = buffer.toString()
