@@ -22,6 +22,7 @@ require('arguable')(module, {
 
     // Node.js API.
     const assert = require('assert')
+    const os = require('os')
 
     const Consolidator = require('prolific.consolidator')
 
@@ -31,6 +32,18 @@ require('arguable')(module, {
 
     const logger = new Logger(destructible.durable('logger'), Date, tmp, process.pid, 1000)
     logger.say('sidecar.start', { tmp })
+
+    function memory () {
+        logger.say('sidecar.memory', {
+            ...(process.memoryUsage()),
+            totalMemory: os.totalmem(),
+            freeMemory: os.freemem(),
+            loadAverage: os.loadavg()
+        })
+    }
+    memory()
+    setInterval(memory, 45000).unref()
+
 
     const _logger = require('prolific.logger').create('prolific')
     function memoryUsage () { _logger.notice('memory', process.memoryUsage()) }

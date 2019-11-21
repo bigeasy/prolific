@@ -280,6 +280,17 @@ require('arguable')(module, { $trap: false }, async arguable => {
 
     printer.say('start', {})
 
+    function memory () {
+        printer.say('supervisor.memory', {
+            ...(process.memoryUsage()),
+            totalMemory: os.totalmem(),
+            freeMemory: os.freemem(),
+            loadAverage: os.loadavg()
+        })
+    }
+    memory()
+    setInterval(memory, 45000).unref()
+
     const stdio = inherit(arguable)
 
     // TODO Restore inheritance.
