@@ -1,11 +1,13 @@
 {
     "name":                 "prolific",
-    "version":              "28.1.1",
+    "version":              "28.1.2",
     "description":
-        "Main Prolific supervisor executable.",
+
+      "Main Prolific supervisor executable.",
+
     "keywords":
     [
-        "logging", "log", "syslog", "prolific"
+                            "logging", "log", "syslog", "prolific"
     ],
     "author":               "Alan Gutierrez <alan@prettyrobots.com>",
     "homepage":             "https://github.com/bigeasy/prolific",
@@ -13,45 +15,45 @@
     "license":              "MIT",
     "repository":
     {
-        "type": "git",
-        "url": "bigeasy/prolific"
+                            "type": "git",
+                            "url": "bigeasy/prolific"
     },
     "dependencies":
     {
-        "arguable":                     "^11.1.0-alpha.1",
-        "ascension":                    "^1.0.3",
-        "avenue":                       "^0.2.0-alpha.0",
-        "cubbyhole":                    "^3.0.0-alpha.2",
-        "destructible":                 "^5.2.0-alpha.2",
-        "foremost":                     "^1.0.4",
-        "hash.fnv":                     "^1.0.6",
-        "interrupt":                    "^9.0.0-alpha.1",
-        "is-running":                   "2.1.0",
-        "isochronous":                  "^4.0.0-alpha.2",
-        "nop":                          "1.0.0",
-        "prolific.collector":           "^11.0.0-alpha.2",
-        "prolific.consolidator":        "^11.0.0-alpha.4",
-        "prolific.evaluator":           "^3.1.0-alpha.5",
-        "prolific.inherit":             "^7.0.2",
-        "prolific.watcher":             "^0.1.0-alpha.2",
-        "prospective":                  "^0.1.0-alpha.1",
-        "reconfigure":                  "^3.0.0-alpha.1",
-        "rimraf":                       "3.0.0"
+                            "arguable":                     "^11.1.0-alpha.1",
+                            "ascension":                    "^1.0.3",
+                            "avenue":                       "^0.2.0-alpha.0",
+                            "cubbyhole":                    "^3.0.0-alpha.2",
+                            "destructible":                 "^5.2.0-alpha.2",
+                            "foremost":                     "^1.0.4",
+                            "hash.fnv":                     "^1.0.6",
+                            "interrupt":                    "^9.0.0-alpha.1",
+                            "is-running":                   "2.1.0",
+                            "isochronous":                  "^4.0.0-alpha.2",
+                            "nop":                          "1.0.0",
+                            "prolific.collector":           "^11.0.0-alpha.2",
+                            "prolific.consolidator":        "^11.0.0-alpha.4",
+                            "prolific.evaluator":           "^3.1.0-alpha.5",
+                            "prolific.inherit":             "^7.0.2",
+                            "prolific.watcher":             "^0.1.0-alpha.2",
+                            "prospective":                  "^0.1.0-alpha.1",
+                            "reconfigure":                  "^3.0.0-alpha.1",
+                            "rimraf":                       "3.0.0"
     },
     "devDependencies":
     {
-        "duplicitous":                  "^0.1.0-alpha.0",
-        "prolific.logger":              "^11.0.0",
-        "prolific.shuttle":             "^26.0.0",
-        "proof":                        "^8.0.0-alpha.5"
+                            "duplicitous":                  "^0.1.0-alpha.0",
+                            "prolific.logger":              "^11.0.0",
+                            "prolific.shuttle":             "^26.0.0",
+                            "proof":                        "^8.0.0-alpha.5"
     },
     "main":                 "prolific.bin",
     "bin":
     {
-        "prolific":                     "prolific.bin.js"
+                            "prolific":                     "prolific.bin.js"
     },
     "scripts":
     {
-        "test": "proof test/*.t.js"
+                            "test": "proof test/*.t.js"
     }
 }
