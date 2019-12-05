@@ -299,7 +299,10 @@ require('arguable')(module, { $trap: false }, async arguable => {
 
     const traps = {}
     for (const signal of signals) {
-        process.on(signal, traps[signal] = child.kill.bind(child, signal))
+        process.on(signal, traps[signal] = signal => {
+            printer.say('trap', { signal })
+            child.kill(signal)
+        })
     }
 
     const exit = once(child, 'exit').promise
