@@ -1,3 +1,5 @@
 ## Prolific Aggregate
 
-Aggregate Prolific log entries.
+Deprecated.
+
+See [Prolific](http://github.com/bigeasy/prolific).
