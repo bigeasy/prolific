@@ -75,7 +75,7 @@ require('arguable')(module, {
     })
 
     // Listen to our asynchronous pipe.
-    const consolidator = new Consolidator(queue)
+    const consolidator = new Consolidator(queue, logger)
 
     destructible.durable('process', queue.shifter().pump(chunk => processor.process(chunk)))
     destructible.ephemeral('configure', processor.configure())
