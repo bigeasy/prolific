@@ -35,7 +35,6 @@ class Consolidator extends events.EventEmitter {
             this._queue.push(null)
         } else if (json.series == this._series) {
             this._series = (this._series + 1) & 0xffffff
-            this._resumed = true
             this._queue.push(json)
         }
     }
