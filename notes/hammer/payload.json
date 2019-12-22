@@ -1,0 +1,26 @@
+{
+    "annotations": {
+        "cni.projectcalico.org/podIP": "192.168.11.129/32"
+    },
+    "creationTimestamp": "2019-12-12T05:50:02Z",
+    "generateName": "calico-kube-controllers-74b4db5cc9-",
+    "labels": {
+        "k8s-app": "calico-kube-controllers",
+        "pod-template-hash": "74b4db5cc9"
+    },
+    "name": "calico-kube-controllers-74b4db5cc9-w6szs",
+    "namespace": "kube-system",
+    "ownerReferences": [
+        {
+            "apiVersion": "apps/v1",
+            "blockOwnerDeletion": true,
+            "controller": true,
+            "kind": "ReplicaSet",
+            "name": "calico-kube-controllers-74b4db5cc9",
+            "uid": "e99c369f-3bd6-46a3-85b9-1b4b8c65a818"
+        }
+    ],
+    "resourceVersion": "854",
+    "selfLink": "/api/v1/namespaces/kube-system/pods/calico-kube-controllers-74b4db5cc9-w6szs",
+    "uid": "a4ba548e-616d-4af3-8adf-5c1970463d53"
+}

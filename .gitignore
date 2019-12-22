@@ -12,3 +12,5 @@
 /prolific.executable/test/tmp
 /prolific.executable/test/processor.js
 !/prolific.syslog/node_modules/json.js
+
+/notes/pipes/fatal
