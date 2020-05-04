@@ -38,7 +38,7 @@
                             "prolific.watcher":             "0.1.0-alpha.2",
                             "prospective":                  "0.1.0-alpha.1",
                             "reconfigure":                  "3.0.0-alpha.1",
-                            "rimraf":                       "3.0.0"
+                            "rimraf":                       "3.0.2"
     },
     "devDependencies":
     {
