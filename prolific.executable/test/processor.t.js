@@ -50,7 +50,8 @@ require('proof')(4, async (okay) => {
             system: { pid: 0 }
         }]
     })
-    destructible.durable('configure', processor.configure(), () => processor.destroy())
+    destructible.durable('configure', processor.configure())
+    destructible.destruct(() => processor.destroy())
     await new Promise(resolve => {
         processor.once('processor', processor => {
             test.push(processor)
