@@ -18,6 +18,11 @@ features.
  application in flight.
  * Works well with multi-process applications.
 
+## Pending Changes
+
+Prolific will remove the object based processor and replace destruction
+mechanics with a `Destructible` instance in Prolific 27.0.0.
+
 ## Getting Started
 
 ```javascript
