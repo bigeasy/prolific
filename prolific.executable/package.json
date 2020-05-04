@@ -42,7 +42,7 @@
     },
     "devDependencies":
     {
-                            "duplicitous":                  "0.1.0-alpha.0",
+                            "duplicitous":                  "0.1.0-alpha.2",
                             "prolific.logger":              "^11.0.0",
                             "prolific.shuttle":             "^26.0.0",
                             "proof":                        "8.0.0-alpha.9"
