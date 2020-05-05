@@ -1,6 +1,6 @@
 {
     "name":                 "prolific.queue",
-    "version":              "19.0.1",
+    "version":              "20.0.0",
     "description":
 
       "Queue for Prolific that submits log entries from the logged application to the logging monitor.",
@@ -30,8 +30,8 @@
                             "duplicitous":                  "^0.2.0",
                             "prolific.collector":           "^12.0.0",
                             "prolific.watcher":             "^0.2.0",
-                            "prospective":                  "^0.2.0",
                             "proof":                        "^9.0.1",
+                            "prospective":                  "^0.2.0",
                             "rimraf":                       "3.0.2"
     },
     "main":                 "queue",
