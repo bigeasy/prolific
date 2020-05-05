@@ -26,7 +26,7 @@
     },
     "devDependencies":
     {
-                            "proof":                        "^8.0.0-alpha.8"
+                            "proof":                        "^9.0.1"
     },
     "scripts":
     {
