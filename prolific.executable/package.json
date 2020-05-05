@@ -24,7 +24,7 @@
                             "ascension":                    "^1.0.3",
                             "avenue":                       "0.2.0-alpha.3",
                             "cubbyhole":                    "4.0.0",
-                            "destructible":                 "5.2.0-alpha.6",
+                            "destructible":                 "6.0.0",
                             "foremost":                     "^1.0.4",
                             "hash.fnv":                     "^1.0.6",
                             "interrupt":                    "10.0.1",
