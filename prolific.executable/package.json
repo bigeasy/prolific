@@ -44,7 +44,7 @@
     {
                             "duplicitous":                  "0.1.0-alpha.2",
                             "prolific.logger":              "^11.0.0",
-                            "prolific.shuttle":             "^26.0.0",
+                            "prolific.shuttle":             "^27.0.0",
                             "proof":                        "^9.0.0"
     },
     "main":                 "prolific.bin",
