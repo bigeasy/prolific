@@ -27,7 +27,7 @@
                             "destructible":                 "5.2.0-alpha.6",
                             "foremost":                     "^1.0.4",
                             "hash.fnv":                     "^1.0.6",
-                            "interrupt":                    "9.0.0-alpha.4",
+                            "interrupt":                    "10.0.1",
                             "is-running":                   "2.1.0",
                             "isochronous":                  "5.0.0",
                             "nop":                          "1.0.0",
