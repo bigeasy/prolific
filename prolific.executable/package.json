@@ -32,7 +32,7 @@
                             "isochronous":                  "5.0.0",
                             "nop":                          "1.0.0",
                             "prolific.collector":           "12.0.0",
-                            "prolific.consolidator":        "11.0.0-alpha.6",
+                            "prolific.consolidator":        "12.0.0",
                             "prolific.evaluator":           "4.0.0",
                             "prolific.inherit":             "^7.0.2",
                             "prolific.watcher":             "0.1.0-alpha.3",
