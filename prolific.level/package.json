@@ -1,6 +1,6 @@
 {
     "name":                 "prolific.level",
-    "version":              "1.0.2",
+    "version":              "1.0.3",
     "description":
 
       "Common level constants used by the Prolific Logging framework.",
@@ -23,7 +23,7 @@
     },
     "devDependencies":
     {
-                            "proof":"^9.0.1"
+                            "proof":                        "^9.0.1"
     },
     "main":                 "level",
     "scripts":
