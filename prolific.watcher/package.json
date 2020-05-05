@@ -26,7 +26,7 @@
     {
                             "destructible":                 "^5.2.0-alpha.2",
                             "foremost":                     "^1.0.4",
-                            "proof":                        "^8.0.0-alpha.5",
+                            "proof":                        "^9.0.1",
                             "prospective":                  "^0.1.0-alpha.1",
                             "rimraf":                       "3.0.0"
     },
