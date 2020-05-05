@@ -28,7 +28,7 @@
                             "foremost":                     "^1.0.4",
                             "proof":                        "^9.0.1",
                             "prospective":                  "^0.1.0-alpha.1",
-                            "rimraf":                       "3.0.0"
+                            "rimraf":                       "3.0.2"
     },
     "main":                 "watcher",
     "scripts":
