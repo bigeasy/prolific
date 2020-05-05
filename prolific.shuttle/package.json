@@ -29,7 +29,7 @@
     },
     "devDependencies":
     {
-                            "destructible":                 "^5.2.0-alpha.2",
+                            "destructible":                 "^6.0.0",
                             "proof":                        "^9.0.1",
                             "prolific.collector":           "^11.0.0-alpha.2",
                             "prolific.watcher":             "^0.1.0-alpha.0",
