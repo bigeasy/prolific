@@ -23,7 +23,7 @@
     },
     "devDependencies":
     {
-                            "proof":                        "^8.0.0-alpha.5"
+                            "proof":                        "^9.0.1"
     },
     "main":                 "inherit",
     "scripts":
