@@ -29,7 +29,7 @@
                             "hash.fnv":                     "^1.0.6",
                             "interrupt":                    "9.0.0-alpha.4",
                             "is-running":                   "2.1.0",
-                            "isochronous":                  "4.0.0-alpha.4",
+                            "isochronous":                  "4.0.0-elpha.4",
                             "nop":                          "1.0.0",
                             "prolific.collector":           "11.0.0-alpha.4",
                             "prolific.consolidator":        "11.0.0-alpha.6",
