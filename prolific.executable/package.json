@@ -33,7 +33,7 @@
                             "nop":                          "1.0.0",
                             "prolific.collector":           "11.0.0-alpha.4",
                             "prolific.consolidator":        "11.0.0-alpha.6",
-                            "prolific.evaluator":           "3.1.0-alpha.6",
+                            "prolific.evaluator":           "4.0.0",
                             "prolific.inherit":             "^7.0.2",
                             "prolific.watcher":             "0.1.0-alpha.3",
                             "prospective":                  "0.1.0-alpha.4",
