@@ -31,7 +31,7 @@
     {
                             "destructible":                 "^6.0.0",
                             "proof":                        "^9.0.1",
-                            "prolific.collector":           "^11.0.0-alpha.2",
+                            "prolific.collector":           "^12.0.0",
                             "prolific.watcher":             "^0.1.0-alpha.0",
                             "prospective":                  "^0.2.0",
                             "rimraf":                       "3.0.2"
