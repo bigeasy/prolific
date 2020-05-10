@@ -1,3 +1,22 @@
+## Mon May 11 03:19:49 CDT 2020
+
+Had a thought that Prolific should handle HUP, but then realized it would
+intercept a HUP destined for the monitored application.
+
+Then I thought that Prolific should generate a PID file for the user to find
+the right PID to HUP, like other UNIX monitor programs, but then realized that I
+want to be able to run Prolific from the command line and I do want signals to
+work there.
+
+Wait. Why not just have Prolific's signals work there? Just TERM and INT?
+
+Oh, and for the most part I'll be running Prolific in Kubernetes, so I'll want
+to have TERM sent directly to the root process.
+
+Wait. That's no different than having a single term handler. If I want to HUP
+that would be for using something like Consul Template to regenerate application
+config files and HUP and it would necessarily want to use a PID from a file.
+
 ## Wed Sep  4 09:19:21 CDT 2019
 
 Regarding the processor argument.
