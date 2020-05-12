@@ -3,19 +3,17 @@ exports.triage = function () {
     const LEVEL = require('prolific.level')
     let count = 0
     return function (level) {
-        assert(count++ < 2)
+        assert(level != null)
         return LEVEL[level] <= LEVEL.warn
     }
 }
 
-exports.process = async function () {
+exports.process = async function (destructible) {
+    let count = 0
     const path = require('path')
     const gather = require(path.join(__dirname, 'gather'))
     const sink = require('prolific.sink')
-    return function (entry) {
-        if (entry != null) {
-            entry.body.subsequent = true
-            gather.push(entry)
-        }
+    return function (entries) {
+        throw new Error('error')
     }
 }

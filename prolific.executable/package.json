@@ -24,10 +24,10 @@
                             "ascension":                    "^1.0.3",
                             "avenue":                       "0.3.0",
                             "cubbyhole":                    "4.0.0",
-                            "destructible":                 "6.0.0",
+                            "destructible":                 "6.2.0",
                             "foremost":                     "^1.0.4",
                             "hash.fnv":                     "^1.0.6",
-                            "interrupt":                    "10.0.1",
+                            "interrupt":                    "^10.0.3",
                             "is-running":                   "2.1.0",
                             "isochronous":                  "5.0.0",
                             "nop":                          "1.0.0",
@@ -37,7 +37,7 @@
                             "prolific.inherit":             "^7.0.2",
                             "prolific.watcher":             "0.2.0",
                             "prospective":                  "0.2.0",
-                            "reconfigure":                  "4.0.0",
+                            "reconfigure":                  "5.0.0-alpha.2",
                             "rimraf":                       "3.0.2"
     },
     "devDependencies":

@@ -8,11 +8,14 @@ exports.triage = function () {
     }
 }
 
-exports.process = async function () {
+exports.process = async function (destructible) {
     let count = 0
     const path = require('path')
     const gather = require(path.join(__dirname, 'gather'))
     const sink = require('prolific.sink')
+    destructible.durable('errored', async function () {
+        throw new Error('errored')
+    })
     return function (entries) {
         gather.push.apply(gather, entries)
     }

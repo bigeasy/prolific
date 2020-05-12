@@ -8,6 +8,7 @@ require('proof')(1, async (okay) => {
 
     const rimraf = require('rimraf')
     const callback = require('prospective/callback')
+    const once = require('prospective/once')
 
     const TMPDIR = path.join(__dirname, 'tmp')
     const dir = {
@@ -55,6 +56,7 @@ require('proof')(1, async (okay) => {
         $stdin: stdin,
         process: messenger
     })
+    const [ message ] = await once(messenger.parent, 'message').promise
     messenger.emit('message', {
         module: 'prolific',
         method: 'socket',
