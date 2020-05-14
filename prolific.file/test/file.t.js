@@ -1,25 +1,12 @@
 require('proof')(1, prove)
 
-function prove (okay, callback) {
-    var Destructible = require('destructible')
-    var destructible = new Destructible('t/file.t')
-
-    destructible.completed.wait(callback)
-
-    var cadence = require('cadence')
-
-    var path = require('path')
-
-    var File = require('..')
-
-    var file = path.join(__dirname, 'log')
-
-    var now = 0
-
-    var fs = require('fs')
+async function prove (okay) {
+    const Destructible = require('destructible')
+    const path = require('path')
+    const fs = require('fs').promises
 
     try {
-        fs.unlinkSync(path.join(__dirname, 'log-1-1970-01-01-00-00'))
+        await fs.unlink(path.join(__dirname, 'log-1970-01-01-00-00-1'))
     } catch (e) {
         if (e.code != 'ENOENT') {
             throw e
@@ -27,42 +14,40 @@ function prove (okay, callback) {
     }
 
     try {
-        fs.unlinkSync(path.join(__dirname, 'log-1-1970-01-01-00-01'))
+        await fs.unlink(path.join(__dirname, 'log-1970-01-01-00-01-1'))
     } catch (e) {
         if (e.code != 'ENOENT') {
             throw e
         }
     }
 
-    cadence(function (async) {
-        async(function () {
-            destructible.durable('file', File, {
-                file: file,
-                rotate: 20,
-                pid: '1',
-                Date: {
-                    now: function () {
-                        var result = now
-                        now += 1000 * 60
-                        return result
-                    }
-                }
-            }, async())
-        }, function (processor) {
-            processor.process(JSON.stringify({ json: { a: 1 } }) + '\n')
-            processor.process(Buffer.from(JSON.stringify({ json: { a: 2 } }) + '\n'))
-            setTimeout(async(), 50)
-            destructible.destroy()
-            processor.process(JSON.stringify({ json: { a: 1 } }) + '\n')
-        }, function () {
-            var lines = fs.readFileSync(path.join(__dirname, 'log-1-1970-01-01-00-00'), 'utf8')
-            lines = lines.split('\n')
-            lines.pop()
-            okay(lines.map(JSON.parse), [{
-                json: { a: 1 }
-            }, {
-                json: { a: 2 }
-            }], 'map')
+    const file = path.join(__dirname, 'log')
+
+    {
+        const destructible = new Destructible('t/file.t')
+
+        const Writer = require('..')
+        let now = 0
+
+        const writer = new Writer(destructible.durable('qualified'), file, {
+            suffix: 1,
+            rotate: 10,
+            Date: { now: function () { return now } }
         })
-    })(destructible.durable('test'))
+
+        await new Promise(resolve => setImmediate(resolve))
+        writer.push({ a: 1 })
+        await new Promise(resolve => setImmediate(resolve))
+        writer.push({ a: 2 })
+        await new Promise(resolve => setTimeout(resolve, 150))
+
+        destructible.destroy()
+
+        await destructible.destructed
+
+        const log = await fs.readFile(path.join(__dirname, 'log-1970-01-01-00-00-1'), 'utf8')
+        const lines = log.split('\n')
+        lines.pop()
+        okay(lines.map(JSON.parse), [{ a: 1 }, { a: 2 }], 'map')
+    }
 }

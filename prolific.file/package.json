@@ -20,20 +20,19 @@
     },
     "dependencies":
     {
-                            "abend":                        "1.0.x",
-                            "cadence":                      "3.0.x",
-                            "delta":                        "3.0.x",
-                            "restrictor":                   "3.0.x",
-                            "staccato":                     "7.0.x"
+                            "extant":                       "^1.0.20",
+                            "nop":                          "1.0.0",
+                            "rescue":                       "^6.0.4",
+                            "staccato":                     "^12.0.0"
     },
     "devDependencies":
     {
-                            "destructible":                 "1.0.x",
-                            "proof":                        "7.0.x"
+                            "destructible":                 "^6.2.1",
+                            "proof":                        "^9.0.1"
     },
     "main":                 "file",
     "scripts":
     {
-                            "test": "proof test test/*.t.js"
+                            "test": "proof test/*.t.js"
     }
 }
