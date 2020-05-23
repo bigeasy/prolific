@@ -143,7 +143,11 @@ class Queue extends events.EventEmitter {
         }
         this._writable = new Staccato.Writable(this._socket)
         this._readable = new Staccato.Readable(byline(this._socket))
-        await this._writable.write(JSON.stringify({ method: 'announce', pid: this._pid }) + '\n')
+        await this._writable.write(JSON.stringify({
+            method: 'announce',
+            pid: this._pid,
+            start: this._start
+        }) + '\n')
         // We may have exited, but that's unlikely at runtime, and the loops
         // here will both exit immediately, so we don't have to check for exit.
         return [ this._send(this._writable), this._receive() ]
