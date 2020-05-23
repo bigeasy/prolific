@@ -1,3 +1,60 @@
+## Fri May 22 22:12:45 CDT 2020
+
+Assumptions in no particular order.
+
+A write to the temporary directory, being synchronous, will be complete before
+the program exits. Perhaps there are file system flush timing issues and we'll
+have to make sure that the Watcher will retry reading a file that doesn't match
+its checksum.
+
+The exit killer will watch a pid *hard* for exit using the operating system. It
+gets notified by a 'closed' message from the sidecar. The sidecar detects that
+the socket has closed. The watcher will harvest any remaining messages.
+
+Rube Goldberg would be proud.
+
+The start killer is just watching the child start up, but I don't know why I'm
+not using just a single killer for all watching since it has a function called
+`unwatch` and all the start killer does is message the exit killer.
+
+We seem to be destroying the watcher while it still needs to watch for messages
+from sidecars. These are `say` messages, logging messages that come from
+sidecars.
+
+The shuttle in a program ought to be able to open a socket and send a header
+most of the time. It will definately write out its start message. Possible race
+condition if a child of the monitored process is starting when the child exits,
+its sidecar exits and the countdown goes to zero. We could wait for the watcher
+to drain before destroying the killers, the rest of the file watch apparatus,
+but we'll still have a race where the directory has drained and there is still a
+write coming. Perhaps the orphaned child process is dithering before starting
+the shuttle.
+
+We could play around with process groups, start the child detached. Then we can
+signal TERM and we can also look for when the number of processes reaches zero
+with `kill`. Don't know if this works in Windows. Didn't I decide that I'm not
+going to actively support Windows, ever? If I can implement this using
+properties of Node.js then there ought to be no reason to worry about Windows,
+that's a Node.js problem.
+
+Start will be written or it won't. It's practically atomic. A process group will
+be zero and once it is zero it won't grow again. Still there's a race if the
+user creates detatched processes, but when the child exits, we can simply use
+the negated pid on all outstanding processes, so now we're only missing a
+lagging detached process.
+
+This belongs in the diary.
+
+## Thu May 21 18:38:07 CDT 2020
+
+Seems that there are some problems with shutting down to soon. The child process
+now starts it's operations by connecting directly a server running in the
+monitor. The monitor will respond to a socket request and start running a
+sidecar to handle that socket. I've written a demo program that sends a single
+message and exits, so it does create the socket, but the exit comes so quickly
+that shutdown is in process when the socket opening begins. But, how far delayed
+is the socket opening, can I increment then?
+
 ## Mon May 11 03:19:49 CDT 2020
 
 Had a thought that Prolific should handle HUP, but then realized it would
