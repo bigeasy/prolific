@@ -22,6 +22,9 @@ class ProcessorConfigurator extends BufferConfigurator {
         const definition = Evaluator.create(source, resolved)
         // Our triage function is always synchronous, requires no
         // destruction logic.
+        // TODO Make it a function not a function builder. Hmm... Maybe a
+        // function builder to be certain that the user understands that it is
+        // not a member of anything. Yeah, okay, but make a note of that.
         const triage = definition.triage()
         // We must register a `Promise.catch` now to prevent an
         // unhandled exception message.
