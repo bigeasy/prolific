@@ -38,7 +38,8 @@
                             "prolific.watcher":             "0.2.0",
                             "prospective":                  "0.2.0",
                             "reconfigure":                  "5.0.0-alpha.2",
-                            "rimraf":                       "3.0.2"
+                            "rimraf":                       "3.0.2",
+                            "vivifyer":                     "^2.0.3"
     },
     "devDependencies":
     {

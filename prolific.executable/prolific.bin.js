@@ -29,7 +29,7 @@
     ___ . ___
 */
 
-// Node.js API.
+// Node.js API. We use quite a bit of it.
 const assert = require('assert')
 const path = require('path')
 const url = require('url')
@@ -39,20 +39,29 @@ const fs = require('fs').promises
 const net = require('net')
 const os = require('os')
 
+// Do nothing.
 const noop = require('nop')
 
+// Return the first value that is not `null`ish.
+const coalesce = require('extant')
+
+// Convert events and callbacks to `async`/`await`.
 const once = require('prospective/once')
 const callback = require('prospective/callback')
 
+// Delete directory and all its contents recursively.
 const rimraf = require('rimraf')
 
+// An `async`/`await` or synchronous queue with many heads.
 const Queue = require('avenue')
 
+// Non-cryptographic 32-bit checksum.
 const fnv = require('hash.fnv')
 
+// An `async`/`await` periodic executor.
 const Isochronous = require('isochronous')
 
-// Exceptions that you can catch by type.
+// Wrapped exceptions that you can catch by type.
 const Interrupt = require('interrupt').create('prolific')
 
 // Command line and environment interpretation utilities.
@@ -62,13 +71,12 @@ const inherit = require('prolific.inherit')
 const Collector = require('prolific.collector')
 const Watcher = require('prolific.watcher')
 
-const coalesce = require('extant')
-
 const Tmp = require('./tmp')
 const Killer = require('./killer')
 const Header = require('./header')
 
 const Cubbyhole = require('cubbyhole')
+const Vivifyer = require('vivifyer')
 
 // Selected signals for propagation. These would appear to be the sort of
 // signals that a user would send to the monitored child from the terminal.
@@ -106,6 +114,7 @@ require('arguable')(module, { $trap: false }, async arguable => {
     const countdown = destructible.ephemeral('countdown')
     const children = destructible.ephemeral('children')
     const supervisor = destructible.durable('supervisor')
+    const workers = destructible.durable('workers')
 
     countdown.increment()
 
@@ -118,10 +127,6 @@ require('arguable')(module, { $trap: false }, async arguable => {
                 argv: arguable.argv
             })
             delete sidecars[pid]
-            countdown.decrement()
-        },
-        child: async (child) => {
-            await exit
             countdown.decrement()
         }
     }
@@ -140,28 +145,87 @@ require('arguable')(module, { $trap: false }, async arguable => {
         console.log(lines)
     }, JSON.stringify, 1000)
 
+    // TODO Add a start time to the header so we can be certain that we're
+    // deleting the send queue for a specific process.
+
+    const senders = new Vivifyer(function () {
+        return {
+            paired: new Queue().shifter().paired,
+            started: false,
+            socketed: false,
+            exited: false
+        }
+    })
+
     const sockets = new Queue().shifter().paired
-    children.durable('sockets', sockets.shifter.pump(async socket => {
-        if (socket != null) {
-            const header = await Header(socket)
-            printer.say('header', { header })
-            if (header != null) {
-                assert.equal(header.method, 'announce', 'announce missing')
-                killers.start.unwatch(header.pid)
-                await cubbyhole.get(header.pid)
-                cubbyhole.remove(header.pid)
-                printer.say('dispatch', { header, destroyed: socket.destroyed })
-                // **TODO** Uncomment to hang unit test.
-                // throw new Error
-                sidecars[header.pid].send({ module: 'prolific', method: 'socket' }, socket)
+    children.durable('sockets', async () => {
+        for await (const entry of sockets.shifter.iterator()) {
+            switch (entry.method) {
+            case 'connect':
+                // Move to server before queuing?
+                try {
+                    const header = await Header(entry.socket)
+                    printer.say('header', { header })
+                    if (header == null) {
+                        console.log('NULL HEADER??')
+                        // If we don't have a header, we should wait 250 ms or some
+                        // such for a child that may come and go. We might set our
+                        // countdown to zero, but we have a mystery to solve.
+                        // TODO I dunno. That file really ought to be written to the
+                        // temporary directory before the socket arrives, the
+                        // temporary directory watcher loop shouldn't have a
+                        // problem picking it up.
+                        countdown.increment()
+                        setTimeout(() => countdown.decrement(), 250)
+                        // Ah, yes, we have no header because a short lived program
+                        // has exited, and has not been flushed.
+                    } else {
+                        assert.equal(header.method, 'announce', 'announce missing')
+                        // Vivify a sending queue.
+                        const { pid, start } = header
+                        const sender = senders.get(pid)
+                        // We'll decrement the countdown once we know that the
+                        // incomeing socket has been handled one way or another.
+                        if (sender.exited) {
+                            entry.socket.destroy()
+                        } else {
+                            sender.socketed = true
+                            if (!sender.started) {
+                                countdown.increment()
+                            }
+                            // Push the socket onto the sender queue.
+                            sender.paired.queue.push({
+                                message: { module: 'prolific', method: 'socket' },
+                                socket: entry.socket
+                            })
+                            // TODO Why do we need a special killer just for the main
+                            // child process. Wouldn't it be better to assume that
+                            // everything is just anonymous?
+                            // TODO I mean, really, why? It's annoying. Stop it.
+                            // **TODO** Uncomment to hang unit test.
+                            // throw new Error
+                            printer.say('socketed', { header, destroyed: entry.socket.destroyed })
+                        }
+                    }
+                } finally {
+                    countdown.decrement()
+                }
+                break
+            case 'exited': {
+                    const { pid } = entry
+                    printer.say('unsocketed', { pid })
+                    senders.remove(pid)
+                }
+                break
             }
         }
-    }))
-    children.destruct(() => sockets.shifter.destroy())
+    })
+    children.destruct(() => sockets.queue.push(null))
     children.destruct(() => printer.say('destruct.children', {}))
 
     const server = net.createServer(socket => {
-        sockets.queue.push(socket)
+        countdown.increment()
+        sockets.queue.push({ method: 'connect', socket })
     })
     children.destruct(() => server.close())
     await callback(callback => server.listen(path.resolve(tmp, 'socket'), callback))
@@ -171,6 +235,9 @@ require('arguable')(module, { $trap: false }, async arguable => {
 
     process.env.PROLIFIC_TMPDIR = tmp
 
+    // A long running process might never touch its temporary directory until
+    // the very end of the program. We don't want a temp directory cleanup
+    // script to clean them up.
     const toucher = new Isochronous(60000, true, async () => {
         const now = Date.now()
         await fs.utimes(tmp, now, now)
@@ -181,22 +248,31 @@ require('arguable')(module, { $trap: false }, async arguable => {
     children.durable('toucher', toucher.start())
     children.destruct(() => toucher.stop())
 
+    // TODO Somehow, if the socket queue can drain, we know that we can close
+    // all the existing sockets. Essentially, if the killer can reach zero, then
+    // we know there are no processes, when the socket queue ends, we know there
+    // are no lingering sockets, so we can then run this function with a timeout
+    // of -1 or some such and ensure that all the sockets are removed.
+
+    // But, we're fiddling with the countdown here, so...
+
+    // Testing the pgid means testing the group first, if it errors we have to
+    // test the pid and if it doesn't... Well, we're not going to know the pgid
+    // of a process except for our child, so we can't really make any
+    // assumptions unless we want to document those assumptions.
+
     const watcher = new Watcher(children.durable('watcher'), buffer => {
         return fnv(0, buffer, 0, buffer.length)
     }, path.join(tmp, 'publish'))
     countdown.destruct(() => watcher.drain())
 
-    const killers = {
-        start: new Killer(100, printer),
-        exit: new Killer(100, printer)
-    }
-    Error.stackTraceLimit = 32
-    killers.start.on('killed', killers.exit.watch.bind(killers.exit))
-    killers.exit.on('killed', watcher.killed.bind(watcher))
-    children.durable([ 'killer', 'start' ], killers.start.run())
-    children.durable([ 'killer', 'exit' ], killers.exit.run())
-    children.destruct(() => killers.start.destroy())
-    children.destruct(() => killers.exit.destroy())
+    const killer = new Killer(100, printer)
+
+    // Start is separate because we watch the start of main process separately,
+    // we started it, while we receive child processes mysteriously.
+    killer.on('killed', watcher.killed.bind(watcher))
+    children.durable([ 'killer' ], killer.run())
+    children.destruct(() => killer.destroy())
 
     const collector = new Collector
 
@@ -207,10 +283,28 @@ require('arguable')(module, { $trap: false }, async arguable => {
     const argv = arguable.argv.slice()
     const main = argv.shift()
 
+    // You keep wanting to turn this into an async function, but you really do
+    // want the shutdowns to happen in parallel. Everything else about this
+    // function is synchronous. Some of the message passing is asynchronous, but
+    // that should have its own queue.
+
+    //
     collector.on('data', data => {
-        const pid = data.pid
+        const { pid } = data
         switch (data.body.method) {
         case 'start': {
+                // We ought get a start message if the user program compiles and
+                // starts a shuttle. The shuttle itself should have no bugs and
+                // should be able to write its start message into the temporary
+                // directory. Program could crash before it starts a shuttle,
+                // which is analogous to not compiling. After starting the
+                // shuttle its like any other runtime error.
+                console.log('STARTING')
+                // Increment the countdown once for the child process.
+                countdown.increment()
+                // Increment the countdown once for the sidecar process.
+                countdown.increment()
+                // Start a sidecar.
                 const sidecar = processes.spawn('node', [
                     path.join(__dirname, 'sidecar.bin.js'),
                     '--processor', processor,
@@ -221,22 +315,36 @@ require('arguable')(module, { $trap: false }, async arguable => {
                 ], {
                     stdio: [ 'ignore', 'inherit', 'inherit', 'ipc' ]
                 })
+                const destructible = children.ephemeral([ 'sidecar', pid ])
                 function message (message) {
                     printer.say(message.method, message)
                     switch (message.method) {
-                    case 'receiving':
-                        cubbyhole.set(message.child, true)
+                    case 'receiving': {
+                            const sender = senders.get(pid)
+                            sender.started = true
+                            if (sender.socketed) {
+                                countdown.decrement()
+                            }
+                            destructible.durable('socket', async function () {
+                                for await (const entry of sender.paired.shifter.iterator()) {
+                                    // TODO Wait on callback? Yes, we should
+                                    // queue this and log if the queue gets too
+                                    // big.
+                                    sidecar.send(entry.message, coalesce(entry.socket))
+                                }
+                            })
+                        }
                         break
-                    case 'closed':
-                        killers.exit.watch(message.child)
+                    case 'closed': {
+                            killer.watch(message.child)
+                        }
                         break
                     }
                 }
                 sidecar.on('message', message)
                 sidecar.on('exit', () => sidecar.removeListener('message', message))
-                countdown.increment()
                 sidecars[pid] = sidecar
-                children.ephemeral([ 'sidecar', sidecar.pid ], supervise.sidecar(sidecar, pid))
+                destructible.durable('process', supervise.sidecar(sidecar, pid))
             }
             break
         case 'say': {
@@ -244,34 +352,46 @@ require('arguable')(module, { $trap: false }, async arguable => {
             }
             break
         case 'eos': {
-                // TODO No need to `killer.purge()`, we can absolutely remove
-                // the pid from the `Killer` here.
-                destructible.ephemeral('exit', (async () => {
-                    const sidecar = sidecars[pid]
-                    const [ code, signal ] = await exit
-                    /*
-                    sidecar.send({
-                        module: 'prolific',
-                        method: 'synchronous',
-                        body: { method: 'exit', code: code, signal: signal }
-                    })
-                    */
-                    sidecar.send({
+                // Decrement once for the child process.
+                countdown.decrement()
+                // Get or create the sender.
+                const sender = senders.get(pid)
+                // Prevent a socket message from entering the queue.
+                sender.exited = true
+                // If we where not socketed, wait a bit for a socket that might
+                // still be in the socket arrival queue. Highly unlikely that
+                // this socket isn't already queued, though.
+                sockets.queue.push({ method: 'exited', pid })
+                // No exit code exit code for child processes.
+                sender.paired.queue.push({
+                    message: {
                         module: 'prolific',
                         method: 'synchronous',
                         body: null
-                    })
-                })())
+                    }
+                })
+                // End the socket loop.
+                sender.paired.queue.push(null)
+                // Wait for exit.
+                destructible.ephemeral('exit', async function () {
+                    // Wait for exit signal.
+                    const [ code, signal ] = await once(sidecars[pid], 'exit').promise
+                    countdown.decrement()
+                    delete sidecars[pid]
+                })
             }
             break
         default: {
+                // If we are getting entry messages from the child, the socket
+                // has closed and its on its way toward an exit.
                 killers.exit.watch(pid)
-                const sidecar = sidecars[pid]
-                // **TODO** Wait on callback?
-                sidecar.send({
-                    module: 'prolific',
-                    method: 'synchronous',
-                    body: data.body
+                // Forward the message to the sidecar.
+                senders.get(pid).paired.queue.push({
+                    message: {
+                        module: 'prolific',
+                        method: 'synchronous',
+                        body: data.body
+                    }
                 })
             }
             break
@@ -295,7 +415,6 @@ require('arguable')(module, { $trap: false }, async arguable => {
 
     // TODO Restore inheritance.
     const child = processes.spawn(main, argv, { stdio: stdio })
-    killers.start.watch(child.pid)
 
     const traps = {}
     for (const signal of signals) {
@@ -305,20 +424,20 @@ require('arguable')(module, { $trap: false }, async arguable => {
         })
     }
 
+    child.once('exit', () => countdown.decrement())
+
     const exit = once(child, 'exit').promise
 
-    children.ephemeral('close', supervise.child(child))
-
-    // TODO How do we propogate signals?
-    // await arguable.destroyed
-    // destructible.destroy()
     await children.destructed
-    supervisor.destroy()
-    await supervisor.destructed
+    destructible.destroy()
+    await destructible.destructed
+
     const [ code, signal ] = await exit
     for (const signal in traps) {
         process.removeListener(signal, traps[signal])
     }
+    // TODO Beginning to seem iffy. Wouldn't it be better to report this to
+    // standard out so it could be parsed?
     if (signal != null) {
         setInterval(noop, 1000)
         setImmediate(() => process.kill(process.pid, signal))
