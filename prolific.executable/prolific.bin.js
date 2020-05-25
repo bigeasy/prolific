@@ -384,7 +384,7 @@ require('arguable')(module, { $trap: false }, async arguable => {
         default: {
                 // If we are getting entry messages from the child, the socket
                 // has closed and its on its way toward an exit.
-                killers.exit.watch(pid)
+                killer.watch(pid)
                 // Forward the message to the sidecar.
                 senders.get(pid).paired.queue.push({
                     message: {

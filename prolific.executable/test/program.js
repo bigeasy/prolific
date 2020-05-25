@@ -13,6 +13,9 @@ try {
 process.stderr.write('wait?\n')
 const child = children.spawn('node', [ '-e', '1' ])
 child.on('exit', function () {
+    logger.warn('foo', {})
+    logger.warn('bar', {})
+    logger.warn('baz', {})
     setTimeout(function () {
         logger.warn('foo', {})
         logger.warn('bar', {})

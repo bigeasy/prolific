@@ -1,7 +1,7 @@
 exports.triage = function () {
     const LEVEL = require('prolific.level')
     return function (level) {
-        return level <= LEVEL.warn
+        return LEVEL[level] <= LEVEL.warn
     }
 }
 
