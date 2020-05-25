@@ -167,7 +167,6 @@ require('arguable')(module, { $trap: false }, async arguable => {
                     const header = await Header(entry.socket)
                     printer.say('header', { header })
                     if (header == null) {
-                        console.log('NULL HEADER??')
                         // If we don't have a header, we should wait 250 ms or some
                         // such for a child that may come and go. We might set our
                         // countdown to zero, but we have a mystery to solve.
@@ -299,7 +298,6 @@ require('arguable')(module, { $trap: false }, async arguable => {
                 // directory. Program could crash before it starts a shuttle,
                 // which is analogous to not compiling. After starting the
                 // shuttle its like any other runtime error.
-                console.log('STARTING')
                 // Increment the countdown once for the child process.
                 countdown.increment()
                 // Increment the countdown once for the sidecar process.
@@ -316,11 +314,11 @@ require('arguable')(module, { $trap: false }, async arguable => {
                     stdio: [ 'ignore', 'inherit', 'inherit', 'ipc' ]
                 })
                 const destructible = children.ephemeral([ 'sidecar', pid ])
+                const sender = senders.get(pid)
                 function message (message) {
                     printer.say(message.method, message)
                     switch (message.method) {
                     case 'receiving': {
-                            const sender = senders.get(pid)
                             sender.started = true
                             if (sender.socketed) {
                                 countdown.decrement()
