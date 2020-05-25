@@ -150,10 +150,13 @@ class Watcher extends events.EventEmitter {
         for await (const entry of shifter.iterator()) {
             switch (entry.method) {
             case 'killed':
+                // TODO Before you look to see that it is killed, first search
+                // for any remaining files.
                 this._pids.push(entry.pid)
                 await this._killed()
                 break
             case 'changed':
+                // TODO How do you know you're recording these files in order?
                 await this._changed(entry.eventType, entry.filename)
                 break
             case 'drain':
