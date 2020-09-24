@@ -81,8 +81,7 @@ require('proof')(14, async (okay) => {
         okay(gathered.map(data => data.body.method), [
             'start'
         ], 'exit')
-        destructible.destroy()
-        await destructible.destructed
+        await destructible.destroy().rejected
     }
     {
         const { destructible, watcher, collector } = await reset()
@@ -98,8 +97,7 @@ require('proof')(14, async (okay) => {
         okay(gathered.map(data => data.body.method), [
             'start', 'entries'
         ], 'exit')
-        destructible.destroy()
-        await destructible.destructed
+        await destructible.destroy().rejected
     }
     {
         const { destructible, watcher, collector } = await reset()
@@ -115,8 +113,7 @@ require('proof')(14, async (okay) => {
         okay(gathered.map(data => data.body.method), [
             'start', 'entries'
         ], 'exit')
-        destructible.destroy()
-        await destructible.destructed
+        await destructible.destroy().destructed
     }
     {
         const { destructible, watcher, collector } = await reset()
@@ -146,8 +143,7 @@ require('proof')(14, async (okay) => {
         queue.exit(0)
         const gathered = await gatherer.promise
         okay(gathered.map(data => data.body.method), [ 'start' ], 'exit')
-        destructible.destroy()
-        await destructible.destructed
+        await destructible.destroy().destructed
         await Promise.all(await promises)
         const lines = net.pipe.server
                               .read()
@@ -190,8 +186,7 @@ require('proof')(14, async (okay) => {
         queue.exit(0)
         const gathered = await gatherer.promise
         okay(gathered.map(data => data.body.method), [ 'start' ], 'exit')
-        destructible.destroy()
-        await destructible.destructed
+        await destructible.destroy().destructed
         await Promise.all(await promises)
         const lines = net.pipe.server
                               .read()
@@ -230,8 +225,7 @@ require('proof')(14, async (okay) => {
         okay(gathered.map(data => data.body.method), [
             'start', 'entries'
         ], 'exit')
-        destructible.destroy()
-        await destructible.destructed
+        await destructible.destroy().destructed
         await Promise.all(await promises)
         const lines = net.pipe.server
                               .read()
@@ -265,8 +259,7 @@ require('proof')(14, async (okay) => {
         okay(gathered.map(data => data.body.method), [
             'start', 'version'
         ], 'exit')
-        destructible.destroy()
-        await destructible.destructed
+        await destructible.destroy().destructed
         await Promise.all(await promises)
         const lines = net.pipe.server
                               .read()
@@ -295,8 +288,7 @@ require('proof')(14, async (okay) => {
         okay(gathered.map(data => data.body.method), [
             'start', 'version'
         ], 'exit')
-        destructible.destroy()
-        await destructible.destructed
+        await destructible.destroy().destructed
         await Promise.all(await promises)
         const lines = net.pipe.server
                               .read()
