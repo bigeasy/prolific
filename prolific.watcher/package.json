@@ -20,7 +20,7 @@
     },
     "dependencies":
     {
-                            "avenue":                       "^0.3.0"
+                            "avenue":                       "^0.4.0"
     },
     "devDependencies":
     {
