@@ -101,8 +101,7 @@ require('proof')(4, async (okay) => {
         await new Promise(resolve => setTimeout(resolve, 100))
         shuttle.exit(0)
         const gathered = await gatherer.promise
-        destructible.destroy()
-        await destructible.destructed
+        await destructible.destroy().rejected
         okay(gathered.map(entry => entry.body.method), [
             'start', 'entries', 'version', 'entries'
         ], 'synchronous')
@@ -143,8 +142,7 @@ require('proof')(4, async (okay) => {
         })
         shuttle.exit(0)
         const gathered = await gatherer.promise
-        destructible.destroy()
-        await destructible.destructed
+        await destructible.destroy().destructed
         okay(gathered.map(entry => entry.body.method), [
             'start'
         ], 'synchronous')
