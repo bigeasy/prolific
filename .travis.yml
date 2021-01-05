@@ -1,9 +1,9 @@
-sudo: false
-
 language: node_js
 
 node_js:
   - '12'
+  - '14'
+  - '15'
 
 branches:
   only:
@@ -11,10 +11,8 @@ branches:
     - travis-ci
 
 install:
-  - for dir in prolific.*; do (cd $dir && npm install --no-save --no-package-lock); done
-  - npm install --no-save --no-package-lock
-  - npm install -g nyc mocha prove
-  - git checkout .
+  - npm install --no-package-lock --no-save
+  - npm install -g nyc prove
 
 script:
   - nyc npm test
