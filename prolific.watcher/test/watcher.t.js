@@ -1,8 +1,6 @@
 require('proof')(9, async (okay) => {
-    const rimraf = require('rimraf')
     const path = require('path')
     const fs = require('fs').promises
-    const callback = require('prospective/callback')
     const once = require('prospective/once')
     const events = require('events')
     const entries = new events.EventEmitter
@@ -13,7 +11,7 @@ require('proof')(9, async (okay) => {
     }
     process.on('unhandledRejection', error => { throw error })
     async function reset () {
-        await callback(callback => rimraf(TMPDIR, callback))
+        await fs.rmdir(TMPDIR, { recursive: true })
         await fs.mkdir(dir.publish, { recursive: true })
         await fs.mkdir(dir.stage, { recursive: true })
         // For some reason we need to wait a bit for the above directories to
@@ -89,7 +87,7 @@ require('proof')(9, async (okay) => {
     }
     {
         const test = []
-        await callback(callback => rimraf(TMPDIR, callback))
+        await fs.rmdir(TMPDIR, { recursive: true })
         await fs.mkdir(dir.publish, { recursive: true })
         await fs.mkdir(dir.stage, { recursive: true })
         await new Promise(resolve => setTimeout(resolve, 50))
@@ -122,7 +120,7 @@ require('proof')(9, async (okay) => {
     }
     {
         const test = []
-        await callback(callback => rimraf(TMPDIR, callback))
+        await fs.rmdir(TMPDIR, { recursive: true })
         await fs.mkdir(dir.publish, { recursive: true })
         await fs.mkdir(dir.stage, { recursive: true })
         await new Promise(resolve => setTimeout(resolve, 50))
