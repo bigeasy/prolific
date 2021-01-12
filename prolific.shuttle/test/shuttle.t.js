@@ -4,8 +4,6 @@ require('proof')(4, async (okay) => {
     const stream = require('stream')
     const once = require('eject')
     const Shuttle = require('../shuttle')
-    const callback = require('prospective/callback')
-    const rimraf = require('rimraf')
     const sink = require('prolific.sink')
     const path = require('path')
     const Watcher = require('prolific.watcher')
@@ -35,7 +33,7 @@ require('proof')(4, async (okay) => {
         }
     }
     async function reset () {
-        await callback(callback => rimraf(TMPDIR, callback))
+        await fs.rmdir(TMPDIR, { recursive: true })
         await fs.mkdir(dir.publish, { recursive: true })
         await fs.mkdir(dir.stage, { recursive: true })
         // For some reason we need to wait a bit for the above directories to
