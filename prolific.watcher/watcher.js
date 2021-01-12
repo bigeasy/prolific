@@ -24,7 +24,10 @@ class Watcher extends events.EventEmitter {
             this._queue.push({ method: 'changed', eventType, filename })
         })
         this._watcher.on('error', this.emit.bind(this, 'error'))
-        destructible.durable('shift', this._shift(paired.shifter))
+        destructible.ephemeral('shift', async () => {
+            await this._shift(paired.shifter)
+            destructible.destroy()
+        })
         destructible.destruct(() => this.destroyed = true)
         destructible.destruct(() => this._watcher.close())
         destructible.destruct(() => paired.shifter.destroy())
