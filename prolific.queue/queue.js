@@ -2,7 +2,7 @@ const assert = require('assert')
 const Staccato = require('staccato')
 const byline = require('byline')
 const events = require('events')
-const once = require('prospective/once')
+const once = require('eject')
 
 const Publisher = require('./publisher')
 
