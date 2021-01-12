@@ -6,9 +6,6 @@ require('proof')(14, async (okay) => {
     const Pipe = require('duplicitous/pipe')
 
     const Destructible = require('destructible')
-    const callback = require('prospective/callback')
-
-    const rimraf = require('rimraf')
 
     const Collector = require('prolific.collector')
     const Watcher = require('prolific.watcher')
@@ -23,7 +20,7 @@ require('proof')(14, async (okay) => {
         publish: path.resolve(TMPDIR, 'publish')
     }
     async function reset () {
-        await callback(callback => rimraf(TMPDIR, callback))
+        await fs.rmdir(TMPDIR, { recursive: true })
         await fs.mkdir(dir.publish, { recursive: true })
         await fs.mkdir(dir.stage, { recursive: true })
         // For some reason we need to wait a bit for the above directories to
