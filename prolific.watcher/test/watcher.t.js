@@ -1,7 +1,7 @@
 require('proof')(9, async (okay) => {
     const path = require('path')
     const fs = require('fs').promises
-    const once = require('prospective/once')
+    const once = require('eject')
     const events = require('events')
     const entries = new events.EventEmitter
     const TMPDIR = path.join(__dirname, 'tmp')

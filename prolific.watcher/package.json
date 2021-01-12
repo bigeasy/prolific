@@ -25,9 +25,9 @@
     "devDependencies":
     {
                             "destructible":                 "7.0.0-alpha.9",
+                            "eject":                        "0.2.3",
                             "foremost":                     "^1.0.4",
-                            "proof":                        "^9.0.1",
-                            "prospective":                  "^0.3.0"
+                            "proof":                        "^9.0.1"
     },
     "main":                 "watcher",
     "scripts":
