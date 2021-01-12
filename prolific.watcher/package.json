@@ -27,8 +27,7 @@
                             "destructible":                 "7.0.0-alpha.9",
                             "foremost":                     "^1.0.4",
                             "proof":                        "^9.0.1",
-                            "prospective":                  "^0.3.0",
-                            "rimraf":                       "3.0.2"
+                            "prospective":                  "^0.3.0"
     },
     "main":                 "watcher",
     "scripts":
