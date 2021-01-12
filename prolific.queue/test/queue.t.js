@@ -78,7 +78,7 @@ require('proof')(14, async (okay) => {
         okay(gathered.map(data => data.body.method), [
             'start'
         ], 'exit')
-        await destructible.destroy().rejected
+        await destructible.destroy().promise
     }
     {
         const { destructible, watcher, collector } = await reset()
@@ -94,7 +94,7 @@ require('proof')(14, async (okay) => {
         okay(gathered.map(data => data.body.method), [
             'start', 'entries'
         ], 'exit')
-        await destructible.destroy().rejected
+        await destructible.destroy().promise
     }
     {
         const { destructible, watcher, collector } = await reset()
