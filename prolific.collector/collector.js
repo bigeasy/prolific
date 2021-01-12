@@ -1,9 +1,10 @@
 const assert = require('assert')
-
-const ascension = require('ascension')
 const events = require('events')
 
-const sort = ascension([ Number, Number ], entry => [ entry.when, entry.series ])
+const ascension = require('ascension')
+const whittle = require('whittle')
+
+const sort = whittle(ascension([ Number, Number ]), entry => [ entry.when, entry.series ])
 
 class Collector extends events.EventEmitter {
     constructor () {
