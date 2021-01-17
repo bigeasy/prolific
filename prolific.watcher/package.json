@@ -24,7 +24,7 @@
     },
     "devDependencies":
     {
-                            "destructible":                 "7.0.0-alpha.38",
+                            "destructible":                 "7.0.0-alpha.39",
                             "eject":                        "0.2.3",
                             "foremost":                     "^1.0.4",
                             "proof":                        "^9.0.1"
