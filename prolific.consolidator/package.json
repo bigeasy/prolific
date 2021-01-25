@@ -21,7 +21,7 @@
     "dependencies":
     {
                             "byline":                       "5.0.0",
-                            "staccato":                     "^12.0.0"
+                            "staccato":                     "^12.0.11"
     },
     "devDependencies":
     {
