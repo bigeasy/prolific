@@ -1,6 +1,6 @@
 const assert = require('assert')
 const byline = require('byline')
-const Staccato = require('staccato')
+const Staccato = require('staccato/redux')
 const events = require('events')
 
 class Consolidator extends events.EventEmitter {
@@ -9,16 +9,15 @@ class Consolidator extends events.EventEmitter {
         this._eos = false
         this._series = 0
         this._queue = queue
-        this._readable = { destroy: () => {} }
-        this._writable = { destroy: () => {} }
+        this._readable = { stream: { destroy: () => {} } }
         this._logger = logger
     }
 
     async asynchronous (input, output) {
-        this._readable = new Staccato.Readable(input)
-        this._writable = new Staccato.Writable(output)
+        this._readable = new Staccato(input)
+        const writable = new Staccato(output)
         let remainder = Buffer.alloc(0)
-        for await (const chunk of this._readable) {
+        READ: for await (const chunk of this._readable.readable) {
             const buffer = remainder.length == 0 ? chunk : Buffer.concat([ remainder, chunk ])
             let start = 0
             for (;;) {
@@ -37,11 +36,17 @@ class Consolidator extends events.EventEmitter {
                             this._series = json.series + 1
                         }
                         this._queue.push(json)
-                        await this._writable.write(JSON.stringify({
+                        if (! writable.writable.write(JSON.stringify({
                             method: 'receipt',
                             series: json.series
-                        }) + '\n')
+                        }) + '\n')) {
+                            await writable.writable.drain()
+                        }
+                        if (writable.writable.finished) {
+                            break READ
+                        }
                     } catch (error) {
+                        console.log(error.stack)
                         assert(error instanceof SyntaxError)
                         this._logger.say('consolidator.json', { line })
                     }
@@ -52,11 +57,11 @@ class Consolidator extends events.EventEmitter {
                 }
             }
         }
+        writable.writable.end()
     }
 
     synchronous (json) {
-        this._readable.destroy()
-        this._writable.destroy()
+        this._readable.stream.destroy()
         if (json == null) {
             this._queue.push(null)
         } else if (json.series == this._series) {
