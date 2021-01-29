@@ -1,7 +1,7 @@
 const filesystem = require('fs')
 const fs = require('fs').promises
 const events = require('events')
-const Queue = require('avenue')
+const { Queue } = require('avenue')
 const path = require('path')
 const assert = require('assert')
 const coalesce = require('extant')
