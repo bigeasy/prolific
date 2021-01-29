@@ -1,6 +1,7 @@
-require('proof')(7, async (okay) => {
+require('proof')(8, async (okay) => {
     const stream = require('stream')
     const Consolidator = require('../consolidator')
+    const { Duplex } = require('duplicitous')
     {
         const queue = []
         const consolidator = new Consolidator(queue)
@@ -8,21 +9,20 @@ require('proof')(7, async (okay) => {
         okay(queue, [ null ], 'queue')
     }
     {
-        const input = new stream.PassThrough
-        const output = new stream.PassThrough
+        const duplex = new Duplex
         const queue = []
         const consolidator = new Consolidator(queue)
-        const async = consolidator.asynchronous(input, output)
-        input.write(JSON.stringify({ series: 0 }) + '\n')
+        const async = consolidator.asynchronous(duplex)
+        duplex.input.write(JSON.stringify({ series: 0 }) + '\n')
         const next = JSON.stringify({ series: 1 }) + '\n'
-        input.write(next.substring(0, 4))
+        duplex.input.write(next.substring(0, 4))
         await new Promise(resolve => setImmediate(resolve))
-        input.write(next.substring(4))
-        input.write(JSON.stringify({ series: 2 }))
-        input.end()
+        duplex.input.write(next.substring(4))
+        duplex.input.write(JSON.stringify({ series: 2 }))
+        duplex.input.end()
         await async
         await new Promise(resolve => setImmediate(resolve))
-        okay(output.read().toString(), ([{
+        okay(String(duplex.output.read()), ([{
             method: 'receipt',
             series: 0
         }, {
@@ -53,16 +53,14 @@ require('proof')(7, async (okay) => {
                 }, 'bad json')
             }
         })
-        const input = new stream.PassThrough
-        const output = new stream.PassThrough
-        const async = consolidator.asynchronous(input, output)
-        input.write('{\n')
-        input.end()
+        const duplex = new Duplex
+        const async = consolidator.asynchronous(duplex)
+        duplex.input.write('{\n')
+        duplex.input.end()
         await async
     }
     {
-        const input = new stream.PassThrough
-        const output = new stream.PassThrough
+        const duplex = new Duplex
         const queue = []
         const consolidator = new Consolidator(queue, {
             say: (message, context) => {
@@ -78,14 +76,14 @@ require('proof')(7, async (okay) => {
                 }, 'bad series')
             }
         })
-        const async = consolidator.asynchronous(input, output)
-        input.write(JSON.stringify({ series: 0 }) + '\n')
-        input.write(JSON.stringify({ series: 2 }) + '\n')
-        input.write(JSON.stringify({ series: 3 }) + '\n')
-        input.end()
-        await async
+        const promise = consolidator.asynchronous(duplex)
+        duplex.input.write(JSON.stringify({ series: 0 }) + '\n')
+        duplex.input.write(JSON.stringify({ series: 2 }) + '\n')
+        duplex.input.write(JSON.stringify({ series: 3 }) + '\n')
+        duplex.input.end()
+        await promise
         await new Promise(resolve => setImmediate(resolve))
-        okay(output.read().toString(), ([{
+        okay(duplex.output.read().toString(), ([{
             method: 'receipt',
             series: 0
         }, {
@@ -105,5 +103,22 @@ require('proof')(7, async (okay) => {
         }, {
             series: 3
         }, null ], 'queue')
+    }
+    {
+        const duplex = new Duplex
+        const queue = []
+        const consolidator = new Consolidator(queue, {
+            say: (message, context) => {
+                okay({
+                    message: message
+                }, {
+                    message: 'consolidator.socket'
+                }, 'bad socket')
+            }
+        })
+        const promise = consolidator.asynchronous(duplex)
+        await null
+        duplex.emit('error', new Error('error'))
+        await promise
     }
 })
