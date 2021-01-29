@@ -71,4 +71,4 @@ class Consolidator extends events.EventEmitter {
     }
 }
 
-module.exports = Consolidator
+exports.Consolidator = Consolidator

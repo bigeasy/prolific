@@ -1,6 +1,6 @@
 require('proof')(8, async (okay) => {
     const stream = require('stream')
-    const Consolidator = require('../consolidator')
+    const { Consolidator } = require('../consolidator')
     const { Duplex } = require('duplicitous')
     {
         const queue = []
