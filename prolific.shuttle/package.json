@@ -21,7 +21,7 @@
     "dependencies":
     {
                             "duplicitous":                  "^0.2.0",
-                            "extant":                       "^1.0.15",
+                            "extant":                       "^2.0.0-alpha.0",
                             "prolific.evaluator":           "^4.0.2",
                             "prolific.logger":              "^11.0.0",
                             "prolific.queue":               "^22.0.0-alpha.1",
