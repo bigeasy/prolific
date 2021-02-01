@@ -1,4 +1,4 @@
-const coalesce = require('extant')
+const { coalesce } = require('extant')
 const Evaluator = require('prolific.evaluator')
 const Queue = require('prolific.queue')
 const path = require('path')

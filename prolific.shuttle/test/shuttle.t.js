@@ -7,7 +7,6 @@ require('proof')(4, async (okay) => {
     const sink = require('prolific.sink')
     const path = require('path')
     const Watcher = require('prolific.watcher')
-    const Pipe = require('duplicitous/pipe')
     const Collector = require('prolific.collector')
     const Destructible = require('destructible')
     const fs = require('fs').promises
