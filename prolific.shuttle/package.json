@@ -22,7 +22,7 @@
     {
                             "duplicitous":                  "^0.2.0",
                             "extant":                       "^1.0.15",
-                            "prolific.evaluator":           "^4.0.0",
+                            "prolific.evaluator":           "^4.0.2",
                             "prolific.logger":              "^11.0.0",
                             "prolific.queue":               "^21.0.0",
                             "prolific.sink":                "^7.0.4"
