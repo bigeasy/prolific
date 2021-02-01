@@ -4,7 +4,7 @@ const events = require('events')
 const { Queue } = require('avenue')
 const path = require('path')
 const assert = require('assert')
-const coalesce = require('extant')
+const { coalesce } = require('extant')
 
 const LEVEL = { ENOENT: 'debug' }
 
