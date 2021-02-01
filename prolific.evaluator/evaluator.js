@@ -1,6 +1,8 @@
-const coalesce = require('extant')
 const assert = require('assert')
 const path = require('path')
+
+const { coalesce } = require('extant')
+
 const _module = require('module')
 
 function createRequire (filename) {
