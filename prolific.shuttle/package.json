@@ -24,7 +24,7 @@
                             "extant":                       "^1.0.15",
                             "prolific.evaluator":           "^4.0.2",
                             "prolific.logger":              "^11.0.0",
-                            "prolific.queue":               "^21.0.0",
+                            "prolific.queue":               "^22.0.0-alpha.1",
                             "prolific.sink":                "^7.0.4"
     },
     "devDependencies":
