@@ -20,7 +20,7 @@
     },
     "dependencies":
     {
-                            "arguable":                     "12.0.1",
+                            "arguable":                     "12.0.7",
                             "ascension":                    "^3.0.0-alpha.2",
                             "avenue":                       "0.6.13",
                             "cubbyhole":                    "4.0.2",
