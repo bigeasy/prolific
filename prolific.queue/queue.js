@@ -1,6 +1,5 @@
 const assert = require('assert')
-const Staccato = require('staccato')
-const byline = require('byline')
+const { Staccato } = require('staccato')
 const events = require('events')
 const once = require('eject')
 
@@ -18,9 +17,9 @@ class Queue extends events.EventEmitter {
         this._unlatched = null
         this._latch = () => {}
         this._batches = []
+        this._previous = Buffer.alloc(0)
         this._written = []
-        this._readable = { destroy: () => {} }
-        this._writable = { destroy: () => {} }
+        this._staccato = { stream: { destroy: () => {} } }
         this._receiving = new Promise(resolve => this._received = resolve)
         this._writing = true
         this._sync = false
@@ -55,59 +54,64 @@ class Queue extends events.EventEmitter {
 
     //
     async _send (writable) {
-        let interval = 0
-        await this._receiving
-        SEND: for (;;) {
-            // We set writing false because from here we either sleep or wait.
-            this._writing = false
-            if (interval != 0) {
-                await new Promise(resolve => {
-                    this._timeout = setTimeout(resolve, this._interval)
-                    this._timeout.unref()
-                })
+//        await Staccato.rescue(async () => {
+            let interval = 0
+            await this._receiving
+            SEND: for (;;) {
+                // We set writing false because from here we either sleep or wait.
+                this._writing = false
+                if (interval != 0) {
+                    await new Promise(resolve => {
+                        this._timeout = setTimeout(resolve, this._interval)
+                        this._timeout.unref()
+                    })
+                }
+                interval = this._interval
+                await this._unlatched
+                this._unlatched = new Promise(resolve => this._latch = resolve)
+                if (this._exited) {
+                    break SEND
+                }
+                this._batchEntries()
+                while (this._batches.length != 0) {
+                    const batch = this._batches.shift()
+                    this._written.push(batch)
+                    await this._staccato.writable.write(JSON.stringify(batch) + '\n')
+                }
             }
-            interval = this._interval
-            await this._unlatched
-            this._unlatched = new Promise(resolve => this._latch = resolve)
-            if (this._exited) {
-                break SEND
-            }
-            this._batchEntries()
-            while (this._batches.length != 0) {
-                const batch = this._batches.shift()
-                this._written.push(batch)
-                await writable.write(JSON.stringify(batch) + '\n')
-            }
-        }
+//        })
     }
 
     _triage (json) {
         this.emit('triage', json.processor)
     }
 
-    _dispatch (line) {
-        const json = JSON.parse(line)
-        switch (json.method) {
-        case 'receipt':
-            assert.equal(this._written[0].series, json.series, 'series mismatch')
-            this._written.shift()
-            break
-        case 'triage':
-            this._triage(json)
-            break
+    _dispatch (lines) {
+        for (const line of lines) {
+            const json = JSON.parse(line)
+            switch (json.method) {
+            case 'receipt':
+                assert.equal(this._written[0].series, json.series, 'series mismatch')
+                this._written.shift()
+                break
+            case 'triage':
+                this._triage(json)
+                break
+            }
         }
     }
 
-    // Note that in case of a truncated stream, `byline` will not give us a
-    // partial line at the end of file, so we can always count on each line
-    // being a full line with a single JSON object.
     async _receive () {
-        const line = await this._readable.read()
-        if (line != null) {
-            this._dispatch(line.toString())
+        const lines = await this._read()
+        if (lines.length != 0) {
+            this._dispatch(lines)
             this._received.call()
-            for await (const line of this._readable) {
-                this._dispatch(line.toString())
+            for (;;) {
+                const lines = await this._read()
+                if (lines != null) {
+                    break
+                }
+                this._dispatch(lines)
             }
         }
     }
@@ -123,6 +127,30 @@ class Queue extends events.EventEmitter {
         while (this._batches.length) {
             this._publisher.publish(this._batches.shift())
         }
+    }
+
+    async _read () {
+        const lines = []
+        let offset = 0
+        LINES: while (this._lines != 0) {
+            const buffer = await this._staccato.readable.read()
+            if (buffer == null) {
+                break
+            }
+            for (;;) {
+                const combined = Buffer.concat([ this._previous, buffer ])
+                this._previous = Buffer.alloc(0)
+                const index = combined.indexOf(0xa, offset)
+                if (~index) {
+                    lines.push(String(combined.slice(offset, index)))
+                    offset = index + 1
+                } else {
+                    this._previous = combined.slice(offset)
+                    break LINES
+                }
+            }
+        }
+        return lines
     }
 
     // Set the asynchronous pipe and begin streaming entries or else close the
@@ -141,16 +169,18 @@ class Queue extends events.EventEmitter {
         if (this._exited) {
             return []
         }
-        this._writable = new Staccato.Writable(this._socket)
-        this._readable = new Staccato.Readable(byline(this._socket))
-        await this._writable.write(JSON.stringify({
-            method: 'announce',
-            pid: this._pid,
-            start: this._start
-        }) + '\n')
+        // **TODO** Report errors.
+        this._staccato = new Staccato(this._socket)
+//        await Staccato.rescue(async () => {
+            await this._staccato.writable.write(JSON.stringify({
+                method: 'announce',
+                pid: this._pid,
+                start: this._start
+            }) + '\n')
+//        })
         // We may have exited, but that's unlikely at runtime, and the loops
         // here will both exit immediately, so we don't have to check for exit.
-        return [ this._send(this._writable), this._receive() ]
+        return [ this._send(), this._receive() ]
     }
 
     _nudge () {
@@ -183,8 +213,7 @@ class Queue extends events.EventEmitter {
     exit (code) {
         if (!this._exited) {
             this._exited = true
-            this._readable.destroy()
-            this._writable.destroy()
+            this._staccato.stream.destroy()
             this._received.call()
             this._latch.call()
             this._writeSync()

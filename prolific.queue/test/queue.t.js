@@ -3,7 +3,7 @@ require('proof')(14, async (okay) => {
     const fs = require('fs').promises
     const fnv = require('hash.fnv')
 
-    const Pipe = require('duplicitous/pipe')
+    const { Duplex } = require('duplicitous')
 
     const Destructible = require('destructible')
 
@@ -54,12 +54,15 @@ require('proof')(14, async (okay) => {
     }
     class Net {
         constructor () {
-            this.pipe = new Pipe
-            this.pipe.client.unref = () => {}
+            this.client = new Duplex
+            this.server = new Duplex
+            this.client.output.pipe(this.server.input)
+            this.server.output.pipe(this.client.input)
+            this.client.unref = () => {}
         }
 
         connect (path) {
-            return this.pipe.client
+            return this.client
         }
     }
     {
@@ -72,7 +75,7 @@ require('proof')(14, async (okay) => {
         const net = new Net
         queue.connect(net, './socket')
         queue.exit(0)
-        net.pipe.client.emit('connect')
+        net.client.emit('connect')
         await new Promise(resolve => setImmediate(resolve))
         const gathered = await gatherer.promise
         okay(gathered.map(data => data.body.method), [
@@ -120,10 +123,10 @@ require('proof')(14, async (okay) => {
         const queue = new Queue({ now: () => now++ }, TMPDIR, 2, 1)
         const net = new Net
         const promises = queue.connect(net, './socket')
-        net.pipe.client.emit('connect')
+        net.client.emit('connect')
         await new Promise(resolve => setTimeout(resolve, 5))
         queue.version(1)
-        net.pipe.server.write(([{
+        net.server.write(([{
             method: 'triage',
             processor: {
                 version: 1,
@@ -135,14 +138,14 @@ require('proof')(14, async (okay) => {
             }
         }]).map(JSON.stringify).join('\n') + '\n')
         await new Promise(resolve => setImmediate(resolve))
-        net.pipe.server.write(([{ method: 'receipt', series: 0 }]).map(JSON.stringify).join('\n') + '\n')
+        net.server.write(([{ method: 'receipt', series: 0 }]).map(JSON.stringify).join('\n') + '\n')
         await new Promise(resolve => setTimeout(resolve, 5))
         queue.exit(0)
         const gathered = await gatherer.promise
         okay(gathered.map(data => data.body.method), [ 'start' ], 'exit')
         await destructible.destroy().destructed
         await Promise.all(await promises)
-        const lines = net.pipe.server
+        const lines = net.server
                               .read()
                               .toString()
                               .split('\n')
@@ -161,10 +164,10 @@ require('proof')(14, async (okay) => {
         queue.push({ a: 1 })
         const net = new Net
         const promises = queue.connect(net, './socket')
-        net.pipe.client.emit('connect')
+        net.client.emit('connect')
         await new Promise(resolve => setTimeout(resolve, 5))
         queue.push({ a: 1 })
-        net.pipe.server.write(([{
+        net.server.write(([{
             method: 'triage',
             processor: {
                 version: 1,
@@ -176,7 +179,7 @@ require('proof')(14, async (okay) => {
             }
         }]).map(JSON.stringify).join('\n') + '\n')
         await new Promise(resolve => setImmediate(resolve))
-        net.pipe.server.write(([{
+        net.server.write(([{
             method: 'receipt', series: 0
         }]).map(JSON.stringify).join('\n') + '\n')
         await new Promise(resolve => setTimeout(resolve, 5))
@@ -185,7 +188,7 @@ require('proof')(14, async (okay) => {
         okay(gathered.map(data => data.body.method), [ 'start' ], 'exit')
         await destructible.destroy().destructed
         await Promise.all(await promises)
-        const lines = net.pipe.server
+        const lines = net.server
                               .read()
                               .toString()
                               .split('\n')
@@ -210,8 +213,8 @@ require('proof')(14, async (okay) => {
         const queue = new Queue({ now: () => now++ }, TMPDIR, 2, 1)
         const net = new Net
         const promises = queue.connect(net, './socket')
-        net.pipe.client.emit('connect')
-        net.pipe.server.write(JSON.stringify({
+        net.client.emit('connect')
+        net.server.write(JSON.stringify({
             method: 'triage', source: '1 + 1', file: '/opt/processor.js', version: 1
         }) + '\n')
         await new Promise(resolve => setTimeout(resolve, 5))
@@ -224,7 +227,7 @@ require('proof')(14, async (okay) => {
         ], 'exit')
         await destructible.destroy().destructed
         await Promise.all(await promises)
-        const lines = net.pipe.server
+        const lines = net.server
                               .read()
                                 .toString()
                                .split('\n')
@@ -241,15 +244,15 @@ require('proof')(14, async (okay) => {
         const queue = new Queue({ now: () => now++ }, TMPDIR, 2, 1)
         const net = new Net
         const promises = queue.connect(net, './socket')
-        net.pipe.client.emit('connect')
+        net.client.emit('connect')
         await new Promise(resolve => setTimeout(resolve, 5))
         queue.version(1)
-        net.pipe.server.write(([{
+        net.server.write(([{
             method: 'triage', source: '1 + 1', file: '/opt/processor.js', version: 1
         }]).map(JSON.stringify).join('\n') + '\n')
         await new Promise(resolve => setImmediate(resolve))
-        net.pipe.server.write('[')
-        net.pipe.server.end()
+        net.server.write('[')
+        net.server.end()
         await new Promise(resolve => setTimeout(resolve, 50))
         queue.exit(0)
         const gathered = await gatherer.promise
@@ -258,7 +261,7 @@ require('proof')(14, async (okay) => {
         ], 'exit')
         await destructible.destroy().destructed
         await Promise.all(await promises)
-        const lines = net.pipe.server
+        const lines = net.server
                               .read()
                               .toString()
                               .split('\n')
@@ -275,10 +278,10 @@ require('proof')(14, async (okay) => {
         const queue = new Queue({ now: () => now++ }, TMPDIR, 2, 1)
         const net = new Net
         const promises = queue.connect(net, './socket')
-        net.pipe.client.emit('connect')
+        net.client.emit('connect')
         await new Promise(resolve => setTimeout(resolve, 5))
         queue.version(1)
-        net.pipe.server.end()
+        net.server.end()
         await new Promise(resolve => setTimeout(resolve, 50))
         queue.exit(0)
         const gathered = await gatherer.promise
@@ -287,7 +290,7 @@ require('proof')(14, async (okay) => {
         ], 'exit')
         await destructible.destroy().destructed
         await Promise.all(await promises)
-        const lines = net.pipe.server
+        const lines = net.server
                               .read()
                               .toString()
                               .split('\n')
