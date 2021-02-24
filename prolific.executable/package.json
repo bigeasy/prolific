@@ -60,7 +60,7 @@
     },
     "dots":
     {
-                            "path":                         "mingle/prolific.executable",
+                            "path":                         "prolific/prolific.executable",
                             "prefix":                       "prolific",
                             "title":                        "Prolific"
     }
