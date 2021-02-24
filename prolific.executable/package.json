@@ -57,5 +57,11 @@
     "scripts":
     {
                             "test": "proof test/*.t.js"
+    },
+    "dots":
+    {
+                            "path":                         "mingle/prolific.executable",
+                            "prefix":                       "prolific",
+                            "title":                        "Prolific"
     }
 }
