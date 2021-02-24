@@ -24,7 +24,7 @@ jobs:
     - name: npm install nyc, prove, codecov
       run:  npm install -g nyc prove codecov
     - name: npm test
-      run: nyc npm test
+      run: nyc bash -c 'for dir in prolific.*; do (cd $dir && [ -e package.json ] && [ ! -e skip ] && npm test || true); done'
       env:
         CI: true
     - name: generate codecov report
