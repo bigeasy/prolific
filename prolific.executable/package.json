@@ -23,6 +23,7 @@
                             "arguable":                     "12.0.7",
                             "ascension":                    "^3.0.0-alpha.2",
                             "avenue":                       "0.6.13",
+                            "comeuppance":                  "0.0.1",
                             "cubbyhole":                    "4.0.2",
                             "destructible":                 "^7.0.0-alpha.48",
                             "foremost":                     "^1.0.4",
@@ -31,14 +32,15 @@
                             "is-running":                   "2.1.0",
                             "isochronous":                  "5.0.1",
                             "nop":                          "1.0.0",
+                            "eject":                         "0.2.3",
                             "prolific.collector":           "12.0.1",
                             "prolific.consolidator":        "13.0.0-alpha.1",
                             "prolific.evaluator":           "4.0.2",
                             "prolific.inherit":             "^7.0.2",
                             "prolific.watcher":             "0.4.0-alpha.3",
                             "reconfigure":                  "5.0.0-alpha.4",
-                            "rimraf":                       "3.0.2",
-                            "vivifyer":                     "^2.0.3"
+                            "vivifyer":                     "^2.0.3",
+                            "whittle":                      "0.0.1"
     },
     "devDependencies":
     {

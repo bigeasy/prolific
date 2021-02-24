@@ -2,9 +2,7 @@ require('proof')(1, async (okay) => {
     const fs = require('fs').promises
     const path = require('path')
 
-    const rimraf = require('rimraf')
-    const callback = require('prospective/callback')
-    const once = require('prospective/once')
+    const once = require('eject')
 
     const Watcher = require('prolific.watcher')
 
@@ -16,7 +14,7 @@ require('proof')(1, async (okay) => {
         stage: path.resolve(TMPDIR, 'stage'),
         publish: path.resolve(TMPDIR, 'publish')
     }
-    await callback(callback => rimraf(TMPDIR, callback))
+    await fs.rmdir(TMPDIR, { recursive: true })
     await fs.mkdir(dir.publish, { recursive: true })
     await fs.mkdir(dir.stage, { recursive: true })
     const Destructible = require('destructible')

@@ -24,13 +24,15 @@ require('arguable')(module, {
     const Destructible = require('destructible')
     const destructible = new Destructible('sidecar')
 
-    await destructible.attemptable('main', async function () {
-        const Consolidator = require('prolific.consolidator')
+    destructible.ephemeral('main', async function () {
+        const { Consolidator } = require('prolific.consolidator')
 
         const Logger = require('./logger')
 
         const tmp = arguable.ultimate.tmp
 
+        // TODO Aren't we going to wait a second before informing that we've
+        // started?
         const logger = new Logger(destructible.durable('logger'), Date, tmp, process.pid, 1000)
         logger.say('sidecar.start', { tmp })
 
@@ -54,7 +56,7 @@ require('arguable')(module, {
         const Configurator = require('./configurator')
         const Reconfigurator = require('reconfigure')
         const Processor = require('./processor')
-        const Queue = require('avenue')
+        const { Queue } = require('avenue')
 
         const configurator = new Configurator(_logger, arguable.ultimate.processor, arguable.ultimate.main)
 
@@ -78,14 +80,20 @@ require('arguable')(module, {
             processors.queue.push(processor)
         })
 
-        await destructible.awaitable('configure', processor.configure())
+        await destructible.destructive('configure', processor.configure())
         destructible.ephemeral('reconfigure', processor.reconfigure())
 
         const queue = new Queue
 
         // Listen to our asynchronous pipe.
         const consolidator = new Consolidator(queue, logger)
-        destructible.durable('process', queue.shifter().pump(chunk => processor.process(chunk)))
+        destructible.durable('process', async () => {
+            for await (const chunk of queue.shifter()) {
+                processor.process(chunk)
+            }
+            processor.process(null)
+            destructible.destroy()
+        })
 
         function message (message, socket) {
             switch (`${message.module}:${message.method}`) {
@@ -133,6 +141,8 @@ require('arguable')(module, {
             child: +arguable.ultimate.child
         })
     })
+
+    await destructible.promise
 
     return 0
 })

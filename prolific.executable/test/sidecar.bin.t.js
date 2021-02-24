@@ -4,18 +4,16 @@ require('proof')(1, async (okay) => {
     const events = require('events')
     const fs = require('fs').promises
 
-    const Pipe = require('duplicitous/pipe')
+    const { Duplex } = require('duplicitous')
 
-    const rimraf = require('rimraf')
-    const callback = require('prospective/callback')
-    const once = require('prospective/once')
+    const once = require('eject')
 
     const TMPDIR = path.join(__dirname, 'tmp')
     const dir = {
         stage: path.resolve(TMPDIR, 'stage'),
         publish: path.resolve(TMPDIR, 'publish')
     }
-    await callback(callback => rimraf(TMPDIR, callback))
+    await fs.rmdir(TMPDIR, { recursive: true })
     await fs.mkdir(dir.publish, { recursive: true })
     await fs.mkdir(dir.stage, { recursive: true })
     const sidecar = require('../sidecar.bin')
@@ -49,10 +47,8 @@ require('proof')(1, async (okay) => {
     messenger.env = {}
     messenger.pid = 2
 
-    const pipe = new Pipe
-
     const child = sidecar({ processor, supervisor: '1', tmp: TMPDIR, child: 3, main: __filename }, {
-        $pipes: { 3: pipe.server },
+        $pipes: { 3: new Duplex },
         $stdin: stdin,
         process: messenger
     })

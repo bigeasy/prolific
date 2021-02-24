@@ -53,13 +53,15 @@ require('proof')(16, async (okay) => {
         const configurator = new ProcessorConfigurator(logger, processors.source, __filename)
         const reconfigurator = new PausableReconfigurator(processors.source, configurator)
         const processor = new Processor(logger, reconfigurator, { now: () => 1 })
+        await destructible.ephemeral('test', async function () {
+            await processor.configure()
+        })
         try {
-            await destructible.attemptable('test', async function () {
-                await destructible.awaitable('configure', processor.configure())
-            })
+            await destructible.promise
         } catch (error) {
+            console.log(error.stack)
             okay(error instanceof Destructible.Error, 'configuration error')
-            okay(error.causes[0] instanceof assert.AssertionError, 'assertion failed')
+            okay(error.errors[0].errors[0] instanceof assert.AssertionError, 'assertion failed')
         }
     }
     {
@@ -79,8 +81,8 @@ require('proof')(16, async (okay) => {
         const reconfigurator = new PausableReconfigurator(processors.source, configurator)
         const processor = new Processor(logger, reconfigurator, { now: () => 1 })
         processor.on('processor', (event) => events.push(event))
-        await destructible.attemptable('test', async function () {
-            await destructible.awaitable('configure', processor.configure())
+        await destructible.ephemeral('test', async function () {
+            await destructible.ephemeral('configure', processor.configure())
             destructible.durable('reconfigure', processor.reconfigure())
             try {
                 processor.process({
@@ -181,8 +183,9 @@ require('proof')(16, async (okay) => {
                 })
                 okay(said.shift()[0], 'process.error', 'processing error')
                 reconfigurator.superUnshift(await fs.readFile(processors.errored))
-                await new Promise(resolve => setTimeout(resolve, 50))
+                await new Promise(resolve => setTimeout(resolve, 150))
                 await processor.process({ method: 'version', version: 2 })
+                await new Promise(resolve => setTimeout(resolve, 150))
                 okay(said.shift()[0], 'background.error', 'background error')
                 await processor.process({
                     method: 'entries',

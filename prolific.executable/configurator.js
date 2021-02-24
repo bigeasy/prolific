@@ -28,15 +28,16 @@ class ProcessorConfigurator extends BufferConfigurator {
         const triage = definition.triage()
         // We must register a `Promise.catch` now to prevent an
         // unhandled exception message.
+        // **TODO** Why is this not a sub-destructible?
         const destructible = new Destructible('processor')
         const terminator = {
             termination: new Promise(resolve => {
                 // TODO Write about this. I wrote a separate call to
                 // `destructible.destructed.catch` and it caused an uncaught
                 // exception.
-                destructible.destructed.then(() => {
+                destructible.promise.then(() => {
                     resolve(true)
-                }).catch(error => {
+                }, error => {
                     this._logger.say('background.error', {
                         error: error.stack,
                         source: source

@@ -1,3 +1,8 @@
+// Log by writing to the temp directory with a synchronous write. These log
+// entries need to be infrequent. Used for meta information about sidecars and
+// the supervisor.
+
+//
 const Isochronous = require('isochronous')
 const Publisher = require('prolific.queue/publisher')
 

@@ -115,13 +115,13 @@ class Processor extends events.EventEmitter {
 
     // We can log dropped messages every thirty seconds or so.
 
-    // Now we'll have `Reconfigurator` ensure that we got a process function
-    // built, and perhaps the user should ensure that it will run correctly,
-    // attempting to connect to HTTP or checking that file paths exist, prior to
-    // actually setting out to run. If it dies during operation, Prolific will
-    // complain bitterly. The user should detect this in their monitoring and
-    // rollback through their DevOps. Thus, Prolific will not go forward if
-    // things are prohibitively bad, but it won't go back.
+    // Now we'll have Reconfigure ensure that we got a process function built,
+    // and perhaps the user should ensure that it will run correctly, attempting
+    // to connect to HTTP or checking that file paths exist, prior to actually
+    // setting out to run. If it dies during operation, Prolific will complain
+    // bitterly. The user should detect this in their monitoring and rollback
+    // through their DevOps. Thus, Prolific will not go forward if things are
+    // prohibitively bad, but it won't go back.
 
     // TODO HUP reload processors. But, there's a reason we don't HUP
     // processors. We don't want to interfere with the HUP handler of the
@@ -130,17 +130,20 @@ class Processor extends events.EventEmitter {
 
     // TODO Leaning toward HUP separation. So, no signal based reload?
 
-    // We receive a process function that has been build by our
-    // `Reconfigurator`. It returns the `process` function and a `Terminator`
-    // object which is a wrapper around a `Destructible` given to the user
-    // defined function to monitor any background strands. This will log an
-    // error if the `Destructible` errors. The `Terminator` wrapper exposes a
-    // `temrination` `Promise` that will resolve `true` if the `Destructible`
-    // has destructed without an error, `false` if it destructed with an
-    // error. As noted, the `Terminator` will log the error, so this
-    // `terminator` `Promise` will not raise an exception. I'm saving the
-    // trouble of having a swallowing `try`/`catch` block in this module
-    // somewhere.
+    // TODO What was I leaning toward? I mean, shouldn't you be able to get the
+    // PID of the process you really want to HUP? Don't you know what a process
+    // tree is?
+
+    // We receive a process function that has been build by our Reconfigure. It
+    // returns the `process` function and a `Terminator` object which is a
+    // wrapper around a `Destructible` given to the user defined function to
+    // monitor any background strands. This will log an error if the
+    // `Destructible` errors. The `Terminator` wrapper exposes a `temrination`
+    // `Promise` that will resolve `true` if the `Destructible` has destructed
+    // without an error, `false` if it destructed with an error. As noted, the
+    // `Terminator` will log the error, so this `terminator` `Promise` will not
+    // raise an exception. I'm saving the trouble of having a swallowing
+    // `try`/`catch` block in this module somewhere.
 
     //
     async configure () {
@@ -191,7 +194,7 @@ class Processor extends events.EventEmitter {
                         this._replace(processor)
                     } else {
                         // This will only be run the first time through, we need to
-                        // catch our kk
+                        // catch our... TODO Catch our what?
                         const version = this._version++
                         this._versions.push({ version, processor })
                         const { source, resolved } = configuration.body

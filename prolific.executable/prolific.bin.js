@@ -43,17 +43,14 @@ const os = require('os')
 const noop = require('nop')
 
 // Return the first value that is not `null`ish.
-const coalesce = require('extant')
+const { coalesce } = require('extant')
 
 // Convert events and callbacks to `async`/`await`.
-const once = require('prospective/once')
-const callback = require('prospective/callback')
-
-// Delete directory and all its contents recursively.
-const rimraf = require('rimraf')
+const once = require('eject')
+const callback = require('comeuppance')
 
 // An `async`/`await` or synchronous queue with many heads.
-const Queue = require('avenue')
+const { Queue } = require('avenue')
 
 // Non-cryptographic 32-bit checksum.
 const fnv = require('hash.fnv')
@@ -62,7 +59,7 @@ const fnv = require('hash.fnv')
 const Isochronous = require('isochronous')
 
 // Wrapped exceptions that you can catch by type.
-const Interrupt = require('interrupt').create('prolific')
+const { Interrupt } = require('interrupt')
 
 // Command line and environment interpretation utilities.
 const inherit = require('prolific.inherit')
@@ -98,6 +95,11 @@ const Vivifyer = require('vivifyer')
 //
 const signals =  [ 'SIGINT', 'SIGTERM', 'SIGHUP', 'SIGQUIT', 'SIGABRT', 'SIGUSR2' ]
 
+const Prolific = {
+    Error: Interrupt.create('Prolific.Error', {
+    })
+}
+
 require('arguable')(module, { $trap: false }, async arguable => {
     arguable.helpIf(arguable.ultimate.help)
 
@@ -111,17 +113,15 @@ require('arguable')(module, { $trap: false }, async arguable => {
     const Destructible = require('destructible')
     const destructible = new Destructible(1500, 'prolific')
 
-    const countdown = destructible.ephemeral('countdown')
+    const countdown = destructible.ephemeral({ countdown: 1 }, 'countdown')
     const children = destructible.ephemeral('children')
     const supervisor = destructible.durable('supervisor')
     const workers = destructible.durable('workers')
 
-    countdown.increment()
-
     const supervise = {
         sidecar: async (sidecar, pid) => {
             const [ exitCode, signal ] = await once(sidecar, 'exit').promise
-            Interrupt.assert(exitCode == 0, 'sidecar.exit', {
+            Prolific.Error.assert(exitCode == 0, 'SIDECAR_EXIT', {
                 exitCode: exitCode,
                 signal: signal,
                 argv: arguable.argv
@@ -139,7 +139,11 @@ require('arguable')(module, { $trap: false }, async arguable => {
         const [ bytes ] = await callback(callback => crypto.randomBytes(16, callback))
         return bytes.toString('hex')
     }, process.pid)
-    supervisor.destruct(() => callback(callback => rimraf(tmp, callback)))
+    supervisor.destruct(() => {
+        supervisor.ephemeral('rm', async () => {
+            // await fs.rmdir(tmp, { recursive: true })
+        })
+    })
 
     const printer = new Printer(supervisor.durable('printer'), lines => {
         console.log(lines)
@@ -226,7 +230,9 @@ require('arguable')(module, { $trap: false }, async arguable => {
         countdown.increment()
         sockets.queue.push({ method: 'connect', socket })
     })
-    children.destruct(() => server.close())
+    children.destruct(() => {
+        server.close()
+    })
     await callback(callback => server.listen(path.resolve(tmp, 'socket'), callback))
 
     await fs.mkdir(path.resolve(tmp, 'stage'))
@@ -260,17 +266,18 @@ require('arguable')(module, { $trap: false }, async arguable => {
     // of a process except for our child, so we can't really make any
     // assumptions unless we want to document those assumptions.
 
-    const watcher = new Watcher(children.durable('watcher'), buffer => {
+    const watcher = new Watcher(children.ephemeral('watcher'), buffer => {
         return fnv(0, buffer, 0, buffer.length)
     }, path.join(tmp, 'publish'))
     countdown.destruct(() => watcher.drain())
+    watcher.on('drain', () => children.destroy())
 
     const killer = new Killer(100, printer)
 
     // Start is separate because we watch the start of main process separately,
     // we started it, while we receive child processes mysteriously.
     killer.on('killed', watcher.killed.bind(watcher))
-    children.durable([ 'killer' ], killer.run())
+    children.durable('killer', killer.run())
     children.destruct(() => killer.destroy())
 
     const collector = new Collector
@@ -313,7 +320,7 @@ require('arguable')(module, { $trap: false }, async arguable => {
                 ], {
                     stdio: [ 'ignore', 'inherit', 'inherit', 'ipc' ]
                 })
-                const destructible = children.ephemeral([ 'sidecar', pid ])
+                const destructible = children.ephemeral(`sidecar.${pid}`)
                 const sender = senders.get(pid)
                 function message (message) {
                     printer.say(message.method, message)
@@ -330,6 +337,7 @@ require('arguable')(module, { $trap: false }, async arguable => {
                                     // big.
                                     sidecar.send(entry.message, coalesce(entry.socket))
                                 }
+                                destructible.destroy()
                             })
                         }
                         break
@@ -426,9 +434,9 @@ require('arguable')(module, { $trap: false }, async arguable => {
 
     const exit = once(child, 'exit').promise
 
-    await children.destructed
+    await children.promise
     destructible.destroy()
-    await destructible.destructed
+    await destructible.promise
 
     const [ code, signal ] = await exit
     for (const signal in traps) {

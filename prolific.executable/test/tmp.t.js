@@ -1,10 +1,8 @@
 require('proof')(1, async (okay) => {
     const fs = require('fs').promises
-    const rimraf = require('rimraf')
     const path = require('path')
-    const callback = require('prospective/callback')
     const TMPDIR = path.join(__dirname, 'tmp')
-    await callback(callback => rimraf(TMPDIR, callback))
+    await fs.rmdir(TMPDIR, { recursive: true })
     const tmp = require('../tmp')
     await fs.mkdir(TMPDIR)
     await fs.chmod(TMPDIR, 0o1777)

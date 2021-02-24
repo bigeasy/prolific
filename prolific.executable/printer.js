@@ -1,5 +1,6 @@
 const ascension = require('ascension')
-const sort = ascension([ Number ], entry => [ entry.when ])
+const whittle = require('whittle')
+const sort = whittle(ascension([ Number ]), entry => [ entry.when ])
 
 const Isochronous = require('isochronous')
 
