@@ -19,7 +19,6 @@ class Consolidator extends events.EventEmitter {
         let remainder = Buffer.alloc(0)
         await Staccato.rescue(async () => {
             READ: for await (const chunk of this._staccato.readable) {
-                console.log('?', String(remainder), String(chunk))
                 const buffer = remainder.length == 0 ? chunk : Buffer.concat([ remainder, chunk ])
                 let start = 0
                 for (;;) {
