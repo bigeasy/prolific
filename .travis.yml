@@ -15,4 +15,4 @@ install:
   - npm install -g nyc prove
 
 script:
-  - nyc npm test
+  - nyc bash -c 'for dir in prolific.*; do (cd $dir && [ -e package.json ] && [ ! -e skip ] && npm test || true); done'
