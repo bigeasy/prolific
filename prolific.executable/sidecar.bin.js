@@ -11,10 +11,7 @@
 
     ___ . ___
 */
-require('arguable')(module, {
-    $trap: { SIGINT: 'swallow', SIGTERM: 'swallow' },
-    process: process
-}, async (arguable) => {
+require('arguable')(module, { $trap: null, process: process }, async (arguable) => {
     arguable.required('processor', 'supervisor')
 
     // Node.js API.
