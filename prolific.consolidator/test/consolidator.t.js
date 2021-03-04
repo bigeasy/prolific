@@ -1,7 +1,6 @@
 require('proof')(8, async (okay) => {
     const stream = require('stream')
     const { Consolidator } = require('../consolidator')
-    throw new Error
     const { Duplex } = require('duplicitous')
     {
         const queue = []
