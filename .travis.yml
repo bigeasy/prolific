@@ -11,7 +11,7 @@ branches:
     - travis-ci
 
 install:
-  - npm install --no-package-lock --no-save
+  - for dir in mingle.*; do (cd $dir && [ -e package.json ] && npm install --no-save --no-package-lock || true); done && git checkout .
   - npm install -g nyc prove
 
 script:
