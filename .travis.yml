@@ -11,8 +11,8 @@ branches:
     - travis-ci
 
 install:
-  - for dir in prolific.*; do (cd $dir && [ -e package.json -a ! -e skip ] && npm install --no-save --no-package-lock || true); done && git checkout .
+  - for dir in prolific.*; do (cd $dir && [[ -e package.json && ! -e skip ]] && npm install --no-save --no-package-lock || true); done && git checkout .
   - npm install -g nyc prove
 
 script:
-  - nyc bash -c 'for dir in prolific.*; do (cd $dir && { [ ! -e package.json -o -e skip ] && true; } || npm test) || exit 1; done'
+  - nyc bash -c 'for dir in prolific.*; do (cd $dir && { [[ ! -e package.json && -e skip ]] && true; } || npm test) || exit 1; done'
