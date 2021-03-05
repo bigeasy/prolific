@@ -23,7 +23,7 @@
     },
     "scripts":
     {
-                            "test": "node test"
+                            "test": "bash -c 'for dir in prolific.*; do (cd $dir && { [ ! -e package.json -o -e skip ] && true; } || npm test) || exit 1; done'"
     },
     "nyc":
     {
