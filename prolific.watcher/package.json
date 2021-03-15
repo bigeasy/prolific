@@ -1,6 +1,6 @@
 {
     "name":                 "prolific.watcher",
-    "version":              "0.4.0-alpha.4",
+    "version":              "0.4.0-alpha.5",
     "description":
 
       "Watch the Prolific synchronous message temporary directory.",
