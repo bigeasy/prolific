@@ -29,7 +29,7 @@
                             "eject":                        "0.2.3",
                             "foremost":                     "^1.0.4",
                             "hash.fnv":                     "^1.0.6",
-                            "interrupt":                    "^11.0.0-alpha.18",
+                            "interrupt":                    "^11.0.0-alpha.20",
                             "is-running":                   "2.1.0",
                             "isochronous":                  "5.0.1",
                             "nop":                          "1.0.0",
