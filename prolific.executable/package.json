@@ -38,7 +38,7 @@
                             "prolific.evaluator":           "4.0.2",
                             "prolific.inherit":             "^7.0.2",
                             "prolific.watcher":             "0.4.0-alpha.5",
-                            "reconfigure":                  "5.0.0-alpha.4",
+                            "reconfigure":                  "5.0.0-alpha.5",
                             "vivifyer":                     "^2.0.3",
                             "whittle":                      "0.0.1"
     },
