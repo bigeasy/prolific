@@ -20,7 +20,7 @@
     },
     "dependencies":
     {
-                            "arguable":                     "13.0.0-alpha.0",
+                            "arguable":                     "13.0.0-alpha.1",
                             "ascension":                    "^3.0.0-alpha.2",
                             "avenue":                       "0.6.13",
                             "comeuppance":                  "0.0.1",
