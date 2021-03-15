@@ -22,7 +22,7 @@
     {
                             "eject":                        "0.2.3",
                             "hash.fnv":                     "^1.0.6",
-                            "staccato":                     "^13.0.0-alpha.1"
+                            "staccato":                     "^13.0.0-alpha.5"
     },
     "devDependencies":
     {
