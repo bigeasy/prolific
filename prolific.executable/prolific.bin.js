@@ -59,7 +59,7 @@ const fnv = require('hash.fnv')
 const Isochronous = require('isochronous')
 
 // Wrapped exceptions that you can catch by type.
-const { Interrupt } = require('interrupt')
+const Interrupt = require('interrupt')
 
 // Command line and environment interpretation utilities.
 const inherit = require('prolific.inherit')

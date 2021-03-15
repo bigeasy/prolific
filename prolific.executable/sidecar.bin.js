@@ -77,7 +77,7 @@ require('arguable')(module, { $trap: null, process: process }, async (arguable) 
             processors.queue.push(processor)
         })
 
-        await destructible.destructive('configure', processor.configure())
+        await processor.configure()
         destructible.ephemeral('reconfigure', processor.reconfigure())
 
         const queue = new Queue

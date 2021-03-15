@@ -48,12 +48,12 @@ require('proof')(16, async (okay) => {
         const logger = {
             say: (...vargs) => console.log('said', vargs)
         }
-        const destructible = new Destructible('configure')
+        const destructible = new Destructible('processor.t.js')
         await fs.copyFile(processors.bad, processors.source)
         const configurator = new ProcessorConfigurator(logger, processors.source, __filename)
         const reconfigurator = new PausableReconfigurator(processors.source, configurator)
         const processor = new Processor(logger, reconfigurator, { now: () => 1 })
-        await destructible.ephemeral('test', async function () {
+        destructible.ephemeral('test', async function () {
             await processor.configure()
         })
         try {
@@ -82,7 +82,7 @@ require('proof')(16, async (okay) => {
         const processor = new Processor(logger, reconfigurator, { now: () => 1 })
         processor.on('processor', (event) => events.push(event))
         await destructible.ephemeral('test', async function () {
-            await destructible.ephemeral('configure', processor.configure())
+            await processor.configure()
             destructible.durable('reconfigure', processor.reconfigure())
             try {
                 processor.process({
