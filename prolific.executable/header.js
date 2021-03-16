@@ -10,7 +10,7 @@ module.exports = async function (input) {
         }
         accumulator = Buffer.concat([ accumulator, buffer ])
         if (~accumulator.indexOf(0xa)) {
-            staccato.stream.destroy()
+            staccato.unlisten()
             return JSON.parse(accumulator.toString('utf8'))
         }
     }
