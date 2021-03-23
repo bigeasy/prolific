@@ -28,7 +28,7 @@
     },
     "devDependencies":
     {
-                            "destructible":                 "7.0.0-alpha.62",
+                            "destructible":                 "7.0.0-alpha.63",
                             "eject":                        "0.2.3",
                             "prolific.collector":           "^12.0.1",
                             "prolific.watcher":             "^0.4.0-alpha.6",
