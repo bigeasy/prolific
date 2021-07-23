@@ -1,7 +1,7 @@
 const assert = require('assert')
 const events = require('events')
 
-const { Staccato } = require('staccato')
+const Staccato = require('staccato')
 
 class Consolidator extends events.EventEmitter {
     constructor (queue, logger) {
