@@ -33,7 +33,7 @@
                             "is-running":                   "2.1.0",
                             "isochronous":                  "5.0.1",
                             "nop":                          "1.0.0",
-                            "prolific.collector":           "12.0.1",
+                            "prolific.collector":           "12.0.2",
                             "prolific.consolidator":        "13.0.0-alpha.6",
                             "prolific.evaluator":           "4.0.2",
                             "prolific.inherit":             "^7.0.2",
