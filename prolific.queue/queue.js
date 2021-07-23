@@ -1,5 +1,5 @@
 const assert = require('assert')
-const { Staccato } = require('staccato')
+const Staccato = require('staccato')
 const events = require('events')
 const once = require('eject')
 
