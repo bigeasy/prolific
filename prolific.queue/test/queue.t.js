@@ -12,7 +12,7 @@ require('proof')(14, async (okay) => {
 
     const Queue = require('../queue')
 
-    const once = require('eject')
+    const { once } = require('eject')
 
     const TMPDIR = path.join(__dirname, 'tmp')
     const dir = {
