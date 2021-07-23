@@ -3,6 +3,7 @@ require('proof')(4, async (okay) => {
     const events = require('events')
     const stream = require('stream')
     const { once } = require('eject')
+    const { coalesce } = require('extant')
     const Shuttle = require('../shuttle')
     const sink = require('prolific.sink')
     const path = require('path')
@@ -32,7 +33,7 @@ require('proof')(4, async (okay) => {
         }
     }
     async function reset () {
-        await fs.rmdir(TMPDIR, { recursive: true })
+        await coalesce(fs.rm, fs.rmdir).call(fs, TMPDIR, { force: true, recursive: true })
         await fs.mkdir(dir.publish, { recursive: true })
         await fs.mkdir(dir.stage, { recursive: true })
         // For some reason we need to wait a bit for the above directories to
