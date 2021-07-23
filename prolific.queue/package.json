@@ -20,7 +20,7 @@
     },
     "dependencies":
     {
-                            "eject":                        "0.2.3",
+                            "eject":                        "0.3.0",
                             "hash.fnv":                     "^1.0.6",
                             "staccato":                     "^13.0.0-alpha.5"
     },
