@@ -21,7 +21,7 @@
     "dependencies":
     {
                             "ascension":                    "^3.0.0-alpha.2",
-                            "whittle":                      "0.0.1"
+                            "whittle":                      "0.0.3"
     },
     "devDependencies":
     {
