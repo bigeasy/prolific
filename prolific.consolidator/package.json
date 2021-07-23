@@ -24,7 +24,7 @@
     },
     "devDependencies":
     {
-                            "duplicitous":                  "0.2.8",
+                            "duplicitous":                  "0.2.9",
                             "proof":                        "^9.0.1"
     },
     "main":                 "consolidator",
