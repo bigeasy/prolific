@@ -1,5 +1,5 @@
 require('proof')(2, async (okay) => {
-    const once = require('eject')
+    const { once } = require('eject')
     const children = require('child_process')
     const path = require('path')
     const Killer = require('../killer')

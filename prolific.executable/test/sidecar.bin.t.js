@@ -6,7 +6,7 @@ require('proof')(1, async (okay) => {
 
     const { Duplex } = require('duplicitous')
 
-    const once = require('eject')
+    const { once } = require('eject')
 
     const TMPDIR = path.join(__dirname, 'tmp')
     const dir = {

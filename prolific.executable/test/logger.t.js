@@ -2,7 +2,7 @@ require('proof')(1, async (okay) => {
     const fs = require('fs').promises
     const path = require('path')
 
-    const once = require('eject')
+    const { once } = require('eject')
 
     const Watcher = require('prolific.watcher')
 

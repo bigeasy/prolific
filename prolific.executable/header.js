@@ -1,4 +1,4 @@
-const { Staccato } = require('staccato')
+const Staccato = require('staccato')
 
 module.exports = async function (input) {
     const staccato = new Staccato(input)

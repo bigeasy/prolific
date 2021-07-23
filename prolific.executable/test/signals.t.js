@@ -1,7 +1,7 @@
 require('proof')(1, async okay => {
     const path = require('path')
     const children = require('child_process')
-    const once = require('eject')
+    const { once } = require('eject')
     const signaled = path.resolve(__dirname, 'signaled.js')
     const processor = path.resolve(__dirname, 'prolific.bin.prolific.js')
     const prolific = path.resolve(__dirname, '..', 'prolific.bin.js')

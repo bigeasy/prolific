@@ -46,8 +46,8 @@ const noop = require('nop')
 const { coalesce } = require('extant')
 
 // Convert events and callbacks to `async`/`await`.
-const once = require('eject')
-const callback = require('comeuppance')
+const { once } = require('eject')
+const { callback } = require('comeuppance')
 
 // An `async`/`await` or synchronous queue with many heads.
 const { Queue } = require('avenue')
