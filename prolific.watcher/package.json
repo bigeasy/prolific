@@ -27,7 +27,7 @@
     {
                             "destructible":                 "7.0.0-alpha.67",
                             "eject":                        "0.2.3",
-                            "foremost":                     "^1.0.4",
+                            "foremost":                     "^2.0.0",
                             "proof":                        "^9.0.1"
     },
     "main":                 "watcher",
