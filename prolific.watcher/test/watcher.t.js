@@ -2,6 +2,7 @@ require('proof')(9, async (okay) => {
     const path = require('path')
     const fs = require('fs').promises
     const { once } = require('eject')
+    const { coalesce } = require('extant')
     const events = require('events')
     const entries = new events.EventEmitter
     const TMPDIR = path.join(__dirname, 'tmp')
@@ -11,7 +12,7 @@ require('proof')(9, async (okay) => {
     }
     process.on('unhandledRejection', error => { throw error })
     async function reset () {
-        await fs.rmdir(TMPDIR, { recursive: true })
+        await coalesce(fs.rm, fs.rmdir).call(fs, TMPDIR, { force: true, recursive: true })
         await fs.mkdir(dir.publish, { recursive: true })
         await fs.mkdir(dir.stage, { recursive: true })
         // For some reason we need to wait a bit for the above directories to
