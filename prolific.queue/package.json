@@ -1,6 +1,6 @@
 {
     "name":                 "prolific.queue",
-    "version":              "22.0.0-alpha.5",
+    "version":              "22.0.0-alpha.6",
     "description":
 
       "Queue for Prolific that submits log entries from the logged application to the logging monitor.",
