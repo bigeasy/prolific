@@ -13,7 +13,7 @@ require('proof')(1, async (okay) => {
         stage: path.resolve(TMPDIR, 'stage'),
         publish: path.resolve(TMPDIR, 'publish')
     }
-    await fs.rmdir(TMPDIR, { recursive: true })
+    await (fs.rm || fs.rmdir).call(fs, TMPDIR, { force: true, recursive: true })
     await fs.mkdir(dir.publish, { recursive: true })
     await fs.mkdir(dir.stage, { recursive: true })
     const sidecar = require('../sidecar.bin')
