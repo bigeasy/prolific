@@ -40,7 +40,7 @@
                             "prolific.watcher":             "0.4.0-alpha.8",
                             "reconfigure":                  "5.0.0-alpha.5",
                             "vivifyer":                     "^2.0.3",
-                            "whittle":                      "0.0.1"
+                            "whittle":                      "0.0.3"
     },
     "devDependencies":
     {
