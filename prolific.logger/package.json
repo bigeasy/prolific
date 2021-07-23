@@ -20,7 +20,7 @@
     },
     "dependencies":
     {
-                            "foremost":                     "^1.0.4",
+                            "foremost":                     "^2.0.0",
                             "prolific.level":               "^1.0.1",
                             "prolific.sink":                "^7.0.3"
     },
