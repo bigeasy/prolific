@@ -1,6 +1,6 @@
 {
     "name":                 "prolific.consolidator",
-    "version":              "13.0.0-alpha.5",
+    "version":              "13.0.0-alpha.6",
     "description":
 
       "Consolidate chunks emitted from the logging stream and standard error of a supervised process.",
