@@ -49,6 +49,10 @@ summaries.
 - [ ] Add child registration to Prolific shuttle.
 - [ ] Log process details from Prolific monitor.
 - [ ] Log process details from Prolific supervisor.
+- [ ] Not getting errors reported on immediate error exit in Prolific.
+    - [ ] Not getting errors reported on immediate error exit in Prolific. ~
+    Throw an error right out the start of `t/program.js` and run tests to see
+    what I mean.
 
 Really want the ability to grep logs remotely, gather them and grep them. Where
 can they live when they are not local?
